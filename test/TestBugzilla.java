@@ -2,12 +2,11 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import ddaoo.bugzilla3.Bug;
-import ddaoo.bugzilla3.Classification;
-import ddaoo.bugzilla3.Component;
-import ddaoo.bugzilla3.Product;
-import ddaoo.bugzilla3.Profile;
-import ddaoo.ddao.Entry;
+import noscodb.bugzilla3.Bug;
+import noscodb.bugzilla3.Classification;
+import noscodb.bugzilla3.Component;
+import noscodb.bugzilla3.Product;
+import noscodb.bugzilla3.Profile;
 
 import junit.framework.TestCase;
 
@@ -134,12 +133,6 @@ public class TestBugzilla extends TestCase {
 
 	public void test18() throws SQLException {
 		for (Bug o : Bug.ALL.with(Bug.FK_ASSIGNED_TO_PROFILE).where(Profile.LOGIN_NAME.eq("Derek Anderson"))) {
-			System.out.println(o +" : "+ o.getAssignedToProfile());
-		}
-	}
-
-	public void test19() throws SQLException {
-		for (Bug o : Bug.ALL.where(Bug.FK_PRODUCT.has(Product.ID.eq(1)))) {
 			System.out.println(o +" : "+ o.getAssignedToProfile());
 		}
 	}

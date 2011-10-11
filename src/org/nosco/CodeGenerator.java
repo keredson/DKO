@@ -39,6 +39,7 @@ public class CodeGenerator {
 		put("package", "noscodb");
 		put("dir", "gensrc");
 		put("metadata", "schema.json");
+		put("fakefks", "fake_fks.json");
 	}});
 
 	private final String pkg;
@@ -80,6 +81,16 @@ public class CodeGenerator {
 		while ((s=br.readLine())!=null) sb.append(s).append('\n');
 		JSONObject metadata = new JSONObject(sb.toString());
 
+		JSONObject fakeFKs = new JSONObject();
+		File fakeFKsFile = new File(params.get("fakefks"));
+		if (fakeFKsFile.exists()) {
+			br = new BufferedReader(new FileReader(fakeFKsFile));
+			sb = new StringBuffer();
+			s = null;
+			while ((s=br.readLine())!=null) sb.append(s).append('\n');
+			fakeFKs = new JSONObject(sb.toString());
+		}
+
 		CodeGenerator generator = new CodeGenerator(dir, pkg, stripPrefixes, stripSuffixes);
 
 		JSONObject schemas = metadata.getJSONObject("schemas");
@@ -88,64 +99,49 @@ public class CodeGenerator {
 		for (String schema : schemas.keySet()) {
 			JSONObject tables = schemas.getJSONObject(schema);
 			for (String table : tables.keySet()) {
+			    // skip these junk mssql tables
+			    if(table.startsWith("syncobj_")) continue;
+
 				JSONObject columns = tables.getJSONObject(table);
 				JSONArray pks = getJSONArray(metadata, "primary_keys", schema, table);
 				List<FK> fks = new ArrayList<FK>();
 				List<FK> fksIn = new ArrayList<FK>();
 
 				for (String constraint_name : foreignKeys.keySet()) {
-				    FK fk = new FK();
-				    fk.name = constraint_name;
 				    JSONObject fkmd = foreignKeys.getJSONObject(constraint_name);
-				    String[] reffing = {fkmd.getJSONArray("reffing").getString(0),
-					    fkmd.getJSONArray("reffing").getString(1)};
-				    fk.reffing = reffing;
-				    String[] reffed = {fkmd.getJSONArray("reffed").getString(0),
-					    fkmd.getJSONArray("reffed").getString(1)};
-				    fk.reffed = reffed;
-				    JSONObject cols = fkmd.getJSONObject("columns");
-				    for (String key : cols.keySet()) {
-					fk.columns.put(key, cols.getString(key));
-				    }
-				    if (schema.equals(fk.reffing[0]) && table.equals(fk.reffing[1])) {
-					fks.add(fk);
-				    }
-				    if (schema.equals(fk.reffed[0]) && table.equals(fk.reffed[1])) {
-					fksIn.add(fk);
-				    }
+				    splitFK(schema, table, fks, fksIn, constraint_name, fkmd);
 				}
-
-
-/*				HashMap<String, Set<String[]>> incomingFKs = new HashMap<String, Set<String[]>>();
-				for (String schema2 : foreignKeys.keySet()) {
-					JSONObject tables2 = foreignKeys.getJSONObject(schema2);
-					for (String table2 : tables2.keySet()) {
-						JSONObject columns2 = tables2.getJSONObject(table2);
-						for (String column2 : columns2.keySet()) {
-							JSONArray relation = columns2.getJSONArray(column2);
-							//System.out.println(relation);
-							String relatedSchema = relation.getString(0);
-							String relatedTable = relation.getString(1);
-							String relatedColumn = relation.getString(2);
-							String[] fk = {schema2, table2, column2};
-							//System.out.println(fk[0] +"."+ fk[1] +"."+ fk[2]);
-							if (!schema.equals(relatedSchema)) continue;
-							if (!table.equals(relatedTable)) continue;
-							Set<String[]> set = incomingFKs.get(relatedColumn);
-							if (set==null) {
-								set = new HashSet<String[]>();
-								incomingFKs.put(relatedColumn, set);
-							}
-							set.add(fk);
-						}
-					}
-				}//*/
-
+				for (String constraint_name : fakeFKs.keySet()) {
+				    JSONObject fkmd = fakeFKs.getJSONObject(constraint_name);
+				    splitFK(schema, table, fks, fksIn, constraint_name, fkmd);
+				}
 
 				generator.generate(schema, table, columns, pks, fks, fksIn);
 			}
 		}
 
+	}
+
+	private static void splitFK(String schema, String table, List<FK> fks, List<FK> fksIn,
+		String constraint_name, JSONObject fkmd) throws JSONException {
+	    FK fk = new FK();
+	    fk.name = constraint_name;
+	    String[] reffing = {fkmd.getJSONArray("reffing").getString(0),
+	        fkmd.getJSONArray("reffing").getString(1)};
+	    fk.reffing = reffing;
+	    String[] reffed = {fkmd.getJSONArray("reffed").getString(0),
+	        fkmd.getJSONArray("reffed").getString(1)};
+	    fk.reffed = reffed;
+	    JSONObject cols = fkmd.getJSONObject("columns");
+	    for (String key : cols.keySet()) {
+	    fk.columns.put(key, cols.getString(key));
+	    }
+	    if (schema.equals(fk.reffing[0]) && table.equals(fk.reffing[1])) {
+	    fks.add(fk);
+	    }
+	    if (schema.equals(fk.reffed[0]) && table.equals(fk.reffed[1])) {
+	    fksIn.add(fk);
+	    }
 	}
 
 	private static JSONObject getJSONObject(JSONObject o, String... path) throws JSONException {
@@ -180,7 +176,10 @@ public class CodeGenerator {
 
 
 	private static String getFieldName(String column) {
-		return column.replace(' ', '_').toUpperCase();
+		return column.replace(' ', '_')
+			.replace("%", "_PERCENT")
+			.replace("-", "_DASH_")
+			.toUpperCase();
 	}
 
 	private static String getFieldName(Collection<String> columns) {
@@ -198,6 +197,7 @@ public class CodeGenerator {
 	throws IOException, JSONException {
 		String className = genTableClassName(table);
 		Set<String> pkSet = new HashSet<String>();
+		if (pks == null) pks = new JSONArray();
 		for (int i=0; i<pks.length(); ++i) {
 			pkSet.add(pks.getString(i));
 		}
@@ -264,7 +264,7 @@ public class CodeGenerator {
 		// write field value references
 		for (String column : columns.keySet()) {
 			br.write("\tprivate "+ getFieldType(columns.getString(column)).getName());
-			br.write(" "+ underscoreToCamelCase(column, false) + " = null;\n");
+			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
 		}
 		br.write("\n");
 
@@ -278,7 +278,7 @@ public class CodeGenerator {
 		br.write("\t\tfor (int i=start; i<end; ++i) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\t\tif (fields[i]=="+ getFieldName(column) +") {\n");
-			br.write("\t\t\t\t"+ underscoreToCamelCase(column, false) +" = (");
+			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = (");
 			br.write(getFieldType(columns.getString(column)).getName());
 			br.write(") objects[i];\n");
 			br.write("\t\t\t\tFETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
@@ -322,22 +322,22 @@ public class CodeGenerator {
 				if (fk.columns.containsKey(column)) continue;
 			}
 			String cls = getFieldType(columns.getString(column)).getName();
-			br.write("\tpublic "+ cls +" get"+ underscoreToCamelCase(column, true) +"() {\n");
+			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\t"+ underscoreToCamelCase(column, false) +" = ALL.onlyFields(");
+			br.write("\t\t\t"+ getInstanceFieldName(column) +" = ALL.onlyFields(");
 			br.write(getFieldName(column)+")");
 			for (String pk : pkSet) {
-				br.write(".where("+ getFieldName(pk) +".eq("+ underscoreToCamelCase(pk, false) +"))");
+				br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 			}
-			br.write(".getTheOnly().get"+ underscoreToCamelCase(column, true) +"();\n");
+			br.write(".getTheOnly().get"+ getInstanceMethodName(column) +"();\n");
 			br.write("\t\t\tFETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t}\n");
-			br.write("\t\treturn "+ underscoreToCamelCase(column, false) +";\n\t}\n\n");
+			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
 
 			if (!pkSet.contains(column)) {
-				br.write("\tpublic void set"+ underscoreToCamelCase(column, true));
+				br.write("\tpublic void set"+ getInstanceMethodName(column));
 				br.write("("+ cls +" v) {\n");
-				br.write("\t\t"+ underscoreToCamelCase(column, false) +" = v;\n");
+				br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
 				br.write("\t\tif (UPDATED_VALUES == null) UPDATED_VALUES = new java.util.BitSet();\n");
 				br.write("\t\tUPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 				br.write("\t}\n\n");
@@ -399,13 +399,13 @@ public class CodeGenerator {
 		    //String method = genFKMethodName(fk.columns.keySet(), relatedTableClassName);
 		    String method = relatedTableClassName;
 		    for (String s : fk.columns.keySet()) method += "_" + s;
-		    method = this.underscoreToCamelCase(method, true);
+		    method = getInstanceMethodName(method);
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() ");
 		    br.write("{\n\t\treturn "+ relatedTableClassName +".ALL");
 		    for (Entry<String, String> e : fk.columns.entrySet()) {
 			String relatedColumn = e.getKey();
 			String column = e.getValue();
-			br.write(".where("+ relatedTableClassName +"."+ getFieldName(relatedColumn) +".eq(get"+ this.underscoreToCamelCase(column, true) +"()))");
+			br.write(".where("+ relatedTableClassName +"."+ getFieldName(relatedColumn) +".eq(get"+ getInstanceMethodName(column) +"()))");
 		    }
 		    br.write(";\n\t}\n\n");
 		}
@@ -416,13 +416,13 @@ public class CodeGenerator {
 		br.write("\t\tif (!dirty()) return false;\n");
 		br.write("\t\tQuery<"+ className +"> query = ALL");
 		for (String pk : pkSet) {
-			br.write(".where("+ getFieldName(pk) +".eq("+ underscoreToCamelCase(pk, false) +"))");
+			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
 		br.write(";\n");
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ underscoreToCamelCase(column, false) +");\n");
+			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
 			br.write("\t\t}\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
@@ -432,11 +432,11 @@ public class CodeGenerator {
 			br.write("\t\tif (");
 			List<String> pkList = new ArrayList<String>(pkSet);
 			for (int i=0; i<pkList.size(); ++i) {
-				br.write(underscoreToCamelCase(pkList.get(i), false) +" == null");
+				br.write(getInstanceFieldName(pkList.get(i)) +" == null");
 				if (i<pkList.size()-1) br.write(" || ");
 			}
 			br.write(") {\n");
-			br.write("\t\t\t"+ underscoreToCamelCase(pkList.get(0), false) +" = (");
+			br.write("\t\t\t"+ getInstanceFieldName(pkList.get(0)) +" = (");
 			br.write(getFieldType(columns.getString(pkList.get(0))).getName() +") query.insert();\n");
 			br.write("\t\t\treturn true;\n\t\t} else {\n");
 			br.write("\t\t\tint count = query.update();\n");
@@ -449,6 +449,18 @@ public class CodeGenerator {
 		br.close();
 	}
 
+	private static String getInstanceFieldName(String column) {
+	    if ("class".equals(column)) column = "JAVA_KEYWORD_class";
+	    if ("for".equals(column)) column = "JAVA_KEYWORD_for";
+	    column = column.replace("-", "_DASH_");
+	    return underscoreToCamelCase(column, false);
+	}
+
+	private static String getInstanceMethodName(String column) {
+	    if ("class".equals(column)) column = "JAVA_KEYWORD_class";
+	    column = column.replace("-", "_DASH_");
+	    return underscoreToCamelCase(column, true);
+	}
 
 	private String genFKName(Set<String> columns, String referencedTable) {
 	    for(String column : columns) {
@@ -500,16 +512,24 @@ public class CodeGenerator {
 	private Class<? extends Object> getFieldType(String type) {
 		if ("varchar".equals(type)) return String.class;
 		if ("char".equals(type)) return Character.class;
+		if ("nvarchar".equals(type)) return String.class;
+		if ("nchar".equals(type)) return String.class;
 		if ("longtext".equals(type)) return String.class;
 		if ("text".equals(type)) return String.class;
 		if ("tinytext".equals(type)) return String.class;
 		if ("mediumtext".equals(type)) return String.class;
+		if ("ntext".equals(type)) return String.class;
+		if ("xml".equals(type)) return String.class;
 		if ("int".equals(type)) return Integer.class;
 		if ("mediumint".equals(type)) return Integer.class;
 		if ("smallint".equals(type)) return Integer.class;
 		if ("tinyint".equals(type)) return Integer.class;
 		if ("bigint".equals(type)) return Long.class;
 		if ("decimal".equals(type)) return Double.class;
+		if ("money".equals(type)) return Double.class;
+		if ("numeric".equals(type)) return Double.class;
+		if ("float".equals(type)) return Double.class;
+		if ("real".equals(type)) return Float.class;
 		if ("blob".equals(type)) return Blob.class;
 		if ("longblob".equals(type)) return Blob.class;
 		if ("datetime".equals(type)) return Timestamp.class;
@@ -518,15 +538,23 @@ public class CodeGenerator {
 		if ("year".equals(type)) return Integer.class;
 		if ("enum".equals(type)) return Integer.class;
 		if ("set".equals(type)) return String.class;
+		if ("bit".equals(type)) return Boolean.class;
+		if ("binary".equals(type)) return java.sql.Blob.class;
+		if ("varbinary".equals(type)) return java.sql.Blob.class;
+		if ("sql_variant".equals(type)) return Object.class;
+		if ("smalldatetime".equals(type)) return Timestamp.class;
+		if ("uniqueidentifier".equals(type)) return String.class;
+		if ("image".equals(type)) return java.sql.Blob.class;
+		System.err.println("unknown field type: "+ type);
 		return null;
 	}
 
 
-	private String underscoreToCamelCase(String s, boolean capitalizeFirstChar) {
+	private static String underscoreToCamelCase(String s, boolean capitalizeFirstChar) {
 		if (s==null) return null;
 		if (s.length()==0) return s;
 		s = s.toLowerCase();
-		s = s.replace(' ', '_');
+		s = s.replace(' ', '_').replace("%", "_PERCENT");
 		char[] c = s.toCharArray();
 		if (capitalizeFirstChar) {
 			c[0] = Character.toUpperCase(c[0]);
@@ -539,7 +567,7 @@ public class CodeGenerator {
 		return new String(c).replaceAll("_", "");
 	}
 
-	private String underscoreToCamelCase(Collection<String> strings, boolean capitalizeFirstChar) {
+	private static String underscoreToCamelCase(Collection<String> strings, boolean capitalizeFirstChar) {
 	    StringBuffer sb = new StringBuffer();
 	    for (String s : strings) {
 		sb.append(underscoreToCamelCase(s, capitalizeFirstChar));

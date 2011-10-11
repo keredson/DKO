@@ -8,28 +8,28 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class Condition {
-	
+
 	public static final Condition TRUE = new Condition() {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
 			sb.append(" 1=1");
 		}
 	};
-	
+
 	public static final Condition FALSE = new Condition() {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
 			sb.append(" 1=0");
 		}
 	};
-	
+
 	List bindings = null;
-	
+
 	String getSQL(Map<String,Set<String>> tableNameMap) {
 		StringBuffer sb = new StringBuffer();
 		bindings = new ArrayList();
 		getSQL(sb, bindings, tableNameMap);
 		return sb.toString();
 	}
-	
+
 	List getSQLBindings() {
 		return bindings;
 	}
@@ -45,17 +45,17 @@ public abstract class Condition {
 		c.conditions.add(this);
 		return c;
 	}
-	
+
 	public Condition or(Condition... conditions) {
 		OrCondition c = new OrCondition(conditions);
 		c.conditions.add(this);
 		return c;
 	}
-	
+
 	private static class AndCondition extends Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
-		
+
 		public AndCondition(Condition[] conditions) {
 			for (Condition condition : conditions) {
 				if (condition instanceof AndCondition) {
@@ -80,13 +80,13 @@ public abstract class Condition {
 			}
 			sb.append(")");
 		}
-		
+
 	}
 
 	private static class OrCondition extends Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
-		
+
 		public OrCondition(Condition[] conditions) {
 			for (Condition condition : conditions) {
 				if (condition instanceof OrCondition) {
@@ -111,7 +111,7 @@ public abstract class Condition {
 			}
 			sb.append(")");
 		}
-		
+
 	}
 
 	public static class Not extends Condition {
@@ -177,10 +177,10 @@ public abstract class Condition {
 			sb.append(derefField(field, tableNameMap));
 			sb.append(cmp);
 		}
-		
+
 	}
-	
-	
+
+
 
 	public static class Binary extends Condition {
 
@@ -190,7 +190,9 @@ public abstract class Condition {
 		private String cmp;
 		private Select s;
 
-		public <T> Binary(Field<T> field, String cmp, T v) {
+		public <T> Binary(Field<T> field, String cmp, Object v) {
+			// note "v" should be of type T here - set to object to work around
+			// this bug: http://stackoverflow.com/questions/5361513/reference-is-ambiguous-with-generics
 			this.field = field;
 			this.cmp = cmp;
 			this.v = v;

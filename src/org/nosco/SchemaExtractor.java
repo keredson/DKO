@@ -55,7 +55,7 @@ public class SchemaExtractor {
 	public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, JSONException, IOException {
 		Map<String, String> params = argsParser.parse(args);
 
-		Driver d = (Driver)Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+		//Driver d = (Driver)Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
 		Connection conn = DriverManager.getConnection (params.get("url"),
 				params.get("username"), params.get("password"));
 

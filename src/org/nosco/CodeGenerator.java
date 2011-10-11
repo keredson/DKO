@@ -22,6 +22,7 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.nosco.util.Misc;
 
 public class CodeGenerator {
 
@@ -74,15 +75,24 @@ public class CodeGenerator {
 		if (params.get("strip-prefixes") != null) stripPrefixes = params.get("strip-prefixes").split(",");
 		String[] stripSuffixes = {};
 		if (params.get("strip-suffixes") != null) stripSuffixes = params.get("strip-suffixes").split(",");
+		String metadataFile = params.get("metadata");
+		String fakefksFile = params.get("fakefks");
 
-		BufferedReader br = new BufferedReader(new FileReader(params.get("metadata")));
+		go(dir, pkg, stripPrefixes, stripSuffixes, metadataFile, fakefksFile);
+	}
+
+	public static void go(String dir, String pkg, String[] stripPrefixes,
+		String[] stripSuffixes, String metadataFile, String fakefksFile)
+			throws IOException, JSONException {
+
+		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
 		StringBuffer sb = new StringBuffer();
 		String s = null;
 		while ((s=br.readLine())!=null) sb.append(s).append('\n');
 		JSONObject metadata = new JSONObject(sb.toString());
 
 		JSONObject fakeFKs = new JSONObject();
-		File fakeFKsFile = new File(params.get("fakefks"));
+		File fakeFKsFile = new File(fakefksFile);
 		if (fakeFKsFile.exists()) {
 			br = new BufferedReader(new FileReader(fakeFKsFile));
 			sb = new StringBuffer();
@@ -203,8 +213,8 @@ public class CodeGenerator {
 		}
 		int fieldCount = columns.keySet().size();
 
-		new File(Util.join("/", dir, pkg, schema)).mkdirs();
-		File file = new File(Util.join("/", dir, pkg, schema, className+".java"));
+		new File(Misc.join("/", dir, pkg, schema)).mkdirs();
+		File file = new File(Misc.join("/", dir, pkg, schema, className+".java"));
 		System.out.println("writing: "+ file.getAbsolutePath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
 		br.write("package "+ pkg +"."+ schema +";\n\n");

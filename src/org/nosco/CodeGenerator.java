@@ -329,9 +329,9 @@ public class CodeGenerator {
 		// write getters and setters
 		for (String column : columns.keySet()) {
 			boolean skipColumn = false;
-			for (FK fk : fks) {
-				if (fk.columns.containsKey(column)) skipColumn = true;
-			}
+			//for (FK fk : fks) {
+			//	if (fk.columns.containsKey(column)) skipColumn = true;
+			//}
 			if (skipColumn) continue;
 			String cls = getFieldType(columns.getString(column)).getName();
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");

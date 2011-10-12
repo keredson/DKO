@@ -134,7 +134,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	public Iterator<T> iterator() {
 		try {
 			ps = query.getConnR().prepareStatement(getSQL());
-			log(sql);
+			query.log(sql);
 			query.setBindings(ps);
 			System.out.println();
 			ps.execute();
@@ -239,10 +239,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	public void remove() {
 		// TODO Auto-generated method stub
 
-	}
-
-	private void log(String sql) {
-		System.err.println("==> "+ sql);
 	}
 
 }

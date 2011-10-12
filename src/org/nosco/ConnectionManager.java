@@ -97,7 +97,7 @@ public class ConnectionManager {
 	        	url = "jdbc:mysql://"+ login.connectionInfo.server +"/?zeroDateTimeBehavior=convertToNull";
 	        }
 	        if (login.connectionInfo.dbtype == DB_TYPE.SQLSERVER) {
-	        	try {
+	        	/*try {
 					Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
 				} catch (InstantiationException e) {
 					e.printStackTrace();
@@ -105,7 +105,7 @@ public class ConnectionManager {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
-				}
+				} //*/
 	        	url = "jdbc:sqlserver://"+ login.connectionInfo.server +":1433";
 	        }
 	        c = DriverManager.getConnection (url, login.username, login.password);

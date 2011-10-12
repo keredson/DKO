@@ -279,8 +279,8 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		return count;
 	}
 
-	private void log(String sql) {
-		System.err.println("==> "+ sql +"");
+	void log(String sql) {
+		//System.err.println("==> "+ sql +"");
 	}
 
 	@Override
@@ -305,6 +305,8 @@ public class QueryImpl<T extends Table> implements Query<T> {
 //		return null;
 //	}
 
+	private Map<String,Set<String>> tableNameMap = null;
+
 	String getWhereClauseAndSetBindings() {
 		if (sql==null) {
 
@@ -312,7 +314,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			bindings = new ArrayList<Object>();
 
 			if (conditions!=null && conditions.size()>0) {
-				Map<String,Set<String>> tableNameMap = new HashMap<String,Set<String>>();
+				tableNameMap = new HashMap<String,Set<String>>();
 				for (TableInfo ti : tableInfos) {
 					String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
 					if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
@@ -632,6 +634,47 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			this.path  = path;
 		}
 
+	}
+
+	@Override
+	public List<T> asList() {
+		List<T> list = new ArrayList<T>();
+		for (T t : this) list.add(t);
+		return list;
+	}
+
+	@Override
+	public Set<T> asSet() {
+		Set<T> set = new HashSet<T>();
+		for (T t : this) set.add(t);
+		return set;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
+			throws SQLException {
+		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+		sql = "select "+ Condition.derefField(byField, tableNameMap)
+				+", sum("+ Condition.derefField(sumField, tableNameMap) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, tableNameMap);
+		log(sql);
+		PreparedStatement ps = getConnR().prepareStatement(sql);
+		setBindings(ps);
+		ps.execute();
+		ResultSet rs = ps.getResultSet();
+		Map<Object, Double> result = new HashMap<Object, Double>();
+		while (rs.next()) {
+			Object key = null;
+			if (byField.TYPE == Long.class) key = rs.getLong(1); else
+			if (byField.TYPE == Double.class) key = rs.getDouble(1); else
+			key = rs.getObject(1);
+			Double value = rs.getDouble(2);
+			result.put(key, value);
+		}
+		rs.close();
+		ps.close();
+		return (Map<S, Double>) result;
 	}
 
 }

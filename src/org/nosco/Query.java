@@ -1,15 +1,16 @@
 package org.nosco;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nosco.Constants.DIRECTION;
 
 
 
 public interface Query<T extends Table> extends Iterable<T> {
-	
+
 	public Query<T> where(Condition... conditions);
 
 	public T get(Condition... conditions);
@@ -59,5 +60,12 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Object insert() throws SQLException;
 
 	public T getTheOnly();
+
+	public List<T> asList();
+
+	public Set<T> asSet();
+
+	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
+			throws SQLException;
 
 }

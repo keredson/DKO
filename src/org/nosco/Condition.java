@@ -1,6 +1,7 @@
 package org.nosco;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -267,23 +268,43 @@ public abstract class Condition {
 		private Field field;
 		private String cmp;
 		private Object[] set;
+		private Collection<?> set2;
 
 		public In(Field field, String cmp, Object... set) {
 			this.field = field;
 			this.cmp = cmp;
 			this.set = set;
+			this.set2 = null;
 		}
+
+		public In(Field field, String cmp, Collection<?> set) {
+			this.field = field;
+			this.cmp = cmp;
+			this.set = null;
+			this.set2 = set;
+		}
+
 		@Override
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
 			sb.append(' ');
 			sb.append(derefField(field, tableNameMap));
 			sb.append(cmp);
 			sb.append('(');
-			for (int i=0; i<set.length; ++i) {
-				Object v = set[i];
-				sb.append("?");
-				if (i<set.length-1) sb.append(",");
-				bindings.add(v);
+			if (set != null) {
+				for (int i=0; i<set.length; ++i) {
+					Object v = set[i];
+					sb.append("?");
+					if (i<set.length-1) sb.append(",");
+					bindings.add(v);
+				}
+			} else if (set2 != null) {
+				int i = 0;
+				for (Object v : set2) {
+					sb.append("?");
+					if (i<set2.size()-1) sb.append(",");
+					bindings.add(v);
+					++i;
+				}
 			}
 			sb.append(')');
 		}

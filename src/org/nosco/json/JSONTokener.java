@@ -1,4 +1,4 @@
-package org.json;
+package org.nosco.json;
 
 import java.io.BufferedReader;
 import java.io.IOException;

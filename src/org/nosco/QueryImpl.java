@@ -4,6 +4,7 @@ import static org.nosco.Constants.DIRECTION.ASCENDING;
 import static org.nosco.Constants.DIRECTION.DESCENDING;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,14 +21,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.nosco.ConnectionManager.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
+import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 
 
 
 public class QueryImpl<T extends Table> implements Query<T> {
-	
+
 	// genned once and cached
 	private String sql;
 	private Field<?>[] fields;
@@ -48,7 +51,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	int top = 0;
 	private Map<Field<?>,Object> data = null;
 	private boolean distinct = false;
-	
+
 	public QueryImpl(Table table) {
 		tables.add(table);
 		String tableName = genTableName(table, tableNames);
@@ -132,11 +135,23 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		return q;
 	}
 
+	DB_TYPE getDBType() {
+		return ConnectionManager.instance().getDBType(tables.get(0).SCHEMA_NAME());
+	}
+
+	Connection getConnR() throws SQLException {
+		return ConnectionManager.instance().getConnection(tables.get(0).SCHEMA_NAME(), "r");
+	}
+
+	Connection getConnRW() throws SQLException {
+		return ConnectionManager.instance().getConnection(tables.get(0).SCHEMA_NAME(), "rw");
+	}
+
 	@Override
 	public int count() throws SQLException {
-		String sql = "select count(1) from "+ Util.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 		log(sql);
-		PreparedStatement ps = Util.conn.prepareStatement(sql);
+		PreparedStatement ps = getConnR().prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
@@ -236,14 +251,14 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			fields[i++] = entry.getKey().toString()+"=?";
 			bindings.add(entry.getValue());
 		}
-		sb.append(Util.join(", ", fields));
+		sb.append(Misc.join(", ", fields));
 		sb.append(" ");
 		sb.append(getWhereClauseAndSetBindings());
 		bindings.addAll(this.bindings);
 		String sql = sb.toString();
 
 		log(sql);
-		PreparedStatement ps = Util.conn.prepareStatement(sql);
+		PreparedStatement ps = getConnRW().prepareStatement(sql);
 		setBindings(ps, bindings);
 		ps.execute();
 		int count = ps.getUpdateCount();
@@ -254,9 +269,9 @@ public class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public int deleteAll() throws SQLException {
-		String sql = "delete from "+ Util.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+		String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 		log(sql);
-		PreparedStatement ps = Util.conn.prepareStatement(sql);
+		PreparedStatement ps = getConnRW().prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
 		int count = ps.getUpdateCount();
@@ -292,10 +307,10 @@ public class QueryImpl<T extends Table> implements Query<T> {
 
 	String getWhereClauseAndSetBindings() {
 		if (sql==null) {
-			
+
 			StringBuffer sb = new StringBuffer();
 			bindings = new ArrayList<Object>();
-			
+
 			if (conditions!=null && conditions.size()>0) {
 				Map<String,Set<String>> tableNameMap = new HashMap<String,Set<String>>();
 				for (TableInfo ti : tableInfos) {
@@ -310,9 +325,9 @@ public class QueryImpl<T extends Table> implements Query<T> {
 					tmp[i++] = condition.getSQL(tableNameMap);
 					bindings.addAll(condition.getSQLBindings());
 				}
-				sb.append(Util.join(" and", tmp));
+				sb.append(Misc.join(" and", tmp));
 			}
-			
+
 			sql = sb.toString();
 			if (bindings!=null) bindings = Collections.unmodifiableList(bindings);
 		}
@@ -354,7 +369,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		q.top  = i;
 		return q;
 	}
-	
+
 	private String genTableName(Table table, Collection<String> tableNames) {
 		String base = table.TABLE_NAME();
 		String proposed = null;
@@ -452,22 +467,22 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			q.bindings.add(entry.getValue());
 			++i;
 		}
-		sb.append(Util.join(", ", fields));
+		sb.append(Misc.join(", ", fields));
 		sb.append(") values (");
-		sb.append(Util.join(", ", bindStrings));
+		sb.append(Misc.join(", ", bindStrings));
 		sb.append(")");
 		String sql = sb.toString();
 
 		log(sql);
-		log(Util.join(", ", q.bindings));
-		PreparedStatement ps = Util.conn.prepareStatement(sql);
+		log(Misc.join(", ", q.bindings));
+		PreparedStatement ps = getConnRW().prepareStatement(sql);
 		q.setBindings(ps);
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
-		
+
 		if (count==1) {
-			Statement s = Util.conn.createStatement();
+			Statement s = getConnRW().createStatement();
 			s.execute("SELECT LAST_INSERT_ID()");
 			ResultSet rs = s.getResultSet();
 			if (rs.next()) {
@@ -476,14 +491,17 @@ public class QueryImpl<T extends Table> implements Query<T> {
 				return pk;
 			}
 		}
-		
+
 		return null;
 	}
 
 	public Collection<String> getTableNameList() {
 		List<String> names = new ArrayList<String>();
 		List<String> tableNames = new LinkedList<String>(this.tableNames);
-		for (Table t : tables) names.add(t.SCHEMA_NAME() +"."+ t.TABLE_NAME() +" "+ tableNames.remove(0));
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".." : ".";
+		for (Table t : tables) {
+			names.add(t.SCHEMA_NAME() + sep + t.TABLE_NAME() +" "+ tableNames.remove(0));
+		}
 		return names;
 	}
 
@@ -511,7 +529,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 					throw new IllegalArgumentException("you have a break in your FK chain");
 				}
 			}
-			
+
 			q.fks.add(new Tree.Callback<Field.FK>() {
 				public void call(FK fkField, int offset, FK[] path) {
 					try {
@@ -528,14 +546,14 @@ public class QueryImpl<T extends Table> implements Query<T> {
 							q.tableInfos.add(new TableInfo(reffedTable, reffedTableName, actualPath));
 							if (q.fkPathTableToTableNameMap == null) q.fkPathTableToTableNameMap = new HashMap<String,String>();
 							q.fkPathTableToTableNameMap.put(
-									genTableNameFromFKPathKey(fkFields, offset, reffedTable), 
+									genTableNameFromFKPathKey(fkFields, offset, reffedTable),
 									reffedTableName);
 							String refingTableName =q.fkPathTableToTableNameMap.get(
 									genTableNameFromFKPathKey(fkFields, offset, refingTable));
 							for (int j=0; j<refingFields.length; ++j) {
 								q.conditions.add(new Condition.Binary(refingFields[j].from(
-										refingTableName), 
-										"=", 
+										refingTableName),
+										"=",
 										reffedFields[j].from(reffedTableName))
 									.or(refingFields[j].from(refingTableName).isNull()));
 							}
@@ -553,7 +571,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 					}
 				}
 			}, fkFields);
-			
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -599,7 +617,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	public int size() throws SQLException {
 		return count();
 	}
-	
+
 	class TableInfo implements Cloneable{
 
 		Table table = null;
@@ -613,7 +631,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			this.tableName = tableName;
 			this.path  = path;
 		}
-		
+
 	}
 
 }

@@ -16,9 +16,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.nosco.ConnectionManager.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.QueryImpl.TableInfo;
+import org.nosco.util.Misc;
 import org.nosco.util.Tree.Callback;
 
 
@@ -63,7 +65,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 							c.setAccessible(true);
 							fkConstructors.put(fk, c);
 							Class<? extends Table> reffedTable = fk.REFERENCED_FIELDS()[0].TABLE;
-							Method setFKMethod  = (Method) reffedTable.getDeclaredMethod("SET_FK", 
+							Method setFKMethod  = (Method) reffedTable.getDeclaredMethod("SET_FK",
 									Field.FK.class, Object.class);
 							setFKMethod.setAccessible(true);
 							fkSetMethods.put(reffedTable, setFKMethod);
@@ -74,7 +76,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 						}
 					}
 				});
-				Method setFKMethod  = (Method) query.getType().getDeclaredMethod("SET_FK", 
+				Method setFKMethod  = (Method) query.getType().getDeclaredMethod("SET_FK",
 						Field.FK.class, Object.class);
 				setFKMethod.setAccessible(true);
 				fkSetMethods.put(query.getType(), setFKMethod);
@@ -88,17 +90,20 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 
 	protected String getSQL() {
 		if (sql==null) {
-			
+
 			selectedFields = query.getSelectFields(false);
 			selectedBoundFields = query.getSelectFields(true);
 			fieldValues = new Object[selectedFields.length];
 			StringBuffer sb = new StringBuffer();
 			sb.append("select ");
-			sb.append(Util.join(", ", selectedBoundFields));
+			if (query.getDBType()==DB_TYPE.SQLSERVER && query.top>0) {
+				sb.append(" top ").append(query.top).append(" ");
+			}
+			sb.append(Misc.join(", ", selectedBoundFields));
 			sb.append(" from ");
-			sb.append(Util.join(", ", query.getTableNameList()));
+			sb.append(Misc.join(", ", query.getTableNameList()));
 			sb.append(query.getWhereClauseAndSetBindings());
-			
+
 			List<DIRECTION> directions = query.getOrderByDirections();
 			List<Field<?>> fields = query.getOrderByFields();
 			if (directions!=null & fields!=null) {
@@ -109,16 +114,18 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					DIRECTION direction = directions.get(i);
 					tmp[i] = fields.get(i) + (direction==DESCENDING ? " DESC" : "");
 				}
-				sb.append(Util.join(", ", tmp));
+				sb.append(Misc.join(", ", tmp));
 			}
 
-			if (query.top>0) sb.append(" limit ").append(query.top);
+			if (query.getDBType()!=DB_TYPE.SQLSERVER && query.top>0) {
+				sb.append(" limit ").append(query.top);
+			}
 
 			sql = sb.toString();
 		}
 		return sql;
 	}
-	
+
 	protected List<Object> getSQLBindings() {
 		return query.getSQLBindings();
 	}
@@ -126,7 +133,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	@Override
 	public Iterator<T> iterator() {
 		try {
-			ps = Util.conn.prepareStatement(getSQL());
+			ps = query.getConnR().prepareStatement(getSQL());
 			log(sql);
 			query.setBindings(ps);
 			System.out.println();
@@ -175,10 +182,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					}
 				}
 			}
-			
-			
-			
-			
+
+
+
+
 			/*
 			if (fkConstructors != null) {
 				Set<Table> createdObjects = new HashSet<Table>();
@@ -231,11 +238,11 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	@Override
 	public void remove() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void log(String sql) {
-		System.err.println(" --==[ "+ sql +" ]==--");
+		System.err.println("==> "+ sql);
 	}
 
 }

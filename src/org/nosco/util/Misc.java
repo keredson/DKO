@@ -1,6 +1,12 @@
 package org.nosco.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
+
+import org.nosco.json.JSONException;
+import org.nosco.json.JSONObject;
 
 public class Misc {
 
@@ -21,6 +27,15 @@ public class Misc {
 	    	sb.append(s);
 	    }
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
+	}
+
+	public static JSONObject loadJSONObject(String fn) throws IOException, JSONException {
+		BufferedReader br = new BufferedReader(new FileReader(fn));
+		StringBuffer sb = new StringBuffer();
+		String s = null;
+		while ((s=br.readLine())!=null) sb.append(s).append('\n');
+		JSONObject o = new JSONObject(sb.toString());
+		return o;
 	}
 
 }

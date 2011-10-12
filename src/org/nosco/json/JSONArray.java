@@ -1,4 +1,4 @@
-package org.json;
+package org.nosco.json;
 
 /*
 Copyright (c) 2002 JSON.org
@@ -30,6 +30,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,7 +74,7 @@ import java.util.Map;
  *     <code>false</code>, or <code>null</code>.</li>
  * <li>Values can be separated by <code>;</code> <small>(semicolon)</small> as
  *     well as by <code>,</code> <small>(comma)</small>.</li>
- * <li>Numbers may have the 
+ * <li>Numbers may have the
  *     <code>0x-</code> <small>(hex)</small> prefix.</li>
  * </ul>
 
@@ -155,12 +156,12 @@ public class JSONArray {
 		if (collection != null) {
 			Iterator iter = collection.iterator();
 			while (iter.hasNext()) {
-                this.myArrayList.add(JSONObject.wrap(iter.next()));  
+                this.myArrayList.add(JSONObject.wrap(iter.next()));
 			}
 		}
     }
 
-    
+
     /**
      * Construct a JSONArray from an array
      * @throws JSONException If not an array.
@@ -177,8 +178,8 @@ public class JSONArray {
 "JSONArray initial value should be a string or collection or array.");
         }
     }
-    
-    
+
+
     /**
      * Get the object value associated with an index.
      * @param index
@@ -762,8 +763,8 @@ public class JSONArray {
         }
         return this;
     }
-    
-    
+
+
     /**
      * Remove an index and close the hole.
      * @param index The index of the element to be removed.
@@ -912,5 +913,13 @@ public class JSONArray {
         } catch (IOException e) {
            throw new JSONException(e);
         }
+    }
+
+    public List<JSONObject> asListJSONObject() throws JSONException {
+    	List<JSONObject> list = new ArrayList<JSONObject>();
+    	for (int i=0; i<this.length(); ++i) {
+    		list.add(this.getJSONObject(i));
+    	}
+    	return list;
     }
 }

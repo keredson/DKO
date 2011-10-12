@@ -1,4 +1,4 @@
-package org.json;
+package org.nosco.json;
 
 import java.util.ArrayList;
 import java.util.Collection;

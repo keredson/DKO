@@ -13,9 +13,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.nosco.json.JSONArray;
+import org.nosco.json.JSONException;
+import org.nosco.json.JSONObject;
 
 public class SchemaExtractor {
 
@@ -36,9 +36,9 @@ public class SchemaExtractor {
 		put("d", "driver");
 		put("f", "filename");
 	}}, new HashMap<String,String>() {{
-		put("url", "jdbc:mysql://localhost/");
-		put("username", "root");
-		put("password", "");
+//		put("url", "jdbc:mysql://localhost/");
+//		put("username", "root");
+//		put("password", "");
 	}});
 
 	private static int[] version = {0,2,0};

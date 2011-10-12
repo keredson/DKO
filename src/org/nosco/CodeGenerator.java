@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.nosco.json.JSONArray;
+import org.nosco.json.JSONException;
+import org.nosco.json.JSONObject;
 import org.nosco.util.Misc;
 
 public class CodeGenerator {

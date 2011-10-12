@@ -15,7 +15,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.json.JSONException;
+import org.nosco.json.JSONException;
 import org.nosco.util.Misc;
 
 public class CodeGenerator extends Task {
@@ -69,6 +69,7 @@ public class CodeGenerator extends Task {
 	    org.nosco.CodeGenerator.go(tempDir.getAbsolutePath(), pkg, stripPrefixes, stripSuffixes,
 	    	"schema.json", "fake_fks.json");
 
+	    System.out.println("compiling "+ tempDir.getAbsolutePath());
 	    String[] cmd = {"javac", "-g", "-cp", classpath, "-d", classesDir.getAbsolutePath()};
 	    List<String> files = new ArrayList<String>();
 	    for (String s : cmd) files.add(s);
@@ -86,6 +87,7 @@ public class CodeGenerator extends Task {
 		throw new BuildException("javac exited "+ p.exitValue());
 	    }
 
+	    System.out.println("writing "+ jarfile.getAbsolutePath());
 	    String[] cmd2 = {"jar", "cf", jarfile.getAbsolutePath(), "-C", tempDir.getAbsolutePath(), "."};
 	    //System.out.println(Misc.join(" ", cmd2));
 	    Process p2 = Runtime.getRuntime().exec(cmd2);
@@ -97,7 +99,6 @@ public class CodeGenerator extends Task {
 	    if (p2.exitValue() != 0) {
 		throw new BuildException("jar exited "+ p2.exitValue());
 	    }
-	    System.out.println("wrote "+ jarfile.getAbsolutePath());
 
 	    delete(tempDir);
 	} catch (IOException e) {

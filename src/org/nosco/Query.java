@@ -68,4 +68,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
 			throws SQLException;
 
+	public Double sum(Field<? extends Number> f) throws SQLException;
+
+	//public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException;
+
 }

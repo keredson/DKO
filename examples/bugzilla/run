@@ -1,0 +1,1 @@
+java -cp /usr/share/java/mysql.jar:../../lib/nosco.jar:lib/noscogen.jar:bin $@

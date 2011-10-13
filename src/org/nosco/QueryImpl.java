@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	private Field<?>[] fields;
 	private Field<?>[] boundFields;
 	private List<Object> bindings = null;
+	private Map<String,Set<String>> tableNameMap = null;
 
 	// these should be cloned
 	List<Condition> conditions = null;
@@ -304,8 +306,6 @@ public class QueryImpl<T extends Table> implements Query<T> {
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
-
-	private Map<String,Set<String>> tableNameMap = null;
 
 	String getWhereClauseAndSetBindings() {
 		if (sql==null) {
@@ -663,7 +663,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		setBindings(ps);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
-		Map<Object, Double> result = new HashMap<Object, Double>();
+		Map<Object, Double> result = new LinkedHashMap<Object, Double>();
 		while (rs.next()) {
 			Object key = null;
 			if (byField.TYPE == Long.class) key = rs.getLong(1); else
@@ -676,5 +676,30 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		ps.close();
 		return (Map<S, Double>) result;
 	}
+
+	@Override
+	public Double sum(Field<? extends Number> sumField) throws SQLException {
+		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+		sql = "select sum("+ Condition.derefField(sumField, tableNameMap) +") from "+ sql;
+		log(sql);
+		PreparedStatement ps = getConnR().prepareStatement(sql);
+		setBindings(ps);
+		ps.execute();
+		ResultSet rs = ps.getResultSet();
+		rs.next();
+		Double ret = rs.getDouble(1);
+		rs.close();
+		ps.close();
+		return ret;
+	}
+
+/*	@Override
+	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException {
+		Map<S, T> ret = new LinkedHashMap<S, T>();
+		for (T t : this) {
+			//t.
+		}
+		return null;
+	} //*/
 
 }

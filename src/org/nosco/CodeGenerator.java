@@ -328,11 +328,11 @@ public class CodeGenerator {
 
 		// write getters and setters
 		for (String column : columns.keySet()) {
-			boolean skipColumn = false;
+			//boolean skipColumn = false;
 			//for (FK fk : fks) {
 			//	if (fk.columns.containsKey(column)) skipColumn = true;
 			//}
-			if (skipColumn) continue;
+			//if (skipColumn) continue;
 			String cls = getFieldType(columns.getString(column)).getName();
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
@@ -490,7 +490,8 @@ public class CodeGenerator {
 
 
 	private String genFKMethodName(Set<String> columns, String referencedTable) {
-		return genTableClassName(genFKName(columns, referencedTable));
+		return this.underscoreToCamelCase(columns, true)+"FK";
+		//return genTableClassName(genFKName(columns, referencedTable));
 	}
 
 

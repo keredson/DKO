@@ -20,7 +20,12 @@
   <target name="noscogen" depends="init">
     <taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator" 
              classpath="${nosco_jar}"/>
-    <noscogen package="db" jarfile="${noscogen_jar}" classpath="${nosco_jar}"/>
+    <noscogen package="db" 
+    	jarfile="${noscogen_jar}" 
+    	classpath="${nosco_jar}"
+    	schemas="schemas.json"
+    	fakefks="fake_fks.json"
+    />
   </target>
 
   <target name="compile" depends="init,noscogen"
@@ -38,6 +43,7 @@
         description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
+    <delete dir="${lib}"/>
   </target>
 </project>
 

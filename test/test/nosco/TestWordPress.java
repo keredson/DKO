@@ -1,3 +1,4 @@
+package test.nosco;
 import java.sql.SQLException;
 
 import ddaoo.wordpress.Post;

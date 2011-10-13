@@ -1,4 +1,4 @@
-package org.nosco.json;
+package test.nosco.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,6 +6,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.io.StringWriter;
+
+import org.nosco.json.CDL;
+import org.nosco.json.Cookie;
+import org.nosco.json.CookieList;
+import org.nosco.json.HTTP;
+import org.nosco.json.JSONArray;
+import org.nosco.json.JSONException;
+import org.nosco.json.JSONML;
+import org.nosco.json.JSONObject;
+import org.nosco.json.JSONString;
+import org.nosco.json.JSONStringer;
+import org.nosco.json.JSONTokener;
+import org.nosco.json.XML;
+
 import junit.framework.TestCase;
 
 /*

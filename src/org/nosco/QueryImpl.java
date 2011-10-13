@@ -282,7 +282,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	void log(String sql) {
-		//System.err.println("==> "+ sql +"");
+		System.err.println("==> "+ sql +"");
 	}
 
 	@Override

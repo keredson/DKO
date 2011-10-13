@@ -136,7 +136,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			ps = query.getConnR().prepareStatement(getSQL());
 			query.log(sql);
 			query.setBindings(ps);
-			System.out.println();
 			ps.execute();
 			rs = ps.getResultSet();
 			//m = query.getType().getMethod("INSTANTIATE", Map.class);

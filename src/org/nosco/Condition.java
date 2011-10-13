@@ -290,14 +290,14 @@ public abstract class Condition {
 			sb.append(derefField(field, tableNameMap));
 			sb.append(cmp);
 			sb.append('(');
-			if (set != null) {
+			if (set != null && set.length > 0) {
 				for (int i=0; i<set.length; ++i) {
 					Object v = set[i];
 					sb.append("?");
 					if (i<set.length-1) sb.append(",");
 					bindings.add(v);
 				}
-			} else if (set2 != null) {
+			} else if (set2 != null && set2.size() > 0) {
 				int i = 0;
 				for (Object v : set2) {
 					sb.append("?");
@@ -305,6 +305,8 @@ public abstract class Condition {
 					bindings.add(v);
 					++i;
 				}
+			} else {
+				sb.append("null");
 			}
 			sb.append(')');
 		}

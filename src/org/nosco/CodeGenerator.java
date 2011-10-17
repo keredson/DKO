@@ -326,6 +326,18 @@ public class CodeGenerator {
 		br.write("\tpublic static final Query<"+ className +"> ALL = new QueryImpl<");
 		br.write(className +">("+ className +".class);\n\n");
 
+		// write toString
+		br.write("\t public String toString() {\n");
+		br.write("\t\treturn \"["+ className);
+		for (int i=0; i<pks.length(); ++i) {
+			String pk = pks.getString(i);
+			br.write(" "+ pk+":");
+			br.write("\"+"+ getInstanceFieldName(pk));
+			br.write("+\"");
+		}
+		br.write("]\";\n");
+		br.write("\t}\n\n");
+
 		// write getters and setters
 		for (String column : columns.keySet()) {
 			//boolean skipColumn = false;

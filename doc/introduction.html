@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Introduction to Nosco</title>
+    <link rel="stylesheet" type="text/css" href="default.css" />
+  </head>
+  <body>
+    <h1>Welcome to Nosco</h1>
+    <p>
+      This introduction uses a simplified blog database schema which can be found at <a href="../examples/mysite/mysite.sql">examples/mysite/mysite.sql</a>. It contains tables for a blog, an entry in that blog, an author, and a many to many mapping of entries to authors.  All sample code can be found in <a href="../examples/mysite/src/Introduction.java">examples/mysite/src/Introduction.java</a>.
+    </p>
+    <p>
+      Let's start by adding a blog to our database:
+    </p>
+    <pre><code>Blog b = new Blog();
+b.setName("Kered.org");
+b.setTagline("Where a kid can be a kid...");
+b.save();</code></pre>
+    <pre><code>==> insert into mysite.blog (name, tagline) values (?, ?)
+^^^ [Kered.org|Where a kid can be a kid...]</code></pre>
+    <p>
+      Notice the <code>==></code> and <code>^^^</code> lines after this code.  This is the logging Nosco will optionally output showing the SQL generated and run by the API.  (the <code>^^^</code> line is a list of the values bound to the generated statement)  Now let's take a look at it:
+    </p>
+    <pre><code>for (Blog blog : Blog.ALL) {
+    System.out.println(blog);
+}
+</code></pre>
+<pre><code>==> select b.id, b.name, b.tagline from mysite.blog b
+[Blog id:7]</code></pre>
+    <p>
+      <code>Blog.ALL</code> is a <code>org.nosco.Query</code> object representing all the available blogs in our database.  Like all query objects it is immutable and stateless (making the static reference to it safe).  It is also genericized and iterable, hence our ability to use it in a Java for/each loop.
+    </p>
+    <p>
+      The <code>Blog</code> class has a host of getter and setter methods (one per field) to provide you structured (and auto-completable, and compiler-checked) access to your data:
+    </p>
+    <pre><code>for (Blog blog : Blog.ALL) {
+    System.out.println(blog.getId() +": "+ blog.getName());
+    System.out.println(blog.getTagline());
+}</code></pre>
+    <pre><code>==> select b.id, b.name, b.tagline from mysite.blog b
+7: Kered.org
+Where a kid can be a kid...</code></pre>
+    <p>
+      How many blogs do we have in our database?
+    </p>
+    <pre><code>System.out.println(Blog.ALL.count());</code></pre>
+    <pre><code>==> select count(1) from mysite.blog b
+2</code></pre>
+    <p>
+      Now how about filtering?  The <code>org.nosco.Query</code> interface has a <code>where()</code> method that returns a new <code>Query</code> instance.  (returning a new instance as opposed to changing the state of the existing object is crucial to this API and will be covered in more detail later)  Here is an example:
+    </p>
+    <pre><code>Query&lt;Blog&gt; kidFriendly = Blog.ALL.where(Blog.TAGLINE.like("%kid%"));
+for (Blog blog : kidFriendly) {
+    System.out.println(blog.getName());
+}
+</code></pre>
+    <pre><code>==> select b.id, b.name, b.tagline from mysite.blog b where b.tagline like ?
+^^^ [%kid%]
+Kered.org</code></pre>
+    <p>
+      <code>Blog.TAGLINE</code> is a <code>org.nosco.Field&lt;String&gt;</code>.  All fields have a series of comparison methods that match SQL comparisons.  They all accept objects corresponding to the typedef of the field being compared.  The <code>like(T o)</code> method is one of these and return a <code>org.nosco.Condition</code> object.  (which happens to be what <code>Query.where()</code> accepts)
+    </p>
+    <p>
+      Similarly, we can take the inverse of a Condition:
+    </p>
+    <pre><code>Query&lt;Blog&gt; notKidFriendly = Blog.ALL.where(Blog.TAGLINE.like("%kid%").not());
+for (Blog blog : notKidFriendly) {
+    System.out.println(blog.getName());
+}</code></pre>
+    <pre><code>==> select b.id, b.name, b.tagline from mysite.blog b where not ( b.tagline like ?)
+^^^ [%kid%]
+Sam I Am
+</code></pre>
+    <p>
+      Recall that queries are immutable.  This means they can be reused.  This should always be true:
+    </p>
+    <pre><code>assert kidFriendly.count() + notKidFriendly.count() == Blog.ALL.count();</code></pre>
+    <p>
+      
+    </p>
+    <pre><code></code></pre>
+    <p>
+    </p>
+    <pre><code></code></pre>
+    <p>
+    </p>
+    <pre><code></code></pre>
+  </body>
+</html>

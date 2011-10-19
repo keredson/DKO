@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -36,6 +37,12 @@ public class Misc {
 		while ((s=br.readLine())!=null) sb.append(s).append('\n');
 		JSONObject o = new JSONObject(sb.toString());
 		return o;
+	}
+
+	public static void log(String sql, List<Object> bindings) {
+		System.err.println("==> "+ sql +"");
+		if (bindings != null && bindings.size() > 0)
+			System.err.println("^^^ ["+ join("|", bindings) +"]");
 	}
 
 }

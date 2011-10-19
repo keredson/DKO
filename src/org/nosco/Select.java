@@ -9,17 +9,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.nosco.ConnectionManager.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
-import org.nosco.QueryImpl.TableInfo;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree.Callback;
 
@@ -134,7 +130,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	public Iterator<T> iterator() {
 		try {
 			ps = query.getConnR().prepareStatement(getSQL());
-			query.log(sql);
+			Misc.log(sql, query.bindings);
 			query.setBindings(ps);
 			ps.execute();
 			rs = ps.getResultSet();

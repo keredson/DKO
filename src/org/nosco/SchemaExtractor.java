@@ -36,9 +36,9 @@ public class SchemaExtractor {
 		put("d", "driver");
 		put("f", "filename");
 	}}, new HashMap<String,String>() {{
-//		put("url", "jdbc:mysql://localhost/");
-//		put("username", "root");
-//		put("password", "");
+		put("url", "jdbc:mysql://localhost/");
+		put("username", "root");
+		put("password", "");
 	}});
 
 	private static int[] version = {0,2,0};

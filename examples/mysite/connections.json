@@ -1,0 +1,14 @@
+{
+	"local": {
+		"dbtype":"mysql",
+		"database":"mysite",
+		"server":"localhost",
+		"logins":[
+			{
+				"username":"root",
+				"password":"",
+				"mode":"rw",
+			}
+		]
+	}
+}

@@ -36,7 +36,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	private String sql;
 	private Field<?>[] fields;
 	private Field<?>[] boundFields;
-	private List<Object> bindings = null;
+	List<Object> bindings = null;
 	private Map<String,Set<String>> tableNameMap = null;
 
 	// these should be cloned
@@ -271,14 +271,29 @@ public class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public int deleteAll() throws SQLException {
-		String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		log(sql);
-		PreparedStatement ps = getConnRW().prepareStatement(sql);
-		setBindings(ps);
-		ps.execute();
-		int count = ps.getUpdateCount();
-		ps.close();
-		return count;
+		if (getDBType()==DB_TYPE.MYSQL) {
+			if (this.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
+					"is not yet supported");
+			Table t = tables.get(0);
+			String sql = "delete from "+ t.SCHEMA_NAME() + "." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
+			log(sql);
+			PreparedStatement ps = getConnRW().prepareStatement(sql);
+			setBindings(ps);
+			ps.execute();
+			int count = ps.getUpdateCount();
+			ps.close();
+			return count;
+			
+		} else {
+			String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+			log(sql);
+			PreparedStatement ps = getConnRW().prepareStatement(sql);
+			setBindings(ps);
+			ps.execute();
+			int count = ps.getUpdateCount();
+			ps.close();
+			return count;
+		}
 	}
 
 	void log(String sql) {
@@ -373,7 +388,9 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	private String genTableName(Table table, Collection<String> tableNames) {
-		String base = table.TABLE_NAME();
+		String name = table.TABLE_NAME();
+		String base = "";
+		for (String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
 		String proposed = null;
 		int i = 1;
 		while (tableNames.contains((proposed = base + (i==1 ? "" : String.valueOf(i))))) ++i;
@@ -475,8 +492,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		sb.append(")");
 		String sql = sb.toString();
 
-		log(sql);
-		log(Misc.join(", ", q.bindings));
+		Misc.log(sql, q.bindings);
 		PreparedStatement ps = getConnRW().prepareStatement(sql);
 		q.setBindings(ps);
 		ps.execute();
@@ -489,7 +505,6 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			ResultSet rs = s.getResultSet();
 			if (rs.next()) {
 				Integer pk = rs.getInt(1);
-				log(pk.toString());
 				return pk;
 			}
 		}

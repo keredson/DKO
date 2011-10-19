@@ -85,6 +85,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	}
 
 	protected String getSQL() {
+		return getSQL(false);
+	}
+
+	protected String getSQL(boolean innerQuery) {
 		if (sql==null) {
 
 			selectedFields = query.getSelectFields(false);
@@ -102,7 +106,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 
 			List<DIRECTION> directions = query.getOrderByDirections();
 			List<Field<?>> fields = query.getOrderByFields();
-			if (directions!=null & fields!=null) {
+			if (!innerQuery && directions!=null & fields!=null) {
 				sb.append(" order by ");
 				int x = Math.min(directions.size(), fields.size());
 				String[] tmp = new String[x];
@@ -115,6 +119,12 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 
 			if (query.getDBType()!=DB_TYPE.SQLSERVER && query.top>0) {
 				sb.append(" limit ").append(query.top);
+			}
+
+			if (innerQuery && selectedFields.length > 1) {
+				Misc.log(sb.toString(), null);
+				throw new RuntimeException("inner queries cannot have more than one selected" +
+						"field - this query has "+ selectedFields.length);
 			}
 
 			sql = sb.toString();

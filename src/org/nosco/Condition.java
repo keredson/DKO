@@ -189,7 +189,7 @@ public abstract class Condition {
 		private Object v;
 		private Field<?> field2;
 		private String cmp;
-		private Select s;
+		private Select<?> s;
 
 		public <T> Binary(Field<T> field, String cmp, Object v) {
 			// note "v" should be of type T here - set to object to work around
@@ -205,10 +205,10 @@ public abstract class Condition {
 			this.field2 = field2;
 		}
 
-		public <T> Binary(Field<T> field, String cmp, Query q) {
+		public <T> Binary(Field<T> field, String cmp, Query<?> q) {
 			this.field = field;
 			this.cmp = cmp;
-			this.s = (Select) q.all();
+			this.s = (Select<?>) q.all();
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -252,7 +252,7 @@ public abstract class Condition {
 				sb.append(derefField(field, tableNameMap));
 				sb.append(cmp);
 				sb.append('(');
-				sb.append(s.getSQL());
+				sb.append(s.getSQL(true));
 				bindings.addAll(s.getSQLBindings());
 				sb.append(')');
 			} else {

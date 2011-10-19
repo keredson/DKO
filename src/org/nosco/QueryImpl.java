@@ -216,7 +216,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		QueryImpl<T> q = new QueryImpl<T>(this);
 		q.onlySet = new HashSet<Field<?>>();
 		if (onlySet!=null) q.onlySet.addAll(onlySet);
-		for (Field<?> f : Table.GET_TABLE_PK(q.tables.get(0)).GET_FIELDS()) {
+		/*for (Field<?> f : Table.GET_TABLE_PK(q.tables.get(0)).GET_FIELDS()) {
 			q.onlySet.add(f);
 		} //*/
 		for (Field<?> field : fields) {
@@ -283,7 +283,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			int count = ps.getUpdateCount();
 			ps.close();
 			return count;
-			
+
 		} else {
 			String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 			log(sql);
@@ -328,13 +328,14 @@ public class QueryImpl<T extends Table> implements Query<T> {
 			StringBuffer sb = new StringBuffer();
 			bindings = new ArrayList<Object>();
 
+			tableNameMap = new HashMap<String,Set<String>>();
+			for (TableInfo ti : tableInfos) {
+				String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
+				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
+				tableNameMap.get(id).add(ti.tableName);
+			}
+
 			if (conditions!=null && conditions.size()>0) {
-				tableNameMap = new HashMap<String,Set<String>>();
-				for (TableInfo ti : tableInfos) {
-					String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
-					if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-					tableNameMap.get(id).add(ti.tableName);
-				}
 				sb.append(" where");
 				String[] tmp = new String[conditions.size()];
 				int i=0;

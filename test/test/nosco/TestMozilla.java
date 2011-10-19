@@ -2,7 +2,6 @@ package test.nosco;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import junit.framework.TestCase;
 import noscodb.mozilla.Bug;
 import noscodb.mozilla.Classification;

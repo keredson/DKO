@@ -17,7 +17,7 @@ ENGINE = InnoDB
 CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `mysite`.`entry` (
-  `id` INTEGER  NOT NULL,
+  `id` INTEGER  NOT NULL AUTO_INCREMENT,
   `blog_id` INTEGER  NOT NULL,
   `headline` VARCHAR(4096),
   `body_text` LONGTEXT,

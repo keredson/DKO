@@ -708,7 +708,33 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		return ret;
 	}
 
-/*	@Override
+	@SuppressWarnings("unchecked")
+	@Override
+	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
+		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+		sql = "select "+ Condition.derefField(byField, tableNameMap)
+				+", count("+ Condition.derefField(byField, tableNameMap) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, tableNameMap);
+		log(sql);
+		PreparedStatement ps = getConnR().prepareStatement(sql);
+		setBindings(ps);
+		ps.execute();
+		ResultSet rs = ps.getResultSet();
+		Map<Object, Integer> result = new LinkedHashMap<Object, Integer>();
+		while (rs.next()) {
+			Object key = null;
+			if (byField.TYPE == Long.class) key = rs.getLong(1); else
+			if (byField.TYPE == Double.class) key = rs.getDouble(1); else
+			key = rs.getObject(1);
+			int value = rs.getInt(2);
+			result.put(key, value);
+		}
+		rs.close();
+		ps.close();
+		return (Map<S, Integer>) result;
+	}
+
+	/*	@Override
 	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException {
 		Map<S, T> ret = new LinkedHashMap<S, T>();
 		for (T t : this) {

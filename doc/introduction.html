@@ -1,30 +1,32 @@
 <html>
   <head>
     <title>Introduction to Nosco</title>
+    <link href="google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="google-code-prettify/prettify.js"></script>
     <link rel="stylesheet" type="text/css" href="default.css" />
   </head>
-  <body>
-    <h1>Welcome to Nosco</h1>
+  <body onload="prettyPrint()">
+    <h1>An Introduction to Nosco</h1>
     <p>
       This introduction uses a simplified blog database schema which can be found at <a href="../examples/mysite/mysite.sql">examples/mysite/mysite.sql</a>. It contains tables for a blog, an entry in that blog, an author, and a many to many mapping of entries to authors.  All sample code can be found in <a href="../examples/mysite/src/Introduction.java">examples/mysite/src/Introduction.java</a>.
     </p>
     <p>
       Let's start by adding a blog to our database:
     </p>
-    <pre><code>Blog b = new Blog();
+    <pre class="prettyprint"><code class="language-java">Blog b = new Blog();
 b.setName("Kered.org");
 b.setTagline("Where a kid can be a kid...");
 b.save();</code></pre>
-    <pre><code>==> insert into mysite.blog (name, tagline) values (?, ?)
+    <pre class="prettyprint"><code class="language-sql">==> insert into mysite.blog (name, tagline) values (?, ?)
 ^^^ [Kered.org|Where a kid can be a kid...]</code></pre>
     <p>
       Notice the <code>==></code> and <code>^^^</code> lines after this code.  This is the logging Nosco will optionally output showing the SQL generated and run by the API.  (the <code>^^^</code> line is a list of the values bound to the generated statement)  Now let's take a look at it:
     </p>
-    <pre><code>for (Blog blog : Blog.ALL) {
+    <pre class="prettyprint"><code class="language-java">for (Blog blog : Blog.ALL) {
     System.out.println(blog);
 }
 </code></pre>
-<pre><code>==> select b.id, b.name, b.tagline from mysite.blog b
+<pre class="prettyprint"><code class="language-sql">==> select b.id, b.name, b.tagline from mysite.blog b
 [Blog id:7]</code></pre>
     <p>
       <code>Blog.ALL</code> is a <code>org.nosco.Query</code> object representing all the available blogs in our database.  Like all query objects it is immutable and stateless (making the static reference to it safe).  It is also genericized and iterable, hence our ability to use it in a Java for/each loop.
@@ -32,28 +34,43 @@ b.save();</code></pre>
     <p>
       The <code>Blog</code> class has a host of getter and setter methods (one per field) to provide you structured (and auto-completable, and compiler-checked) access to your data:
     </p>
-    <pre><code>for (Blog blog : Blog.ALL) {
+    <pre class="prettyprint"><code class="language-java">for (Blog blog : Blog.ALL) {
     System.out.println(blog.getId() +": "+ blog.getName());
     System.out.println(blog.getTagline());
 }</code></pre>
-    <pre><code>==> select b.id, b.name, b.tagline from mysite.blog b
+    <pre class="prettyprint"><code class="language-sql">==> select b.id, b.name, b.tagline from mysite.blog b
 7: Kered.org
 Where a kid can be a kid...</code></pre>
     <p>
       How many blogs do we have in our database?
     </p>
-    <pre><code>System.out.println(Blog.ALL.count());</code></pre>
-    <pre><code>==> select count(1) from mysite.blog b
+    <pre class="prettyprint"><code class="language-java">System.out.println(Blog.ALL.count());</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select count(1) from mysite.blog b
+1</code></pre>
+    <p>
+      Let's add another...
+    </p>
+    <pre class="prettyprint"><code class="language-java">Blog b = new Blog();
+b.setName("Sam I Am");
+b.setTagline("For the serious blog connoisseur...");
+b.save();</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> insert into mysite.blog (name, tagline) values (?, ?)
+^^^ [Sam I Am|For the serious blog connoisseur...]</code></pre>
+    <p>
+      How many do we have now?
+    </p>
+    <pre class="prettyprint"><code class="language-java">System.out.println(Blog.ALL.count());</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select count(1) from mysite.blog b
 2</code></pre>
     <p>
       Now how about filtering?  The <code>org.nosco.Query</code> interface has a <code>where()</code> method that returns a new <code>Query</code> instance.  (returning a new instance as opposed to changing the state of the existing object is crucial to this API and will be covered in more detail later)  Here is an example:
     </p>
-    <pre><code>Query&lt;Blog&gt; kidFriendly = Blog.ALL.where(Blog.TAGLINE.like("%kid%"));
+    <pre class="prettyprint"><code class="language-java">Query&lt;Blog&gt; kidFriendly = Blog.ALL.where(Blog.TAGLINE.like("%kid%"));
 for (Blog blog : kidFriendly) {
     System.out.println(blog.getName());
 }
 </code></pre>
-    <pre><code>==> select b.id, b.name, b.tagline from mysite.blog b where b.tagline like ?
+    <pre class="prettyprint"><code class="language-sql">==> select b.id, b.name, b.tagline from mysite.blog b where b.tagline like ?
 ^^^ [%kid%]
 Kered.org</code></pre>
     <p>
@@ -62,27 +79,134 @@ Kered.org</code></pre>
     <p>
       Similarly, we can take the inverse of a Condition:
     </p>
-    <pre><code>Query&lt;Blog&gt; notKidFriendly = Blog.ALL.where(Blog.TAGLINE.like("%kid%").not());
+    <pre class="prettyprint"><code class="language-java">Query&lt;Blog&gt; notKidFriendly = Blog.ALL.where(Blog.TAGLINE.like("%kid%").not());
 for (Blog blog : notKidFriendly) {
     System.out.println(blog.getName());
 }</code></pre>
-    <pre><code>==> select b.id, b.name, b.tagline from mysite.blog b where not ( b.tagline like ?)
+    <pre class="prettyprint"><code class="language-sql">==> select b.id, b.name, b.tagline from mysite.blog b where not ( b.tagline like ?)
 ^^^ [%kid%]
 Sam I Am
 </code></pre>
     <p>
       Recall that queries are immutable.  This means they can be reused.  This should always be true:
     </p>
-    <pre><code>assert kidFriendly.count() + notKidFriendly.count() == Blog.ALL.count();</code></pre>
+    <pre class="prettyprint"><code class="language-java">assert kidFriendly.count() + notKidFriendly.count() == Blog.ALL.count();</code></pre>
     <p>
-      
+      If you know the primary key (or have some other criteria you know to be unique, you can bypass the iteration:
     </p>
-    <pre><code></code></pre>
+    <pre class="prettyprint">System.out.println(Blog.ALL.get(Blog.ID.eq(7)));<code></code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select b.id, b.name, b.tagline from mysite.blog b where b.id=? limit 2
+^^^ [7]
+[Blog id:7]
+</code></pre>
     <p>
+      Notice that the generated SQL is "limit 2" instead of "limit 1".  <code>Query.get()</code> will throw an
+      exception if the criteria does not return a distinct row.
     </p>
-    <pre><code></code></pre>
     <p>
+      Now let's add some more data to work with...
     </p>
-    <pre><code></code></pre>
+    <pre class="prettyprint"><code class="language-java">Author a = new Author();
+a.setName("Derek Anderson");
+a.setEmail("afakeone@kered.org");
+a.save();
+
+a = new Author();
+a.setName("Curtis Anderson");
+a.setEmail("another@kered.org");
+a.save();
+
+Blog kered = Blog.ALL.get(Blog.ID.eq(7));
+Entry e = new Entry();
+e.setBlogIdFK(kered);
+e.setHeadline("Hello World!");
+e.setBodyText("This is my first blog entry...");
+e.setPublishDate(new Timestamp(new Date().getTime()));
+e.save();</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> insert into mysite.author (name, email) values (?, ?)
+^^^ [Derek Anderson|afakeone@kered.org]
+==> insert into mysite.author (name, email) values (?, ?)
+^^^ [Curtis Anderson|another@kered.org]
+==> select b.id, b.name, b.tagline from mysite.blog b where b.id=? limit 2
+^^^ [7]
+==> insert into mysite.entry (blog_id, body_text, publish_date, headline) values (?, ?, ?, ?)
+^^^ [7|This is my first blog entry...|2011-10-19 10:15:56.702|Hello World!]
+</code></pre>
+    <p>
+      ... and take a look at it:
+    </p>
+    <pre class="prettyprint"><code class="language-java">for (Entry e : Entry.ALL) {
+    System.out.println(e.getId() +": "+ e.getHeadline()
+        +" in blog "+ e.getBlogIdFK().getName());
+}</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select e.headline, e.id, e.publish_date, e.modify_date, e.body_text, e.blog_id, e.rating from mysite.entry e
+==> select b.id, b.name, b.tagline from mysite.blog b where b.id=? limit 2
+^^^ [7]
+1: Hello World! in blog Kered.org</code></pre>
+    <p>
+      Looking at the <code>Entry</code> object you'll notice a method <code>Entry.getBlogIdFK()</code> that returns a <code>Blog</code> corresponding the foreign key relationship between <code>entry.blog_id</code> and <code>blog.id</code>.  The <code>Entry</code> instance knows how to fetch its FK related objects on demand.  (and keeps a reference to them once retrieved)  However this is highly inefficient when accessing objects in a tight loop like this.  (this code will generate O(1+n) SQL calls given the number of entries)  It would be better to fetch all the data at once with a join.  This is done in Nosco with <code>Query.with()</code>:
+    </p>
+    <pre class="prettyprint"><code class="language-java">for (Entry e : Entry.ALL.with(Entry.FK_BLOG)) {
+   System.out.println(e.getId() +": "+ e.getHeadline()
+    +" in blog "+ e.getBlogIdFK().getName());
+}</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select e.headline, e.id, e.publish_date, e.modify_date, e.body_text, e.blog_id, e.rating, b.id, b.name, b.tagline from mysite.entry e, mysite.blog b where( e.blog_id is null or  e.blog_id=b.id)
+1: Hello World! in blog Kered.org</code></pre>
+    <p>
+      <code>Entry.FK_BLOG</code> represents the foreign key relationship between entries and blogs, and tells the API to fetch all the objects together in one query.  This version of the loop will only result in one SQL call.  Btw, <code>Query.with()</code> accepts an arbitrary number of arguments representing an ordered descent into your object structure.  If our <code>Blog</code> FKed to a <code>Category</code>, we could use <code>Entry.ALL.with(Entry.FK_BLOG, Blog.FK_CATEGORY)</code> to get all three objects at one time with one query.
+    </p>
+    <p class="note">Future versions of Nosco will keep usage statics of object access at different points in the stack.  It will use this to provide suggestions to the developer for when it might be prudent to add <code>with()</code> information, and optionally will auto-optimize queries where appropriate.</p>
+    <p>Speaking of optimizations, that last query pulls back a lot of columns we're not using.</p>
+    <pre class="prettyprint"><code class="language-java">for (Entry e : Entry.ALL
+        .with(Entry.FK_BLOG)
+        .onlyFields(Entry.HEADLINE, Blog.NAME)) {
+    System.out.println(e.getId() +": "+ e.getHeadline()
+            +" in blog "+ e.getBlogIdFK().getName());
+}</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select e.headline, e.id, b.name from mysite.entry e, mysite.blog b where( e.blog_id is null or  e.blog_id=b.id)
+1: Hello World! in blog Kered.org</code></pre>
+    <p>As you can see the SQL is shorter resulting in less DB load, network traffic and JVM memory usage.</p>
+    <p class="note">Like FK retrieval, future versions of Nosco will make optimization suggestions (and optionally apply them automatically) for obvious tight-loop scenarios like this.  Nosco keeps track of which fields and FKs have been referenced on an object with fast and memory efficient <code>BitVector</code> objects (one per instance).</p>
+    <p>Object level FK lookups can go the other way too, using methods with names like <code>get[Table][FKColumns]Set()</code>.</p>
+    <pre class="prettyprint"><code class="language-java">Blog keredOrg = Blog.ALL.get(Blog.ID.eq(7));
+Entry e2 = new Entry();
+e2.setBlogIdFK(keredOrg);
+e2.setHeadline("A second note from Derek");
+e2.setBodyText("I wish i had something more interesting to say...");
+e2.setPublishDate(new Timestamp(new Date().getTime()));
+e2.save();</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> insert into mysite.entry (publish_date, blog_id, body_text, headline) values (?, ?, ?, ?)
+^^^ [2011-10-19 11:54:35.033|7|I wish i had something more interesting to say...|A second note from Derek]</code></pre>
+    <pre class="prettyprint"><code class="language-java">for (Entry e : keredOrg.getEntryBlogIdSet()) {
+    System.out.println(e +" "+ e.getHeadline());
+}</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select e.headline, e.id, e.publish_date, e.modify_date, e.body_text, e.blog_id, e.rating from mysite.entry e where e.blog_id=?
+^^^ [7]
+[Entry id:1] Hello World!
+[Entry id:2] A second note from Derek</code></pre>
+    <p class="note">Pre-fetching (like above) reverse FKed objects through a single join using the <code>with()</code> isn't yet implemented, but will be in the near future.</p>
+    <p>The call <code>keredOrg.getEntryBlogIdSet()</code> returns a <code>Query&lt;Entry&gt;</code>, so it's fully filterable and manipulatable like any other query object.  For instance:</p>
+    <pre class="prettyprint"><code class="language-java">Timestamp time = new Timestamp(111, 9, 19, 11, 30, 0, 0);
+for (Entry e : keredOrg.getEntryBlogIdSet()
+        .where(Entry.PUBLISH_DATE.gt(time))) {
+    System.out.println(e +" "+ e.getPublishDate());
+}</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select e.headline, e.id, e.publish_date, e.modify_date, e.body_text, e.blog_id, e.rating from mysite.entry e where e.blog_id=? and e.publish_date>?
+^^^ [7|2011-10-19 11:30:00.0]
+[Entry id:2] 2011-10-19 11:54:35.0</code></pre>
+    <p>Notice the <code>Field.gt()</code> method which generates a "greater than" comparison.  <code>gt(), lt(), gte() /*greater-than-or-equal*/, lte(), between(), in(), eq(), neq() /*not-equal*/, isNull()</code> and more are all comparison options for fields.</p>
+    <p>TODO: talk about <code>insert, update, sum, sumBy, mapBy, asList, orderBy, isEmpty, first, top/limit, deferFields</code></p>
+    <p>TODO: talk about connections, mirrors, multiple logins by read type</p>
+    <p>TODO: talk about schemas.json, fake foreign keys</p>
+    <p>TODO: talk about building w/ ant, the jar generation task (and how we make our code generation non-evil)</p>
+    <p>TODO: talk about version controlled entities vs. build artifacts (and which are which in nosco)</p>
+    <pre class="prettyprint"><code class="language-java"></code></pre>
+    <pre class="prettyprint"><code class="language-sql"></code></pre>
+    <p></p>
+    <pre class="prettyprint"><code class="language-java"></code></pre>
+    <pre class="prettyprint"><code class="language-sql"></code></pre>
+    <p></p>
+    <pre class="prettyprint"><code class="language-java"></code></pre>
+    <pre class="prettyprint"><code class="language-sql"></code></pre>
   </body>
 </html>

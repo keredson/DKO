@@ -72,4 +72,5 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	//public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException;
 
+	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException;
 }

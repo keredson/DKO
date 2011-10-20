@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nosco.util.Misc;
+
 public abstract class Condition {
 
 	public static final Condition TRUE = new Condition() {
@@ -318,10 +320,14 @@ public abstract class Condition {
 			Table table = field.TABLE.newInstance();
 			String id = table.SCHEMA_NAME() +"."+ table.TABLE_NAME();
 			Set<String> tableNames = tableNameMap.get(id);
-			if (tableNames.size() > 1) {
-				throw new RuntimeException("field ambigious");
-			} else if (tableNames.size() < 1) {
-				throw new RuntimeException("field's table not in the named table map");
+			if (tableNames == null || tableNames.size() < 1) {
+				throw new RuntimeException("field "+ field +
+						" is not from one of the selected tables {"+
+						Misc.join(",", tableNameMap.keySet()) +"}");
+			} else if (tableNames.size() > 1) {
+				throw new RuntimeException("field "+ field +
+						" is ambigious over the tables {"+
+						Misc.join(",", tableNameMap.values()) +"}");
 			} else {
 				return tableNames.iterator().next() + "."+ field;
 			}

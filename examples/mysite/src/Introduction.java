@@ -6,6 +6,7 @@ import org.nosco.Query;
 import db.mysite.Author;
 import db.mysite.Blog;
 import db.mysite.Entry;
+import db.mysite.EntryAuthor;
 
 class Introduction {
 	public static void main(String[] args) throws java.sql.SQLException {
@@ -52,11 +53,11 @@ class Introduction {
 		a.setEmail("afakeone@kered.org");
 		a.save();
 
-		a = new Author();
-		a.setName("Curtis Anderson");
-		a.setEmail("another@kered.org");
-		a.save(); //*/
-
+/*		Author a2 = new Author();
+		a2.setName("Curtis Anderson");
+		a2.setEmail("another@kered.org");
+		a2.save(); //*/
+		
 		Blog kered = Blog.ALL.get(Blog.ID.eq(7));
 /*		Entry e1 = new Entry();
 		e1.setBlogIdFK(kered);
@@ -72,6 +73,13 @@ class Introduction {
 		e2.setPublishDate(new Timestamp(new Date().getTime()));
 		e2.save(); //*/
 
+/*		Entry e3 = new Entry();
+		e3.setBlogId(8);
+		e3.setHeadline("Hello World Too!");
+		e3.setBodyText("This one is from Curtis...");
+		e3.setPublishDate(new Timestamp(new Date().getTime()));
+		e3.save(); //*/
+
 		for (Entry e : Entry.ALL) {
 		    System.out.println(e.getId() +": "+ e.getHeadline()
 			    +" in blog "+ e.getBlogIdFK().getName());
@@ -84,7 +92,7 @@ class Introduction {
 
 		for (Entry e : Entry.ALL
 			.with(Entry.FK_BLOG)
-			.onlyFields(Entry.HEADLINE, Blog.NAME)) {
+			.onlyFields(Entry.ID, Entry.HEADLINE, Blog.NAME)) {
 		    System.out.println(e.getId() +": "+ e.getHeadline()
 			    +" in blog "+ e.getBlogIdFK().getName());
 		}
@@ -98,6 +106,28 @@ class Introduction {
 			.where(Entry.PUBLISH_DATE.gt(time))) {
 		    System.out.println(e +" "+ e.getPublishDate());
 		}
+		
+/*		EntryAuthor ea = new EntryAuthor();
+		ea.setAuthorId(1);
+		ea.setEntryIdFK(e1);
+		ea.save();
+		EntryAuthor ea2 = new EntryAuthor();
+		ea2.setAuthorId(1);
+		ea2.setEntryId(2);
+		ea2.save();
+		EntryAuthor ea3 = new EntryAuthor();
+		ea3.setAuthorId(2);
+		ea3.setEntryIdFK(e3);
+		ea3.save(); //*/
+		
+		for (Entry e : Entry.ALL.where(Entry.ID.in(
+				EntryAuthor.ALL
+					.with(EntryAuthor.FK_AUTHOR)
+					.where(Author.EMAIL.like("%fake%"))
+					.onlyFields(EntryAuthor.ENTRY_ID)))) {
+			System.out.println(e);
+		}
+		
 
 	}
 }

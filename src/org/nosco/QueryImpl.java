@@ -215,7 +215,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	public Query<T> onlyFields(Field<?>... fields) {
 		QueryImpl<T> q = new QueryImpl<T>(this);
 		q.onlySet = new HashSet<Field<?>>();
-		if (onlySet!=null) q.onlySet.addAll(onlySet);
+		//if (onlySet!=null) q.onlySet.addAll(onlySet);
 		/*for (Field<?> f : Table.GET_TABLE_PK(q.tables.get(0)).GET_FIELDS()) {
 			q.onlySet.add(f);
 		} //*/

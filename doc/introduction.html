@@ -8,7 +8,7 @@
   <body onload="prettyPrint()">
     <h1>An Introduction to Nosco</h1>
     <p>
-      This introduction uses a simplified blog database schema which can be found at <a href="../examples/mysite/mysite.sql">examples/mysite/mysite.sql</a>. It contains tables for a blog, an entry in that blog, an author, and a many to many mapping of entries to authors.  All sample code can be found in <a href="../examples/mysite/src/Introduction.java">examples/mysite/src/Introduction.java</a>.
+      This document is a conversational introduction to Nosco, not a comprehensive reference guide for its use.  (that is still to be written)  It uses a simplified blog database schema which can be found at <a href="../examples/mysite/mysite.sql">examples/mysite/mysite.sql</a>. It contains tables for a blog, an entry in that blog, an author, and a many to many mapping of entries to authors.  All sample code can be found in <a href="../examples/mysite/src/Introduction.java">examples/mysite/src/Introduction.java</a>.
     </p>
     <p>
       Let's start by adding a blog to our database:
@@ -159,7 +159,7 @@ e.save();</code></pre>
     <p>Speaking of optimizations, that last query pulls back a lot of columns we're not using.</p>
     <pre class="prettyprint"><code class="language-java">for (Entry e : Entry.ALL
         .with(Entry.FK_BLOG)
-        .onlyFields(Entry.HEADLINE, Blog.NAME)) {
+        .onlyFields(Entry.ID, Entry.HEADLINE, Blog.NAME)) {
     System.out.println(e.getId() +": "+ e.getHeadline()
             +" in blog "+ e.getBlogIdFK().getName());
 }</code></pre>
@@ -167,6 +167,7 @@ e.save();</code></pre>
 1: Hello World! in blog Kered.org</code></pre>
     <p>As you can see the SQL is shorter resulting in less DB load, network traffic and JVM memory usage.</p>
     <p class="note">Like FK retrieval, future versions of Nosco will make optimization suggestions (and optionally apply them automatically) for obvious tight-loop scenarios like this.  Nosco keeps track of which fields and FKs have been referenced on an object with fast and memory efficient <code>BitVector</code> objects (one per instance).</p>
+    <p class="note">Be careful when using <code>onlyFields()</code> and not including the primary key fields.  You can do it, but lazy-accessing other fields of the instance (including <code>e.getBlogIdFK().getName()</code> above) will fail. (for obvious reasons)</p>
     <p>Object level FK lookups can go the other way too, using methods with names like <code>get[Table][FKColumns]Set()</code>.</p>
     <pre class="prettyprint"><code class="language-java">Blog keredOrg = Blog.ALL.get(Blog.ID.eq(7));
 Entry e2 = new Entry();
@@ -195,11 +196,25 @@ for (Entry e : keredOrg.getEntryBlogIdSet()
 ^^^ [7|2011-10-19 11:30:00.0]
 [Entry id:2] 2011-10-19 11:54:35.0</code></pre>
     <p>Notice the <code>Field.gt()</code> method which generates a "greater than" comparison.  <code>gt(), lt(), gte() /*greater-than-or-equal*/, lte(), between(), in(), eq(), neq() /*not-equal*/, isNull()</code> and more are all comparison options for fields.</p>
-    <p>TODO: talk about <code>insert, update, sum, sumBy, mapBy, asList, orderBy, isEmpty, first, top/limit, deferFields</code></p>
-    <p>TODO: talk about connections, mirrors, multiple logins by read type</p>
-    <p>TODO: talk about schemas.json, fake foreign keys</p>
-    <p>TODO: talk about building w/ ant, the jar generation task (and how we make our code generation non-evil)</p>
-    <p>TODO: talk about version controlled entities vs. build artifacts (and which are which in nosco)</p>
+    <p><b>TODO:</b> talk about <code>insert, update, sum, sumBy, mapBy, asList, orderBy, isEmpty, first, top/limit, deferFields</code></p>
+    <p>Sub-queries are supported as well.  This is an admittedly contrived example, but it serves the purpose:</p>
+    <pre class="prettyprint"><code class="language-java">for (Entry e : Entry.ALL.where(Entry.ID.in(
+        EntryAuthor.ALL
+            .with(EntryAuthor.FK_AUTHOR)
+            .where(Author.EMAIL.like("%fake%"))
+            .onlyFields(EntryAuthor.ENTRY_ID)))) {
+    System.out.println(e);
+}</code></pre>
+    <pre class="prettyprint"><code class="language-sql">==> select e.headline, e.id, e.publish_date, e.modify_date, e.body_text, e.blog_id, e.rating from mysite.entry e where e.id in (
+    select ea.entry_id from mysite.entry_author ea, mysite.author a where( ea.author_id is null or  ea.author_id=a.id) and a.email like ?)
+^^^ [%fake%]
+[Entry id:2]
+[Entry id:5]
+</code></pre>
+    <p><b>TODO:</b> talk about connections, mirrors, multiple logins by read type</p>
+    <p><b>TODO:</b> talk about schemas.json, fake foreign keys</p>
+    <p><b>TODO:</b> talk about building w/ ant, the jar generation task (and how we make our code generation non-evil)</p>
+    <p><b>TODO:</b> talk about version controlled entities vs. build artifacts (and which are which in nosco)</p>
     <pre class="prettyprint"><code class="language-java"></code></pre>
     <pre class="prettyprint"><code class="language-sql"></code></pre>
     <p></p>

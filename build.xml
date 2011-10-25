@@ -37,11 +37,31 @@
     <jar jarfile="${dist}/lib/nosco-${DSTAMP}.jar" basedir="${build}"/>
   </target>
 
-  <target name="clean"
-        description="clean up" >
+  <target name="clean" description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
     <delete dir="lib"/>
     <delete dir="${dist}"/>
   </target>
+  
+  <target name="javadoc" description="generate javadoc" >
+    <javadoc packagenames="org.nosco.*"
+           sourcepath="src"
+           excludepackagenames="org.nosco.json.*,org.nosco.util.*,org.nosco.QueryImpl,org.nosco.RSArgsParser"
+           defaultexcludes="yes"
+           destdir="doc/api"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="Nosco API">
+      <doctitle><![CDATA[<h1>Nosco</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>]]></bottom>
+      <tag name="todo" scope="all" description="To do:"/>
+      <!--group title="Group 1 Packages" packages="com.dummy.test.a*"/>
+      <group title="Group 2 Packages" packages="com.dummy.test.b*:com.dummy.test.c*"/>
+      <link offline="true" href="http://download.oracle.com/javase/6/docs/api/" packagelistLoc="C:\tmp"/>
+      <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/-->
+    </javadoc>
+  </target>
+
 </project>

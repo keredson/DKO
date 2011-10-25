@@ -2,7 +2,6 @@ package org.nosco;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +114,7 @@ public abstract class Condition {
 
 	}
 
-	public static class Not extends Condition {
+	static class Not extends Condition {
 
 		private Condition condition;
 
@@ -132,7 +131,7 @@ public abstract class Condition {
 
 	}
 
-	public static class Ternary extends Condition {
+	static class Ternary extends Condition {
 
 		private Field field;
 		private String cmp1;
@@ -162,7 +161,7 @@ public abstract class Condition {
 
 	}
 
-	public static class Unary extends Condition {
+	static class Unary extends Condition {
 
 		private Field<?> field;
 		private String cmp;
@@ -183,7 +182,7 @@ public abstract class Condition {
 
 
 
-	public static class Binary extends Condition {
+	static class Binary extends Condition {
 
 		private Field<?> field;
 		private Object v;
@@ -263,7 +262,7 @@ public abstract class Condition {
 
 	}
 
-	public static class In extends Condition {
+	static class In extends Condition {
 
 		private Field field;
 		private String cmp;

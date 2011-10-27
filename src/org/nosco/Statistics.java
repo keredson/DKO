@@ -1,5 +1,5 @@
 package org.nosco;
 
-public class Statistics {
+class Statistics {
 
 }

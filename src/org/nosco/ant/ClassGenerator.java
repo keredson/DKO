@@ -1,4 +1,4 @@
-package org.nosco;
+package org.nosco.ant;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,8 +23,9 @@ import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 import org.nosco.util.Misc;
+import org.nosco.util.RSArgsParser;
 
-public class CodeGenerator {
+class ClassGenerator {
 
 	private static RSArgsParser argsParser = new RSArgsParser(new HashMap<String,Boolean>() {{
 		put("package", true);
@@ -51,7 +52,7 @@ public class CodeGenerator {
 	private String[] stripSuffixes;
 
 
-	public CodeGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
+	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
 		this.dir = dir;
 		this.pkg = pkg;
 		this.stripPrefixes = stripPrefixes.clone();
@@ -101,7 +102,7 @@ public class CodeGenerator {
 			fakeFKs = new JSONObject(sb.toString());
 		}
 
-		CodeGenerator generator = new CodeGenerator(dir, pkg, stripPrefixes, stripSuffixes);
+		ClassGenerator generator = new ClassGenerator(dir, pkg, stripPrefixes, stripSuffixes);
 
 		JSONObject schemas = metadata.getJSONObject("schemas");
 		JSONObject foreignKeys = metadata.getJSONObject("foreign_keys");
@@ -223,7 +224,7 @@ public class CodeGenerator {
 		br.write("import java.util.HashMap;\n\n");
 		br.write("import org.nosco.Field;\n");
 		br.write("import org.nosco.Query;\n");
-		br.write("import org.nosco.QueryImpl;\n");
+		br.write("import org.nosco.QueryFactory;\n");
 		br.write("import org.nosco.Table;\n");
 		br.write("\n");
 		br.write("public class "+ className +" extends Table {\n\n");
@@ -323,8 +324,7 @@ public class CodeGenerator {
 		//}
 		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
-		br.write("\tpublic static final Query<"+ className +"> ALL = new QueryImpl<");
-		br.write(className +">("+ className +".class);\n\n");
+		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("+ className +".class);\n\n");
 
 		// write toString
 		br.write("\t public String toString() {\n");

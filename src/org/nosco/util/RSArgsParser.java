@@ -1,4 +1,4 @@
-package org.nosco;
+package org.nosco.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

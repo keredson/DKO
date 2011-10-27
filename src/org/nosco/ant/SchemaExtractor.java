@@ -1,4 +1,4 @@
-package org.nosco;
+package org.nosco.ant;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import java.util.Set;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
+import org.nosco.util.RSArgsParser;
 
 public class SchemaExtractor {
 

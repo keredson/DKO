@@ -22,15 +22,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.nosco.ConnectionManager.DB_TYPE;
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 
 
-
-public class QueryImpl<T extends Table> implements Query<T> {
+class QueryImpl<T extends Table> implements Query<T> {
 
 	// genned once and cached
 	private String sql;
@@ -54,14 +53,14 @@ public class QueryImpl<T extends Table> implements Query<T> {
 	private Map<Field<?>,Object> data = null;
 	private boolean distinct = false;
 
-	public QueryImpl(Table table) {
+	QueryImpl(Table table) {
 		tables.add(table);
 		String tableName = genTableName(table, tableNames);
 		tableNames.add(tableName);
 		tableInfos.add(new TableInfo(table, tableName, null));
 	}
 
-	public QueryImpl(QueryImpl<T> q) {
+	QueryImpl(QueryImpl<T> q) {
 		if (q.conditions!=null) {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
@@ -99,7 +98,7 @@ public class QueryImpl<T extends Table> implements Query<T> {
 		distinct = q.distinct;
 	}
 
-	public QueryImpl(Class<? extends Table> tableClass) {
+	QueryImpl(Class<? extends Table> tableClass) {
 		try {
 			Table table = tableClass.getConstructor().newInstance();
 			tables.add(table);

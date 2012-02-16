@@ -1,4 +1,4 @@
-package org.nosco;
+package org.nosco.ant;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import java.util.Set;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
+import org.nosco.util.RSArgsParser;
 
 public class SchemaExtractor {
 
@@ -36,9 +37,6 @@ public class SchemaExtractor {
 		put("d", "driver");
 		put("f", "filename");
 	}}, new HashMap<String,String>() {{
-		put("url", "jdbc:mysql://localhost/");
-		put("username", "root");
-		put("password", "");
 	}});
 
 	private static int[] version = {0,2,0};
@@ -55,7 +53,7 @@ public class SchemaExtractor {
 	public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, JSONException, IOException {
 		Map<String, String> params = argsParser.parse(args);
 
-		//Driver d = (Driver)Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+		Driver d = (Driver)Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
 		Connection conn = DriverManager.getConnection (params.get("url"),
 				params.get("username"), params.get("password"));
 
@@ -141,6 +139,7 @@ public class SchemaExtractor {
 
 	    for(String schema : schemas.keySet()) {
 		if (ignoredSchemas.contains(schema)) continue;
+		if (!"data_configuration".equals(schema) && !"staging_core".equals(schema)) continue;
 		System.err.println(schema);
 		Map<String, Map<String, String>> tables = schemas.get(schema);
 

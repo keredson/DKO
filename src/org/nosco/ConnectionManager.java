@@ -42,14 +42,13 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import org.nosco.ConnectionManager.ConnectionInfo.Login;
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 
 public class ConnectionManager {
-
-	public enum DB_TYPE {MYSQL, SQLSERVER}
 
 	private static ConnectionManager instance;
 	private List<ConnectionInfo> connections = new ArrayList<ConnectionInfo>();
@@ -366,7 +365,7 @@ public class ConnectionManager {
 		}
 	}
 
-	public static class DynamicCompiler {
+	static class DynamicCompiler {
 		private JavaCompiler compiler;
 		private DiagnosticCollector<JavaFileObject> collector;
 		private JavaFileManager manager;
@@ -399,7 +398,7 @@ public class ConnectionManager {
 		}
 	}
 
-	public static class StringJavaFileObject extends SimpleJavaFileObject {
+	static class StringJavaFileObject extends SimpleJavaFileObject {
 		private String source;
 		public StringJavaFileObject(String name, String source) {
 			super(URI.create("string:///" + name.replace('.','/') + Kind.SOURCE.extension),

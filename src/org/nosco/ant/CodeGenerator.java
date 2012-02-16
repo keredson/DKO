@@ -79,7 +79,7 @@ public class CodeGenerator extends Task {
 			bw.write(timestamp);
 			bw.close();
 
-			org.nosco.CodeGenerator.go(tempDir.getAbsolutePath(), pkg,
+			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
 					fake_fks.getAbsolutePath());
 
@@ -158,5 +158,6 @@ public class CodeGenerator extends Task {
 		if (f.getAbsolutePath().endsWith(".java"))
 			list.add(f.getAbsolutePath());
 	}
+
 
 }

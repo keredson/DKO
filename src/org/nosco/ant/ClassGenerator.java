@@ -1,4 +1,4 @@
-package org.nosco;
+package org.nosco.ant;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,8 +23,9 @@ import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 import org.nosco.util.Misc;
+import org.nosco.util.RSArgsParser;
 
-public class CodeGenerator {
+class ClassGenerator {
 
 	private static RSArgsParser argsParser = new RSArgsParser(new HashMap<String,Boolean>() {{
 		put("package", true);
@@ -51,7 +52,7 @@ public class CodeGenerator {
 	private String[] stripSuffixes;
 
 
-	public CodeGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
+	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
 		this.dir = dir;
 		this.pkg = pkg;
 		this.stripPrefixes = stripPrefixes.clone();
@@ -101,7 +102,7 @@ public class CodeGenerator {
 			fakeFKs = new JSONObject(sb.toString());
 		}
 
-		CodeGenerator generator = new CodeGenerator(dir, pkg, stripPrefixes, stripSuffixes);
+		ClassGenerator generator = new ClassGenerator(dir, pkg, stripPrefixes, stripSuffixes);
 
 		JSONObject schemas = metadata.getJSONObject("schemas");
 		JSONObject foreignKeys = metadata.getJSONObject("foreign_keys");
@@ -213,8 +214,9 @@ public class CodeGenerator {
 		}
 		int fieldCount = columns.keySet().size();
 
-		new File(Misc.join("/", dir, pkg, schema)).mkdirs();
-		File file = new File(Misc.join("/", dir, pkg, schema, className+".java"));
+		String pkgDir = Misc.join("/", pkg.split("[.]"));
+		new File(Misc.join("/", dir, pkgDir, schema)).mkdirs();
+		File file = new File(Misc.join("/", dir, pkgDir, schema, className+".java"));
 		System.out.println("writing: "+ file.getAbsolutePath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
 		br.write("package "+ pkg +"."+ schema +";\n\n");
@@ -223,7 +225,7 @@ public class CodeGenerator {
 		br.write("import java.util.HashMap;\n\n");
 		br.write("import org.nosco.Field;\n");
 		br.write("import org.nosco.Query;\n");
-		br.write("import org.nosco.QueryImpl;\n");
+		br.write("import org.nosco.QueryFactory;\n");
 		br.write("import org.nosco.Table;\n");
 		br.write("\n");
 		br.write("public class "+ className +" extends Table {\n\n");
@@ -255,6 +257,9 @@ public class CodeGenerator {
 		for (FK fk : fks) {
 			String referencedTable = fk.reffed[1];
 			String referencedTableClassName = genTableClassName(referencedTable);
+			if (!schema.equals(fk.reffed[0])) {
+				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
+			}
 			String fkName = genFKName(fk.columns.keySet(), referencedTable);
 			br.write("\tpublic static final Field.FK FK_"+ fkName);
 			br.write(" = new Field.FK("+ index +", "+ className +".class, ");
@@ -313,6 +318,9 @@ public class CodeGenerator {
 		br.write("\tpublic Field.FK[] FKS() {\n\t\tField.FK[] fields = {");
 		for (FK fk : fks) {
 			String referencedTable = fk.reffed[1];
+//			if (!schema.equals(fk.reffed[0])) {
+//				referencedTable = fk.reffed[0] +"_"+ referencedTable;
+//			}
 			br.write("FK_" + genFKName(fk.columns.keySet(), referencedTable) + ",");
 		}
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
@@ -323,8 +331,7 @@ public class CodeGenerator {
 		//}
 		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
-		br.write("\tpublic static final Query<"+ className +"> ALL = new QueryImpl<");
-		br.write(className +">("+ className +".class);\n\n");
+		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("+ className +".class);\n\n");
 
 		// write toString
 		br.write("\t public String toString() {\n");
@@ -374,6 +381,9 @@ public class CodeGenerator {
 			String referencedTable = fk.reffed[1];
 			//String referencedColumn = referenced.getString(2);
 			String referencedTableClassName = genTableClassName(referencedTable);
+			if (!schema.equals(fk.reffed[0])) {
+				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
+		}
 			String methodName = genFKMethodName(fk.columns.keySet(), referencedTable);
 			String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
 
@@ -407,6 +417,9 @@ public class CodeGenerator {
 			String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
 			String referencedTable = fk.reffed[1];
 			String referencedTableClassName = genTableClassName(referencedTable);
+			if (!schema.equals(fk.reffed[0])) {
+				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
+		}
 			br.write("\t\telse if (field == FK_"+ genFKName(fk.columns.keySet(), referencedTable) +") {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = ("+ referencedTableClassName +") v;\n");
 			br.write("\t\t\tFETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
@@ -422,6 +435,9 @@ public class CodeGenerator {
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
 		    //String method = genFKMethodName(fk.columns.keySet(), relatedTableClassName);
 		    String method = relatedTableClassName;
+			if (!schema.equals(fk.reffing[0])) {
+				relatedTableClassName = pkg +"."+ fk.reffing[0] +"."+ relatedTableClassName;
+		}
 		    for (String s : fk.columns.keySet()) method += "_" + s;
 		    method = getInstanceMethodName(method);
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() ");

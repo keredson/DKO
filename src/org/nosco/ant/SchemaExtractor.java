@@ -139,7 +139,6 @@ public class SchemaExtractor {
 
 	    for(String schema : schemas.keySet()) {
 		if (ignoredSchemas.contains(schema)) continue;
-		if (!"data_configuration".equals(schema) && !"staging_core".equals(schema)) continue;
 		System.err.println(schema);
 		Map<String, Map<String, String>> tables = schemas.get(schema);
 
@@ -190,7 +189,21 @@ public class SchemaExtractor {
 		Map<String,Map<String,Set<String>>> primaryKeys =
 			new HashMap<String, Map<String, Set<String>>>();
 
-		Statement s = conn.createStatement();
+	    Statement s = conn.createStatement();
+	    s.execute("SELECT name FROM sys.databases;");
+	    ResultSet rs2 = s.getResultSet();
+	    while (rs2.next()) {
+		String schema = rs2.getString("name");
+		Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();
+		schemas.put(schema,tables);
+	    }
+	    rs2.close();
+
+
+
+	    for(String schema2 : schemas.keySet()) {
+			if (ignoredSchemas.contains(schema2)) continue;
+	    s.execute("use \""+ schema2 +"\";");
 		s.execute("select a.table_catalog, a.table_name, b.column_name, a.constraint_name " +
 				"from information_schema.table_constraints a, " +
 				"information_schema.constraint_column_usage b " +
@@ -232,6 +245,8 @@ public class SchemaExtractor {
 			pkColumns.add(column);
 		}
 		rs.close();
+	    }
+
 		s.close();
 
 		return primaryKeys;

@@ -241,9 +241,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public int update() throws SQLException {
 		if (data==null || data.size()==0) return 0;
 		Table table = tables.get(0);
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(table.SCHEMA_NAME() +"."+ table.TABLE_NAME());
+		sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
 		sb.append(" set ");
 		String[] fields = new String[data.size()];
 		List<Object> bindings = new ArrayList<Object>();
@@ -254,11 +255,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		sb.append(Misc.join(", ", fields));
 		sb.append(" ");
-		sb.append(getWhereClauseAndSetBindings());
+		sb.append(getWhereClauseAndSetBindings(false));
 		bindings.addAll(this.bindings);
 		String sql = sb.toString();
 
-		log(sql);
+		Misc.log(sql, bindings);
 		PreparedStatement ps = getConnRW().prepareStatement(sql);
 		setBindings(ps, bindings);
 		ps.execute();
@@ -322,6 +323,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 //	}
 
 	String getWhereClauseAndSetBindings() {
+		return getWhereClauseAndSetBindings(true);
+	}
+
+	String getWhereClauseAndSetBindings(boolean bindTables) {
 		if (sql==null) {
 
 			StringBuffer sb = new StringBuffer();
@@ -331,7 +336,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 			for (TableInfo ti : tableInfos) {
 				String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
 				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-				tableNameMap.get(id).add(ti.tableName);
+				tableNameMap.get(id).add(bindTables ? ti.tableName : ti.table.TABLE_NAME());
 			}
 
 			if (conditions!=null && conditions.size()>0) {
@@ -472,9 +477,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public Object insert() throws SQLException {
 		QueryImpl<T> q = new QueryImpl<T>(this);
 		Table table = q.tables.get(0);
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(table.SCHEMA_NAME() +"."+ table.TABLE_NAME());
+		sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
 		sb.append(" (");
 		String[] fields = new String[q.data.size()];
 		String[] bindStrings = new String[q.data.size()];
@@ -493,19 +499,23 @@ class QueryImpl<T extends Table> implements Query<T> {
 		String sql = sb.toString();
 
 		Misc.log(sql, q.bindings);
-		PreparedStatement ps = getConnRW().prepareStatement(sql);
+		Connection conn = getConnRW();
+		PreparedStatement ps = conn.prepareStatement(sql);
 		q.setBindings(ps);
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
 
 		if (count==1) {
-			Statement s = getConnRW().createStatement();
-			s.execute("SELECT LAST_INSERT_ID()");
-			ResultSet rs = s.getResultSet();
-			if (rs.next()) {
-				Integer pk = rs.getInt(1);
-				return pk;
+			if (getDBType()==DB_TYPE.MYSQL) {
+				Statement s = conn.createStatement();
+
+				s.execute("SELECT LAST_INSERT_ID()");
+				ResultSet rs = s.getResultSet();
+				if (rs.next()) {
+					Integer pk = rs.getInt(1);
+					return pk;
+				}
 			}
 		}
 

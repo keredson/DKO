@@ -10,7 +10,7 @@ import org.nosco.Field.PK;
 
 
 public abstract class Table {
-	
+
 	public abstract String SCHEMA_NAME();
 
 	public abstract String TABLE_NAME();
@@ -22,15 +22,16 @@ public abstract class Table {
 
 	public abstract Field.FK[] FKS();
 
-	protected BitSet FETCHED_VALUES = new BitSet();
-	protected BitSet UPDATED_VALUES = null;
-	
+	protected BitSet __NOSCO_FETCHED_VALUES = new BitSet();
+	protected BitSet __NOSCO_UPDATED_VALUES = null;
+	protected boolean __NOSCO_GOT_FROM_DATABASE = false;
+
 	public boolean dirty() {
-		return UPDATED_VALUES != null && !UPDATED_VALUES.isEmpty();
+		return __NOSCO_UPDATED_VALUES != null && !__NOSCO_UPDATED_VALUES.isEmpty();
 	}
 
 	public abstract boolean save() throws SQLException;
-	
+
 	static Map<Table,java.lang.reflect.Field> _pkCache = new HashMap<Table, java.lang.reflect.Field>();
 	static Field.PK GET_TABLE_PK(Table table) {
 		if (!_pkCache.containsKey(table)) {
@@ -53,9 +54,9 @@ public abstract class Table {
 		}
 		return null;
 	}
-	
+
 	public boolean sameTable(Table t) {
 		return t.SCHEMA_NAME() == SCHEMA_NAME() && t.TABLE_NAME() == TABLE_NAME();
 	}
-	
+
 }

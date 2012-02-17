@@ -296,7 +296,7 @@ class ClassGenerator {
 			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = (");
 			br.write(getFieldType(columns.getString(column)).getName());
 			br.write(") objects[i];\n");
-			br.write("\t\t\t\tFETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+			br.write("\t\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t\t\tcontinue;\n");
 			br.write("\t\t\t}\n");
 		}
@@ -354,14 +354,14 @@ class ClassGenerator {
 			//if (skipColumn) continue;
 			String cls = getFieldType(columns.getString(column)).getName();
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
-			br.write("\t\tif (!FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\t"+ getInstanceFieldName(column) +" = ALL.onlyFields(");
 			br.write(getFieldName(column)+")");
 			for (String pk : pkSet) {
 				br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 			}
 			br.write(".getTheOnly().get"+ getInstanceMethodName(column) +"();\n");
-			br.write("\t\t\tFETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
 
@@ -369,8 +369,8 @@ class ClassGenerator {
 				br.write("\tpublic void set"+ getInstanceMethodName(column));
 				br.write("("+ cls +" v) {\n");
 				br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
-				br.write("\t\tif (UPDATED_VALUES == null) UPDATED_VALUES = new java.util.BitSet();\n");
-				br.write("\t\tUPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+				br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
+				br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 				br.write("\t}\n\n");
 			}
 		}
@@ -390,11 +390,11 @@ class ClassGenerator {
 			br.write("\tprivate "+ referencedTableClassName +" "+ cachedObjectName +" = null;\n\n");
 
 			br.write("\tpublic "+ referencedTableClassName +" get"+ methodName +"() {\n");
-			br.write("\t\tif (!FETCHED_VALUES.get(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX)) {\n");
+			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX)) {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = "+ referencedTableClassName +".ALL");
 			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq("+ underscoreToCamelCase(fk.columns.keySet(), false) +"))");
 			br.write(".getTheOnly();\n");
-			br.write("\t\t\tFETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ cachedObjectName +";\n\t}\n\n");
 
@@ -402,10 +402,10 @@ class ClassGenerator {
 			//br.write(" v) {\n\t\tPUT_VALUE(");
 
 			br.write("\t\t"+ underscoreToCamelCase(fk.columns.keySet(), false) +" = v.get"+ underscoreToCamelCase(fk.columns.values(), true) +"();\n");
-			br.write("\t\tif (UPDATED_VALUES == null) UPDATED_VALUES = new java.util.BitSet();\n");
-			br.write("\t\tUPDATED_VALUES.set("+ getFieldName(fk.columns.keySet()) +".INDEX);\n");
+			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
+			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(fk.columns.keySet()) +".INDEX);\n");
 			br.write("\t\t"+ cachedObjectName +" = v;\n");
-			br.write("\t\tUPDATED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\t__NOSCO_UPDATED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
 
 			br.write("\n\t}\n\n");
 		}
@@ -422,7 +422,7 @@ class ClassGenerator {
 		}
 			br.write("\t\telse if (field == FK_"+ genFKName(fk.columns.keySet(), referencedTable) +") {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = ("+ referencedTableClassName +") v;\n");
-			br.write("\t\t\tFETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
 			br.write("\t\t}\n");
 
 		}
@@ -461,7 +461,7 @@ class ClassGenerator {
 		br.write(";\n");
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
-			br.write("\t\tif (UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
 			br.write("\t\t}\n");
 		}

@@ -25,6 +25,7 @@
     	classpath="${nosco_jar}"
     	schemas="schemas.json"
     	fakefks="fake_fks.json"
+    	datasource="local = test.Something.callme()"
     />
   </target>
 

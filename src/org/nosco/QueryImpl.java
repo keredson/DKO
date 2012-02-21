@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
@@ -52,6 +54,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	int top = 0;
 	private Map<Field<?>,Object> data = null;
 	private boolean distinct = false;
+	private DataSource ds = null;
 
 	QueryImpl(Table table) {
 		tables.add(table);
@@ -96,6 +99,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 			data.putAll(q.data);
 		}
 		distinct = q.distinct;
+		ds = q.ds;
 	}
 
 	QueryImpl(Class<? extends Table> tableClass) {
@@ -137,15 +141,25 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	DB_TYPE getDBType() {
-		return ConnectionManager.instance().getDBType(tables.get(0).SCHEMA_NAME());
+		return DB_TYPE.MYSQL;
+		//return ConnectionManager.instance().getDBType(tables.get(0).SCHEMA_NAME());
 	}
 
 	Connection getConnR() throws SQLException {
-		return ConnectionManager.instance().getConnection(tables.get(0).SCHEMA_NAME(), "r");
+		if (TransactionThread.inTransaction(ds)) {
+			return TransactionThread.getConnection(ds);
+		}
+		if (ds.isWrapperFor(MirroredDataSource.class)) {
+			return ds.unwrap(MirroredDataSource.class).getMirroredConnection();
+		}
+		return ds.getConnection();
 	}
 
 	Connection getConnRW() throws SQLException {
-		return ConnectionManager.instance().getConnection(tables.get(0).SCHEMA_NAME(), "rw");
+		if (TransactionThread.inTransaction(ds)) {
+			return TransactionThread.getConnection(ds);
+		}
+		return ds.getConnection();
 	}
 
 	@Override
@@ -742,6 +756,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 		rs.close();
 		ps.close();
 		return (Map<S, Integer>) result;
+	}
+	
+	public Query<T> use(DataSource ds) {
+		final QueryImpl<T> q = new QueryImpl<T>(this);
+		q.ds  = ds;
+		return q;
 	}
 
 	/*	@Override

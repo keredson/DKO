@@ -331,7 +331,7 @@ class ClassGenerator {
 		//}
 		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
-		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("+ className +".class);\n\n");
+		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("+ className +".class).use("+ pkg +".Local.IT);\n\n");
 
 		// write toString
 		br.write("\t public String toString() {\n");

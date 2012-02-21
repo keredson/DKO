@@ -1,13 +1,13 @@
 package test.nosco;
 import java.sql.SQLException;
 
-import ddaoo.wordpress.Post;
+//import ddaoo.wordpress.Post;
 import junit.framework.TestCase;
 
 
 public class TestWordPress extends TestCase {
 	
-	public void test01() throws SQLException {
+/*	public void test01() throws SQLException {
 		this.assertTrue(Post.ALL.size()>0);
 	}
 
@@ -74,5 +74,5 @@ public class TestWordPress extends TestCase {
 			System.out.println(o.getId() +": "+ o.getPostTitle());
 		}
 	}
-
+*/
 }

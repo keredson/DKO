@@ -44,5 +44,5 @@ public class Misc {
 		if (bindings != null && bindings.size() > 0)
 			System.err.println("^^^ ["+ join("|", bindings) +"]");
 	}
-
+	
 }

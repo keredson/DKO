@@ -12,12 +12,14 @@
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
+    <mkdir dir="bin_test"/>
   </target>
 
   <target name="compile" depends="init"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="on"/>
+    <javac srcdir="test" destdir="bin_test" debug="on" classpath="examples/bugzilla/lib/noscogen.jar:lib/nosco.jar:/usr/share/java/mysql.jar"/>
   </target>
 
   <target name="jar" depends="compile"
@@ -26,6 +28,7 @@
     <mkdir dir="lib"/>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="lib/nosco.jar" basedir="${build}"/>
+    <jar jarfile="lib/test.jar" basedir="bin_test"/>
   </target>
 
   <target name="dist" depends="compile"

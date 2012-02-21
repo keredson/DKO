@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.nosco.Constants.DIRECTION;
 
 
@@ -73,4 +75,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	//public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException;
 
 	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException;
+
+	public Query<T> use(DataSource ds);
+
 }

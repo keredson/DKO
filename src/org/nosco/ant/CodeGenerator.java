@@ -26,6 +26,7 @@ public class CodeGenerator extends Task {
 	private String classpath = null;
 	private String[] stripPrefixes = {};
 	private String[] stripSuffixes = {};
+	private String dataSource = null;
 
 	public void setJarfile(String s) {
 		this.jarfile = new File(s);
@@ -37,6 +38,10 @@ public class CodeGenerator extends Task {
 
 	public void setClasspath(String s) {
 		this.classpath = s;
+	}
+
+	public void setDataSource(String s) {
+		this.dataSource = s;
 	}
 
 	public void setSchemas(String s) {
@@ -78,6 +83,8 @@ public class CodeGenerator extends Task {
 					tempDir.getAbsolutePath() + File.separator + ".timestamp")));
 			bw.write(timestamp);
 			bw.close();
+
+			org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource);
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),

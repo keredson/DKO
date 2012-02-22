@@ -30,6 +30,8 @@ public abstract class Table {
 		return __NOSCO_UPDATED_VALUES != null && !__NOSCO_UPDATED_VALUES.isEmpty();
 	}
 
+	public abstract boolean insert() throws SQLException;
+	public abstract boolean update() throws SQLException;
 	public abstract boolean save() throws SQLException;
 
 	static Map<Table,java.lang.reflect.Field> _pkCache = new HashMap<Table, java.lang.reflect.Field>();

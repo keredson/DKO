@@ -285,7 +285,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
-		if (!TransactionThread.inTransaction(ds)) conn.close();
+		if (!TransactionThread.inTransaction(ds)) {
+			if (!conn.getAutoCommit()) conn.commit();
+			conn.close();
+		}
 
 		return count;
 	}
@@ -304,7 +307,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!TransactionThread.inTransaction(ds)) conn.close();
+			if (!TransactionThread.inTransaction(ds)) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
+			}
 			return count;
 
 		} else {
@@ -315,7 +321,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!TransactionThread.inTransaction(ds)) conn.close();
+			if (!TransactionThread.inTransaction(ds)) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
+			}
 			return count;
 		}
 	}
@@ -542,7 +551,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 				}
 			}
 		}
-		if (!TransactionThread.inTransaction(ds)) conn.close();
+		if (!TransactionThread.inTransaction(ds)) {
+			if (!conn.getAutoCommit()) conn.commit();
+			conn.close();
+		}
 
 		return null;
 	}

@@ -79,12 +79,12 @@ class ClassGenerator {
 		String metadataFile = params.get("metadata");
 		String fakefksFile = params.get("fakefks");
 
-		go(dir, pkg, stripPrefixes, stripSuffixes, metadataFile, fakefksFile, null);
+		go(dir, pkg, stripPrefixes, stripSuffixes, metadataFile, fakefksFile, null, null);
 	}
 
 	public static void go(String dir, String pkg, String[] stripPrefixes,
-		String[] stripSuffixes, String metadataFile, String fakefksFile, String dataSource)
-			throws IOException, JSONException {
+		String[] stripSuffixes, String metadataFile, String fakefksFile, String dataSource,
+		String callbackPackage) throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
 		StringBuffer sb = new StringBuffer();
@@ -129,7 +129,8 @@ class ClassGenerator {
 				    splitFK(schema, table, fks, fksIn, constraint_name, fkmd);
 				}
 
-				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName);
+				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName,
+						callbackPackage);
 			}
 		}
 
@@ -206,7 +207,7 @@ class ClassGenerator {
 	}
 
 	private void generate(String schema, String table, JSONObject columns, JSONArray pks,
-			List<FK> fks, List<FK> fksIn, String dataSourceName)
+			List<FK> fks, List<FK> fksIn, String dataSourceName, String callbackPackage)
 	throws IOException, JSONException {
 		String className = genTableClassName(table);
 		Set<String> pkSet = new HashSet<String>();
@@ -222,6 +223,8 @@ class ClassGenerator {
 		System.out.println("writing: "+ file.getAbsolutePath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
 		br.write("package "+ pkg +"."+ schema +";\n\n");
+		br.write("import java.lang.reflect.Method;\n");
+		br.write("import java.lang.reflect.InvocationTargetException;\n");
 		br.write("import java.sql.SQLException;\n");
 		br.write("import java.util.Map;\n\n");
 		br.write("import java.util.HashMap;\n\n");
@@ -369,11 +372,12 @@ class ClassGenerator {
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
 
 			//if (!pkSet.contains(column)) {
-			br.write("\tpublic void set"+ getInstanceMethodName(column));
+			br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
 			br.write("("+ cls +" v) {\n");
 			br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+			br.write("\t\treturn this;\n");
 			br.write("\t}\n\n");
 			//}
 		}
@@ -401,7 +405,7 @@ class ClassGenerator {
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ cachedObjectName +";\n\t}\n\n");
 
-			br.write("\tpublic void set"+ methodName +"("+ referencedTableClassName +" v) {\n");
+			br.write("\tpublic "+ className +" set"+ methodName +"("+ referencedTableClassName +" v) {\n");
 			//br.write(" v) {\n\t\tPUT_VALUE(");
 
 			br.write("\t\t"+ underscoreToCamelCase(fk.columns.keySet(), false) +" = v.get"+ underscoreToCamelCase(fk.columns.values(), true) +"();\n");
@@ -409,6 +413,7 @@ class ClassGenerator {
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(fk.columns.keySet()) +".INDEX);\n");
 			br.write("\t\t"+ cachedObjectName +" = v;\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\treturn this;\n");
 
 			br.write("\n\t}\n\n");
 		}
@@ -462,6 +467,24 @@ class ClassGenerator {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
 		br.write(";\n");
+
+		if (!pkSet.isEmpty()) {
+			br.write("\t\tif (");
+			List<String> pkList = new ArrayList<String>(pkSet);
+			for (int i=0; i<pkList.size(); ++i) {
+				br.write(getInstanceFieldName(pkList.get(i)) +" == null");
+				if (i<pkList.size()-1) br.write(" || ");
+			}
+			br.write(") {\n");
+			br.write("} else {\n");
+			br.write("\t\t\tif (__NOSCO_CALLBACK_UPDATE_PRE!=null) "
+					+ "try { __NOSCO_CALLBACK_UPDATE_PRE.invoke(null, this); }"
+					+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+					+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
+			br.write("\t\t}\n");
+		}
+
+
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
@@ -483,11 +506,98 @@ class ClassGenerator {
 			br.write(getFieldType(columns.getString(pkList.get(0))).getName() +") query.insert();\n");
 			br.write("\t\t\treturn true;\n\t\t} else {\n");
 			br.write("\t\t\tint count = query.update();\n");
+			br.write("\t\t\tif (__NOSCO_CALLBACK_UPDATE_POST!=null) "
+					+ "try { __NOSCO_CALLBACK_UPDATE_POST.invoke(null, this); }"
+					+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+					+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 			br.write("\t\t\treturn count==1;\n");
 			br.write("\t\t}\n");
 		}
 		br.write("\t}\n");
 
+		// write update function
+		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
+		br.write("\tpublic boolean update() throws SQLException {\n");
+		br.write("\t\tif (!dirty()) return false;\n");
+		br.write("\t\tQuery<"+ className +"> query = ALL");
+		for (String pk : pkSet) {
+			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
+		}
+		br.write(";\n");
+		br.write("\t\tif (__NOSCO_CALLBACK_UPDATE_PRE!=null) "
+				+ "try { __NOSCO_CALLBACK_UPDATE_PRE.invoke(null, this); }"
+				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
+		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
+		for (String column : columns.keySet()) {
+			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
+			br.write("\t\t}\n");
+		}
+		br.write("\t\tquery = query.set(updates);\n");
+		br.write("\t\tint count = query.update();\n");
+		br.write("\t\tif (__NOSCO_CALLBACK_UPDATE_POST!=null) "
+				+ "try { __NOSCO_CALLBACK_UPDATE_POST.invoke(null, this); }"
+				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
+		br.write("\t\treturn count==1;\n");
+		br.write("\t}\n");
+
+		// write insert function
+		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
+		br.write("\tpublic boolean insert() throws SQLException {\n");
+		br.write("\t\tif (!dirty()) return false;\n");
+		br.write("\t\tQuery<"+ className +"> query = ALL");
+		for (String pk : pkSet) {
+			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
+		}
+		br.write(";\n");
+		if (!pkSet.isEmpty()) {
+			br.write("\t\tif (__NOSCO_CALLBACK_INSERT_PRE!=null) "
+					+ "try { __NOSCO_CALLBACK_INSERT_PRE.invoke(null, this); }"
+					+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+					+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
+		}
+		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
+		for (String column : columns.keySet()) {
+			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
+			br.write("\t\t}\n");
+		}
+		br.write("\t\tquery = query.set(updates);\n");
+		br.write("\t\t\tquery.insert();\n");
+		br.write("\t\t\tif (__NOSCO_CALLBACK_INSERT_POST!=null) "
+				+ "try { __NOSCO_CALLBACK_INSERT_POST.invoke(null, this); }"
+				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
+		br.write("\t\t\treturn true;\n");
+		br.write("\t}\n");
+
+		// write callbacks
+		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_PRE = null;\n");
+		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_POST = null;\n");
+		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_PRE = null;\n");
+		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_POST = null;\n");
+		br.write("\tstatic {\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"preInsert\", "
+				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"postInsert\", "
+				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"preUpdate\", "
+				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"postUpdate\", "
+				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\t\n");
+		br.write("\t\t\n");
+
+		//callbackPackage;
+		br.write("\t}\n");
+
+		// end class
 		br.write("}\n");
 		br.close();
 	}
@@ -547,6 +657,7 @@ class ClassGenerator {
 		if (s.endsWith("series"));
 		else if (s.endsWith("us"));
 		else if (s.endsWith("is"));
+		else if (s.endsWith("as"));
 		else if (s.endsWith("ies")) s = s.substring(0,s.length()-3)+"y";
 		else if (s.endsWith("s")) s = s.substring(0,s.length()-1);
 		return s;

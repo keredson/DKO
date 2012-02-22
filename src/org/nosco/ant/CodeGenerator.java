@@ -32,6 +32,7 @@ public class CodeGenerator extends Task {
 	private String javac = "javac";
 	private File srcjarfile = null;
 	private boolean debug = true;
+	private String callbackPackage = null;
 
 	public void setJarfile(String s) {
 		this.jarfile = new File(s);
@@ -77,6 +78,10 @@ public class CodeGenerator extends Task {
 		this.fake_fks = new File(s);
 	}
 
+	public void setCallbackPackage(String s) {
+		this.callbackPackage  = s;
+	}
+
 	public void execute() {
 
 		try {
@@ -118,7 +123,7 @@ public class CodeGenerator extends Task {
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
-					fake_fks.getAbsolutePath(), dataSource);
+					fake_fks.getAbsolutePath(), dataSource, callbackPackage);
 
 			if (this.srcjarfile != null) {
 				System.out.println("writing " + srcjarfile.getAbsolutePath());

@@ -5,6 +5,7 @@ import static org.nosco.Constants.DIRECTION.DESCENDING;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,6 +42,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private Constructor<T> constructor;
 	private Map<Field.FK,Constructor<T>> fkConstructors;
 	private Map<Class<? extends Table>,Method> fkSetMethods = null;
+	private Connection conn;
 
 	@SuppressWarnings("unchecked")
 	Select(QueryImpl<T> query) {
@@ -139,7 +141,8 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	@Override
 	public Iterator<T> iterator() {
 		try {
-			ps = query.getConnR().prepareStatement(getSQL());
+			conn = query.getConnR();
+			ps = conn.prepareStatement(getSQL());
 			Misc.log(sql, query.bindings);
 			query.setBindings(ps);
 			ps.execute();
@@ -157,7 +160,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	public boolean hasNext() {
 		if (next!=null) return true;
 		try {
-			if (!rs.next()) return false;
+			if (!rs.next()) {
+				cleanUp();
+				return false;
+			}
 			for (int i=0; i<selectedFields.length; ++i) {
 				if (selectedFields[i].TYPE == Long.class) fieldValues[i] = rs.getLong(i+1); else
 				if (selectedFields[i].TYPE == Double.class) fieldValues[i] = rs.getDouble(i+1); else
@@ -223,7 +229,20 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
-		return next!=null;
+		boolean hasNext = next != null;
+		if (!hasNext) cleanUp();
+		return hasNext;
+	}
+
+	private void cleanUp() {
+		if (!TransactionThread.inTransaction(query.ds)) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private boolean startsWith(FK[] path, FK[] path2) {

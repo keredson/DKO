@@ -54,7 +54,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	int top = 0;
 	private Map<Field<?>,Object> data = null;
 	private boolean distinct = false;
-	private DataSource ds = null;
+	DataSource ds = null;
 
 	QueryImpl(Table table) {
 		tables.add(table);
@@ -141,7 +141,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	DB_TYPE getDBType() {
-		return DB_TYPE.MYSQL;
+		//return DB_TYPE.MYSQL;
+		return DB_TYPE.SQLSERVER;
 		//return ConnectionManager.instance().getDBType(tables.get(0).SCHEMA_NAME());
 	}
 
@@ -166,7 +167,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public int count() throws SQLException {
 		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 		log(sql);
-		PreparedStatement ps = getConnR().prepareStatement(sql);
+		Connection conn = getConnR();
+		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
@@ -174,6 +176,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 		int count = rs.getInt(1);
 		rs.close();
 		ps.close();
+		if (!TransactionThread.inTransaction(ds)) {
+			conn.close();
+		}
 		return count;
 	}
 
@@ -274,38 +279,43 @@ class QueryImpl<T extends Table> implements Query<T> {
 		String sql = sb.toString();
 
 		Misc.log(sql, bindings);
-		PreparedStatement ps = getConnRW().prepareStatement(sql);
+		Connection conn = getConnRW();
+		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps, bindings);
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
+		if (!TransactionThread.inTransaction(ds)) conn.close();
 
 		return count;
 	}
 
 	@Override
 	public int deleteAll() throws SQLException {
+		Connection conn = getConnRW();
 		if (getDBType()==DB_TYPE.MYSQL) {
 			if (this.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
 			Table t = tables.get(0);
 			String sql = "delete from "+ t.SCHEMA_NAME() + "." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
 			log(sql);
-			PreparedStatement ps = getConnRW().prepareStatement(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
 			setBindings(ps);
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
+			if (!TransactionThread.inTransaction(ds)) conn.close();
 			return count;
 
 		} else {
 			String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 			log(sql);
-			PreparedStatement ps = getConnRW().prepareStatement(sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
 			setBindings(ps);
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
+			if (!TransactionThread.inTransaction(ds)) conn.close();
 			return count;
 		}
 	}
@@ -532,6 +542,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 				}
 			}
 		}
+		if (!TransactionThread.inTransaction(ds)) conn.close();
 
 		return null;
 	}
@@ -698,7 +709,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 				+", sum("+ Condition.derefField(sumField, tableNameMap) +") from "+ sql
 				+" group by "+ Condition.derefField(byField, tableNameMap);
 		log(sql);
-		PreparedStatement ps = getConnR().prepareStatement(sql);
+		Connection conn = getConnR();
+		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
@@ -713,6 +725,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		rs.close();
 		ps.close();
+		if (!TransactionThread.inTransaction(ds)) {
+			conn.close();
+		}
 		return (Map<S, Double>) result;
 	}
 
@@ -721,7 +736,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 		sql = "select sum("+ Condition.derefField(sumField, tableNameMap) +") from "+ sql;
 		log(sql);
-		PreparedStatement ps = getConnR().prepareStatement(sql);
+		Connection conn = getConnR();
+		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
@@ -729,6 +745,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 		Double ret = rs.getDouble(1);
 		rs.close();
 		ps.close();
+		if (!TransactionThread.inTransaction(ds)) {
+			conn.close();
+		}
 		return ret;
 	}
 
@@ -740,7 +759,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 				+", count("+ Condition.derefField(byField, tableNameMap) +") from "+ sql
 				+" group by "+ Condition.derefField(byField, tableNameMap);
 		log(sql);
-		PreparedStatement ps = getConnR().prepareStatement(sql);
+		Connection conn = getConnR();
+		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
@@ -755,9 +775,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		rs.close();
 		ps.close();
+		if (!TransactionThread.inTransaction(ds)) {
+			conn.close();
+		}
 		return (Map<S, Integer>) result;
 	}
-	
+
 	public Query<T> use(DataSource ds) {
 		final QueryImpl<T> q = new QueryImpl<T>(this);
 		q.ds  = ds;

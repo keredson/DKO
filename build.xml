@@ -19,6 +19,11 @@
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="on"/>
+  </target>
+
+  <target name="compile_test" depends="compile"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="test" destdir="bin_test" debug="on" classpath="examples/bugzilla/lib/noscogen.jar:lib/nosco.jar:/usr/share/java/mysql.jar"/>
   </target>
 
@@ -28,6 +33,13 @@
     <mkdir dir="lib"/>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="lib/nosco.jar" basedir="${build}"/>
+  </target>
+
+  <target name="jar_test" depends="compile_test"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="lib"/>
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
   </target>
 

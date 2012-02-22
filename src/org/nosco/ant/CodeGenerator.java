@@ -27,9 +27,22 @@ public class CodeGenerator extends Task {
 	private String[] stripPrefixes = {};
 	private String[] stripSuffixes = {};
 	private String dataSource = null;
+	private String javacTarget = null;
+	private String javacSource = null;
+	private String javac = "javac";
+	private File srcjarfile = null;
+	private boolean debug = true;
 
 	public void setJarfile(String s) {
 		this.jarfile = new File(s);
+	}
+
+	public void setSrcJarfile(String s) {
+		this.srcjarfile  = new File(s);
+	}
+
+	public void setDebug(String s) {
+		this.debug  = "true".equalsIgnoreCase(s) || "t".equalsIgnoreCase(s) || "1".equals(s);
 	}
 
 	public void setPackage(String s) {
@@ -46,6 +59,18 @@ public class CodeGenerator extends Task {
 
 	public void setSchemas(String s) {
 		this.schemas = new File(s);
+	}
+
+	public void setJavac(String s) {
+		this.javac  = s;
+	}
+
+	public void setJavacTarget(String s) {
+		this.javacTarget = s;
+	}
+
+	public void setJavacSource(String s) {
+		this.javacSource  = s;
 	}
 
 	public void setFakeFKs(String s) {
@@ -72,9 +97,13 @@ public class CodeGenerator extends Task {
 		File tempDir = new File(tempdir + File.separator + "nosco_"
 				+ this.hashCode());
 		tempDir.mkdir();
-		File classesDir = tempDir; // new File(tempDir.getAbsolutePath() +
+		File classesDir = tempDir;  // new File(tempDir.getAbsolutePath() +
 									// File.separator + "classes");
-		// classesDir.mkdir();
+		if (!debug) {
+			classesDir = new File(tempdir + File.separator + "nosco_classes_"
+					+ this.hashCode());
+			classesDir.mkdir();
+		}
 
 		try {
 			String timestamp = String.valueOf(schemas.lastModified()) + ":"
@@ -84,19 +113,47 @@ public class CodeGenerator extends Task {
 			bw.write(timestamp);
 			bw.close();
 
-			org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource);
+			org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
+					schemas.getAbsolutePath());
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
-					fake_fks.getAbsolutePath());
+					fake_fks.getAbsolutePath(), dataSource);
+
+			if (this.srcjarfile != null) {
+				System.out.println("writing " + srcjarfile.getAbsolutePath());
+				String[] cmd2 = { "jar", "cf", srcjarfile.getAbsolutePath(), "-C",
+						tempDir.getAbsolutePath(), "." };
+				// System.out.println(Misc.join(" ", cmd2));
+				Process p2 = Runtime.getRuntime().exec(cmd2);
+				p2.waitFor();
+				BufferedReader br;
+				br = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+				for (String s; (s = br.readLine()) != null; System.out.println(s));
+				br = new BufferedReader(new InputStreamReader(p2.getErrorStream()));
+				for (String s; (s = br.readLine()) != null; System.out.println(s));
+				if (p2.exitValue() != 0) {
+					throw new BuildException("jar exited " + p2.exitValue());
+				}
+			}
 
 			System.out.println("compiling " + tempDir.getAbsolutePath());
-			String[] cmd = { "javac", "-g", "-cp", classpath, "-d",
-					classesDir.getAbsolutePath() };
+
 			List<String> files = new ArrayList<String>();
-			for (String s : cmd) files.add(s);
+			files.add(javac);
+			if (debug) files.add("-g");
+			if (this.javacTarget != null) {
+				files.add("-target");
+				files.add(javacTarget);
+			}
+			if (this.javacSource != null) {
+				files.add("-source");
+				files.add(javacSource);
+			}
+			String[] options = {"-cp", classpath, "-d", classesDir.getAbsolutePath() };
+			for (String s : options) files.add(s);
 			findJava(tempDir, files);
-			cmd = new String[files.size()];
+			String[] cmd = new String[files.size()];
 			files.toArray(cmd);
 			// System.out.println(Misc.join(" ", cmd));
 			Process p = Runtime.getRuntime().exec(cmd);
@@ -111,7 +168,7 @@ public class CodeGenerator extends Task {
 
 			System.out.println("writing " + jarfile.getAbsolutePath());
 			String[] cmd2 = { "jar", "cf", jarfile.getAbsolutePath(), "-C",
-					tempDir.getAbsolutePath(), "." };
+					classesDir.getAbsolutePath(), "." };
 			// System.out.println(Misc.join(" ", cmd2));
 			Process p2 = Runtime.getRuntime().exec(cmd2);
 			p2.waitFor();

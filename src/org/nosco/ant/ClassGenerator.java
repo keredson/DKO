@@ -79,11 +79,11 @@ class ClassGenerator {
 		String metadataFile = params.get("metadata");
 		String fakefksFile = params.get("fakefks");
 
-		go(dir, pkg, stripPrefixes, stripSuffixes, metadataFile, fakefksFile);
+		go(dir, pkg, stripPrefixes, stripSuffixes, metadataFile, fakefksFile, null);
 	}
 
 	public static void go(String dir, String pkg, String[] stripPrefixes,
-		String[] stripSuffixes, String metadataFile, String fakefksFile)
+		String[] stripSuffixes, String metadataFile, String fakefksFile, String dataSource)
 			throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
@@ -107,6 +107,8 @@ class ClassGenerator {
 		JSONObject schemas = metadata.getJSONObject("schemas");
 		JSONObject foreignKeys = metadata.getJSONObject("foreign_keys");
 
+		String dataSourceName = DataSourceGenerator.getDataSourceName(dataSource);
+
 		for (String schema : schemas.keySet()) {
 			JSONObject tables = schemas.getJSONObject(schema);
 			for (String table : tables.keySet()) {
@@ -127,7 +129,7 @@ class ClassGenerator {
 				    splitFK(schema, table, fks, fksIn, constraint_name, fkmd);
 				}
 
-				generator.generate(schema, table, columns, pks, fks, fksIn);
+				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName);
 			}
 		}
 
@@ -204,7 +206,7 @@ class ClassGenerator {
 	}
 
 	private void generate(String schema, String table, JSONObject columns, JSONArray pks,
-			List<FK> fks, List<FK> fksIn)
+			List<FK> fks, List<FK> fksIn, String dataSourceName)
 	throws IOException, JSONException {
 		String className = genTableClassName(table);
 		Set<String> pkSet = new HashSet<String>();
@@ -331,7 +333,8 @@ class ClassGenerator {
 		//}
 		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
-		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("+ className +".class).use("+ pkg +".Local.IT);\n\n");
+		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("
+		+ className +".class).use("+ pkg +"."+ dataSourceName +"."+ schema.toUpperCase() +");\n\n");
 
 		// write toString
 		br.write("\t public String toString() {\n");
@@ -365,14 +368,14 @@ class ClassGenerator {
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
 
-			if (!pkSet.contains(column)) {
-				br.write("\tpublic void set"+ getInstanceMethodName(column));
-				br.write("("+ cls +" v) {\n");
-				br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
-				br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
-				br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
-				br.write("\t}\n\n");
-			}
+			//if (!pkSet.contains(column)) {
+			br.write("\tpublic void set"+ getInstanceMethodName(column));
+			br.write("("+ cls +" v) {\n");
+			br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
+			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
+			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+			br.write("\t}\n\n");
+			//}
 		}
 
 		// write getters and setters for FKs

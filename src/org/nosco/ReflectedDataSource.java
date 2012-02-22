@@ -9,21 +9,35 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 public class ReflectedDataSource implements DataSource {
-	
+
 	DataSource ds = null;
 	private String cls;
 	private String method;
-	
+	private String schema = null;
+
 	public ReflectedDataSource(String cls, String method) {
 		this.cls = cls;
 		this.method = method;
 	}
-	
+
+	public ReflectedDataSource(String cls, String method, String schema) {
+		this.cls = cls;
+		this.method = method;
+		this.schema  = schema;
+	}
+
 	private void checkDS() {
 		if (ds != null) return;
 		try {
-			Method m = Class.forName(cls).getMethod(method);
-			ds = (DataSource) m.invoke(null);
+			Method m = null;
+			if (schema == null) {
+				m = Class.forName(cls).getMethod(method);
+				ds = (DataSource) m.invoke(null);
+			} else {
+				m = Class.forName(cls).getMethod(method, String.class);
+				ds = (DataSource) m.invoke(null, schema);
+			}
+			System.err.println("ds: "+ ds);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

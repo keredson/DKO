@@ -1,5 +1,9 @@
 package org.nosco.ant;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,73 +17,124 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tools.ant.Task;
+import org.nosco.Constants;
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
-import org.nosco.util.RSArgsParser;
 
-public class SchemaExtractor {
+public class SchemaExtractor extends Task {
+
+	private static int[] version = {0,2,0};
+
+	private String fn = null;
+	private DB_TYPE dbType = null;
+	private String url = null;
+	private String username = null;
+	private String password = null;
+	private HashSet<String> includeSchemas = null;
+
+	public void setOut(String s) {
+		this.fn = s;
+	}
+
+	public void setDBType(String s) {
+		if ("sqlserver".equalsIgnoreCase(s))
+			this.dbType  = Constants.DB_TYPE.SQLSERVER;
+		if ("mysql".equalsIgnoreCase(s))
+			this.dbType  = Constants.DB_TYPE.MYSQL;
+	}
+
+	public void setURL(String s) {
+		this.url = s;
+		if (url.startsWith("jdbc:sqlserver")) {
+			try {
+				Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void setUsername(String s) {
+		this.username = s;
+	}
+
+	public void setPassword(String s) {
+		this.password = s;
+	}
+
+	public void setPasswordFile(String s) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(s));
+			this.password = br.readLine().trim();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void setSchemas(String s) {
+		this.includeSchemas = new HashSet<String>();
+		for (String schema : s.split(",")) {
+			this.includeSchemas.add(schema);
+		}
+	}
+
+	public void execute() {
+
+		Connection conn;
+		try {
+
+			conn = DriverManager.getConnection (url, username, password);
+			Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
+			Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);
+			Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
+
+			JSONObject json = new JSONObject();
+			json.put("version", new JSONArray(version));
+			json.put("schemas", new JSONObject(schemas));
+			json.put("primary_keys", new JSONObject(primaryKeys));
+			json.put("foreign_keys", new JSONObject(foreignKeys));
+
+			File f = new File(fn);
+			System.err.println("writing: "+ f.getAbsolutePath());
+			FileWriter w = new FileWriter(f);
+			w.write(json.toString(4));
+			w.close();
+
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+	}
 
 	private static Set<String> ignoredSchemas = new HashSet<String>() {{
 		add("information_schema");
 		add("mysql");
 	}};
 
-	private static RSArgsParser argsParser = new RSArgsParser(new HashMap<String,Boolean>() {{
-		put("url", true);
-		put("username", true);
-		put("password", true);
-		put("driver", true);
-		put("filename", true);
-	}}, new HashMap<String,String>() {{
-		put("u", "username");
-		put("p", "password");
-		put("d", "driver");
-		put("f", "filename");
-	}}, new HashMap<String,String>() {{
-	}});
-
-	private static int[] version = {0,2,0};
-
-	/**
-	 * @param args
-	 * @throws SQLException
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws JSONException
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, JSONException, IOException {
-		Map<String, String> params = argsParser.parse(args);
-
-		Driver d = (Driver)Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
-		Connection conn = DriverManager.getConnection (params.get("url"),
-				params.get("username"), params.get("password"));
-
-		Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
-
-		Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);
-
-		Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
-
-		JSONObject json = new JSONObject();
-		json.put("version", new JSONArray(version));
-		json.put("schemas", new JSONObject(schemas));
-		json.put("primary_keys", new JSONObject(primaryKeys));
-		json.put("foreign_keys", new JSONObject(foreignKeys));
-
-		if (params.containsKey("filename")) {
-			FileWriter w = new FileWriter(params.get("filename"));
-			w.write(json.toString(4));
-			w.close();
-		} else {
-			System.out.println(json.toString(4));
-		}
-
-	}
-
-	private static Map<String, Map<String, Map<String, String>>> getSchemas(Connection conn) throws SQLException {
+	private Map<String, Map<String, Map<String, String>>> getSchemas(
+			Connection conn) throws SQLException {
 	    if (conn.getClass().getName().startsWith("com.mysql")) {
 		return getSchemasMySQL(conn);
 	    } else if (conn.getClass().getName().startsWith("com.microsoft")) {
@@ -88,94 +143,111 @@ public class SchemaExtractor {
 	    return null;
 	}
 
-	private static Map<String, Map<String, Map<String, String>>> getSchemasMySQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
+	private Map<String, Map<String, Map<String, String>>> getSchemasMySQL(
+			Connection conn)
+			throws SQLException {
+		Map<String, Map<String, Map<String, String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
 
-	    Statement s = conn.createStatement();
-	    s.execute("select table_schema, table_name, column_name, data_type " +
-		    "from information_schema.columns;");
-	    ResultSet rs = s.getResultSet();
-	    while (rs.next()) {
-		String schema = rs.getString("table_schema");
-		String table = rs.getString("table_name");
-		String column = rs.getString("column_name");
-		String type = rs.getString("data_type");
+		Statement s = conn.createStatement();
+		s.execute("select table_schema, table_name, column_name, data_type "
+				+ "from information_schema.columns;");
+		ResultSet rs = s.getResultSet();
+		while (rs.next()) {
+			String schema = rs.getString("table_schema");
+			String table = rs.getString("table_name");
+			String column = rs.getString("column_name");
+			String type = rs.getString("data_type");
 
-		if (ignoredSchemas.contains(schema)) continue;
+			if (ignoredSchemas.contains(schema))
+				continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema))
+				continue;
 
-		Map<String, Map<String, String>> tables = schemas.get(schema);
-		if (tables==null) {
-		    tables = new HashMap<String, Map<String, String>>();
-		    schemas.put(schema,tables);
-		}
-
-		Map<String, String> columns = tables.get(table);
-		if (columns==null) {
-		    columns = new HashMap<String, String>();
-		    tables.put(table,columns);
-		}
-
-		columns.put(column, type);
-	    }
-	    rs.close();
-	    s.close();
-
-	    return schemas;
-	}
-
-	private static Map<String, Map<String, Map<String, String>>> getSchemasMSSQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
-
-	    Statement s = conn.createStatement();
-	    s.execute("SELECT name FROM sys.databases;");
-	    ResultSet rs = s.getResultSet();
-	    while (rs.next()) {
-		String schema = rs.getString("name");
-		Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();
-		schemas.put(schema,tables);
-	    }
-	    rs.close();
-	    //s.close();
-
-	    for(String schema : schemas.keySet()) {
-		if (ignoredSchemas.contains(schema)) continue;
-		System.err.println(schema);
-		Map<String, Map<String, String>> tables = schemas.get(schema);
-
-		try {
-			s.execute("use \""+ schema +"\";");
-			s.execute("select table_schema, table_name, column_name, data_type " +
-					"from information_schema.columns;");
-			ResultSet rs2 = s.getResultSet();
-			while (rs2.next()) {
-				String table = rs2.getString("table_name");
-				String column = rs2.getString("column_name");
-				String type = rs2.getString("data_type");
-
-				Map<String, String> columns = tables.get(table);
-				if (columns==null) {
-					columns = new HashMap<String, String>();
-					tables.put(table,columns);
-				}
-
-				columns.put(column, type);
+			Map<String, Map<String, String>> tables = schemas.get(schema);
+			if (tables == null) {
+				tables = new HashMap<String, Map<String, String>>();
+				schemas.put(schema, tables);
 			}
-			rs2.close();
-		} catch (SQLException e) {
-		    if (e.getMessage().contains("security context")) {
-			System.err.println(e.getMessage());
-		    } else {
-			throw e;
-		    }
+
+			Map<String, String> columns = tables.get(table);
+			if (columns == null) {
+				columns = new HashMap<String, String>();
+				tables.put(table, columns);
+			}
+
+			columns.put(column, type);
 		}
-	    }
+		rs.close();
+		s.close();
 
-	    s.close();
-
-	    return schemas;
+		return schemas;
 	}
 
-	private static Map<String,Map<String,Set<String>>> getPrimaryKeys(Connection conn) throws SQLException {
+	private Map<String, Map<String, Map<String, String>>> getSchemasMSSQL(Connection conn)
+			throws SQLException {
+		Map<String, Map<String, Map<String, String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
+
+		Statement s = conn.createStatement();
+		s.execute("SELECT name FROM sys.databases;");
+		ResultSet rs = s.getResultSet();
+		while (rs.next()) {
+			String schema = rs.getString("name");
+			if (ignoredSchemas.contains(schema))
+				continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema))
+				continue;
+			Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();
+			schemas.put(schema, tables);
+		}
+		rs.close();
+		// s.close();
+
+		for (String schema : schemas.keySet()) {
+			if (ignoredSchemas.contains(schema))
+				continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema))
+				continue;
+
+			System.err.println("extracting schema for: "+ schema);
+			Map<String, Map<String, String>> tables = schemas.get(schema);
+
+			try {
+				s.execute("use \"" + schema + "\";");
+				s.execute("select table_schema, table_name, column_name, data_type "
+						+ "from information_schema.columns;");
+				ResultSet rs2 = s.getResultSet();
+				while (rs2.next()) {
+					String table = rs2.getString("table_name");
+					if (table.startsWith("syncobj_")) continue;
+					if (table.startsWith("MS") && table.length() > 2
+							&& Character.isLowerCase(table.charAt(2))) continue;
+					String column = rs2.getString("column_name");
+					String type = rs2.getString("data_type");
+
+					Map<String, String> columns = tables.get(table);
+					if (columns == null) {
+						columns = new HashMap<String, String>();
+						tables.put(table, columns);
+					}
+
+					columns.put(column, type);
+				}
+				rs2.close();
+			} catch (SQLException e) {
+				if (e.getMessage().contains("security context")) {
+					System.err.println(e.getMessage());
+				} else {
+					throw e;
+				}
+			}
+		}
+
+		s.close();
+
+		return schemas;
+	}
+
+	private Map<String,Map<String,Set<String>>> getPrimaryKeys(Connection conn) throws SQLException {
 	    if (conn.getClass().getName().startsWith("com.mysql")) {
 		return getPrimaryKeysMySQL(conn);
 	    } else if (conn.getClass().getName().startsWith("com.microsoft")) {
@@ -184,7 +256,7 @@ public class SchemaExtractor {
 	    return null;
 	}
 
-	private static Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(Connection conn) throws SQLException {
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(Connection conn) throws SQLException {
 	    Map<String,Map<String,Map<String,String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
 		Map<String,Map<String,Set<String>>> primaryKeys =
 			new HashMap<String, Map<String, Set<String>>>();
@@ -203,6 +275,8 @@ public class SchemaExtractor {
 
 	    for(String schema2 : schemas.keySet()) {
 			if (ignoredSchemas.contains(schema2)) continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema2))
+				continue;
 	    s.execute("use \""+ schema2 +"\";");
 		s.execute("select a.table_catalog, a.table_name, b.column_name, a.constraint_name " +
 				"from information_schema.table_constraints a, " +
@@ -217,6 +291,8 @@ public class SchemaExtractor {
 			String column = rs.getString("column_name");
 
 			if (ignoredSchemas.contains(schema)) continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema))
+				continue;
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {
@@ -252,7 +328,7 @@ public class SchemaExtractor {
 		return primaryKeys;
 	}
 
-	private static Map<String,Map<String,Set<String>>> getPrimaryKeysMySQL(Connection conn) throws SQLException {
+	private Map<String,Map<String,Set<String>>> getPrimaryKeysMySQL(Connection conn) throws SQLException {
 	    Map<String,Map<String,Map<String,String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
 		Map<String,Map<String,Set<String>>> primaryKeys =
 			new HashMap<String, Map<String, Set<String>>>();
@@ -268,6 +344,8 @@ public class SchemaExtractor {
 			String columnKey = rs.getString("column_key");
 
 			if (ignoredSchemas.contains(schema)) continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema))
+				continue;
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {

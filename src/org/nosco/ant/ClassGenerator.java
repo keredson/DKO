@@ -560,9 +560,7 @@ class ClassGenerator {
 		}
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
-			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
-			br.write("\t\t}\n");
+			br.write("\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\t\tquery.insert();\n");

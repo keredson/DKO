@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
@@ -50,6 +51,8 @@ class ClassGenerator {
 	private String[] stripPrefixes;
 
 	private String[] stripSuffixes;
+
+	private Map<String, String> tableToClassName;
 
 
 	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
@@ -111,6 +114,15 @@ class ClassGenerator {
 
 		for (String schema : schemas.keySet()) {
 			JSONObject tables = schemas.getJSONObject(schema);
+
+			generator.tableToClassName = new HashMap<String,String>();
+
+			for (String table : new TreeSet<String>(tables.keySet())) {
+				// we process these in order to avoid naming conflicts when you have
+				// both plural and singular tables of the same root word
+				generator.genTableClassName(table);
+			}
+
 			for (String table : tables.keySet()) {
 			    // skip these junk mssql tables
 			    if(table.startsWith("syncobj_")) continue;
@@ -635,9 +647,11 @@ class ClassGenerator {
 
 
 	private String genTableClassName(String table) {
+		if (tableToClassName.containsKey(table)) return tableToClassName.get(table);
+		String proposed = table;
 		for (String prefix : stripPrefixes) {
-			if (table.startsWith(prefix)) {
-				table = table.substring(prefix.length());
+			if (proposed.startsWith(prefix)) {
+				proposed = proposed.substring(prefix.length());
 				break;
 			}
 		}
@@ -647,7 +661,12 @@ class ClassGenerator {
 				break;
 			}
 		} //*/
-		return underscoreToCamelCase(dePlural(table), true);
+		String proposed2 = underscoreToCamelCase(dePlural(proposed), true);
+		if (tableToClassName.containsValue(proposed2)) {
+			proposed2 = underscoreToCamelCase(proposed, true);
+		}
+		tableToClassName.put(table, proposed2);
+		return proposed2;
 	}
 
 	private String dePlural(String s) {

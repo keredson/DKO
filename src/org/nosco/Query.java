@@ -14,9 +14,23 @@ import org.nosco.Constants.DIRECTION;
 /**
  * The Query interface is the center of the Nosco API. &nbsp; When you generate your JAR file 
  * (with {@code org.nosco.ant.CodeGenerator}) each object gets its own static {@code Query} instance. &nbsp; 
- * For example, {@code SomeClass} would have:
- * <pre>  {@code public static Query<SomeClass> ALL = [...]}</pre>
- * This will generally be your starting point for all queries expected to return {@code SomeClass} objects. &nbsp; 
+ * For example, if your database
+ * table looked like this:
+ * <table border="1" cellpadding="4" style="margin-left: 2em;">
+ * <tr><th colspan="2">some_class</th></tr>
+ * <tr><th>id</th><th>name</th></tr>
+ * <tr><td>123</td><td>my name</td></tr>
+ * <tr><td>456</td><td>your name</td></tr>
+ * </table>
+ * <p>
+ * The {@code CodeGenerator} would create the following for you (simplified):
+ * <pre>  {@code public class SomeClass extends Table {
+ *     final static Query<SomeClass> ALL = new Query<SomeClass>();
+ *     final static Field<Integer> ID = new Field<Integer>();
+ *     final static Field<String> NAME = new Field<String>();
+ *  }}</pre>
+ * The constant {@code SomeClass.ALL} will generally be your starting point for all queries 
+ * expected to return {@code SomeClass} objects. &nbsp; 
  * For example, if you wanted to iterate over all of them you could do this:
  * <pre>  {@code for (SomeClass x : SomeClass.ALL)
  *     System.out.println(x);}</pre>

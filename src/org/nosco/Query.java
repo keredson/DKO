@@ -11,6 +11,25 @@ import org.nosco.Constants.DIRECTION;
 
 
 
+/**
+ * The Query interface is the center of the Nosco API. &nbsp; When you generate your JAR file 
+ * (with {@code org.nosco.ant.CodeGenerator}) each object gets its own static {@code Query} instance. &nbsp; 
+ * For example, {@code SomeClass} would have:
+ * <pre>  {@code public static Query<SomeClass> ALL = [...]}</pre>
+ * This will generally be your starting point for all queries expected to return {@code SomeClass} objects. &nbsp; 
+ * For example, if you wanted to iterate over all of them you could do this:
+ * <pre>  {@code for (SomeClass x : SomeClass.ALL)
+ *     System.out.println(x);}</pre>
+ * If you only want a specific one (assuming "id" was the primary key for the table) you could do this:
+ * <pre>  {@code SomeClass x = SomeClass.ALL.get(SomeClass.ID.eq(123)))}</pre>
+ * {@code SomeClass.ID} is a {@code Field<Integer>}.  All {@code Field<R>} objects contain a {@code eq(<R> x)}
+ * which returns a {@code Condition} object.  (here passed into {@code Query.get(Condition... c)}) &nbsp; Similarly:
+ * <pre>  {@code for (SomeClass x : SomeClass.ALL.where(SomeClass.NAME.like("%me%")))
+ *     System.out.println(x);}</pre>
+ * would print out all rows named like {@code "me"}.
+ * @author Derek Anderson
+ * @param <T> the type of object this will return
+ */
 public interface Query<T extends Table> extends Iterable<T> {
 
 	/**

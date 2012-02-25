@@ -1,5 +1,10 @@
 package org.nosco;
 
+/**
+ * Defines constants for use in this API.
+ * 
+ * @author Derek Anderson
+ */
 public class Constants {
 	
 	public static enum DIRECTION {

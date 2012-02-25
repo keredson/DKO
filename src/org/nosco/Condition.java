@@ -9,14 +9,32 @@ import java.util.Set;
 
 import org.nosco.util.Misc;
 
+/**
+ * This class represents a SQL conditional statement.  (ie: the contents of the {@code where} clause)
+ * They are almost always created by {@code Field} instances. &nbsp; For example:
+ * {@code SomeClass.ID.eq(123)}
+ * would be a condition equivalent to {@code "someclass.id=123"} in SQL.
+ * <p>
+ * Conditions can be built into any arbitrary tree. &nbsp; For example:
+ * {@code SomeClass.ID.eq(123).or(SomeClass.NAME.like("%me%"))} would generate
+ * {@code "someclass.id=123 or someclass.name like '%me%'"}
+ * 
+ * @author Derek Anderson
+ */
 public abstract class Condition {
 
+	/**
+	 * always true
+	 */
 	public static final Condition TRUE = new Condition() {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
 			sb.append(" 1=1");
 		}
 	};
 
+	/**
+	 * always false
+	 */
 	public static final Condition FALSE = new Condition() {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
 			sb.append(" 1=0");
@@ -25,6 +43,9 @@ public abstract class Condition {
 
 	List bindings = null;
 
+	/**
+	 * Internal function.  Do not use.  Subject to change.
+	 */
 	String getSQL(Map<String,Set<String>> tableNameMap) {
 		StringBuffer sb = new StringBuffer();
 		bindings = new ArrayList();
@@ -32,22 +53,42 @@ public abstract class Condition {
 		return sb.toString();
 	}
 
+	/**
+	 * Internal function.  Do not use.  Subject to change.
+	 */
 	List getSQLBindings() {
 		return bindings;
 	}
 
+	/**
+	 * Internal function.  Do not use.  Subject to change.
+	 */
 	protected abstract void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap);
 
+	/**
+	 * Creates a new condition negating the current condition.
+	 * @return A new condition negating the current condition
+	 */
 	public Condition not() {
 		return new Not(this);
 	}
 
+	/**
+	 * Creates a condition that represents the logical AND between this condition and the given conditions.
+	 * @param conditions
+	 * @return A new condition ANDing this with the given conditions
+	 */
 	public Condition and(Condition... conditions) {
 		AndCondition c = new AndCondition(conditions);
 		c.conditions.add(this);
 		return c;
 	}
 
+	/**
+	 * Creates a condition that represents the logical OR between this condition and the given conditions.
+	 * @param conditions
+	 * @return A new condition ORing this with the given conditions
+	 */
 	public Condition or(Condition... conditions) {
 		OrCondition c = new OrCondition(conditions);
 		c.conditions.add(this);
@@ -313,6 +354,9 @@ public abstract class Condition {
 		}
 	}
 
+	/**
+	 * Internal function.  Do not use.  Subject to change.
+	 */
 	public static String derefField(Field<?> field, Map<String,Set<String>> tableNameMap) {
 		if (field.isBound()) return field.toString();
 		try {

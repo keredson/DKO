@@ -6,11 +6,25 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+/**
+ * This class wraps other {@code javax.sql.DataSource} instances.  It usually passes 
+ * through calls to the primary, but if {@code getMirroredConnection()} 
+ * is called a random mirror is used instead.
+ * 
+ * @author Derek Anderson
+ */
 public class MirroredDataSource implements DataSource {
 	
 	private DataSource primary;
 	private DataSource[] mirrors;
 
+	/**
+     * This class usually passes 
+     * through calls to the primary, but if {@code getMirroredConnection()} 
+     * is called a random mirror is used instead.
+	 * @param primary
+	 * @param mirrors
+	 */
 	public MirroredDataSource(DataSource primary, DataSource... mirrors) {
 		this.primary = primary;
 		if (mirrors == null) this.mirrors = new DataSource[0];
@@ -55,6 +69,13 @@ public class MirroredDataSource implements DataSource {
 		return primary.getConnection();
 	}
 
+	/**
+	 * Returns a connection from a randomly selected mirror. &nbsp;
+	 * Feel free to override this method to implement other 
+	 * load balancing stratigies in your own code.
+	 * @return
+	 * @throws SQLException
+	 */
 	public Connection getMirroredConnection() throws SQLException {
 		// for now we randomly select the mirror
 		// TODO: implement other strategies

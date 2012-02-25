@@ -6,6 +6,40 @@ import org.nosco.Condition.Binary;
 import org.nosco.Condition.Ternary;
 
 
+/**
+ * This class represents a column in a table. &nbsp; It it typed to the type of the column in the database. &nbsp;
+ * They are generally found as auto-generated static fields in the classes representing tables, and 
+ * primarily used to create {@code Condition}s for {@code Query} objects. &nbsp; For example, if your database
+ * table looked like this:
+ * <table border="1" cellpadding="4" style="margin-left: 2em;">
+ * <tr><th colspan="2">some_class</th></tr>
+ * <tr><th>id</th><th>name</th></tr>
+ * <tr><td>123</td><td>my name</td></tr>
+ * <tr><td>456</td><td>your name</td></tr>
+ * </table>
+ * <p>
+ * The generated class would look like this (simplified):
+ * 
+ * <pre>  {@code public class SomeClass extends Table {
+ *     static Query<SomeClass> ALL = new Query<SomeClass>();
+ *     static Field<Integer> ID = new Field<Integer>();
+ *     static Field<String> NAME = new Field<String>();
+ *  }}</pre>
+ *  
+ *  You could then write code like this:
+ *  <pre>  {@code Condition c = SomeClass.ID.eq(123);
+ *  for (SomeClass x : SomeClass.ALL.where(c))
+ *    System.out.println(x);}
+ *  </pre>
+ *  
+ *  Note: &nbsp; I wrote these methods to all be short in length.  "eq" instead of "equals". &nbsp;
+ *  This is because I feel the common use case will be to chain multiple of these together. &nbsp;
+ *  Java is already quite verbose and I thought this API would be less useful if it almost always
+ *  created really long lines of Java code.  
+ * 
+ * @author Derek Anderson
+ * @param <T> the field type
+ */
 public class Field<T> implements Cloneable {
 
 	@Override
@@ -28,18 +62,38 @@ public class Field<T> implements Cloneable {
 		TYPE = type;
 	}
 
+	/**
+	 * Creates a condition representing this field equal to the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
 	public Condition eq(T v) {
 		return new Binary(this, "=", v);
 	}
 
+	/**
+	 * Creates a condition representing this field not equal to the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
 	public Condition neq(T v) {
 		return new Binary(this, "!=", v);
 	}
 
+	/**
+	 * Creates a condition representing this field equal to some other field.
+	 * @param v
+	 * @return
+	 */
 	public Condition eq(Field<T> v) {
 		return new Binary(this, "=", v);
 	}
 
+	/**
+	 * Creates a condition representing this field not equal to some other field.
+	 * @param v
+	 * @return
+	 */
 	public Condition neq(Field<T> v) {
 		return new Binary(this, "!=", v);
 	}
@@ -56,50 +110,111 @@ public class Field<T> implements Cloneable {
 		return new Binary(this, "!=", v);
 	} //*/
 
+	/**
+	 * Creates a condition representing this field "like" the literal value of the parameter.
+	 * Interpretation varies by database.
+	 * @param v
+	 * @return
+	 */
 	public Condition like(T v) {
 		return new Binary(this, " like ", v);
 	}
 
+	/**
+	 * Creates a condition representing this field less than the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
 	public Condition lt(T v) {
 		return new Binary(this, "<", v);
 	}
 
+	/**
+	 * Creates a condition representing this field less than or equal to the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
 	public Condition lte(T v) {
 		return new Binary(this, "<=", v);
 	}
 
+	/**
+	 * Creates a condition representing this field greater than the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
 	public Condition gt(T v) {
 		return new Binary(this, ">", v);
 	}
 
+	/**
+	 * Creates a condition representing this field greater than or equal to the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
 	public Condition gte(T v) {
 		return new Binary(this, ">=", v);
 	}
 
+	/**
+	 * Creates a condition representing this field equal to null.
+	 * @return
+	 */
 	public Condition isNull() {
 		return new Condition.Unary(this, " is null");
 	}
 
+	/**
+	 * Creates a condition representing this field not equal to null.
+	 * @return
+	 */
 	public Condition isNotNull() {
 		return new Condition.Unary(this, " is not null");
 	}
 
+	/**
+	 * Creates a condition representing this field between the literal values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
 	public Condition between(T v1, T v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
+	/**
+	 * Creates a condition representing this field being a member of the given set.
+	 * @param set
+	 * @return
+	 */
 	public Condition in(T... set) {
 		return new Condition.In(this, " in ", set);
 	}
 
+	/**
+	 * Creates a condition representing this field being a member of the given set.
+	 * @param set
+	 * @return
+	 */
 	public Condition in(Collection<T> set) {
 		return new Condition.In(this, " in ", set);
 	}
 
+	/**
+	 * Creates a condition representing this field being a member of the given sub-query. &nbsp;
+	 * Note that the given query MUST return only one field (using the {@code Query.onlyFields()})
+	 * method), otherwise this will throw a {@code SQLException} at runtime.
+	 * @param set
+	 * @return
+	 */
 	public Condition in(Query q) {
 		return new Binary(this, " in ", q);
 	}
 
+	/**
+	 * Represents a foreign key constraint.
+	 * @author Derek Anderson
+	 */
 	public static class FK {
 
 		public final int INDEX;
@@ -138,6 +253,10 @@ public class Field<T> implements Cloneable {
 
 	}
 
+	/**
+	 * Represents a primary key constraint.
+	 * @author Derek Anderson
+	 */
 	public static class PK {
 
 		@SuppressWarnings("rawtypes")

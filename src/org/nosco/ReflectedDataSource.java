@@ -8,6 +8,13 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+/**
+ * This class will, given a class name and a method, call that method to get an
+ * actual {@code javax.sql.DataSource}. &nbsp; It is then cached, and all other calls
+ * are passed through.
+ * 
+ * @author Derek Anderson
+ */
 public class ReflectedDataSource implements DataSource {
 
 	DataSource ds = null;

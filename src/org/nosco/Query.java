@@ -284,7 +284,16 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Double sum(Field<? extends Number> f) throws SQLException;
 
-	//public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException;
+	/**
+	 * Evaluates your query into a map, keyed by whatever field you specify.
+	 * If more than one instance has the same key value, the last instance
+	 * read will be what the map contains.  (use orderBy() to control ordering)<br>
+	 * Note: this reads your entire query into memory.
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException;
 
 	/**
 	 * Counts the rows grouped by a given field.

@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.nosco.Field;
 import org.nosco.Table;
 import org.nosco.Table.TableAlias;
 import org.nosco.json.JSONArray;
@@ -344,6 +345,15 @@ class ClassGenerator {
 			br.write("FK_" + genFKName(fk.columns.keySet(), referencedTable) + ",");
 		}
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
+
+		// write the generic get(Field) method
+		br.write("\tpublic <S> S get(Field<S> field) {\n");
+		for (String column : columns.keySet()) {
+			br.write("\t\tif (field=="+ getFieldName(column) +") ");
+			br.write("return (S) "+ getInstanceFieldName(column) +";\n");
+		}
+		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ field);\n");
+		br.write("\t}\n\n");
 
 		//br.write("\tpublic Field[] GET_PRIMARY_KEY_FIELDS() {\n\t\tField[] fields = {");
 		//for (int i=0; i<pks.length(); ++i) {

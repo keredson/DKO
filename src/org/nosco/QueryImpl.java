@@ -860,13 +860,13 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return q;
 	}
 
-	/*	@Override
+	@Override
 	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException {
 		Map<S, T> ret = new LinkedHashMap<S, T>();
 		for (T t : this) {
-			//t.
+			ret.put(t.get(byField), t);
 		}
-		return null;
-	} //*/
+		return ret;
+	}
 
 }

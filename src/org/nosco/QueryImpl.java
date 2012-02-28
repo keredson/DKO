@@ -869,4 +869,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return ret;
 	}
 
+	@Override
+	public Query<T> toMemory() {
+		return new InMemoryQuery<T>(this);
+	}
+
 }

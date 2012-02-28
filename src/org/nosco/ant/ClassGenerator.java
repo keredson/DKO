@@ -346,13 +346,22 @@ class ClassGenerator {
 		}
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
 
-		// write the generic get(Field) method
-		br.write("\tpublic <S> S get(Field<S> field) {\n");
+		// write the generic get(field) method
+		br.write("\tpublic <S> S get(Field<S> _field) {\n");
 		for (String column : columns.keySet()) {
-			br.write("\t\tif (field=="+ getFieldName(column) +") ");
+			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
 			br.write("return (S) "+ getInstanceFieldName(column) +";\n");
 		}
-		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ field);\n");
+		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
+		br.write("\t}\n\n");
+
+		// write the generic set(field, value) method
+		br.write("\tpublic <S> void set(Field<S> _field, S _value) {\n");
+		for (String column : columns.keySet()) {
+			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
+			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(columns.getString(column)).getName() +") _value;\n");
+		}
+		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
 
 		//br.write("\tpublic Field[] GET_PRIMARY_KEY_FIELDS() {\n\t\tField[] fields = {");

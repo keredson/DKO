@@ -79,6 +79,15 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 	public abstract <S> S get(Field<S> field);
 
 	/**
+	 * Sets the value of this instance that corresponds to the given field.
+	 * Throws an IllegalArgumentException if the field isn't part of this instance.
+	 * @param field
+	 * @param value
+	 * @return
+	 */
+	public abstract <S> void set(Field<S> field, S value);
+
+	/**
 	 * Creates and executes an insert statement for this object
 	 * (irregardless of if it's already in the database)
 	 * @return success

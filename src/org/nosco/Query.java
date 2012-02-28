@@ -347,4 +347,11 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Query<T> cross(Class<? extends Table> t);
 
+	/**
+	 * Evaluates the given query into memory and returns to you a new query backed by
+	 * this in-memory store.
+	 * @return
+	 */
+	public Query<T> toMemory();
+
 }

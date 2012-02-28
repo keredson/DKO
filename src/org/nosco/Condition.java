@@ -31,6 +31,10 @@ public abstract class Condition {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(" 1=1");
 		}
+		@Override
+		boolean matches(Table t) {
+			return true;
+		}
 	};
 
 	/**
@@ -39,6 +43,10 @@ public abstract class Condition {
 	public static final Condition FALSE = new Condition() {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(" 1=0");
+		}
+		@Override
+		boolean matches(Table t) {
+			return false;
 		}
 	};
 
@@ -60,6 +68,11 @@ public abstract class Condition {
 	List getSQLBindings() {
 		return bindings;
 	}
+
+	/**
+	 * Internal function.  Do not use.  Subject to change.
+	 */
+	abstract boolean matches(Table t);
 
 	/**
 	 * Internal function.  Do not use.  Subject to change.
@@ -125,6 +138,14 @@ public abstract class Condition {
 			sb.append(")");
 		}
 
+		@Override
+		boolean matches(Table t) {
+			for (Condition c : conditions) {
+				if (!c.matches(t)) return false;
+			}
+			return true;
+		}
+
 	}
 
 	private static class OrCondition extends Condition {
@@ -156,6 +177,14 @@ public abstract class Condition {
 			sb.append(")");
 		}
 
+		@Override
+		boolean matches(Table t) {
+			for (Condition c : conditions) {
+				if (c.matches(t)) return true;
+			}
+			return false;
+		}
+
 	}
 
 	static class Not extends Condition {
@@ -171,6 +200,11 @@ public abstract class Condition {
 			sb.append(" not (");
 			condition.getSQL(sb, bindings, tableNameMap, tableInfos);
 			sb.append(")");
+		}
+
+		@Override
+		boolean matches(Table t) {
+			return !condition.matches(t);
 		}
 
 	}
@@ -203,6 +237,24 @@ public abstract class Condition {
 			bindings.add(v2);
 		}
 
+		@Override
+		boolean matches(Table t) {
+			if (!cmp1.trim().equalsIgnoreCase("between")) {
+				throw new IllegalStateException("unknown comparision function '"+ cmp1
+						+"' for in-memory conditional check");
+			}
+			if (!cmp2.trim().equalsIgnoreCase("and")) {
+				throw new IllegalStateException("unknown comparision function '"+ cmp2
+						+"' for in-memory conditional check");
+			}
+			Comparable o1 = (Comparable) v1;
+			Comparable o2 = (Comparable) v2;
+			Comparable v = (Comparable) t.get(field);
+			if (o1 != null && o1.compareTo(v) > 0) return false;
+			if (o2 != null && o2.compareTo(v) <= 0) return false;
+			return true;
+		}
+
 	}
 
 	static class Unary extends Condition {
@@ -220,6 +272,19 @@ public abstract class Condition {
 			sb.append(' ');
 			sb.append(derefField(field, tableInfos));
 			sb.append(cmp);
+		}
+
+		@Override
+		boolean matches(Table t) {
+			Object v = t.get(field);
+			if (" is null".equals(this.cmp)) {
+				return t == null;
+			}
+			if (" is not null".equals(this.cmp)) {
+				return t != null;
+			}
+			throw new IllegalStateException("unknown comparision function '"+ cmp
+					+"' for in-memory conditional check");
 		}
 
 	}
@@ -304,6 +369,19 @@ public abstract class Condition {
 			}
 		}
 
+		@Override
+		boolean matches(Table t) {
+			if (v!=null) {
+				return v.equals(t.get(field));
+			} else if (field2!=null) {
+				Object a = t.get(field);
+				Object b = t.get(field2);
+				return a == b || (a != null && a.equals(b));
+			} else {
+				return t.get(field) == null;
+			}
+		}
+
 	}
 
 	static class In extends Condition {
@@ -353,6 +431,30 @@ public abstract class Condition {
 			}
 			sb.append(')');
 		}
+
+		@Override
+		boolean matches(Table t) {
+			boolean rev;
+			if (cmp.trim().equalsIgnoreCase("in")) rev = false;
+			else if (cmp.trim().equalsIgnoreCase("not in")) rev = true;
+			else throw new IllegalStateException("unknown comparision function '"+ cmp
+					+"' for in-memory conditional check");
+			if (set != null && set.length > 0) {
+				for (int i=0; i<set.length; ++i) {
+					if (eq(t.get(field), set[i])) return rev ? false : true;
+				}
+				return rev ? true : false;
+			} else if (set2 != null && set2.size() > 0) {
+				boolean v = set2.contains(t.get(field));
+				return rev ? !v : v;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	private static boolean eq(Object a, Object b) {
+		return a == b || (a != null && a.equals(b));
 	}
 
 	/**

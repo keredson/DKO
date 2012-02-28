@@ -170,7 +170,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public int count() throws SQLException {
 		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		log(sql);
+		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
@@ -305,7 +305,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 					"is not yet supported");
 			Table t = tables.get(0);
 			String sql = "delete from "+ t.SCHEMA_NAME() + "." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
-			log(sql);
+			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			setBindings(ps);
 			ps.execute();
@@ -319,7 +319,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 		} else {
 			String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-			log(sql);
+			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			setBindings(ps);
 			ps.execute();
@@ -331,10 +331,6 @@ class QueryImpl<T extends Table> implements Query<T> {
 			}
 			return count;
 		}
-	}
-
-	void log(String sql) {
-		System.err.println("==> "+ sql +"");
 	}
 
 	@Override
@@ -722,10 +718,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
 			throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, tableNameMap, tableInfos)
-				+", sum("+ Condition.derefField(sumField, tableNameMap, tableInfos) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, tableNameMap, tableInfos);
-		log(sql);
+		sql = "select "+ Condition.derefField(byField, tableInfos)
+				+", sum("+ Condition.derefField(sumField, tableInfos) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, tableInfos);
+		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
@@ -751,8 +747,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public Double sum(Field<? extends Number> sumField) throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select sum("+ Condition.derefField(sumField, tableNameMap, tableInfos) +") from "+ sql;
-		log(sql);
+		sql = "select sum("+ Condition.derefField(sumField, tableInfos) +") from "+ sql;
+		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
@@ -772,10 +768,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, tableNameMap, tableInfos)
-				+", count("+ Condition.derefField(byField, tableNameMap, tableInfos) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, tableNameMap, tableInfos);
-		log(sql);
+		sql = "select "+ Condition.derefField(byField, tableInfos)
+				+", count("+ Condition.derefField(byField, tableInfos) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, tableInfos);
+		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);

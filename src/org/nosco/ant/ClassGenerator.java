@@ -604,12 +604,13 @@ class ClassGenerator {
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
 				+"."+ schema +"."+ className +"CB\").getMethod(\"postUpdate\", "
 				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
-		br.write("\t\t\n");
-		br.write("\t\t\n");
-
-		//callbackPackage;
 		br.write("\t}\n");
 
+		// write the alias function
+		br.write("\t/**\n");
+		br.write("\t * Returns a table alias.  This is used when specifying manual joins\n");
+		br.write("\t * to reference later using Field.from(alias) in where() conditions.\n");
+		br.write("\t */\n");
 		br.write("\tpublic static TableAlias as(String alias) {\n");
 		br.write("\t\treturn new TableAlias("+ className +".class, alias);\n");
 		br.write("\t}\n");

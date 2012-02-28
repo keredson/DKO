@@ -303,18 +303,36 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> use(DataSource ds);
 
 	/**
+	 * Performs a cross join.  Note that this can result in an extraordinary number
+	 * of rows returned if not paired with additional where() clauses.
+	 * Note you will not be able to access the data in the second table (unless there is
+	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
+	 * are you useing this instead of with()?)
+	 * Use with care.
 	 * @param t
 	 * @return
 	 */
 	public Query<T> cross(Table t);
 
 	/**
+	 * Performs a cross join.  Note that this can result in an extraordinary number
+	 * of rows returned if not paired with additional where() clauses.
+	 * Note you will not be able to access the data in the second table (unless there is
+	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
+	 * are you useing this instead of with()?)
+	 * Use with care.
 	 * @param t
 	 * @return
 	 */
 	public Query<T> cross(TableAlias t);
 
 	/**
+	 * Performs a cross join.  Note that this can result in an extraordinary number
+	 * of rows returned if not paired with additional where() clauses.
+	 * Note you will not be able to access the data in the second table (unless there is
+	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
+	 * are you useing this instead of with()?)
+	 * Use with care.
 	 * @param t
 	 * @return
 	 */

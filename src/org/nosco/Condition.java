@@ -194,7 +194,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
-			sb.append(derefField(field, tableNameMap, tableInfos));
+			sb.append(derefField(field, tableInfos));
 			sb.append(cmp1);
 			sb.append("?");
 			bindings.add(v1);
@@ -218,7 +218,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
-			sb.append(derefField(field, tableNameMap, tableInfos));
+			sb.append(derefField(field, tableInfos));
 			sb.append(cmp);
 		}
 
@@ -259,7 +259,7 @@ public abstract class Condition {
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
 			if (v!=null) {
-				sb.append(derefField(field, tableNameMap, tableInfos));
+				sb.append(derefField(field, tableInfos));
 				sb.append(cmp);
 				sb.append("?");
 				bindings.add(v);
@@ -272,9 +272,9 @@ public abstract class Condition {
 						if (tableNames.size() > 2) {
 							throw new RuntimeException("field ambigious");
 						} else if (tableNames.size() < 2) {
-							sb.append(derefField(field, tableNameMap, tableInfos));
+							sb.append(derefField(field, tableInfos));
 							sb.append(cmp);
-							sb.append(derefField(field2, tableNameMap, tableInfos));
+							sb.append(derefField(field2, tableInfos));
 						} else {
 							Iterator<String> i = tableNames.iterator();
 							sb.append(i.next() + "."+ field);
@@ -287,19 +287,19 @@ public abstract class Condition {
 						e.printStackTrace();
 					}
 				} else {
-					sb.append(derefField(field, tableNameMap, tableInfos));
+					sb.append(derefField(field, tableInfos));
 					sb.append(cmp);
-					sb.append(derefField(field2, tableNameMap, tableInfos));
+					sb.append(derefField(field2, tableInfos));
 				}
 			} else if (s!=null) {
-				sb.append(derefField(field, tableNameMap, tableInfos));
+				sb.append(derefField(field, tableInfos));
 				sb.append(cmp);
 				sb.append('(');
 				sb.append(s.getSQL(true));
 				bindings.addAll(s.getSQLBindings());
 				sb.append(')');
 			} else {
-				sb.append(derefField(field, tableNameMap, tableInfos));
+				sb.append(derefField(field, tableInfos));
 				sb.append(" is null");
 			}
 		}
@@ -330,7 +330,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
-			sb.append(derefField(field, tableNameMap, tableInfos));
+			sb.append(derefField(field, tableInfos));
 			sb.append(cmp);
 			sb.append('(');
 			if (set != null && set.length > 0) {
@@ -358,7 +358,7 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	public static String derefField(Field<?> field, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+	public static String derefField(Field<?> field, List<TableInfo> tableInfos) {
 		if (field.isBound()) return field.toString();
 		List<String> selectedTables = new ArrayList<String>();
 		List<TableInfo> unboundTables = new ArrayList<TableInfo>();

@@ -171,8 +171,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			}
 			Object[] objects = new Object[query.tableInfos.size()];
 			for (int i=0; i<query.tableInfos.size(); ++i) {
-				QueryImpl<T>.TableInfo ti = query.tableInfos.get(i);
+				QueryImpl.TableInfo ti = query.tableInfos.get(i);
 				if (ti.path == null) {
+					if (next != null) continue;
+					//System.out.println(ti.start +" "+ ti.end);
 					next = (T) constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
 					next.__NOSCO_GOT_FROM_DATABASE= true;
 					objects[i] = next;
@@ -183,9 +185,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				}
 			}
 			for (int i=0; i<query.tableInfos.size(); ++i) {
-				QueryImpl<T>.TableInfo ti = query.tableInfos.get(i);
+				QueryImpl.TableInfo ti = query.tableInfos.get(i);
 				for (int j=i+1; j<query.tableInfos.size(); ++j) {
-					QueryImpl<T>.TableInfo tj = query.tableInfos.get(j);
+					QueryImpl.TableInfo tj = query.tableInfos.get(j);
+					if (tj.path == null) continue;
 					if(startsWith(tj.path, ti.path)) {
 						FK fk = tj.path[tj.path.length-1];
 						if (!fk.referencing.equals(objects[i].getClass())) continue;

@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.nosco.Table;
+import org.nosco.Table.TableAlias;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -244,6 +246,7 @@ class ClassGenerator {
 		br.write("import org.nosco.Query;\n");
 		br.write("import org.nosco.QueryFactory;\n");
 		br.write("import org.nosco.Table;\n");
+		br.write("import org.nosco.Table.TableAlias;\n");
 		br.write("\n");
 		br.write("public class "+ className +" extends Table {\n\n");
 
@@ -606,6 +609,11 @@ class ClassGenerator {
 
 		//callbackPackage;
 		br.write("\t}\n");
+
+		br.write("\tpublic static TableAlias as(String alias) {\n");
+		br.write("\t\treturn new TableAlias("+ className +".class, alias);\n");
+		br.write("\t}\n");
+
 
 		// end class
 		br.write("}\n");

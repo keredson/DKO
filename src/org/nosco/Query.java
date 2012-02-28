@@ -8,12 +8,13 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.nosco.Constants.DIRECTION;
+import org.nosco.Table.TableAlias;
 
 
 
 /**
- * The Query interface is the center of the Nosco API. &nbsp; When you generate your JAR file 
- * (with {@code org.nosco.ant.CodeGenerator}) each object gets its own static {@code Query} instance. &nbsp; 
+ * The Query interface is the center of the Nosco API. &nbsp; When you generate your JAR file
+ * (with {@code org.nosco.ant.CodeGenerator}) each object gets its own static {@code Query} instance. &nbsp;
  * For example, if your database
  * table looked like this:
  * <table border="1" cellpadding="4" style="margin-left: 2em;">
@@ -29,8 +30,8 @@ import org.nosco.Constants.DIRECTION;
  *     final static Field<Integer> ID = new Field<Integer>();
  *     final static Field<String> NAME = new Field<String>();
  *  }}</pre>
- * The constant {@code SomeClass.ALL} will generally be your starting point for all queries 
- * expected to return {@code SomeClass} objects. &nbsp; 
+ * The constant {@code SomeClass.ALL} will generally be your starting point for all queries
+ * expected to return {@code SomeClass} objects. &nbsp;
  * For example, if you wanted to iterate over all of them you could do this:
  * <pre>  {@code for (SomeClass x : SomeClass.ALL)
  *     System.out.println(x);}</pre>
@@ -47,8 +48,8 @@ import org.nosco.Constants.DIRECTION;
 public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
-	 * Adds conditions to the query.  Usually conditions are created off the fields of tables.  
-	 * Example: SomeClass.SOME_FIELD.eq("abc") would return a Condition.  
+	 * Adds conditions to the query.  Usually conditions are created off the fields of tables.
+	 * Example: SomeClass.SOME_FIELD.eq("abc") would return a Condition.
 	 * So for a full query: SomeClass.ALL.where(SomeClass.SOME_FIELD.eq("abc"))
 	 * Multiple conditions are ANDed together.
 	 * @param conditions
@@ -128,7 +129,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Don't include the following fields in the select statement.
-	 * Note: The returned object will still contain a .getField() method.  If it is called another 
+	 * Note: The returned object will still contain a .getField() method.  If it is called another
 	 * SQL call will be made to fetch this value.  (assuming the PK was not also excluded with this call)
 	 * @param fields
 	 * @return
@@ -137,7 +138,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Only include the following fields in the select statement.
-	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not in this list, another 
+	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not in this list, another
 	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
 	 * @param fields
 	 * @return
@@ -194,21 +195,21 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Statistics stats(Field<?>... field);
 
 	/**
-	 * Returns an Iterable for this query.  Not usually necessary as the Query itself is Iterable, but useful if you want to 
+	 * Returns an Iterable for this query.  Not usually necessary as the Query itself is Iterable, but useful if you want to
 	 * prevent further filtering or updating for some reason.
 	 * @return
 	 */
 	public Iterable<T> all();
 
 	/**
-	 * Returns an always-empty Iterable.  I'm not sure this has any practical use, 
+	 * Returns an always-empty Iterable.  I'm not sure this has any practical use,
 	 * but it seemed to be a good corollary to: .all()
 	 * @return
 	 */
 	public Iterable<T> none();
 
 	/**
-	 * Same as .orderBy(fields), but allows you to specify the direction. 
+	 * Same as .orderBy(fields), but allows you to specify the direction.
 	 * Note: The direction is applied to all the fields.  to specify different
 	 * directions to different fields, chain the calls like this:
 	 * SomeClass.ALL.orderBy(DESCENDING, SomeClass.SOME_FIELD).orderBy(ASCENDING, SomeClass.SOME_OTHER_FIELD)
@@ -235,7 +236,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Inserts the values set by .set(key,value).
-	 * Note: May be easier to create the object with new SomeClass(), 
+	 * Note: May be easier to create the object with new SomeClass(),
 	 * then call its setter methods and then .insert() in it.
 	 * @return
 	 * @throws SQLException
@@ -243,7 +244,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Object insert() throws SQLException;
 
 	/**
-	 * Returns the only object returned by this query.  If multiple rows are returned, 
+	 * Returns the only object returned by this query.  If multiple rows are returned,
 	 * throws a RuntimeException.
 	 * @return
 	 */
@@ -251,8 +252,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Runs the query, populating a list with all the values returned.
-	 * Useful if you need non-linear access to your objects, but take note all 
-	 * objects must be able to fit into memory at the same time. 
+	 * Useful if you need non-linear access to your objects, but take note all
+	 * objects must be able to fit into memory at the same time.
 	 * @return
 	 */
 	public List<T> asList();
@@ -300,5 +301,23 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> use(DataSource ds);
+
+	/**
+	 * @param t
+	 * @return
+	 */
+	public Query<T> cross(Table t);
+
+	/**
+	 * @param t
+	 * @return
+	 */
+	public Query<T> cross(TableAlias t);
+
+	/**
+	 * @param t
+	 * @return
+	 */
+	public Query<T> cross(Class<? extends Table> t);
 
 }

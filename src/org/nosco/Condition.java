@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nosco.QueryImpl.TableInfo;
 import org.nosco.util.Misc;
 
 /**
@@ -18,7 +19,7 @@ import org.nosco.util.Misc;
  * Conditions can be built into any arbitrary tree. &nbsp; For example:
  * {@code SomeClass.ID.eq(123).or(SomeClass.NAME.like("%me%"))} would generate
  * {@code "someclass.id=123 or someclass.name like '%me%'"}
- * 
+ *
  * @author Derek Anderson
  */
 public abstract class Condition {
@@ -27,7 +28,7 @@ public abstract class Condition {
 	 * always true
 	 */
 	public static final Condition TRUE = new Condition() {
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(" 1=1");
 		}
 	};
@@ -36,7 +37,7 @@ public abstract class Condition {
 	 * always false
 	 */
 	public static final Condition FALSE = new Condition() {
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(" 1=0");
 		}
 	};
@@ -46,10 +47,10 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	String getSQL(Map<String,Set<String>> tableNameMap) {
+	String getSQL(Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 		StringBuffer sb = new StringBuffer();
 		bindings = new ArrayList();
-		getSQL(sb, bindings, tableNameMap);
+		getSQL(sb, bindings, tableNameMap, tableInfos);
 		return sb.toString();
 	}
 
@@ -63,7 +64,7 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	protected abstract void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap);
+	protected abstract void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos);
 
 	/**
 	 * Creates a new condition negating the current condition.
@@ -112,11 +113,11 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
 				Condition condition = conditions.get(i);
-				condition.getSQL(sb, bindings, tableNameMap);
+				condition.getSQL(sb, bindings, tableNameMap, tableInfos);
 				if (i<conditions.size()-1) {
 					sb.append(" and ");
 				}
@@ -143,11 +144,11 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
 				Condition condition = conditions.get(i);
-				condition.getSQL(sb, bindings, tableNameMap);
+				condition.getSQL(sb, bindings, tableNameMap, tableInfos);
 				if (i<conditions.size()-1) {
 					sb.append(" or ");
 				}
@@ -166,9 +167,9 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(" not (");
-			condition.getSQL(sb, bindings, tableNameMap);
+			condition.getSQL(sb, bindings, tableNameMap, tableInfos);
 			sb.append(")");
 		}
 
@@ -191,9 +192,9 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
-			sb.append(derefField(field, tableNameMap));
+			sb.append(derefField(field, tableNameMap, tableInfos));
 			sb.append(cmp1);
 			sb.append("?");
 			bindings.add(v1);
@@ -215,9 +216,9 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
-			sb.append(derefField(field, tableNameMap));
+			sb.append(derefField(field, tableNameMap, tableInfos));
 			sb.append(cmp);
 		}
 
@@ -255,10 +256,10 @@ public abstract class Condition {
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
 			if (v!=null) {
-				sb.append(derefField(field, tableNameMap));
+				sb.append(derefField(field, tableNameMap, tableInfos));
 				sb.append(cmp);
 				sb.append("?");
 				bindings.add(v);
@@ -271,9 +272,9 @@ public abstract class Condition {
 						if (tableNames.size() > 2) {
 							throw new RuntimeException("field ambigious");
 						} else if (tableNames.size() < 2) {
-							sb.append(derefField(field, tableNameMap));
+							sb.append(derefField(field, tableNameMap, tableInfos));
 							sb.append(cmp);
-							sb.append(derefField(field2, tableNameMap));
+							sb.append(derefField(field2, tableNameMap, tableInfos));
 						} else {
 							Iterator<String> i = tableNames.iterator();
 							sb.append(i.next() + "."+ field);
@@ -286,19 +287,19 @@ public abstract class Condition {
 						e.printStackTrace();
 					}
 				} else {
-					sb.append(derefField(field, tableNameMap));
+					sb.append(derefField(field, tableNameMap, tableInfos));
 					sb.append(cmp);
-					sb.append(derefField(field2, tableNameMap));
+					sb.append(derefField(field2, tableNameMap, tableInfos));
 				}
 			} else if (s!=null) {
-				sb.append(derefField(field, tableNameMap));
+				sb.append(derefField(field, tableNameMap, tableInfos));
 				sb.append(cmp);
 				sb.append('(');
 				sb.append(s.getSQL(true));
 				bindings.addAll(s.getSQLBindings());
 				sb.append(')');
 			} else {
-				sb.append(derefField(field, tableNameMap));
+				sb.append(derefField(field, tableNameMap, tableInfos));
 				sb.append(" is null");
 			}
 		}
@@ -327,9 +328,9 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap) {
+		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 			sb.append(' ');
-			sb.append(derefField(field, tableNameMap));
+			sb.append(derefField(field, tableNameMap, tableInfos));
 			sb.append(cmp);
 			sb.append('(');
 			if (set != null && set.length > 0) {
@@ -357,29 +358,30 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	public static String derefField(Field<?> field, Map<String,Set<String>> tableNameMap) {
+	public static String derefField(Field<?> field, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
 		if (field.isBound()) return field.toString();
-		try {
-			Table table = field.TABLE.newInstance();
-			String id = table.SCHEMA_NAME() +"."+ table.TABLE_NAME();
-			Set<String> tableNames = tableNameMap.get(id);
-			if (tableNames == null || tableNames.size() < 1) {
-				throw new RuntimeException("field "+ field +
-						" is not from one of the selected tables {"+
-						Misc.join(",", tableNameMap.keySet()) +"}");
-			} else if (tableNames.size() > 1) {
-				throw new RuntimeException("field "+ field +
-						" is ambigious over the tables {"+
-						Misc.join(",", tableNameMap.values()) +"}");
-			} else {
-				return tableNames.iterator().next() + "."+ field;
+		List<String> selectedTables = new ArrayList<String>();
+		List<TableInfo> unboundTables = new ArrayList<TableInfo>();
+		for (TableInfo info : tableInfos) {
+			selectedTables.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
+			if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
+				unboundTables.add(info);
 			}
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		}
-		return null;
+		if (unboundTables.size() < 1) {
+			throw new RuntimeException("field "+ field +
+					" is not from one of the selected tables {"+
+					Misc.join(",", selectedTables) +"}");
+		} else if (unboundTables.size() > 1) {
+			List<String> x = new ArrayList<String>();
+			for (TableInfo info : unboundTables) {
+				x.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
+			}
+			throw new RuntimeException("field "+ field +
+					" is ambigious over the tables {"+ Misc.join(",", x) +"}");
+		} else {
+			return unboundTables.iterator().next().tableName + "."+ field;
+		}
 	}
 
 }

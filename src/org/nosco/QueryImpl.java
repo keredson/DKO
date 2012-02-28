@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
+import org.nosco.Table.TableAlias;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 
@@ -57,10 +58,16 @@ class QueryImpl<T extends Table> implements Query<T> {
 	DataSource ds = null;
 
 	QueryImpl(Table table) {
+		addTable(table);
+	}
+
+	private void addTable(Table table) {
 		tables.add(table);
 		String tableName = genTableName(table, tableNames);
 		tableNames.add(tableName);
-		tableInfos.add(new TableInfo(table, tableName, null));
+		TableInfo info = new TableInfo(table, tableName, null);
+		info.nameAutogenned = true;
+		tableInfos.add(info);
 	}
 
 	QueryImpl(QueryImpl<T> q) {
@@ -105,10 +112,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	QueryImpl(Class<? extends Table> tableClass) {
 		try {
 			Table table = tableClass.getConstructor().newInstance();
-			tables.add(table);
-			String tableName = genTableName(table, tableNames);
-			tableNames.add(tableName);
-			tableInfos.add(new TableInfo(table, tableName, null));
+			addTable(table);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -377,7 +381,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 				String[] tmp = new String[conditions.size()];
 				int i=0;
 				for (Condition condition : conditions) {
-					tmp[i++] = condition.getSQL(tableNameMap);
+					tmp[i++] = condition.getSQL(tableNameMap, tableInfos);
 					bindings.addAll(condition.getSQLBindings());
 				}
 				sb.append(Misc.join(" and", tmp));
@@ -682,13 +686,14 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return count();
 	}
 
-	class TableInfo implements Cloneable{
+	static class TableInfo implements Cloneable{
 
 		Table table = null;
 		String tableName = null;
 		int start = -1;
 		int end = -1;
 		FK[] path = null;
+		boolean nameAutogenned = false;
 
 		public TableInfo(Table table, String tableName, FK[] path) {
 			this.table = table;
@@ -717,9 +722,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
 			throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, tableNameMap)
-				+", sum("+ Condition.derefField(sumField, tableNameMap) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, tableNameMap);
+		sql = "select "+ Condition.derefField(byField, tableNameMap, tableInfos)
+				+", sum("+ Condition.derefField(sumField, tableNameMap, tableInfos) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, tableNameMap, tableInfos);
 		log(sql);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -746,7 +751,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public Double sum(Field<? extends Number> sumField) throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select sum("+ Condition.derefField(sumField, tableNameMap) +") from "+ sql;
+		sql = "select sum("+ Condition.derefField(sumField, tableNameMap, tableInfos) +") from "+ sql;
 		log(sql);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -767,9 +772,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, tableNameMap)
-				+", count("+ Condition.derefField(byField, tableNameMap) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, tableNameMap);
+		sql = "select "+ Condition.derefField(byField, tableNameMap, tableInfos)
+				+", count("+ Condition.derefField(byField, tableNameMap, tableInfos) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, tableNameMap, tableInfos);
 		log(sql);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -796,6 +801,66 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public Query<T> use(DataSource ds) {
 		final QueryImpl<T> q = new QueryImpl<T>(this);
 		q.ds  = ds;
+		return q;
+	}
+
+	@Override
+	public Query<T> cross(Table t) {
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		q.addTable(t);
+		for (Field<?> field : t.FIELDS()) {
+			this.deferFields(field.from("i2"));
+		}
+		return q;
+	}
+
+	@Override
+	public Query<T> cross(Class<? extends Table> tableClass) {
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		try {
+			Table table = tableClass.getConstructor().newInstance();
+			q.addTable(table);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		return q;
+	}
+
+	@Override
+	public Query<T> cross(TableAlias tableAlias) {
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		try {
+			Table table = tableAlias.table.getConstructor().newInstance();
+			q.tables.add(table);
+			if (q.tableNames.contains(tableAlias.alias)) {
+				throw new RuntimeException("table alias "+ tableAlias.alias
+						+" already exists in this query");
+			}
+			q.tableNames.add(tableAlias.alias);
+			q.tableInfos.add(new TableInfo(table, tableAlias.alias, null));
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
 		return q;
 	}
 

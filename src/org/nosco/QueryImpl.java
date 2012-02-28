@@ -264,7 +264,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public int update() throws SQLException {
 		if (data==null || data.size()==0) return 0;
 		Table table = tables.get(0);
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".." : ".";
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("update ");
 		sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
@@ -510,7 +510,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public Object insert() throws SQLException {
 		QueryImpl<T> q = new QueryImpl<T>(this);
 		Table table = q.tables.get(0);
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".." : ".";
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
 		sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
@@ -562,7 +562,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public Collection<String> getTableNameList() {
 		List<String> names = new ArrayList<String>();
 		List<String> tableNames = new LinkedList<String>(this.tableNames);
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".." : ".";
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (Table t : tables) {
 			names.add(t.SCHEMA_NAME() + sep + t.TABLE_NAME() +" "+ tableNames.remove(0));
 		}

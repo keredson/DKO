@@ -12,8 +12,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -187,6 +189,7 @@ public class SchemaExtractor extends Task {
 			throws SQLException {
 		Map<String, Map<String, Map<String, String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
 
+		List<String> dbs = new ArrayList<String>();
 		Statement s = conn.createStatement();
 		s.execute("SELECT name FROM sys.databases;");
 		ResultSet rs = s.getResultSet();
@@ -196,27 +199,32 @@ public class SchemaExtractor extends Task {
 				continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
 				continue;
-			Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();
-			schemas.put(schema, tables);
+			dbs.add(schema);
 		}
 		rs.close();
 		// s.close();
 
-		for (String schema : schemas.keySet()) {
-			if (ignoredSchemas.contains(schema))
+		for (String db : dbs) {
+			if (ignoredSchemas.contains(db))
 				continue;
-			if (includeSchemas != null && !includeSchemas.contains(schema))
+			if (includeSchemas != null && !includeSchemas.contains(db))
 				continue;
 
-			System.err.println("extracting schema for: "+ schema);
-			Map<String, Map<String, String>> tables = schemas.get(schema);
+			System.err.println("extracting schema for: "+ db);
 
 			try {
-				s.execute("use \"" + schema + "\";");
+				s.execute("use \"" + db + "\";");
 				s.execute("select table_schema, table_name, column_name, data_type "
 						+ "from information_schema.columns;");
 				ResultSet rs2 = s.getResultSet();
 				while (rs2.next()) {
+					String schema = db; // +"."+ rs2.getString("table_schema");
+					Map<String, Map<String, String>> tables = schemas.get(schema);
+					if (tables == null) {
+						tables = new HashMap<String, Map<String, String>>();
+						schemas.put(schema, tables);
+					}
+
 					String table = rs2.getString("table_name");
 					if (table.startsWith("syncobj_")) continue;
 					if (table.startsWith("MS") && table.length() > 2

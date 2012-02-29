@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
-import org.nosco.Table.TableAlias;
+import org.nosco.Table.__Alias;
 
 class InMemoryQuery<T extends Table> implements Query<T> {
 
@@ -264,7 +264,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> cross(TableAlias t) {
+	public Query<T> cross(__Alias<? extends Table> t) {
 		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
 
@@ -276,6 +276,24 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	@Override
 	public Query<T> toMemory() {
 		return this;
+	}
+
+	@Override
+	public Query<T> max() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Query<T> min() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Condition exists() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -142,14 +142,32 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 		return t.SCHEMA_NAME() == SCHEMA_NAME() && t.TABLE_NAME() == TABLE_NAME();
 	}
 
-	public static class TableAlias {
+	public static class __Alias<S extends Table> {
 
-		public final Class<? extends Table> table;
-		public final String alias;
+		final Class<S> table;
+		final String alias;
+		public final Query<S> ALL;
 
-		public TableAlias(Class<? extends Table> table, String alias) {
+		public __Alias(Class<S> table, String alias) {
 			this.table = table;
 			this.alias = alias;
+			Query<S> all = new QueryImpl<S>(this);
+			try {
+				java.lang.reflect.Field f = table.getDeclaredField("ALL");
+				f.setAccessible(true);
+				@SuppressWarnings("unchecked")
+				QueryImpl<S> q = (QueryImpl<S>) f.get(null);
+				all = all.use(q.ds);
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			this.ALL = all;
 		}
 
 	}

@@ -20,9 +20,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.nosco.Field;
-import org.nosco.Table;
-import org.nosco.Table.TableAlias;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -30,23 +27,6 @@ import org.nosco.util.Misc;
 import org.nosco.util.RSArgsParser;
 
 class ClassGenerator {
-
-	private static RSArgsParser argsParser = new RSArgsParser(new HashMap<String,Boolean>() {{
-		put("package", true);
-		put("metadata", true);
-		put("dir", true);
-		put("strip-prefixes", true);
-		put("strip-suffixes", true);
-	}}, new HashMap<String,String>() {{
-		put("p", "package");
-		put("m", "metadata");
-		put("d", "dir");
-	}}, new HashMap<String,String>() {{
-		put("package", "noscodb");
-		put("dir", "gensrc");
-		put("metadata", "schema.json");
-		put("fakefks", "fake_fks.json");
-	}});
 
 	private final String pkg;
 	private final String dir;
@@ -70,22 +50,6 @@ class ClassGenerator {
 	    String[] reffing = null;
 	    String[] reffed = null;
 	    Map<String,String> columns = new LinkedHashMap<String,String>();
-	}
-
-
-	public static void main(String[] args) throws IOException, JSONException {
-		Map<String, String> params = argsParser.parse(args);
-		String dir = params.get("dir");
-		//recursiveDelete(new File(dir));
-		String pkg = params.get("package");
-		String[] stripPrefixes = {};
-		if (params.get("strip-prefixes") != null) stripPrefixes = params.get("strip-prefixes").split(",");
-		String[] stripSuffixes = {};
-		if (params.get("strip-suffixes") != null) stripSuffixes = params.get("strip-suffixes").split(",");
-		String metadataFile = params.get("metadata");
-		String fakefksFile = params.get("fakefks");
-
-		go(dir, pkg, stripPrefixes, stripSuffixes, metadataFile, fakefksFile, null, null);
 	}
 
 	public static void go(String dir, String pkg, String[] stripPrefixes,
@@ -247,7 +211,6 @@ class ClassGenerator {
 		br.write("import org.nosco.Query;\n");
 		br.write("import org.nosco.QueryFactory;\n");
 		br.write("import org.nosco.Table;\n");
-		br.write("import org.nosco.Table.TableAlias;\n");
 		br.write("\n");
 		br.write("public class "+ className +" extends Table {\n\n");
 
@@ -630,8 +593,8 @@ class ClassGenerator {
 		br.write("\t * Returns a table alias.  This is used when specifying manual joins\n");
 		br.write("\t * to reference later using Field.from(alias) in where() conditions.\n");
 		br.write("\t */\n");
-		br.write("\tpublic static TableAlias as(String alias) {\n");
-		br.write("\t\treturn new TableAlias("+ className +".class, alias);\n");
+		br.write("\tpublic static Table.__Alias as(String alias) {\n");
+		br.write("\t\treturn new Table.__Alias("+ className +".class, alias);\n");
 		br.write("\t}\n");
 
 

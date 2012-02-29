@@ -98,10 +98,19 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			fieldValues = new Object[selectedFields.length];
 			StringBuffer sb = new StringBuffer();
 			sb.append("select ");
+			if (query.distinct) sb.append("distinct ");
 			if (query.getDBType()==DB_TYPE.SQLSERVER && query.top>0) {
 				sb.append(" top ").append(query.top).append(" ");
 			}
-			sb.append(Misc.join(", ", selectedBoundFields));
+			if (query.globallyAppliedSelectFunction == null) {
+				sb.append(Misc.join(", ", selectedBoundFields));
+			} else {
+				String[] x = new String[selectedBoundFields.length];
+				for (int i=0; i < x.length; ++i) {
+					x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i] +")";
+				}
+				sb.append(Misc.join(", ", x));
+			}
 			sb.append(" from ");
 			sb.append(Misc.join(", ", query.getTableNameList()));
 			sb.append(query.getWhereClauseAndSetBindings());

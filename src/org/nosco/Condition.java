@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -190,16 +191,23 @@ public abstract class Condition {
 	static class Not extends Condition {
 
 		private Condition condition;
+		private boolean parens = true;
 
 		public Not(Condition condition) {
 			this.condition = condition;
 		}
 
+		public Not(Condition condition, boolean parens) {
+			this.condition = condition;
+			this.parens = parens;
+		}
+
 		@Override
 		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
-			sb.append(" not (");
+			sb.append(" not ");
+			if (parens) sb.append("(");
 			condition.getSQL(sb, bindings, tableNameMap, tableInfos);
-			sb.append(")");
+			if (parens) sb.append(")");
 		}
 
 		@Override
@@ -288,8 +296,6 @@ public abstract class Condition {
 		}
 
 	}
-
-
 
 	static class Binary extends Condition {
 
@@ -484,6 +490,43 @@ public abstract class Condition {
 		} else {
 			return unboundTables.iterator().next().tableName + "."+ field;
 		}
+	}
+
+	public static class Exists extends Condition {
+
+		private Query<? extends Table> q;
+		private Select<?> s;
+
+		Exists(Query<? extends Table> q) {
+			this.q = q;
+			this.s = (Select<?>) q.all();
+		}
+
+		@Override
+		public Condition not() {
+			return new Not(this, false);
+		}
+
+		@Override
+		boolean matches(Table t) {
+			try {
+				return q.size() > 0;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		@Override
+		protected void getSQL(StringBuffer sb, List bindings,
+				Map<String, Set<String>> tableNameMap,
+				List<TableInfo> tableInfos) {
+			sb.append(" exists (");
+			sb.append(s.getSQL());
+			bindings.addAll(s.getSQLBindings());
+			sb.append(")");
+		}
+
 	}
 
 }

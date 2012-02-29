@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
-import org.nosco.Table.TableAlias;
+import org.nosco.Table.__Alias;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 
@@ -54,8 +54,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 	private List<Field<?>> orderByFields = null;
 	int top = 0;
 	private Map<Field<?>,Object> data = null;
-	private boolean distinct = false;
+	boolean distinct = false;
 	DataSource ds = null;
+	String globallyAppliedSelectFunction = null;
 
 	QueryImpl(Table table) {
 		addTable(table);
@@ -107,12 +108,36 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		distinct = q.distinct;
 		ds = q.ds;
+		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
 	}
 
 	QueryImpl(Class<? extends Table> tableClass) {
 		try {
 			Table table = tableClass.getConstructor().newInstance();
 			addTable(table);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public QueryImpl(__Alias<? extends Table> alias) {
+		try {
+			Table table = alias.table.getConstructor().newInstance();
+			tables.add(table);
+			tableNames.add(alias.alias);
+			TableInfo info = new TableInfo(table, alias.alias, null);
+			info.nameAutogenned = false;
+			tableInfos.add(info);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -833,7 +858,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> cross(TableAlias tableAlias) {
+	public Query<T> cross(__Alias<? extends Table> tableAlias) {
 		QueryImpl<T> q = new QueryImpl<T>(this);
 		try {
 			Table table = tableAlias.table.getConstructor().newInstance();
@@ -872,6 +897,25 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public Query<T> toMemory() {
 		return new InMemoryQuery<T>(this);
+	}
+
+	@Override
+	public Query<T> max() {
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		q.globallyAppliedSelectFunction = "max";
+		return q;
+	}
+
+	@Override
+	public Query<T> min() {
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		q.globallyAppliedSelectFunction = "min";
+		return q;
+	}
+
+	@Override
+	public Condition exists() {
+		return new Condition.Exists(this);
 	}
 
 }

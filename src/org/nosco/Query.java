@@ -8,7 +8,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.nosco.Constants.DIRECTION;
-import org.nosco.Table.TableAlias;
+import org.nosco.Table.__Alias;
 
 
 
@@ -118,6 +118,18 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> distinct();
+
+	/**
+	 * Sets the max function on the selected columns in this statement.
+	 * @return
+	 */
+	public Query<T> max();
+
+	/**
+	 * Sets the min function on the selected columns in this statement.
+	 * @return
+	 */
+	public Query<T> min();
 
 	/**
 	 * Joins on foreign keys.  FKed objects are populated under the .getFK() style methods.
@@ -316,7 +328,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * of rows returned if not paired with additional where() clauses.
 	 * Note you will not be able to access the data in the second table (unless there is
 	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
-	 * are you useing this instead of with()?)
+	 * are you using this instead of with()?)
 	 * Use with care.
 	 * @param t
 	 * @return
@@ -328,19 +340,19 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * of rows returned if not paired with additional where() clauses.
 	 * Note you will not be able to access the data in the second table (unless there is
 	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
-	 * are you useing this instead of with()?)
+	 * are you using this instead of with()?)
 	 * Use with care.
 	 * @param t
 	 * @return
 	 */
-	public Query<T> cross(TableAlias t);
+	public Query<T> cross(__Alias<? extends Table> t);
 
 	/**
 	 * Performs a cross join.  Note that this can result in an extraordinary number
 	 * of rows returned if not paired with additional where() clauses.
 	 * Note you will not be able to access the data in the second table (unless there is
 	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
-	 * are you useing this instead of with()?)
+	 * are you using this instead of with()?)
 	 * Use with care.
 	 * @param t
 	 * @return
@@ -353,5 +365,12 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> toMemory();
+
+	/**
+	 * Turns a query into an "exists" subquery. &nbsp; Example:
+	 * <pre><code>select * from A where exists (select * from B where b.a_id = a.id)</code></pre>
+	 * @return
+	 */
+	public Condition exists();
 
 }

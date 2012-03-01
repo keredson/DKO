@@ -434,25 +434,40 @@ class ClassGenerator {
 		br.write("\t\telse {throw new RuntimeException(\"unknown FK\");}\n");
 		br.write("\t}\n\n");
 
+		// write the getTableFKSet() functions
+		Map<String, Integer> reffingCounts = new HashMap<String,Integer>();
+		for (FK fk : fksIn) {
+		    String relatedTable = fk.reffing[1];
+		    Integer c = reffingCounts.get(relatedTable);
+		    if (c == null) c = 0;
+		    reffingCounts.put(relatedTable, c+1);
+		}
 		for (FK fk : fksIn) {
 		    String relatedSchema = fk.reffing[0];
 		    String relatedTable = fk.reffing[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
 		    //String method = genFKMethodName(fk.columns.keySet(), relatedTableClassName);
-		    String method = relatedTableClassName;
 			if (!schema.equals(fk.reffing[0])) {
 				relatedTableClassName = pkg +"."+ fk.reffing[0] +"."+ relatedTableClassName;
-		}
-		    for (String s : fk.columns.keySet()) method += "_" + s;
-		    method = getInstanceMethodName(method);
-		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() ");
-		    br.write("{\n\t\treturn "+ relatedTableClassName +".ALL");
+			}
+		    String method = getInstanceMethodName(relatedTable);
+		    if (reffingCounts.get(relatedTable) > 1) {
+			    String tmp = Misc.join("_", fk.columns.keySet());
+				method = method + "_" + getInstanceMethodName(tmp);
+		    }
+		    String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
+		    		+ Misc.join("__", fk.columns.keySet());
+		    br.write("\tprivate Query<"+ relatedTableClassName +"> "+ localVar +" = null;\n");
+		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() {\n");
+		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
+		    br.write("\t\telse return "+ relatedTableClassName +".ALL");
 		    for (Entry<String, String> e : fk.columns.entrySet()) {
 			String relatedColumn = e.getKey();
 			String column = e.getValue();
 			br.write(".where("+ relatedTableClassName +"."+ getFieldName(relatedColumn) +".eq(get"+ getInstanceMethodName(column) +"()))");
 		    }
-		    br.write(";\n\t}\n\n");
+		    br.write(";\n");
+		    br.write("\t}\n\n");
 		}
 
 		// write save function

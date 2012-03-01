@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -303,7 +304,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		List<Object> bindings = new ArrayList<Object>();
 		int i=0;
 		for (Entry<Field<?>, Object> entry : data.entrySet()) {
-			fields[i++] = entry.getKey().toString()+"=?";
+			fields[i++] = entry.getKey().NAME+"=?";
 			bindings.add(entry.getValue());
 		}
 		sb.append(Misc.join(", ", fields));
@@ -514,7 +515,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 		int i=1;
 		if (bindings!=null) {
 			for (Object o : bindings) {
-				ps.setObject(i++, o);
+				// hack for sql server which otherwise gives:
+				// com.microsoft.sqlserver.jdbc.SQLServerException:
+				// The conversion from UNKNOWN to UNKNOWN is unsupported.
+				if (o instanceof Character) ps.setString(i++, o.toString());
+				else ps.setObject(i++, o);
 				//System.err.print("\t"+ o +"");
 			}
 		}
@@ -550,7 +555,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		q.bindings = new ArrayList<Object>();
 		int i=0;
 		for (Entry<Field<?>, Object> entry : q.data.entrySet()) {
-			fields[i] = entry.getKey().toString();
+			fields[i] = entry.getKey().NAME;
 			bindStrings[i] = "?";
 			q.bindings.add(entry.getValue());
 			++i;

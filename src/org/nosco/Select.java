@@ -247,7 +247,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	}
 
 	private void cleanUp() {
-		if (!TransactionThread.inTransaction(query.ds)) {
+		if (!ThreadContext.inTransaction(query.ds)) {
 			try {
 				conn.close();
 			} catch (SQLException e) {

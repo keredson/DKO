@@ -130,6 +130,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 	}
 
+	QueryImpl(Class<? extends Table> tableClass, DataSource ds) {
+		this(tableClass);
+		this.ds = ds;
+	}
+
 	public QueryImpl(__Alias<? extends Table> alias) {
 		try {
 			Table table = alias.table.getConstructor().newInstance();
@@ -176,8 +181,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	Connection getConnR() throws SQLException {
-		if (TransactionThread.inTransaction(ds)) {
-			return TransactionThread.getConnection(ds);
+		if (ThreadContext.inTransaction(ds)) {
+			return ThreadContext.getConnection(ds);
 		}
 		if (ds.isWrapperFor(MirroredDataSource.class)) {
 			return ds.unwrap(MirroredDataSource.class).getMirroredConnection();
@@ -186,8 +191,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	Connection getConnRW() throws SQLException {
-		if (TransactionThread.inTransaction(ds)) {
-			return TransactionThread.getConnection(ds);
+		if (ThreadContext.inTransaction(ds)) {
+			return ThreadContext.getConnection(ds);
 		}
 		return ds.getConnection();
 	}
@@ -205,7 +210,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		int count = rs.getInt(1);
 		rs.close();
 		ps.close();
-		if (!TransactionThread.inTransaction(ds)) {
+		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
 		return count;
@@ -314,7 +319,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
-		if (!TransactionThread.inTransaction(ds)) {
+		if (!ThreadContext.inTransaction(ds)) {
 			if (!conn.getAutoCommit()) conn.commit();
 			conn.close();
 		}
@@ -336,7 +341,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!TransactionThread.inTransaction(ds)) {
+			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -350,7 +355,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!TransactionThread.inTransaction(ds)) {
+			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -576,7 +581,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 				}
 			}
 		}
-		if (!TransactionThread.inTransaction(ds)) {
+		if (!ThreadContext.inTransaction(ds)) {
 			if (!conn.getAutoCommit()) conn.commit();
 			conn.close();
 		}
@@ -589,7 +594,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 		List<String> tableNames = new LinkedList<String>(this.tableNames);
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (Table t : tables) {
-			names.add(t.SCHEMA_NAME() + sep + t.TABLE_NAME() +" "+ tableNames.remove(0));
+			names.add(ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
+					+ sep + t.TABLE_NAME() +" "+ tableNames.remove(0));
 		}
 		return names;
 	}
@@ -763,7 +769,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		rs.close();
 		ps.close();
-		if (!TransactionThread.inTransaction(ds)) {
+		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
 		return (Map<S, Double>) result;
@@ -783,7 +789,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		Double ret = rs.getDouble(1);
 		rs.close();
 		ps.close();
-		if (!TransactionThread.inTransaction(ds)) {
+		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
 		return ret;
@@ -813,7 +819,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		rs.close();
 		ps.close();
-		if (!TransactionThread.inTransaction(ds)) {
+		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
 		return (Map<S, Integer>) result;
@@ -916,6 +922,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public Condition exists() {
 		return new Condition.Exists(this);
+	}
+
+	@Override
+	public DataSource getDataSource() {
+		return ds;
 	}
 
 }

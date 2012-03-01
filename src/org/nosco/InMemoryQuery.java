@@ -296,4 +296,9 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		return null;
 	}
 
+	@Override
+	public DataSource getDataSource() {
+		return null;
+	}
+
 }

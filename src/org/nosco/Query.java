@@ -361,7 +361,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Evaluates the given query into memory and returns to you a new query backed by
-	 * this in-memory store.
+	 * this in-memory store. &nbsp; (does nothing if this is already an in-memory
+	 * query.
 	 * @return
 	 */
 	public Query<T> toMemory();
@@ -369,8 +370,17 @@ public interface Query<T extends Table> extends Iterable<T> {
 	/**
 	 * Turns a query into an "exists" subquery. &nbsp; Example:
 	 * <pre><code>select * from A where exists (select * from B where b.a_id = a.id)</code></pre>
+	 * &nbsp; Note that this doesn't evaluate this right away. &nbsp; If you want a simple
+	 * check for if the query contains any rows, use <code>isEmpty()</code>
 	 * @return
 	 */
 	public Condition exists();
+
+	/**
+	 * Returns the DataSource this query is currently using. &nbsp;
+	 * Returns null for in-memory queries.
+	 * @return
+	 */
+	public DataSource getDataSource();
 
 }

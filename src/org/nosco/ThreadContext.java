@@ -57,6 +57,7 @@ public class ThreadContext {
 	public static boolean startTransaction(DataSource ds) throws SQLException {
 		ThreadLocal<Connection> tl = tls.get(ds);
 		if (tl == null) {
+			tl = new ThreadLocal<Connection>();
 			ThreadLocal<Connection> tmp = tls.put(ds, tl);
 			if (tmp != null) tl = tmp;
 		}
@@ -123,6 +124,7 @@ public class ThreadContext {
 	public static void setDatabaseOverride(DataSource ds, String oldName, String newName) {
 		ThreadLocal<Map<String, String>> tl = schemaOverrides.get(ds);
 		if (tl == null) {
+			tl = new ThreadLocal<Map<String, String>>();
 			ThreadLocal<Map<String, String>> tmp = schemaOverrides.put(ds, tl);
 			if (tmp != null) tl = tmp;
 		}

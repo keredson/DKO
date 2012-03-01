@@ -488,7 +488,9 @@ public abstract class Condition {
 			throw new RuntimeException("field "+ field +
 					" is ambigious over the tables {"+ Misc.join(",", x) +"}");
 		} else {
-			return unboundTables.iterator().next().tableName + "."+ field;
+			TableInfo theOne = unboundTables.iterator().next();
+			return (theOne.tableName == null ? theOne.table.TABLE_NAME() : theOne.tableName)
+					+ "."+ field;
 		}
 	}
 

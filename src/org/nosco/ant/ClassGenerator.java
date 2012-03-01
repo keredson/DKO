@@ -535,6 +535,11 @@ class ClassGenerator {
 		for (String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
+		if (pkSet == null || pkSet.size() == 0) {
+			for (String column : columns.keySet()) {
+				br.write(".where("+ getFieldName(column) +".eq("+ getInstanceFieldName(column) +"))");
+			}
+		}
 		br.write(";\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_UPDATE_PRE!=null) "
 				+ "try { __NOSCO_CALLBACK_UPDATE_PRE.invoke(null, this); }"
@@ -552,6 +557,23 @@ class ClassGenerator {
 				+ "try { __NOSCO_CALLBACK_UPDATE_POST.invoke(null, this); }"
 				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
+		br.write("\t\treturn count==1;\n");
+		br.write("\t}\n");
+
+		// write delete function
+		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
+		br.write("\tpublic boolean delete() throws SQLException {\n");
+		br.write("\t\tQuery<"+ className +"> query = ALL");
+		for (String pk : pkSet) {
+			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
+		}
+		if (pkSet == null || pkSet.size() == 0) {
+			for (String column : columns.keySet()) {
+				br.write(".where("+ getFieldName(column) +".eq("+ getInstanceFieldName(column) +"))");
+			}
+		}
+		br.write(";\n");
+		br.write("\t\tint count = query.deleteAll();\n");
 		br.write("\t\treturn count==1;\n");
 		br.write("\t}\n");
 

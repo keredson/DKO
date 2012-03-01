@@ -6,21 +6,23 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.nosco.util.Misc;
+
 /**
- * This class wraps other {@code javax.sql.DataSource} instances.  It usually passes 
- * through calls to the primary, but if {@code getMirroredConnection()} 
+ * This class wraps other {@code javax.sql.DataSource} instances.  It usually passes
+ * through calls to the primary, but if {@code getMirroredConnection()}
  * is called a random mirror is used instead.
- * 
+ *
  * @author Derek Anderson
  */
 public class MirroredDataSource implements DataSource {
-	
+
 	private DataSource primary;
 	private DataSource[] mirrors;
 
 	/**
-     * This class usually passes 
-     * through calls to the primary, but if {@code getMirroredConnection()} 
+     * This class usually passes
+     * through calls to the primary, but if {@code getMirroredConnection()}
      * is called a random mirror is used instead.
 	 * @param primary
 	 * @param mirrors
@@ -71,7 +73,7 @@ public class MirroredDataSource implements DataSource {
 
 	/**
 	 * Returns a connection from a randomly selected mirror. &nbsp;
-	 * Feel free to override this method to implement other 
+	 * Feel free to override this method to implement other
 	 * load balancing stratigies in your own code.
 	 * @return
 	 * @throws SQLException
@@ -89,6 +91,12 @@ public class MirroredDataSource implements DataSource {
 	public Connection getConnection(String arg0, String arg1)
 			throws SQLException {
 		return primary.getConnection(arg0, arg1);
+	}
+
+	@Override
+	public String toString() {
+		return "[MirroredDataSource primary="+ primary +" mirrors="
+				+ Misc.join(",", mirrors) +"]";
 	}
 
 }

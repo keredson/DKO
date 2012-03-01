@@ -104,6 +104,14 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 	public abstract boolean update() throws SQLException;
 
 	/**
+	 * Creates and executes a delete statement for this object
+	 * (irregardless of if it's already in the database)
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean delete() throws SQLException;
+
+	/**
 	 * Creates and executes an insert or update statement for this object
 	 * based on if the object came from the database or not.
 	 * @return success

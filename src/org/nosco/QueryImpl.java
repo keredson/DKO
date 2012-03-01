@@ -295,6 +295,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public int update() throws SQLException {
 		if (data==null || data.size()==0) return 0;
 		Table table = tables.get(0);
+		this.tableInfos.get(0).tableName = null;
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("update ");
@@ -335,7 +336,28 @@ class QueryImpl<T extends Table> implements Query<T> {
 			if (this.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
 			Table t = tables.get(0);
-			String sql = "delete from "+ t.SCHEMA_NAME() + "." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
+			this.tableInfos.get(0).tableName = null;
+			String sql = "delete from "+ ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
+					+ "." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
+			Misc.log(sql, null);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			setBindings(ps);
+			ps.execute();
+			int count = ps.getUpdateCount();
+			ps.close();
+			if (!ThreadContext.inTransaction(ds)) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
+			}
+			return count;
+
+		} else if (getDBType()==DB_TYPE.SQLSERVER) {
+			if (this.tables.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
+					"is not yet supported");
+			Table t = tables.get(0);
+			this.tableInfos.get(0).tableName = null;
+			String sql = "delete from "+ ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
+					+ ".dbo." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
 			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			setBindings(ps);

@@ -85,7 +85,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		tables.addAll(q.tables);
 		tableNames.addAll(q.tableNames);
-		tableInfos.addAll(q.tableInfos);
+		try { for (TableInfo x : q.tableInfos) tableInfos.add((TableInfo) x.clone()); }
+		catch (CloneNotSupportedException e) { /* ignore */ }
 		if (q.deferSet!=null) {
 			deferSet = new HashSet<Field<?>>();
 			deferSet.addAll(q.deferSet);
@@ -741,7 +742,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return count();
 	}
 
-	static class TableInfo implements Cloneable{
+	static class TableInfo implements Cloneable {
 
 		Table table = null;
 		String tableName = null;
@@ -754,6 +755,20 @@ class QueryImpl<T extends Table> implements Query<T> {
 			this.table = table;
 			this.tableName = tableName;
 			this.path  = path;
+		}
+
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			TableInfo x = new TableInfo(table, tableName, path);
+			x.start = start;
+			x.end = end;
+			x.nameAutogenned = nameAutogenned;
+			return x;
+		}
+
+		@Override
+		public String toString() {
+			return "[TableInfo "+ table +", "+ tableName +", nameAutogenned="+ nameAutogenned +"]";
 		}
 
 	}

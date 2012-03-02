@@ -359,12 +359,14 @@ class ClassGenerator {
 			String cls = getFieldType(columns.getString(column)).getName();
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\t"+ getInstanceFieldName(column) +" = ALL.onlyFields(");
+			br.write("\t\t\t"+ className +" _tmp = ALL.onlyFields(");
 			br.write(getFieldName(column)+")");
 			for (String pk : pkSet) {
 				br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 			}
-			br.write(".getTheOnly().get"+ getInstanceMethodName(column) +"();\n");
+			br.write(".getTheOnly();\n");
+			br.write("\t\t\t"+ getInstanceFieldName(column) +" = _tmp == null ? null : _tmp.get"
+					+ getInstanceMethodName(column) +"();");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");

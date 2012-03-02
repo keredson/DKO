@@ -38,7 +38,8 @@ public class Bulk {
 				String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 				StringBuffer sb = new StringBuffer();
 				sb.append("insert into ");
-				sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
+				sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
+						+sep+ table.TABLE_NAME());
 				sb.append(" (");
 				fields = table.FIELDS();
 				sb.append(Misc.join(",", fields));

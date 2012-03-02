@@ -213,7 +213,7 @@ class ClassGenerator {
 		br.write("import org.nosco.QueryFactory;\n");
 		br.write("import org.nosco.Table;\n");
 		br.write("\n");
-		br.write("public class "+ className +" extends Table {\n\n");
+		br.write("public class "+ className +" extends Table implements Comparable<"+ className +"> {\n\n");
 
 		// write field constants
 		int index = 0;
@@ -610,7 +610,7 @@ class ClassGenerator {
 		br.write("\t */\n");
 		br.write("\tpublic static Table.__Alias as(String alias) {\n");
 		br.write("\t\treturn new Table.__Alias("+ className +".class, alias);\n");
-		br.write("\t}\n");
+		br.write("\t}\n\n");
 
 		// write the hashcode function
 		br.write("\t@Override\n");
@@ -618,10 +618,11 @@ class ClassGenerator {
 		br.write("\t\tfinal int prime = 31;\n");
 		br.write("\t\tint result = 1;\n");
 		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
-			br.write("\t\tresult = prime * result + (("+ getFieldName(column) +" == null) ? 0 : "+ getFieldName(column) +".hashCode());\n");
+			br.write("\t\tresult = prime * result + (("+ getInstanceFieldName(column)
+					+" == null) ? 0 : "+ getInstanceFieldName(column) +".hashCode());\n");
 		}
 		br.write("\t\treturn result;\n");
-		br.write("\t}\n");
+		br.write("\t}\n\n");
 
 		// write the equals function
 		br.write("\t@Override\n");
@@ -630,13 +631,27 @@ class ClassGenerator {
 		br.write("\t\t\t&& (other instanceof "+ className +")\n");
 		br.write("\t\t\n");
 		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
-			br.write("\t\t\t&& (("+ getFieldName(column) +" == null) ? ((("
-					+ className +")other)."+ getFieldName(column) +" == null) : ("
-					+ getFieldName(column) +".equals((("+ className +")other)."
-					+ getFieldName(column) +")))\n");
+			br.write("\t\t\t&& (("+ getInstanceFieldName(column) +" == null) ? ((("
+					+ className +")other)."+ getInstanceFieldName(column) +" == null) : ("
+					+ getInstanceFieldName(column) +".equals((("+ className +")other)."
+					+ getInstanceFieldName(column) +")))\n");
 		}
 		br.write("\t\t);\n");
-		br.write("\t}\n");
+		br.write("\t}\n\n");
+
+		// write the compare function
+		br.write("\t@Override\n");
+		br.write("\tpublic int compareTo("+ className +" o) {\n");
+		br.write("\t\tint v = 0;\n");
+		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
+			br.write("\t\tv = "+ getInstanceFieldName(column) +"==null ? (o."
+					+ getInstanceFieldName(column) +"==null ? 0 : -1) : "
+					+ getInstanceFieldName(column) +".compareTo(o."
+					+ getInstanceFieldName(column) +");\n");
+			br.write("\t\tif (v != 0) return v;\n");
+		}
+		br.write("\t\treturn 0;\n");
+		br.write("\t}\n\n");
 
 		// end class
 		br.write("}\n");

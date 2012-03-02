@@ -570,7 +570,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
+		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME()));
+		sb.append(sep+ table.TABLE_NAME());
 		sb.append(" (");
 		String[] fields = new String[q.data.size()];
 		String[] bindStrings = new String[q.data.size()];

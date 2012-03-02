@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.nosco.Field.FK;
 import org.nosco.Field.PK;
 
 
@@ -213,5 +212,34 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 		}
 
 	}
+
+	@Override
+	public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    Field.PK pk = this.PK();
+	    Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
+	    for (Field<?> f : fields) {
+	    	Object o = this.get(f);
+		    result = prime * result + ((o == null) ? 0 : o.hashCode());
+	    }
+	    return result;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) return true;
+		if (other == null) return false;
+		if (!(other instanceof Table)) return false;
+	    Field.PK pk = this.PK();
+	    Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
+	    for (Field<?> f : fields) {
+	    	Object o1 = this.get(f);
+	    	Object o2 = ((Table)other).get(f);
+	    	if (!((o1 == null) ? (o2 == null) : o1.equals(o2))) return false;
+	    }
+	    return true;
+	}
+
 
 }

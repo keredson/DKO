@@ -612,6 +612,31 @@ class ClassGenerator {
 		br.write("\t\treturn new Table.__Alias("+ className +".class, alias);\n");
 		br.write("\t}\n");
 
+		// write the hashcode function
+		br.write("\t@Override\n");
+		br.write("\tpublic int hashCode() {\n");
+		br.write("\t\tfinal int prime = 31;\n");
+		br.write("\t\tint result = 1;\n");
+		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
+			br.write("\t\tresult = prime * result + (("+ getFieldName(column) +" == null) ? 0 : "+ getFieldName(column) +".hashCode());\n");
+		}
+		br.write("\t\treturn result;\n");
+		br.write("\t}\n");
+
+		// write the equals function
+		br.write("\t@Override\n");
+		br.write("\tpublic boolean equals(Object other) {\n");
+		br.write("\t\treturn (other == this) || ((other != null) \n");
+		br.write("\t\t\t&& (other instanceof "+ className +")\n");
+		br.write("\t\t\n");
+		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
+			br.write("\t\t\t&& (("+ getFieldName(column) +" == null) ? ((("
+					+ className +")other)."+ getFieldName(column) +" == null) : ("
+					+ getFieldName(column) +".equals((("+ className +")other)."
+					+ getFieldName(column) +")))\n");
+		}
+		br.write("\t\t);\n");
+		br.write("\t}\n");
 
 		// end class
 		br.write("}\n");

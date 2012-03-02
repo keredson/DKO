@@ -26,6 +26,7 @@ public class Bulk {
 		int count = 0;
 		boolean first = true;
 		PreparedStatement ps = null;
+		Connection conn = null;
 		Field[] fields = null;
 		QueryImpl<T> q = null;
 
@@ -48,7 +49,7 @@ public class Bulk {
 				sb.append(")");
 				String sql = sb.toString();
 				Misc.log(sql, null);
-				Connection conn = q.getConnRW();
+				conn = q.getConnRW();
 				ps = conn.prepareStatement(sql);
 			}
 			int i=1;
@@ -66,6 +67,10 @@ public class Bulk {
 		}
 
 		ps.close();
+		if (!ThreadContext.inTransaction(ds)) {
+			if (!conn.getAutoCommit()) conn.commit();
+			conn.close();
+		}
 		return count;
 	}
 

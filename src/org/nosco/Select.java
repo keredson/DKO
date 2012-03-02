@@ -174,9 +174,16 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				return false;
 			}
 			for (int i=0; i<selectedFields.length; ++i) {
-				if (selectedFields[i].TYPE == Long.class) fieldValues[i] = rs.getLong(i+1); else
-				if (selectedFields[i].TYPE == Double.class) fieldValues[i] = rs.getDouble(i+1); else
-				fieldValues[i] = rs.getObject(i+1);
+				if (selectedFields[i].TYPE == Long.class) fieldValues[i] = rs.getLong(i+1);
+				else if (selectedFields[i].TYPE == Double.class) {
+					fieldValues[i] = rs.getDouble(i+1);
+					if (rs.wasNull()) fieldValues[i] = null;
+				}
+				else if (selectedFields[i].TYPE == Character.class) {
+					String s = rs.getString(i+1);
+					if (s != null && s.length() > 0) fieldValues[i] = s.charAt(0);
+				}
+				else fieldValues[i] = rs.getObject(i+1);
 			}
 			Object[] objects = new Object[query.tableInfos.size()];
 			for (int i=0; i<query.tableInfos.size(); ++i) {

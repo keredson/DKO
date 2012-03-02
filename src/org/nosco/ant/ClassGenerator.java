@@ -375,6 +375,7 @@ class ClassGenerator {
 			br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+			br.write("\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\treturn this;\n");
 			br.write("\t}\n\n");
 			//}

@@ -24,7 +24,6 @@ import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 import org.nosco.util.Misc;
-import org.nosco.util.RSArgsParser;
 
 class ClassGenerator {
 
@@ -311,6 +310,7 @@ class ClassGenerator {
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
 
 		// write the generic get(field) method
+		br.write("\t@SuppressWarnings(\"unchecked\")\n");
 		br.write("\tpublic <S> S get(Field<S> _field) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
@@ -485,7 +485,7 @@ class ClassGenerator {
 		}
 		br.write(";\n");
 		if (pkSet == null || pkSet.isEmpty()) {
-			br.write("\t\tthrow new RuntimeException(\"save() not supported on objects without PKs\");\n");
+			br.write("\t\tthrow new RuntimeException(\"save() is ambiguous on objects without PKs - use insert() or update()\");\n");
 		} else {
 			br.write("\t\tint size = query.size();\n");
 			br.write("\t\tif (size == 0) return this.insert(ds);\n");
@@ -583,6 +583,23 @@ class ClassGenerator {
 		br.write("\t\t\treturn true;\n");
 		br.write("\t}\n");
 
+		// write exists function
+		br.write("\tpublic boolean exists() throws SQLException {\n");
+		br.write("\t\t return exists(ALL.getDataSource());\n");
+		br.write("\t}\n");
+		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
+		br.write("\tpublic boolean exists(DataSource ds) throws SQLException {\n");
+		br.write("\t\tif (!dirty()) return false;\n");
+		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
+		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
+			br.write(".where("+ getFieldName(column) +".eq("+ getInstanceFieldName(column) +"))");
+		}
+		br.write(";\n");
+		br.write("\t\tint size = query.size();\n");
+		br.write("\t\treturn size > 0;\n");
+		br.write("\t}\n");
+
+
 		// write callbacks
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_PRE = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_POST = null;\n");
@@ -608,8 +625,8 @@ class ClassGenerator {
 		br.write("\t * Returns a table alias.  This is used when specifying manual joins\n");
 		br.write("\t * to reference later using Field.from(alias) in where() conditions.\n");
 		br.write("\t */\n");
-		br.write("\tpublic static Table.__Alias as(String alias) {\n");
-		br.write("\t\treturn new Table.__Alias("+ className +".class, alias);\n");
+		br.write("\tpublic static Table.__Alias<"+ className +"> as(String alias) {\n");
+		br.write("\t\treturn new Table.__Alias<"+ className +">("+ className +".class, alias);\n");
 		br.write("\t}\n\n");
 
 		// write the hashcode function

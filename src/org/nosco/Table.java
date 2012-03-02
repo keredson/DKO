@@ -121,6 +121,14 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 	public abstract boolean save() throws SQLException;
 
 	/**
+	 * Returns if this object exists in the database. &nbsp;
+	 * Executes SQL looking for the PK values, or all columns if no PK.
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean exists() throws SQLException;
+
+	/**
 	 * Creates and executes an insert statement for this object
 	 * (irregardless of if it's already in the database)
 	 * @return success
@@ -151,6 +159,14 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 	 * @throws SQLException
 	 */
 	public abstract boolean save(DataSource ds) throws SQLException;
+
+	/**
+	 * Returns if this object exists in the database. &nbsp;
+	 * Executes SQL looking for the PK values, or all columns if no PK.
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean exists(DataSource ds) throws SQLException;
 
 	static Map<Table,java.lang.reflect.Field> _pkCache = new HashMap<Table, java.lang.reflect.Field>();
 	static Field.PK GET_TABLE_PK(Table table) {

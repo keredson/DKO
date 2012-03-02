@@ -33,13 +33,24 @@ public class CodeGenerator extends Task {
 	private File srcjarfile = null;
 	private boolean debug = true;
 	private String callbackPackage = null;
+	private File javaOutputDir = null;
 
 	public void setJarfile(String s) {
 		this.jarfile = new File(s);
 	}
 
 	public void setSrcJarfile(String s) {
-		this.srcjarfile  = new File(s);
+		this.srcjarfile = new File(s);
+	}
+
+	public void setJavaOutputDir(String s) {
+		this.javaOutputDir = new File(s);
+		if (!javaOutputDir.exists()) {
+			javaOutputDir.mkdir();
+		}
+		if (!javaOutputDir.isDirectory()) {
+			throw new RuntimeException("not a directory: "+ javaOutputDir.getAbsolutePath());
+		}
 	}
 
 	public void setDebug(String s) {
@@ -98,13 +109,19 @@ public class CodeGenerator extends Task {
 			throw new BuildException(e1);
 		}
 
-		String tempdir = System.getProperty("java.io.tmpdir");
-		File tempDir = new File(tempdir + File.separator + "nosco_"
-				+ this.hashCode());
-		tempDir.mkdir();
+		File tempDir = null;
+		if (javaOutputDir == null) {
+			String tempdir = System.getProperty("java.io.tmpdir");
+			tempDir = new File(tempdir + File.separator + "nosco_"
+					+ this.hashCode());
+			tempDir.mkdir();
+		} else {
+			tempDir = this.javaOutputDir;
+		}
 		File classesDir = tempDir;  // new File(tempDir.getAbsolutePath() +
 									// File.separator + "classes");
 		if (!debug) {
+			String tempdir = System.getProperty("java.io.tmpdir");
 			classesDir = new File(tempdir + File.separator + "nosco_classes_"
 					+ this.hashCode());
 			classesDir.mkdir();
@@ -140,6 +157,11 @@ public class CodeGenerator extends Task {
 				if (p2.exitValue() != 0) {
 					throw new BuildException("jar exited " + p2.exitValue());
 				}
+			}
+
+			if (javaOutputDir != null) {
+				// we're done
+				return;
 			}
 
 			System.out.println("compiling " + tempDir.getAbsolutePath());
@@ -199,6 +221,11 @@ public class CodeGenerator extends Task {
 	}
 
 	private boolean up2date() throws ZipException, IOException {
+		if (jarfile == null && this.javaOutputDir != null) {
+			System.err.println("you're outputing code to a directory, not a jar, so " +
+					"up2date detection doesn't work.  always writing all classes.");
+			return false;
+		}
 		if (!jarfile.exists()) return false;
 		String timestamp = String.valueOf(schemas.lastModified()) + ":"
 				+ String.valueOf(fake_fks.lastModified());

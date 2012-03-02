@@ -5,6 +5,8 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.nosco.Field.FK;
 import org.nosco.Field.PK;
 
@@ -118,6 +120,38 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 	 * @throws SQLException
 	 */
 	public abstract boolean save() throws SQLException;
+
+	/**
+	 * Creates and executes an insert statement for this object
+	 * (irregardless of if it's already in the database)
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean insert(DataSource ds) throws SQLException;
+
+	/**
+	 * Creates and executes an update statement for this object
+	 * (irregardless of if it's already in the database)
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean update(DataSource ds) throws SQLException;
+
+	/**
+	 * Creates and executes a delete statement for this object
+	 * (irregardless of if it's already in the database)
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean delete(DataSource ds) throws SQLException;
+
+	/**
+	 * Creates and executes an insert or update statement for this object
+	 * based on if the object came from the database or not.
+	 * @return success
+	 * @throws SQLException
+	 */
+	public abstract boolean save(DataSource ds) throws SQLException;
 
 	static Map<Table,java.lang.reflect.Field> _pkCache = new HashMap<Table, java.lang.reflect.Field>();
 	static Field.PK GET_TABLE_PK(Table table) {

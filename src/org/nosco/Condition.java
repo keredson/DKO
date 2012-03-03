@@ -494,7 +494,7 @@ public abstract class Condition {
 		}
 	}
 
-	public static class Exists extends Condition {
+	static class Exists extends Condition {
 
 		private Query<? extends Table> q;
 		private Select<?> s;

@@ -199,6 +199,17 @@ protected BitSet __NOSCO_UPDATED_VALUES = null;
 		return t.SCHEMA_NAME() == SCHEMA_NAME() && t.TABLE_NAME() == TABLE_NAME();
 	}
 
+	/**
+	 * This is used for conditional statements where the fields are ambiguous. (ie: a self-join) &nbsp;
+	 * All generated subclasses of {@code Table} will contain a static {@code MyTable.as(String s)} method. &nbsp;
+	 * It will return an instance of this class. &nbsp; You will likely never have to create one manually. &nbsp;
+	 * (the constructor is public only because the generated classes are in a different package scope)
+	 * <p>
+	 * Example:
+	 * <pre>  {@code MyTable.ALL.cross(MyTable.as("t2")).where(MyTable.ID.from("t2").eq(MyTable.PARENT_ID))}</pre>
+	 * @author Derek Anderson
+	 * @param <S>
+	 */
 	public static class __Alias<S extends Table> {
 
 		final Class<S> table;

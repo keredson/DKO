@@ -17,6 +17,12 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.nosco.json.JSONException;
 
+/**
+ * Using the {@code schemas.json} file produced by the {@code SchemaExtractor}, this Ant task
+ * produces a JAR file for use in your application. &nbsp;
+ * 
+ * @author Derek Anderson
+ */
 public class CodeGenerator extends Task {
 
 	private File jarfile = null;

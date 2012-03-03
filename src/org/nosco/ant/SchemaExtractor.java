@@ -26,6 +26,13 @@ import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 
+/**
+ * Extracts schema information from a provided database into a JSON file. &nbsp;
+ * Designed to be run occasionally, with the output file checked into version control. 
+ * (to avoid regular builds hitting your DB server, and for code generation history) &nbsp;
+ * 
+ * @author Derek Anderson
+ */
 public class SchemaExtractor extends Task {
 
 	private static int[] version = {0,2,0};

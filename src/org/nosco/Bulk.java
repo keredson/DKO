@@ -18,7 +18,7 @@ import org.nosco.util.Misc;
  * Provides optimized methods for CRUD operations on collections. &nbsp;
  * Note that if you find yourself doing the following:
  * <pre>   {@code List<MyObject> toDelete = MyObject.ALL.where(conditions...).asList();
- *   new Bulk(ds).deleteAll();}</pre>
+ *   new Bulk(ds).deleteAll(toDelete);}</pre>
  * It's much more efficient to do this:
  * <pre>   {@code   List<MyObject> toDelete = MyObject.ALL.where(conditions...).deleteAll();}</pre>
  * The latter deletes them from the database without transferring everything over the network.

@@ -192,7 +192,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					if (next != null) continue;
 					//System.out.println(ti.start +" "+ ti.end);
 					next = (T) constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-					next.__NOSCO_GOT_FROM_DATABASE= true;
 					objects[i] = next;
 				} else {
 					FK fk = ti.path[ti.path.length-1];

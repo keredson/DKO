@@ -60,8 +60,7 @@ public abstract class Table {
 	/**
 	 * Please do not use.
 	 */
-protected BitSet __NOSCO_UPDATED_VALUES = null;
-	protected boolean __NOSCO_GOT_FROM_DATABASE = false;
+	protected BitSet __NOSCO_UPDATED_VALUES = null;
 
 	/**
 	 * Returns true if the object has been modified

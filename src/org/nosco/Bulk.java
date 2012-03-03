@@ -30,8 +30,8 @@ import org.nosco.util.Misc;
  * Will move all data from the "from" to the "to" database without having to load the entire
  * result list into memory at one time.
  * <p>
- * Note: If a transaction is desired, use {@codeThreadContext.startTransaction(ds)} before
- * and {@codeThreadContext.commitTransaction(ds)} after any of these calls.
+ * Note: If a transaction is desired, use {@code ThreadContext.startTransaction(ds)} before
+ * and {@code ThreadContext.commitTransaction(ds)} after any of these calls.
  * @author Derek Anderson
  */
 public class Bulk {

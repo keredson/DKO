@@ -37,6 +37,7 @@ import org.nosco.util.Misc;
 public class Bulk {
 
 	private DataSource ds;
+	private static final int BATCH_SIZE = 64;
 
 	/**
 	 * Specify the target DataSource.
@@ -56,6 +57,7 @@ public class Bulk {
 	 */
 	public <T extends Table> int insertAll(Iterable<T> iterable) throws SQLException {
 		int count = 0;
+		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
 		Field[] fields = null;
@@ -63,6 +65,7 @@ public class Bulk {
 
 		try {
 			for (T table : iterable) {
+				count += 1;
 				if (first) {
 					first = false;
 					QueryImpl<T> q = (QueryImpl<T>) new QueryImpl<T>(table.getClass()).use(ds);
@@ -79,27 +82,31 @@ public class Bulk {
 					if (o instanceof Character) psInsert.setString(i++, o.toString());
 					else psInsert.setObject(i++, o);
 				}
-				psInsert.execute();
-				count += psInsert.getUpdateCount();
-
+				psInsert.addBatch();
+				if (count % BATCH_SIZE == 0) {
+					for (int k : psInsert.executeBatch()) resCount += k;
+				}
+			}
+			if (count % BATCH_SIZE != 0) {
+				for (int k : psInsert.executeBatch()) resCount += k;
 			}
 			psInsert.close();
 			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
-			return count;
+			return resCount;
 		} catch (SQLException e) {
 			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
-			if (!ThreadContext.inTransaction(ds)) conn.close();
+			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
 
 	/**
-	 * Updates all objects (based on their primary keys) from the source iterable into the 
+	 * Updates all objects (based on their primary keys) from the source iterable into the
 	 * target DataSource. &nbsp; On error aborts. &nbsp;
 	 * <p>Note that classes without primary keys are not supported at this time.
 	 * @param iterable
@@ -108,6 +115,7 @@ public class Bulk {
 	 */
 	public <T extends Table> int updateAll(Iterable<T> iterable) throws SQLException {
 		int count = 0;
+		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
 		Field[] fields = null;
@@ -141,27 +149,31 @@ public class Bulk {
 					if (o instanceof Character) psUpdate.setString(i++, o.toString());
 					else psUpdate.setObject(i++, o);
 				}
-				psUpdate.execute();
-				count += psUpdate.getUpdateCount();
-
+				psUpdate.addBatch();
+				if (count % BATCH_SIZE == 0) {
+					for (int k : psUpdate.executeBatch()) resCount += k;
+				}
+			}
+			if (count % BATCH_SIZE != 0) {
+				for (int k : psUpdate.executeBatch()) resCount += k;
 			}
 			psUpdate.close();
 			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
-			return count;
+			return resCount;
 		} catch (SQLException e) {
 			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (!ThreadContext.inTransaction(ds)) conn.close();
+			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
 
 	/**
-	 * Inserts all objects from the source iterable into the 
+	 * Inserts all objects from the source iterable into the
 	 * target DataSource. &nbsp; On error attempts to update (based on their primary keys). &nbsp;
 	 * On update error aborts.
 	 * <p>Note that classes without primary keys are not supported at this time.
@@ -171,6 +183,7 @@ public class Bulk {
 	 */
 	public <T extends Table> int insertOrUpdateAll(Iterable<T> iterable) throws SQLException {
 		int count = 0;
+		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
 		Field[] fields = null;
@@ -235,7 +248,7 @@ public class Bulk {
 		} finally {
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (!ThreadContext.inTransaction(ds)) conn.close();
+			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
 

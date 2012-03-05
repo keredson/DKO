@@ -51,6 +51,37 @@ public abstract class Condition {
 		}
 	};
 
+	/**
+	 * Use this class to add custom SQL code to your where clause. &nbsp;
+	 * For Example:
+	 * <pre>   {@code SomeClass.ALL.where(new Condition.Literal("id = 1"));}</pre>
+	 * Obviously this should be used sparingly, and can break compatibility between
+	 * different databases. &nbsp;  But it's here if you really need it.
+	 *
+	 * @author Derek Anderson
+	 */
+	public static class Literal extends Condition {
+
+		private String s;
+
+		public Literal(String s) {
+			this.s = s;
+		}
+
+		@Override
+		boolean matches(Table t) {
+			throw new RuntimeException("literal conditions cannot be applied to in-memory queries");
+		}
+
+		@Override
+		protected void getSQL(StringBuffer sb, List bindings,
+				Map<String, Set<String>> tableNameMap,
+				List<TableInfo> tableInfos) {
+			sb.append(s);
+		}
+
+	}
+
 	List bindings = null;
 
 	/**

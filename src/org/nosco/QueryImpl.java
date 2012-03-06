@@ -332,17 +332,18 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public int deleteAll() throws SQLException {
-		Connection conn = getConnRW();
-		if (getDBType()==DB_TYPE.MYSQL) {
-			if (this.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		Connection conn = q.getConnRW();
+		if (q.getDBType()==DB_TYPE.MYSQL) {
+			if (q.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
-			Table t = tables.get(0);
-			this.tableInfos.get(0).tableName = null;
+			Table t = q.tables.get(0);
+			q.tableInfos.get(0).tableName = null;
 			String sql = "delete from "+ ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
-					+ "." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
+					+ "." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
-			setBindings(ps);
+			q.setBindings(ps);
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
@@ -353,15 +354,15 @@ class QueryImpl<T extends Table> implements Query<T> {
 			return count;
 
 		} else if (getDBType()==DB_TYPE.SQLSERVER) {
-			if (this.tables.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
+			if (q.tables.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
 					"is not yet supported");
-			Table t = tables.get(0);
-			this.tableInfos.get(0).tableName = null;
+			Table t = q.tables.get(0);
+			q.tableInfos.get(0).tableName = null;
 			String sql = "delete from "+ ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
-					+ ".dbo." + t.TABLE_NAME() + getWhereClauseAndSetBindings();
+					+ ".dbo." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
-			setBindings(ps);
+			q.setBindings(ps);
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
@@ -372,10 +373,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 			return count;
 
 		} else {
-			String sql = "delete from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+			String sql = "delete from "+ Misc.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
 			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
-			setBindings(ps);
+			q.setBindings(ps);
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
@@ -505,6 +506,18 @@ class QueryImpl<T extends Table> implements Query<T> {
 					} else {
 						if(deferSet==null || !deferSet.contains(field)) {
 							fields.add(bind ? field.from(tableName) : field);
+							++c;
+						}
+					}
+				}
+				if (onlySet != null) {
+					// check for aliased fields - assume they're good
+					// these otherwise aren't added because they don't match anything in the
+					// set.contains() call earlier
+					for (Field<?> f : onlySet) {
+						if (!(f.TABLE.isInstance(ti.table))) continue;
+						if (f.isBound()) {
+							fields.add(bind ? f : f.unBound);
 							++c;
 						}
 					}

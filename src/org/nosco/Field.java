@@ -8,7 +8,7 @@ import org.nosco.Condition.Ternary;
 
 /**
  * This class represents a column in a table. &nbsp; It it typed to the type of the column in the database. &nbsp;
- * They are generally found as auto-generated static fields in the classes representing tables, and 
+ * They are generally found as auto-generated static fields in the classes representing tables, and
  * primarily used to create {@code Condition}s for {@code Query} objects. &nbsp; For example, if your database
  * table looked like this:
  * <table border="1" cellpadding="4" style="margin-left: 2em;">
@@ -19,24 +19,24 @@ import org.nosco.Condition.Ternary;
  * </table>
  * <p>
  * The generated class would look like this (simplified):
- * 
+ *
  * <pre>  {@code public class SomeClass extends Table {
  *     static Query<SomeClass> ALL = new Query<SomeClass>();
  *     static Field<Integer> ID = new Field<Integer>();
  *     static Field<String> NAME = new Field<String>();
  *  }}</pre>
- *  
+ *
  *  You could then write code like this:
  *  <pre>  {@code Condition c = SomeClass.ID.eq(123);
  *  for (SomeClass x : SomeClass.ALL.where(c))
  *    System.out.println(x);}
  *  </pre>
- *  
+ *
  *  Note: &nbsp; I wrote these methods to all be short in length.  "eq" instead of "equals". &nbsp;
  *  This is because I feel the common use case will be to chain multiple of these together. &nbsp;
  *  Java is already quite verbose and I thought this API would be less useful if it almost always
- *  created really long lines of Java code.  
- * 
+ *  created really long lines of Java code.
+ *
  * @author Derek Anderson
  * @param <T> the field type
  */
@@ -54,6 +54,7 @@ public class Field<T> implements Cloneable {
 	public final Class<T> TYPE;
 
 	private String boundTable = null;
+	Field<T> unBound = null;
 
 	public Field(int index, Class<? extends Table> table, String name, Class<T> type) {
 		INDEX = index;
@@ -281,6 +282,7 @@ public class Field<T> implements Cloneable {
 			@SuppressWarnings("unchecked")
 			Field<T> f = (Field<T>) this.clone();
 			f.boundTable = table;
+			f.unBound  = isBound() ? this.unBound : this;
 			return f;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

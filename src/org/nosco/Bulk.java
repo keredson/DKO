@@ -2,12 +2,7 @@ package org.nosco;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
@@ -60,7 +55,7 @@ public class Bulk {
 		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
-		Field[] fields = null;
+		Field<?>[] fields = null;
 		PreparedStatement psInsert = null;
 
 		try {
@@ -74,7 +69,7 @@ public class Bulk {
 					psInsert = createInsertPS(conn, q, table, fields);
 				}
 				int i=1;
-				for (Field field : fields) {
+				for (Field<?> field : fields) {
 					Object o = table.get(field);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
@@ -90,7 +85,7 @@ public class Bulk {
 			if (count % BATCH_SIZE != 0) {
 				for (int k : psInsert.executeBatch()) resCount += k;
 			}
-			psInsert.close();
+			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
 			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
@@ -118,9 +113,9 @@ public class Bulk {
 		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
-		Field[] fields = null;
+		Field<?>[] fields = null;
 		PreparedStatement psUpdate = null;
-		Field[] pks = null;
+		Field<?>[] pks = null;
 
 		try {
 			for (T table : iterable) {
@@ -133,7 +128,7 @@ public class Bulk {
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
-				for (Field field : fields) {
+				for (Field<?> field : fields) {
 					Object o = table.get(field);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
@@ -141,7 +136,7 @@ public class Bulk {
 					if (o instanceof Character) psUpdate.setString(i++, o.toString());
 					else psUpdate.setObject(i++, o);
 				}
-				for (Field field : pks) {
+				for (Field<?> field : pks) {
 					Object o = table.get(field);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
@@ -157,7 +152,7 @@ public class Bulk {
 			if (count % BATCH_SIZE != 0) {
 				for (int k : psUpdate.executeBatch()) resCount += k;
 			}
-			psUpdate.close();
+			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
 			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
@@ -186,10 +181,10 @@ public class Bulk {
 		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
-		Field[] fields = null;
+		Field<?>[] fields = null;
 		PreparedStatement psInsert = null;
 		PreparedStatement psUpdate = null;
-		Field[] pks = null;
+		Field<?>[] pks = null;
 
 		try {
 			for (T table : iterable) {
@@ -203,7 +198,7 @@ public class Bulk {
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
-				for (Field field : fields) {
+				for (Field<?> field : fields) {
 					Object o = table.get(field);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
@@ -237,6 +232,8 @@ public class Bulk {
 				}
 
 			}
+			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
+			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
 			if (!ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
@@ -248,6 +245,66 @@ public class Bulk {
 		} finally {
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
+			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
+		}
+	}
+
+	/**
+	 * Updates all objects (based on their primary keys) from the source iterable into the
+	 * target DataSource. &nbsp; On error aborts. &nbsp;
+	 * <p>Note that classes without primary keys are not supported at this time.
+	 * @param iterable
+	 * @return
+	 * @throws SQLException
+	 */
+	public <T extends Table> int deleteAll(Iterable<T> iterable) throws SQLException {
+		int count = 0;
+		int resCount = 0;
+		boolean first = true;
+		Connection conn = null;
+		PreparedStatement psDelete = null;
+		Field<?>[] pks = null;
+
+		try {
+			for (T table : iterable) {
+				if (first) {
+					first = false;
+					QueryImpl<T> q = (QueryImpl<T>) new QueryImpl<T>(table.getClass()).use(ds);
+					conn = q.getConnRW();
+					pks = table.PK() == null ? null : table.PK().GET_FIELDS();
+					if (pks == null || pks.length == 0) {
+						throw new RuntimeException("cannot bulk delete from tha PK-less table");
+					}
+					psDelete = createDeletePS(conn, q, table, pks);
+				}
+				int i=1;
+				for (Field<?> field : pks) {
+					Object o = table.get(field);
+					// hack for sql server which otherwise gives:
+					// com.microsoft.sqlserver.jdbc.SQLServerException:
+					// The conversion from UNKNOWN to UNKNOWN is unsupported.
+					if (o instanceof Character) psDelete.setString(i++, o.toString());
+					else psDelete.setObject(i++, o);
+				}
+				psDelete.addBatch();
+				if (count % BATCH_SIZE == 0) {
+					for (int k : psDelete.executeBatch()) resCount += k;
+				}
+			}
+			if (count % BATCH_SIZE != 0) {
+				for (int k : psDelete.executeBatch()) resCount += k;
+			}
+			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
+			if (!ThreadContext.inTransaction(ds)) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
+			}
+			return resCount;
+		} catch (SQLException e) {
+			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
+			throw e;
+		} finally {
+			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
 			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
@@ -286,6 +343,23 @@ public class Bulk {
 		sb.append(Misc.join("=? ,", fields));
 		sb.append("=?  where ");
 		sb.append(Misc.join("=? ,", pks));
+		sb.append("=?;");
+		String sql = sb.toString();
+		Misc.log(sql, null);
+		ps = conn.prepareStatement(sql);
+		return ps;
+	}
+
+	private <T extends Table> PreparedStatement createDeletePS(Connection conn,
+			QueryImpl<T> q, Table table, Field[] pks) throws SQLException {
+		PreparedStatement ps;
+		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		StringBuffer sb = new StringBuffer();
+		sb.append("delete from ");
+		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
+				+sep+ table.TABLE_NAME());
+		sb.append(" where ");
+		sb.append(Misc.join("=? and ", pks));
 		sb.append("=?;");
 		String sql = sb.toString();
 		Misc.log(sql, null);

@@ -9,13 +9,20 @@ import org.nosco.QueryImpl.TableInfo;
 
 class SqlContext {
 
-	public SqlContext(QueryImpl<?> q) {
+	SqlContext(QueryImpl<?> q) {
 		tableNameMap = q.tableNameMap;
 		tableInfos = q.tableInfos;
 		dbType = q.getDBType();
 	}
-	public Map<String, Set<String>> tableNameMap = null;
-	public List<TableInfo> tableInfos = null;
-	public DB_TYPE dbType = null;
+
+	Map<String, Set<String>> tableNameMap = null;
+	List<TableInfo> tableInfos = null;
+	DB_TYPE dbType = null;
+	SqlContext parentContext = null;
+	public int maxFields = Integer.MAX_VALUE;
+
+	boolean inInnerQuery() {
+		return parentContext != null;
+	}
 
 }

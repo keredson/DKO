@@ -45,11 +45,64 @@ public abstract class Function {
 	}
 
 	/**
+	 * COALESCE is a sql function that will return the first non-null parameter value.
 	 * @param fields
 	 * @return
 	 */
 	public static <T> Function COALESCE(Field<? extends T>... fields) {
 		return new SimpleFunction("coalesce", fields);
+	}
+
+	/**
+	 * COALESCE is a sql function that will return the first non-null parameter value.
+	 * @param field
+	 * @param v
+	 * @return
+	 */
+	public static <T> Function COALESCE(Field<? extends T> field, T v) {
+		return new SimpleFunction("coalesce", field, v);
+	}
+
+	/**
+	 * COALESCE is a sql function that will return the first non-null parameter value.
+	 * @param f1
+	 * @param f2
+	 * @param v
+	 * @return
+	 */
+	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2, T v) {
+		return new SimpleFunction("coalesce", f1, f2, v);
+	}
+
+	/**
+	 * COALESCE is a sql function that will return the first non-null parameter value.
+	 * @param f1
+	 * @param f2
+	 * @param f3
+	 * @param v
+	 * @return
+	 */
+	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2,
+			Field<? extends T> f3, T v) {
+		return new SimpleFunction("coalesce", f1, f2, f3, v);
+	}
+
+	/**
+	 * COALESCE is a sql function that will return the first non-null parameter value.
+	 * &nbsp;
+	 * If you need more than 4, roll your own Function instance. &nbsp;
+	 * Sadly Java won't let you use varargs without it being the final
+	 * parameter in the method call.
+	 * @param f1
+	 * @param f2
+	 * @param f3
+	 * @param f4
+	 * @param v
+	 * @return
+	 */
+	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2,
+			Field<? extends T> f3, Field<? extends T> f4, T v) {
+		return new SimpleFunction("coalesce", f1, f2, f3, f4, v);
 	}
 
 	public abstract String getSQL(SqlContext context);

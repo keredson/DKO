@@ -19,6 +19,7 @@ import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree.Callback;
+import org.nosco.util.Tuple;
 
 
 
@@ -87,73 +88,78 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	}
 
 	protected String getSQL() {
-		return getSQL(false);
+		return getSQL(new SqlContext(query)).a;
 	}
 
-	protected String getSQL(boolean innerQuery) {
-		if (sql==null) {
+	QueryImpl<T> getUnderlyingQuery() {
+		return query;
+	}
 
-			selectedFields = query.getSelectFields(false);
-			selectedBoundFields = query.getSelectFields(true);
-			fieldValues = new Object[selectedFields.length];
-			StringBuffer sb = new StringBuffer();
-			sb.append("select ");
-			if (query.distinct) sb.append("distinct ");
-			if (query.getDBType()==DB_TYPE.SQLSERVER && query.top>0) {
-				sb.append(" top ").append(query.top).append(" ");
-			}
-			if (query.globallyAppliedSelectFunction == null) {
-				sb.append(Misc.join(", ", selectedBoundFields));
-			} else {
-				String[] x = new String[selectedBoundFields.length];
-				for (int i=0; i < x.length; ++i) {
-					x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i] +")";
-				}
-				sb.append(Misc.join(", ", x));
-			}
-			sb.append(" from ");
-			sb.append(Misc.join(", ", query.getTableNameList()));
-			sb.append(query.getWhereClauseAndSetBindings());
-
-			List<DIRECTION> directions = query.getOrderByDirections();
-			List<Field<?>> fields = query.getOrderByFields();
-			if (!innerQuery && directions!=null & fields!=null) {
-				sb.append(" order by ");
-				int x = Math.min(directions.size(), fields.size());
-				String[] tmp = new String[x];
-				for (int i=0; i<x; ++i) {
-					DIRECTION direction = directions.get(i);
-					tmp[i] = fields.get(i) + (direction==DESCENDING ? " DESC" : "");
-				}
-				sb.append(Misc.join(", ", tmp));
-			}
-
-			if (query.getDBType()!=DB_TYPE.SQLSERVER && query.top>0) {
-				sb.append(" limit ").append(query.top);
-			}
-
-			if (innerQuery && selectedFields.length > 1) {
-				Misc.log(sb.toString(), null);
-				throw new RuntimeException("inner queries cannot have more than one selected" +
-						"field - this query has "+ selectedFields.length);
-			}
-
-			sql = sb.toString();
+	protected Tuple<String,List<Object>> getSQL(SqlContext context) {
+		selectedFields = query.getSelectFields(false);
+		selectedBoundFields = query.getSelectFields(true);
+		fieldValues = new Object[selectedFields.length];
+		StringBuffer sb = new StringBuffer();
+		sb.append("select ");
+		if (query.distinct) sb.append("distinct ");
+		if (query.getDBType()==DB_TYPE.SQLSERVER && query.top>0) {
+			sb.append(" top ").append(query.top).append(" ");
 		}
-		return sql;
+		if (query.globallyAppliedSelectFunction == null) {
+			sb.append(Misc.join(", ", selectedBoundFields));
+		} else {
+			String[] x = new String[selectedBoundFields.length];
+			for (int i=0; i < x.length; ++i) {
+				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i] +")";
+			}
+			sb.append(Misc.join(", ", x));
+		}
+		sb.append(" from ");
+		sb.append(Misc.join(", ", query.getTableNameList()));
+		Tuple<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
+		sb.append(ret.a);
+
+		List<DIRECTION> directions = query.getOrderByDirections();
+		List<Field<?>> fields = query.getOrderByFields();
+		if (!context.inInnerQuery() && directions!=null & fields!=null) {
+			sb.append(" order by ");
+			int x = Math.min(directions.size(), fields.size());
+			String[] tmp = new String[x];
+			for (int i=0; i<x; ++i) {
+				DIRECTION direction = directions.get(i);
+				tmp[i] = fields.get(i) + (direction==DESCENDING ? " DESC" : "");
+			}
+			sb.append(Misc.join(", ", tmp));
+		}
+
+		if (query.getDBType()!=DB_TYPE.SQLSERVER && query.top>0) {
+			sb.append(" limit ").append(query.top);
+		}
+
+		if (selectedFields.length > context.maxFields) {
+			Misc.log(sb.toString(), null);
+			throw new RuntimeException("too many fields selected: "+ selectedFields.length
+					+" > "+ context.maxFields +" (note: inner queries inside a 'where x in " +
+							"()' can have at most one returned column.  use onlyFields()" +
+							"in the inner query)");
+		}
+
+		sql = sb.toString();
+		return new Tuple<String,List<Object>>(sb.toString(), ret.b);
 	}
 
-	protected List<Object> getSQLBindings() {
-		return query.getSQLBindings();
-	}
+//	protected List<Object> getSQLBindings() {
+//		return query.getSQLBindings();
+//	}
 
 	@Override
 	public Iterator<T> iterator() {
 		try {
 			conn = query.getConnR();
-			ps = conn.prepareStatement(getSQL());
-			Misc.log(sql, query.bindings);
-			query.setBindings(ps);
+			Tuple<String, List<Object>> ret = getSQL(new SqlContext(query));
+			ps = conn.prepareStatement(ret.a);
+			Misc.log(sql, ret.b);
+			query.setBindings(ps, ret.b);
 			ps.execute();
 			rs = ps.getResultSet();
 			//m = query.getType().getMethod("INSTANTIATE", Map.class);

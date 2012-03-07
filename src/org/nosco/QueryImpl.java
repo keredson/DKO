@@ -31,6 +31,7 @@ import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
+import org.nosco.util.Tuple;
 
 
 class QueryImpl<T extends Table> implements Query<T> {
@@ -417,6 +418,24 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	String getWhereClauseAndSetBindings() {
 		return getWhereClauseAndSetBindings(true);
+	}
+
+	Tuple<String,List<Object>> getWhereClauseAndBindings(SqlContext context) {
+		StringBuffer sb = new StringBuffer();
+		List<Object> bindings = new ArrayList<Object>();
+		if (conditions!=null && conditions.size()>0) {
+			sb.append(" where");
+			String[] tmp = new String[conditions.size()];
+			int i=0;
+			for (Condition condition : conditions) {
+				tmp[i++] = condition.getSQL(context);
+				bindings.addAll(condition.getSQLBindings());
+			}
+			sb.append(Misc.join(" and", tmp));
+		}
+		return new Tuple<String,List<Object>>(
+				sb.toString(),
+				Collections.unmodifiableList(bindings));
 	}
 
 	String getWhereClauseAndSetBindings(boolean bindTables) {

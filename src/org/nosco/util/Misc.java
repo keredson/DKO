@@ -19,7 +19,10 @@ public class Misc {
 	    	sb.append(o);
 	    	sb.append(s);
 	    }
-	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
+	    if (c != null && c.size() > 0) {
+	    	sb.delete(sb.length()-s.length(), sb.length());
+	    }
+	    return sb.toString();
 	}
 
 	public static String join(String s, Object... c) {

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.nosco.QueryImpl.TableInfo;
 import org.nosco.util.Misc;
+import org.nosco.util.Tuple;
 
 /**
  * This class represents a SQL conditional statement.  (ie: the contents of the {@code where} clause)
@@ -446,8 +447,14 @@ public abstract class Condition {
 				sb.append(derefField(field, context));
 				sb.append(cmp);
 				sb.append('(');
-				sb.append(s.getSQL(true));
-				bindings.addAll(s.getSQLBindings());
+				SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
+				innerContext.parentContext = context;
+				if (" in ".equals(cmp)) {
+					innerContext.maxFields = 1;
+				}
+				Tuple<String, List<Object>> ret = s.getSQL(innerContext);
+				sb.append(ret.a);
+				bindings.addAll(ret.b);
 				sb.append(')');
 			} else if (function!=null) {
 				sb.append(derefField(field, context));
@@ -555,11 +562,15 @@ public abstract class Condition {
 		if (field.isBound()) return field.toString();
 		List<String> selectedTables = new ArrayList<String>();
 		List<TableInfo> unboundTables = new ArrayList<TableInfo>();
-		for (TableInfo info : context.tableInfos) {
-			selectedTables.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
-			if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
-				unboundTables.add(info);
+		SqlContext tmp = context;
+		while (tmp != null) {
+			for (TableInfo info : tmp.tableInfos) {
+				selectedTables.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
+				if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
+					unboundTables.add(info);
+				}
 			}
+			tmp = tmp.parentContext;
 		}
 		if (unboundTables.size() < 1) {
 			throw new RuntimeException("field "+ field +
@@ -607,8 +618,11 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(" exists (");
-			sb.append(s.getSQL());
-			bindings.addAll(s.getSQLBindings());
+			SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
+			innerContext.parentContext = context;
+			Tuple<String, List<Object>> ret = s.getSQL(innerContext);
+			sb.append(ret.a);
+			bindings.addAll(ret.b);
 			sb.append(")");
 		}
 

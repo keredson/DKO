@@ -301,4 +301,11 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		return null;
 	}
 
+	@Override
+	public <S> Iterable<S> select(Field<S> field) {
+		List<S> ret = new ArrayList<S>();
+		for (T t : cache) ret.add(t.get(field));
+		return ret;
+	}
+
 }

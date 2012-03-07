@@ -360,6 +360,16 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> cross(Class<? extends Table> t);
 
 	/**
+	 * Returns you an iterable of the values only in the given field. &nbsp;
+	 * If you want an iterable of more than one field type, you should use
+	 * {@code onlyFields(field1, field2, ...)}. &nbsp; This will return you an
+	 * iterable of T instances, with only those fields populated. &nbsp;
+	 * If Java adds typed tuple support at some point this method may be extended.
+	 * @return
+	 */
+	public <S> Iterable<S> select(Field<S> field);
+
+	/**
 	 * Evaluates the given query into memory and returns to you a new query backed by
 	 * this in-memory store. &nbsp; (does nothing if this is already an in-memory
 	 * query.

@@ -218,11 +218,11 @@ class ClassGenerator {
 		int index = 0;
 		for (String column : columns.keySet()) {
 			br.write("\tpublic static final Field<");
-			br.write(getFieldType(columns.getString(column)).getName());
+			br.write(getFieldType(columns.getString(column)));
 			br.write("> "+ getFieldName(column));
-			br.write(" = new Field<"+ getFieldType(columns.getString(column)).getName());
+			br.write(" = new Field<"+ getFieldType(columns.getString(column)));
 			br.write(">("+ index +", "+ className +".class, \""+ column);
-			br.write("\", "+ getFieldType(columns.getString(column)).getName() +".class");
+			br.write("\", "+ getFieldType(columns.getString(column)) +".class");
 			br.write(");\n");
 			++index;
 		}
@@ -262,7 +262,7 @@ class ClassGenerator {
 
 		// write field value references
 		for (String column : columns.keySet()) {
-			br.write("\tprivate "+ getFieldType(columns.getString(column)).getName());
+			br.write("\tprivate "+ getFieldType(columns.getString(column)));
 			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
 		}
 		br.write("\n");
@@ -278,7 +278,7 @@ class ClassGenerator {
 		for (String column : columns.keySet()) {
 			br.write("\t\t\tif (fields[i]=="+ getFieldName(column) +") {\n");
 			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = (");
-			br.write(getFieldType(columns.getString(column)).getName());
+			br.write(getFieldType(columns.getString(column)));
 			br.write(") objects[i];\n");
 			br.write("\t\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t\t\tcontinue;\n");
@@ -323,7 +323,7 @@ class ClassGenerator {
 		br.write("\tpublic <S> void set(Field<S> _field, S _value) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
-			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(columns.getString(column)).getName() +") _value;\n");
+			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(columns.getString(column)) +") _value;\n");
 		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
@@ -356,7 +356,7 @@ class ClassGenerator {
 			//	if (fk.columns.containsKey(column)) skipColumn = true;
 			//}
 			//if (skipColumn) continue;
-			String cls = getFieldType(columns.getString(column)).getName();
+			String cls = getFieldType(columns.getString(column));
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\t"+ className +" _tmp = ALL.onlyFields(");
@@ -745,7 +745,11 @@ class ClassGenerator {
 	}
 
 
-	private Class<? extends Object> getFieldType(String type) {
+	private String getFieldType(String type) {
+		return getFieldClassType(type).getName();
+	}
+
+	private Class<? extends Object> getFieldClassType(String type) {
 		if ("varchar".equals(type)) return String.class;
 		if ("char".equals(type)) return Character.class;
 		if ("nvarchar".equals(type)) return String.class;

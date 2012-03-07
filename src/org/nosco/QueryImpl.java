@@ -1011,4 +1011,40 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return ds;
 	}
 
+	@Override
+	public <S> Iterable<S> select(final Field<S> field) {
+		final QueryImpl<T> q = this;
+		return new Iterable<S>() {
+			private Iterable<T> it1 = q.all();
+			@Override
+			public Iterator<S> iterator() {
+				return new Iterator<S>() {
+					private S next = null;
+					private Iterator<T> it = it1.iterator();
+					@Override
+					public boolean hasNext() {
+						if (next != null) return true;
+						if (it.hasNext()) {
+							next = it.next().get(field);
+							return true;
+						}
+						return false;
+					}
+					@Override
+					public S next() {
+						if (hasNext()) {
+							S tmp = next;
+							next = null;
+							return tmp;
+						}
+						throw new RuntimeException("no more available");
+					}
+					@Override
+					public void remove() {
+						throw new RuntimeException("remove not implemented");
+					}
+				};
+			}};
+	}
+
 }

@@ -28,9 +28,9 @@ import org.nosco.json.JSONObject;
 
 /**
  * Extracts schema information from a provided database into a JSON file. &nbsp;
- * Designed to be run occasionally, with the output file checked into version control. 
+ * Designed to be run occasionally, with the output file checked into version control.
  * (to avoid regular builds hitting your DB server, and for code generation history) &nbsp;
- * 
+ *
  * @author Derek Anderson
  */
 public class SchemaExtractor extends Task {
@@ -221,8 +221,8 @@ public class SchemaExtractor extends Task {
 
 			try {
 				s.execute("use \"" + db + "\";");
-				s.execute("select table_schema, table_name, column_name, data_type "
-						+ "from information_schema.columns;");
+				s.execute("select table_schema, table_name, column_name, data_type, " +
+						"character_maximum_length from information_schema.columns;");
 				ResultSet rs2 = s.getResultSet();
 				while (rs2.next()) {
 					String schema = db; // +"."+ rs2.getString("table_schema");
@@ -238,6 +238,9 @@ public class SchemaExtractor extends Task {
 							&& Character.isLowerCase(table.charAt(2))) continue;
 					String column = rs2.getString("column_name");
 					String type = rs2.getString("data_type");
+					int maxLength = rs2.getInt("character_maximum_length");
+					if ("char".equalsIgnoreCase(type) &&  maxLength > 1)
+						type = "varchar";
 
 					Map<String, String> columns = tables.get(table);
 					if (columns == null) {

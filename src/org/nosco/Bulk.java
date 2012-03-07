@@ -340,9 +340,9 @@ public class Bulk {
 		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" set ");
-		sb.append(Misc.join("=? ,", fields));
+		sb.append(Misc.join("=?, ", fields));
 		sb.append("=?  where ");
-		sb.append(Misc.join("=? ,", pks));
+		sb.append(Misc.join("=? and ", pks));
 		sb.append("=?;");
 		String sql = sb.toString();
 		Misc.log(sql, null);

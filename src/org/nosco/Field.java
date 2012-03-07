@@ -53,7 +53,7 @@ public class Field<T> implements Cloneable {
 	public final String NAME;
 	public final Class<T> TYPE;
 
-	private String boundTable = null;
+	String boundTable = null;
 	Field<T> unBound = null;
 
 	public Field(int index, Class<? extends Table> table, String name, Class<T> type) {
@@ -73,15 +73,6 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
-	 * Creates a condition representing this field not equal to the literal value of the parameter.
-	 * @param v
-	 * @return
-	 */
-	public Condition neq(T v) {
-		return new Binary(this, "!=", v);
-	}
-
-	/**
 	 * Creates a condition representing this field equal to some other field.
 	 * @param v
 	 * @return
@@ -91,11 +82,38 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Creates a condition representing this field equal to some function.
+	 * @param v
+	 * @return
+	 */
+	public Condition eq(Function v) {
+		return new Binary(this, "=", v);
+	}
+
+	/**
+	 * Creates a condition representing this field not equal to the literal value of the parameter.
+	 * @param v
+	 * @return
+	 */
+	public Condition neq(T v) {
+		return new Binary(this, "!=", v);
+	}
+
+	/**
 	 * Creates a condition representing this field not equal to some other field.
 	 * @param v
 	 * @return
 	 */
 	public Condition neq(Field<T> v) {
+		return new Binary(this, "!=", v);
+	}
+
+	/**
+	 * Creates a condition representing this field not equal to some function.
+	 * @param v
+	 * @return
+	 */
+	public Condition neq(Function v) {
 		return new Binary(this, "!=", v);
 	}
 
@@ -131,11 +149,47 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Creates a condition representing this field less than some other field.
+	 * @param v
+	 * @return
+	 */
+	public Condition lt(Field<T> v) {
+		return new Binary(this, "<", v);
+	}
+
+	/**
+	 * Creates a condition representing this field less than some function.
+	 * @param v
+	 * @return
+	 */
+	public Condition lt(Function v) {
+		return new Binary(this, "<", v);
+	}
+
+	/**
 	 * Creates a condition representing this field less than or equal to the literal value of the parameter.
 	 * @param v
 	 * @return
 	 */
 	public Condition lte(T v) {
+		return new Binary(this, "<=", v);
+	}
+
+	/**
+	 * Creates a condition representing this field less than or equal to some other field.
+	 * @param v
+	 * @return
+	 */
+	public Condition lte(Field<T> v) {
+		return new Binary(this, "<=", v);
+	}
+
+	/**
+	 * Creates a condition representing this field less than or equal to some function.
+	 * @param v
+	 * @return
+	 */
+	public Condition lte(Function v) {
 		return new Binary(this, "<=", v);
 	}
 
@@ -149,11 +203,47 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Creates a condition representing this field greater than some other field.
+	 * @param v
+	 * @return
+	 */
+	public Condition gt(Field<T> v) {
+		return new Binary(this, ">", v);
+	}
+
+	/**
+	 * Creates a condition representing this field greater than some function.
+	 * @param v
+	 * @return
+	 */
+	public Condition gt(Function v) {
+		return new Binary(this, ">", v);
+	}
+
+	/**
 	 * Creates a condition representing this field greater than or equal to the literal value of the parameter.
 	 * @param v
 	 * @return
 	 */
 	public Condition gte(T v) {
+		return new Binary(this, ">=", v);
+	}
+
+	/**
+	 * Creates a condition representing this field greater than or equal to some other field.
+	 * @param v
+	 * @return
+	 */
+	public Condition gte(Field<T> v) {
+		return new Binary(this, ">=", v);
+	}
+
+	/**
+	 * Creates a condition representing this field greater than or equal to some function.
+	 * @param v
+	 * @return
+	 */
+	public Condition gte(Function v) {
 		return new Binary(this, ">=", v);
 	}
 
@@ -180,6 +270,36 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition between(T v1, T v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the literal values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(T v1, Function v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the literal values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(Function v1, T v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the literal values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(Function v1, Function v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 

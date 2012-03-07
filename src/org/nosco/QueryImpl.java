@@ -40,7 +40,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	private Field<?>[] fields;
 	private Field<?>[] boundFields;
 	List<Object> bindings = null;
-	private Map<String,Set<String>> tableNameMap = null;
+	Map<String,Set<String>> tableNameMap = null;
 
 	// these should be cloned
 	List<Condition> conditions = null;
@@ -274,6 +274,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 			q.onlySet.add(f);
 		} //*/
 		for (Field<?> field : fields) {
+			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+				throw new RuntimeException("cannot use bound fields " +
+						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+						"primary/first table");
+			}
 			q.onlySet.add(field);
 		}
 		return q;
@@ -427,12 +432,14 @@ class QueryImpl<T extends Table> implements Query<T> {
 				tableNameMap.get(id).add(bindTables ? ti.tableName : ti.table.TABLE_NAME());
 			}
 
+			SqlContext context = new SqlContext(this);
+
 			if (conditions!=null && conditions.size()>0) {
 				sb.append(" where");
 				String[] tmp = new String[conditions.size()];
 				int i=0;
 				for (Condition condition : conditions) {
-					tmp[i++] = condition.getSQL(tableNameMap, tableInfos);
+					tmp[i++] = condition.getSQL(context);
 					bindings.addAll(condition.getSQLBindings());
 				}
 				sb.append(Misc.join(" and", tmp));
@@ -499,25 +506,22 @@ class QueryImpl<T extends Table> implements Query<T> {
 				String tableName = bind ? ti.tableName : null;
 				for (Field<?> field : ti.table.FIELDS()) {
 					if(onlySet!=null) {
-						if(onlySet.contains(field) && (deferSet==null || !deferSet.contains(field))) {
-							fields.add(bind ? field.from(tableName) : field);
-							++c;
+						for (Field<?> other : onlySet) {
+							if (field == other && ti.nameAutogenned) {
+								fields.add(bind ? field.from(tableName) : field);
+								++c;
+								continue;
+							}
+							if (other.isBound() && other.boundTable.equals(ti.tableName)
+									&& field.sameField(other)) {
+								fields.add(bind ? field.from(tableName) : field);
+								++c;
+								continue;
+							}
 						}
 					} else {
 						if(deferSet==null || !deferSet.contains(field)) {
 							fields.add(bind ? field.from(tableName) : field);
-							++c;
-						}
-					}
-				}
-				if (onlySet != null) {
-					// check for aliased fields - assume they're good
-					// these otherwise aren't added because they don't match anything in the
-					// set.contains() call earlier
-					for (Field<?> f : onlySet) {
-						if (!(f.TABLE.isInstance(ti.table))) continue;
-						if (f.isBound()) {
-							fields.add(bind ? f : f.unBound);
 							++c;
 						}
 					}
@@ -804,10 +808,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
 			throws SQLException {
+		SqlContext context = new SqlContext(this);
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, tableInfos)
-				+", sum("+ Condition.derefField(sumField, tableInfos) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, tableInfos);
+		sql = "select "+ Condition.derefField(byField, context)
+				+", sum("+ Condition.derefField(sumField, context) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, context);
 		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -834,7 +839,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public Double sum(Field<? extends Number> sumField) throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select sum("+ Condition.derefField(sumField, tableInfos) +") from "+ sql;
+		SqlContext context = new SqlContext(this);
+		sql = "select sum("+ Condition.derefField(sumField, context) +") from "+ sql;
 		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -855,9 +861,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
 		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, tableInfos)
-				+", count("+ Condition.derefField(byField, tableInfos) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, tableInfos);
+		SqlContext context = new SqlContext(this);
+		sql = "select "+ Condition.derefField(byField, context)
+				+", count("+ Condition.derefField(byField, context) +") from "+ sql
+				+" group by "+ Condition.derefField(byField, context);
 		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);

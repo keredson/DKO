@@ -29,7 +29,7 @@ public abstract class Condition {
 	 * always true
 	 */
 	public static final Condition TRUE = new Condition() {
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(" 1=1");
 		}
 		@Override
@@ -42,7 +42,7 @@ public abstract class Condition {
 	 * always false
 	 */
 	public static final Condition FALSE = new Condition() {
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(" 1=0");
 		}
 		@Override
@@ -74,9 +74,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings,
-				Map<String, Set<String>> tableNameMap,
-				List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(s);
 		}
 
@@ -87,10 +85,10 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	String getSQL(Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+	String getSQL(SqlContext context) {
 		StringBuffer sb = new StringBuffer();
 		bindings = new ArrayList();
-		getSQL(sb, bindings, tableNameMap, tableInfos);
+		getSQL(sb, bindings, context);
 		return sb.toString();
 	}
 
@@ -109,7 +107,7 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	protected abstract void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos);
+	protected abstract void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context);
 
 	/**
 	 * Creates a new condition negating the current condition.
@@ -158,11 +156,11 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
 				Condition condition = conditions.get(i);
-				condition.getSQL(sb, bindings, tableNameMap, tableInfos);
+				condition.getSQL(sb, bindings, context);
 				if (i<conditions.size()-1) {
 					sb.append(" and ");
 				}
@@ -197,11 +195,11 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
 				Condition condition = conditions.get(i);
-				condition.getSQL(sb, bindings, tableNameMap, tableInfos);
+				condition.getSQL(sb, bindings, context);
 				if (i<conditions.size()-1) {
 					sb.append(" or ");
 				}
@@ -234,10 +232,10 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(" not ");
 			if (parens) sb.append("(");
-			condition.getSQL(sb, bindings, tableNameMap, tableInfos);
+			condition.getSQL(sb, bindings, context);
 			if (parens) sb.append(")");
 		}
 
@@ -255,6 +253,8 @@ public abstract class Condition {
 		private String cmp2;
 		private Object v1;
 		private Object v2;
+		private Function function1;
+		private Function function2;
 
 		public Ternary(Field field, String cmp1, Object v1, String cmp2, Object v2) {
 			this.field = field;
@@ -262,18 +262,60 @@ public abstract class Condition {
 			this.cmp2 = cmp2;
 			this.v1 = v1;
 			this.v2 = v2;
+			function1 = null;
+			function2 = null;
+		}
+
+		public Ternary(Field field, String cmp1, Function f1, String cmp2, Object v2) {
+			this.field = field;
+			this.cmp1 = cmp1;
+			this.cmp2 = cmp2;
+			this.v1 = null;
+			this.v2 = v2;
+			function1 = f1;
+			function2 = null;
+		}
+
+		public Ternary(Field field, String cmp1, Object v1, String cmp2, Function f2) {
+			this.field = field;
+			this.cmp1 = cmp1;
+			this.cmp2 = cmp2;
+			this.v1 = v1;
+			this.v2 = null;
+			function1 = null;
+			function2 = f2;
+		}
+
+		public Ternary(Field field, String cmp1, Function f1, String cmp2, Function f2) {
+			this.field = field;
+			this.cmp1 = cmp1;
+			this.cmp2 = cmp2;
+			this.v1 = null;
+			this.v2 = null;
+			function1 = f1;
+			function2 = f2;
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, tableInfos));
+			sb.append(derefField(field, context));
 			sb.append(cmp1);
-			sb.append("?");
-			bindings.add(v1);
+			if (function1 == null) {
+				sb.append("?");
+				bindings.add(v1);
+			} else {
+				sb.append(function1.getSQL(context));
+				bindings.addAll(function1.getSQLBindings());
+			}
 			sb.append(cmp2);
-			sb.append("?");
-			bindings.add(v2);
+			if (function2 == null) {
+				sb.append("?");
+				bindings.add(v2);
+			} else {
+				sb.append(function2.getSQL(context));
+				bindings.addAll(function2.getSQLBindings());
+			}
 		}
 
 		@Override
@@ -307,9 +349,9 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, tableInfos));
+			sb.append(derefField(field, context));
 			sb.append(cmp);
 		}
 
@@ -335,6 +377,7 @@ public abstract class Condition {
 		private Field<?> field2;
 		private String cmp;
 		private Select<?> s;
+		private Function function = null;
 
 		public <T> Binary(Field<T> field, String cmp, Object v) {
 			// note "v" should be of type T here - set to object to work around
@@ -356,12 +399,18 @@ public abstract class Condition {
 			this.s = (Select<?>) q.all();
 		}
 
+		public <T> Binary(Field<T> field, String cmp, Function f) {
+			this.field = field;
+			this.cmp = cmp;
+			this.function  = f;
+		}
+
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
 			if (v!=null) {
-				sb.append(derefField(field, tableInfos));
+				sb.append(derefField(field, context));
 				sb.append(cmp);
 				sb.append("?");
 				bindings.add(v);
@@ -370,13 +419,13 @@ public abstract class Condition {
 					try {
 						Table table = field.TABLE.newInstance();
 						String id = table.SCHEMA_NAME() +"."+ table.TABLE_NAME();
-						Set<String> tableNames = tableNameMap.get(id);
+						Set<String> tableNames = context.tableNameMap.get(id);
 						if (tableNames.size() > 2) {
 							throw new RuntimeException("field ambigious");
 						} else if (tableNames.size() < 2) {
-							sb.append(derefField(field, tableInfos));
+							sb.append(derefField(field, context));
 							sb.append(cmp);
-							sb.append(derefField(field2, tableInfos));
+							sb.append(derefField(field2, context));
 						} else {
 							Iterator<String> i = tableNames.iterator();
 							sb.append(i.next() + "."+ field);
@@ -389,19 +438,24 @@ public abstract class Condition {
 						e.printStackTrace();
 					}
 				} else {
-					sb.append(derefField(field, tableInfos));
+					sb.append(derefField(field, context));
 					sb.append(cmp);
-					sb.append(derefField(field2, tableInfos));
+					sb.append(derefField(field2, context));
 				}
 			} else if (s!=null) {
-				sb.append(derefField(field, tableInfos));
+				sb.append(derefField(field, context));
 				sb.append(cmp);
 				sb.append('(');
 				sb.append(s.getSQL(true));
 				bindings.addAll(s.getSQLBindings());
 				sb.append(')');
+			} else if (function!=null) {
+				sb.append(derefField(field, context));
+				sb.append(cmp);
+				sb.append(function.getSQL(context));
+				bindings.addAll(function.getSQLBindings());
 			} else {
-				sb.append(derefField(field, tableInfos));
+				sb.append(derefField(field, context));
 				sb.append(" is null");
 			}
 		}
@@ -423,19 +477,19 @@ public abstract class Condition {
 
 	static class In extends Condition {
 
-		private Field field;
+		private Field<?> field;
 		private String cmp;
 		private Object[] set;
 		private Collection<?> set2;
 
-		public In(Field field, String cmp, Object... set) {
+		public In(Field<?> field, String cmp, Object... set) {
 			this.field = field;
 			this.cmp = cmp;
 			this.set = set;
 			this.set2 = null;
 		}
 
-		public In(Field field, String cmp, Collection<?> set) {
+		public In(Field<?> field, String cmp, Collection<?> set) {
 			this.field = field;
 			this.cmp = cmp;
 			this.set = null;
@@ -443,9 +497,9 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings, Map<String,Set<String>> tableNameMap, List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, tableInfos));
+			sb.append(derefField(field, context));
 			sb.append(cmp);
 			sb.append('(');
 			if (set != null && set.length > 0) {
@@ -497,11 +551,11 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	public static String derefField(Field<?> field, List<TableInfo> tableInfos) {
+	public static String derefField(Field<?> field, SqlContext context) {
 		if (field.isBound()) return field.toString();
 		List<String> selectedTables = new ArrayList<String>();
 		List<TableInfo> unboundTables = new ArrayList<TableInfo>();
-		for (TableInfo info : tableInfos) {
+		for (TableInfo info : context.tableInfos) {
 			selectedTables.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
 			if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
 				unboundTables.add(info);
@@ -551,9 +605,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List bindings,
-				Map<String, Set<String>> tableNameMap,
-				List<TableInfo> tableInfos) {
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(" exists (");
 			sb.append(s.getSQL());
 			bindings.addAll(s.getSQLBindings());

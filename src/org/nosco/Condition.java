@@ -76,6 +76,7 @@ public abstract class Condition {
 
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+			sb.append(" ");
 			sb.append(s);
 		}
 

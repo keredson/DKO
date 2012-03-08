@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
@@ -35,8 +36,9 @@ class ClassGenerator {
 	private String[] stripSuffixes;
 
 	private Map<String, String> tableToClassName;
-	private JSONObject typeMappings = new JSONObject();
+	private JSONObject classTypeMappings = new JSONObject();
 	private JSONObject typeMappingFunctions = new JSONObject();
+	private Map<Pattern, String> schemaTypeMappings;
 
 
 	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
@@ -74,7 +76,8 @@ class ClassGenerator {
 			fakeFKs = new JSONObject(sb.toString());
 		}
 
-		JSONObject typeMappings = new JSONObject();
+		JSONObject classTypeMappings = new JSONObject();
+		JSONObject schemaTypeMappings = new JSONObject();
 		JSONObject typeMappingFunctions = new JSONObject();
 		File mappingsFile = typeMappingsFile==null ? null : new File(typeMappingsFile);
 		if (mappingsFile!=null && mappingsFile.exists()) {
@@ -83,13 +86,19 @@ class ClassGenerator {
 			s = null;
 			while ((s=br.readLine())!=null) sb.append(s).append('\n');
 			JSONObject allMappings = new JSONObject(sb.toString());
-			typeMappings = allMappings.getJSONObject("mappings");
+			classTypeMappings = allMappings.getJSONObject("class_mappings");
+			schemaTypeMappings = allMappings.getJSONObject("schema_mappings");
 			typeMappingFunctions = allMappings.getJSONObject("functions");
 		}
 
 		ClassGenerator generator = new ClassGenerator(dir, pkg, stripPrefixes, stripSuffixes);
-		generator.typeMappings = typeMappings;
+		generator.classTypeMappings = classTypeMappings;
 		generator.typeMappingFunctions = typeMappingFunctions;
+		generator.schemaTypeMappings = new LinkedHashMap<Pattern,String>();
+		for (String key : schemaTypeMappings.keySet()) {
+			String value = schemaTypeMappings.optString(key);
+			generator.schemaTypeMappings.put(Pattern.compile(key), value);
+		}
 
 		JSONObject schemas = metadata.getJSONObject("schemas");
 		JSONObject foreignKeys = metadata.getJSONObject("foreign_keys");
@@ -236,11 +245,11 @@ class ClassGenerator {
 		int index = 0;
 		for (String column : columns.keySet()) {
 			br.write("\tpublic static final Field<");
-			br.write(getFieldType(columns.getString(column)));
+			br.write(getFieldType(schema, table, column, columns.getString(column)));
 			br.write("> "+ getFieldName(column));
-			br.write(" = new Field<"+ getFieldType(columns.getString(column)));
+			br.write(" = new Field<"+ getFieldType(schema, table, column, columns.getString(column)));
 			br.write(">("+ index +", "+ className +".class, \""+ column);
-			br.write("\", "+ getFieldType(columns.getString(column)) +".class");
+			br.write("\", "+ getFieldType(schema, table, column, columns.getString(column)) +".class");
 			br.write(");\n");
 			++index;
 		}
@@ -280,7 +289,7 @@ class ClassGenerator {
 
 		// write field value references
 		for (String column : columns.keySet()) {
-			br.write("\tprivate "+ getFieldType(columns.getString(column)));
+			br.write("\tprivate "+ getFieldType(schema, table, column, columns.getString(column)));
 			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
 		}
 		br.write("\n");
@@ -296,7 +305,8 @@ class ClassGenerator {
 		for (String column : columns.keySet()) {
 			br.write("\t\t\tif (fields[i]=="+ getFieldName(column) +") {\n");
 			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = ");
-			String assignment = convertToActualType(columns.getString(column),
+			String assignment = convertToActualType(schema, table, column,
+					columns.getString(column),
 					"("+ getFieldClassType(columns.getString(column)).getName()+ ") objects[i]");
 			br.write(assignment);
 			br.write(";\n");
@@ -343,7 +353,7 @@ class ClassGenerator {
 		br.write("\tpublic <S> void set(Field<S> _field, S _value) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
-			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(columns.getString(column)) +") _value;\n");
+			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(schema, table, column, columns.getString(column)) +") _value;\n");
 		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
@@ -371,7 +381,7 @@ class ClassGenerator {
 
 		// write getters and setters
 		for (String column : columns.keySet()) {
-			String cls = getFieldType(columns.getString(column));
+			String cls = getFieldType(schema, table, column, columns.getString(column));
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\t"+ className +" _tmp = ALL.onlyFields(");
@@ -399,7 +409,8 @@ class ClassGenerator {
 				br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
 				br.write("("+ getFieldClassType(columns.getString(column)).getName() +" v) {\n");
 				br.write("\t\treturn set"+ getInstanceMethodName(column) +"("+
-						this.convertToActualType(columns.getString(column), "v") +");\n");
+						this.convertToActualType(schema, table, column,
+								columns.getString(column), "v") +");\n");
 				br.write("\t}\n\n");
 			}
 		}
@@ -544,7 +555,7 @@ class ClassGenerator {
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "
-			+ convertToOriginalType(columns.getString(column), getInstanceFieldName(column)) +");\n");
+			+ convertToOriginalType(schema, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
 			br.write("\t\t}\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
@@ -597,7 +608,7 @@ class ClassGenerator {
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tupdates.put("+ getFieldName(column) +", "
-		+ convertToOriginalType(columns.getString(column), getInstanceFieldName(column)) +");\n");
+		+ convertToOriginalType(schema, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\t\tquery.insert();\n");
@@ -697,12 +708,31 @@ class ClassGenerator {
 		// write the map type function
 		br.write("\t@Override\n");
 		br.write("\tpublic java.lang.Object __NOSCO_PRIVATE_mapType(java.lang.Object o) {\n");
-		for (String origType : typeMappings.keySet()) {
-			String actualType = typeMappings.optString(origType);
+		Set<String> coveredTypes = new HashSet<String>();
+		for (String origType : classTypeMappings.keySet()) {
+			String actualType = classTypeMappings.optString(origType);
 			br.write("\t\tif (o instanceof "+ actualType +") return ");
 			br.write(typeMappingFunctions.optString(actualType +" "+ origType)
 					.replaceAll("[%]s", "(("+ actualType +")o)"));
 			br.write(";\n");
+			coveredTypes.add(actualType);
+		}
+		for (String actualType : this.schemaTypeMappings.values()) {
+			if (coveredTypes.contains(actualType)) continue;
+			String origType = null;
+			for (String column : columns.keySet()) {
+				String type = columns.getString(column);
+				if (actualType.equals(this.getFieldType(schema, table, column, type))) {
+					origType = this.getFieldClassType(type).getName();
+					break;
+				}
+			}
+			if (origType == null) continue;
+			br.write("\t\tif (o instanceof "+ actualType +") return ");
+			br.write(typeMappingFunctions.optString(actualType +" "+ origType)
+					.replaceAll("[%]s", "(("+ actualType +")o)"));
+			br.write(";\n");
+			coveredTypes.add(actualType);
 		}
 		br.write("\t\treturn o;\n");
 		br.write("\t}\n\n");
@@ -780,13 +810,18 @@ class ClassGenerator {
 		return s;
 	}
 
-	private String convertToActualType(String type, String var) {
+	private String convertToActualType(String schema, String table, String column,
+			String type, String var) {
 		String origType = getFieldClassType(type).getName();
-		String actualType = getFieldType(type);
+		String actualType = getFieldType(schema, table, column, type);
 		if (origType.equals(actualType)) {
 			return var;
 		}
-		String key = origType +" "+ actualType;
+		return convertType(var, origType, actualType);
+	}
+
+	private String convertType(String var, String fromType, String toType) {
+		String key = fromType +" "+ toType;
 		if (!typeMappingFunctions.has(key)) {
 			throw new RuntimeException("a mapping function of '" + key +"' was not " +
 					"found");
@@ -802,37 +837,31 @@ class ClassGenerator {
 		}
 	}
 
-	private String convertToOriginalType(String type, String var) {
+	private String convertToOriginalType(String schema, String table, String column,
+			String type, String var) {
 		String origType = getFieldClassType(type).getName();
-		String actualType = getFieldType(type);
+		String actualType = getFieldType(schema, table, column, type);
 		if (origType.equals(actualType)) {
 			return var;
 		}
-		String key = actualType +" "+ origType;
-		if (!typeMappingFunctions.has(key)) {
-			throw new RuntimeException("a mapping function of '" + key +"' was not " +
-					"found");
-		}
-		try {
-			String ret = typeMappingFunctions.getString(key);
-			ret = ret.replaceAll("[%]s", var);
-			return "("+ var +" == null) ? null : "+ ret;
-		} catch (JSONException e) {
-			e.printStackTrace();
-			throw new RuntimeException("the mapping function of '" + key +"' needs " +
-					"to be a JSON string");
-		}
+		return convertType(var, actualType, origType);
 	}
 
-	private String getFieldType(String type) {
+	private String getFieldType(String schema, String table, String column, String type) {
 		String s = getFieldClassType(type).getName();
+		String v = schema +"."+ table +"."+ column;
+		for (Entry<Pattern, String> e : schemaTypeMappings.entrySet()) {
+			if (e.getKey().matcher(v).matches()) {
+				return e.getValue();
+			}
+		}
 		try {
-			return typeMappings.has(s) ? typeMappings.getString(s) : s;
+			return classTypeMappings.has(s) ? classTypeMappings.getString(s) : s;
 		} catch (JSONException e) {
 			e.printStackTrace();
 			try {
 				throw new RuntimeException("a String was expected for the type mapping of "
-						+ s +" but a "+ typeMappings.get(s) +" was found");
+						+ s +" but a "+ classTypeMappings.get(s) +" was found");
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 				throw new RuntimeException("this should never happen");

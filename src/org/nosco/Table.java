@@ -267,5 +267,11 @@ public abstract class Table {
 	    return true;
 	}
 
+	/**
+	 * Internal function - please don't use. &nbsp; Subject to change.
+	 * @param o
+	 * @return
+	 */
+	public abstract java.lang.Object __NOSCO_PRIVATE_mapType(java.lang.Object o);
 
 }

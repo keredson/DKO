@@ -4,6 +4,7 @@ import static org.nosco.Constants.DIRECTION.ASCENDING;
 import static org.nosco.Constants.DIRECTION.DESCENDING;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -571,9 +572,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	public void setBindings(PreparedStatement ps, List<Object> bindings) throws SQLException {
+		Table main = tables.get(0);
 		int i=1;
 		if (bindings!=null) {
 			for (Object o : bindings) {
+				o = main.__NOSCO_PRIVATE_mapType(o);
 				// hack for sql server which otherwise gives:
 				// com.microsoft.sqlserver.jdbc.SQLServerException:
 				// The conversion from UNKNOWN to UNKNOWN is unsupported.

@@ -71,6 +71,7 @@ public class Bulk {
 				int i=1;
 				for (Field<?> field : fields) {
 					Object o = table.get(field);
+					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.
@@ -130,6 +131,7 @@ public class Bulk {
 				int i=1;
 				for (Field<?> field : fields) {
 					Object o = table.get(field);
+					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.
@@ -138,6 +140,7 @@ public class Bulk {
 				}
 				for (Field<?> field : pks) {
 					Object o = table.get(field);
+					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.
@@ -200,6 +203,7 @@ public class Bulk {
 				int i=1;
 				for (Field<?> field : fields) {
 					Object o = table.get(field);
+					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.
@@ -211,16 +215,18 @@ public class Bulk {
 					count += psInsert.getUpdateCount();
 				} catch (SQLException e) {
 					int j=1;
-					for (Field field : fields) {
+					for (Field<?> field : fields) {
 						Object o = table.get(field);
+						o = table.__NOSCO_PRIVATE_mapType(o);
 						// hack for sql server which otherwise gives:
 						// com.microsoft.sqlserver.jdbc.SQLServerException:
 						// The conversion from UNKNOWN to UNKNOWN is unsupported.
 						if (o instanceof Character) psUpdate.setString(j++, o.toString());
 						else psUpdate.setObject(j++, o);
 					}
-					for (Field field : pks) {
+					for (Field<?> field : pks) {
 						Object o = table.get(field);
+						o = table.__NOSCO_PRIVATE_mapType(o);
 						// hack for sql server which otherwise gives:
 						// com.microsoft.sqlserver.jdbc.SQLServerException:
 						// The conversion from UNKNOWN to UNKNOWN is unsupported.
@@ -280,6 +286,7 @@ public class Bulk {
 				int i=1;
 				for (Field<?> field : pks) {
 					Object o = table.get(field);
+					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.

@@ -35,6 +35,8 @@ class ClassGenerator {
 	private String[] stripSuffixes;
 
 	private Map<String, String> tableToClassName;
+	private JSONObject typeMappings = new JSONObject();
+	private JSONObject typeMappingFunctions = new JSONObject();
 
 
 	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
@@ -52,8 +54,9 @@ class ClassGenerator {
 	}
 
 	public static void go(String dir, String pkg, String[] stripPrefixes,
-		String[] stripSuffixes, String metadataFile, String fakefksFile, String dataSource,
-		String callbackPackage) throws IOException, JSONException {
+		String[] stripSuffixes, String metadataFile, String fakefksFile,
+		String typeMappingsFile, String dataSource, String callbackPackage)
+				throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
 		StringBuffer sb = new StringBuffer();
@@ -71,7 +74,22 @@ class ClassGenerator {
 			fakeFKs = new JSONObject(sb.toString());
 		}
 
+		JSONObject typeMappings = new JSONObject();
+		JSONObject typeMappingFunctions = new JSONObject();
+		File mappingsFile = typeMappingsFile==null ? null : new File(typeMappingsFile);
+		if (mappingsFile!=null && mappingsFile.exists()) {
+			br = new BufferedReader(new FileReader(mappingsFile));
+			sb = new StringBuffer();
+			s = null;
+			while ((s=br.readLine())!=null) sb.append(s).append('\n');
+			JSONObject allMappings = new JSONObject(sb.toString());
+			typeMappings = allMappings.getJSONObject("mappings");
+			typeMappingFunctions = allMappings.getJSONObject("functions");
+		}
+
 		ClassGenerator generator = new ClassGenerator(dir, pkg, stripPrefixes, stripSuffixes);
+		generator.typeMappings = typeMappings;
+		generator.typeMappingFunctions = typeMappingFunctions;
 
 		JSONObject schemas = metadata.getJSONObject("schemas");
 		JSONObject foreignKeys = metadata.getJSONObject("foreign_keys");
@@ -277,9 +295,11 @@ class ClassGenerator {
 		br.write("\t\tfor (int i=start; i<end; ++i) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\t\tif (fields[i]=="+ getFieldName(column) +") {\n");
-			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = (");
-			br.write(getFieldType(columns.getString(column)));
-			br.write(") objects[i];\n");
+			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = ");
+			String assignment = convertToActualType(columns.getString(column),
+					"("+ getFieldClassType(columns.getString(column)).getName()+ ") objects[i]");
+			br.write(assignment);
+			br.write(";\n");
 			br.write("\t\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t\t\tcontinue;\n");
 			br.write("\t\t\t}\n");
@@ -351,11 +371,6 @@ class ClassGenerator {
 
 		// write getters and setters
 		for (String column : columns.keySet()) {
-			//boolean skipColumn = false;
-			//for (FK fk : fks) {
-			//	if (fk.columns.containsKey(column)) skipColumn = true;
-			//}
-			//if (skipColumn) continue;
 			String cls = getFieldType(columns.getString(column));
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
@@ -371,7 +386,6 @@ class ClassGenerator {
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
 
-			//if (!pkSet.contains(column)) {
 			br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
 			br.write("("+ cls +" v) {\n");
 			br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
@@ -380,7 +394,14 @@ class ClassGenerator {
 			br.write("\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\treturn this;\n");
 			br.write("\t}\n\n");
-			//}
+
+			if (!cls.equals(getFieldClassType(columns.getString(column)).getName())) {
+				br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
+				br.write("("+ getFieldClassType(columns.getString(column)).getName() +" v) {\n");
+				br.write("\t\treturn set"+ getInstanceMethodName(column) +"("+
+						this.convertToActualType(columns.getString(column), "v") +");\n");
+				br.write("\t}\n\n");
+			}
 		}
 
 		// write getters and setters for FKs
@@ -522,7 +543,8 @@ class ClassGenerator {
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
+			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "
+			+ convertToOriginalType(columns.getString(column), getInstanceFieldName(column)) +");\n");
 			br.write("\t\t}\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
@@ -574,7 +596,8 @@ class ClassGenerator {
 		}
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
-			br.write("\t\tupdates.put("+ getFieldName(column) +", "+ getInstanceFieldName(column) +");\n");
+			br.write("\t\tupdates.put("+ getFieldName(column) +", "
+		+ convertToOriginalType(columns.getString(column), getInstanceFieldName(column)) +");\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\t\tquery.insert();\n");
@@ -671,6 +694,19 @@ class ClassGenerator {
 		br.write("\t\treturn 0;\n");
 		br.write("\t}\n\n");
 
+		// write the map type function
+		br.write("\t@Override\n");
+		br.write("\tpublic java.lang.Object __NOSCO_PRIVATE_mapType(java.lang.Object o) {\n");
+		for (String origType : typeMappings.keySet()) {
+			String actualType = typeMappings.optString(origType);
+			br.write("\t\tif (o instanceof "+ actualType +") return ");
+			br.write(typeMappingFunctions.optString(actualType +" "+ origType)
+					.replaceAll("[%]s", "(("+ actualType +")o)"));
+			br.write(";\n");
+		}
+		br.write("\t\treturn o;\n");
+		br.write("\t}\n\n");
+
 		// end class
 		br.write("}\n");
 		br.close();
@@ -744,9 +780,64 @@ class ClassGenerator {
 		return s;
 	}
 
+	private String convertToActualType(String type, String var) {
+		String origType = getFieldClassType(type).getName();
+		String actualType = getFieldType(type);
+		if (origType.equals(actualType)) {
+			return var;
+		}
+		String key = origType +" "+ actualType;
+		if (!typeMappingFunctions.has(key)) {
+			throw new RuntimeException("a mapping function of '" + key +"' was not " +
+					"found");
+		}
+		try {
+			String ret = typeMappingFunctions.getString(key);
+			ret = "("+ var +"== null) ? null : " + ret.replaceAll("[%]s", var);
+			return ret;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new RuntimeException("the mapping function of '" + key +"' needs " +
+					"to be a JSON string");
+		}
+	}
+
+	private String convertToOriginalType(String type, String var) {
+		String origType = getFieldClassType(type).getName();
+		String actualType = getFieldType(type);
+		if (origType.equals(actualType)) {
+			return var;
+		}
+		String key = actualType +" "+ origType;
+		if (!typeMappingFunctions.has(key)) {
+			throw new RuntimeException("a mapping function of '" + key +"' was not " +
+					"found");
+		}
+		try {
+			String ret = typeMappingFunctions.getString(key);
+			ret = ret.replaceAll("[%]s", var);
+			return "("+ var +" == null) ? null : "+ ret;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new RuntimeException("the mapping function of '" + key +"' needs " +
+					"to be a JSON string");
+		}
+	}
 
 	private String getFieldType(String type) {
-		return getFieldClassType(type).getName();
+		String s = getFieldClassType(type).getName();
+		try {
+			return typeMappings.has(s) ? typeMappings.getString(s) : s;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				throw new RuntimeException("a String was expected for the type mapping of "
+						+ s +" but a "+ typeMappings.get(s) +" was found");
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+				throw new RuntimeException("this should never happen");
+			}
+		}
 	}
 
 	private Class<? extends Object> getFieldClassType(String type) {

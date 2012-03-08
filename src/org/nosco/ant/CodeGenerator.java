@@ -20,7 +20,7 @@ import org.nosco.json.JSONException;
 /**
  * Using the {@code schemas.json} file produced by the {@code SchemaExtractor}, this Ant task
  * produces a JAR file for use in your application. &nbsp;
- * 
+ *
  * @author Derek Anderson
  */
 public class CodeGenerator extends Task {
@@ -40,6 +40,7 @@ public class CodeGenerator extends Task {
 	private boolean debug = true;
 	private String callbackPackage = null;
 	private File javaOutputDir = null;
+	private File typeMappings = null;
 
 	public void setJarfile(String s) {
 		this.jarfile = new File(s);
@@ -77,6 +78,10 @@ public class CodeGenerator extends Task {
 
 	public void setSchemas(String s) {
 		this.schemas = new File(s);
+	}
+
+	public void setTypeMappings(String s) {
+		this.typeMappings  = new File(s);
 	}
 
 	public void setJavac(String s) {
@@ -146,7 +151,8 @@ public class CodeGenerator extends Task {
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
-					fake_fks.getAbsolutePath(), dataSource, callbackPackage);
+					fake_fks.getAbsolutePath(), typeMappings==null ? null : typeMappings.getAbsolutePath(),
+					dataSource, callbackPackage);
 
 			if (this.srcjarfile != null) {
 				System.out.println("writing " + srcjarfile.getAbsolutePath());

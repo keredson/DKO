@@ -271,6 +271,16 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public List<T> asList();
 
 	/**
+	 * Runs the query, populating a list of the values only in the given field. &nbsp;
+	 * If you want an list of more than one field type, you should use
+	 * {@code onlyFields(field1, field2, ...).asList()}. &nbsp; This will return you an
+	 * list of T instances, with only those fields populated. &nbsp;
+	 * If Java adds typed tuple support at some point this method may be extended.
+	 * @return
+	 */
+	public <S> List<S> asList(Field<S> field);
+
+	/**
 	 * Same as asList(), but puts them into a HashSet.
 	 * @return
 	 */

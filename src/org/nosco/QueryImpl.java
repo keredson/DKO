@@ -1050,4 +1050,13 @@ class QueryImpl<T extends Table> implements Query<T> {
 			}};
 	}
 
+	@Override
+	public <S> List<S> asList(Field<S> field) {
+		List<S> ret = new ArrayList<S>();
+		for (S s : select(field)) {
+			ret.add(s);
+		}
+		return ret;
+	}
+
 }

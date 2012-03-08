@@ -308,4 +308,13 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		return ret;
 	}
 
+	@Override
+	public <S> List<S> asList(Field<S> field) {
+		List<S> ret = new ArrayList<S>();
+		for (S s : select(field)) {
+			ret.add(s);
+		}
+		return ret;
+	}
+
 }

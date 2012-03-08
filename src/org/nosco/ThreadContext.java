@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -32,10 +31,21 @@ import javax.sql.DataSource;
  */
 public class ThreadContext {
 
-	private static ConcurrentHashMap<DataSource,ThreadLocal<Connection>> tls =
-			new ConcurrentHashMap<DataSource,ThreadLocal<Connection>>();
-	private static ConcurrentHashMap<DataSource,ThreadLocal<Map<String,String>>> schemaOverrides =
-			new ConcurrentHashMap<DataSource,ThreadLocal<Map<String,String>>>();
+	// these hashmaps don't need to be synchronized/thread-safe, since they're
+	// only ever being called by one thread thanks to being in a ThreadLocal.
+	private Map<DataSource,Map<String,String>> schemaOverrides =
+			new HashMap<DataSource,Map<String,String>>();
+	private Map<DataSource,Connection> transactionConnections =
+			new HashMap<DataSource,Connection>();
+
+	private ThreadContext() {}
+
+	private static ThreadLocal<ThreadContext> tl = new ThreadLocal<ThreadContext>() {
+		@Override
+		protected ThreadContext initialValue() {
+			return new ThreadContext();
+		}
+	};
 
 	/**
 	 * Returns true if currently inside a transaction.
@@ -43,9 +53,8 @@ public class ThreadContext {
 	 * @return
 	 */
 	public static boolean inTransaction(DataSource ds) {
-		ThreadLocal<Connection> tl = tls.get(ds);
-		if (tl == null) return false;
-		return tl.get() != null;
+		ThreadContext tc = tl.get();
+		return tc.transactionConnections.containsKey(ds);
 	}
 
 	/**
@@ -55,17 +64,12 @@ public class ThreadContext {
 	 * @throws SQLException
 	 */
 	public static boolean startTransaction(DataSource ds) throws SQLException {
-		ThreadLocal<Connection> tl = tls.get(ds);
-		if (tl == null) {
-			tl = new ThreadLocal<Connection>();
-			ThreadLocal<Connection> tmp = tls.put(ds, tl);
-			if (tmp != null) tl = tmp;
-		}
-		Connection c = tl.get();
+		ThreadContext tc = tl.get();
+		Connection c = tc.transactionConnections.get(ds);
 		if (c != null) return false;
 		c = ds.getConnection();
 		c.setAutoCommit(false);
-		tl.set(c);
+		tc.transactionConnections.put(ds, c);
 		return true;
 	}
 
@@ -76,11 +80,11 @@ public class ThreadContext {
 	 * @throws SQLException
 	 */
 	public static boolean commitTransaction(DataSource ds) throws SQLException {
-		ThreadLocal<Connection> tl = tls.get(ds);
-		if (tl == null) return false;
-		Connection c = tl.get();
+		ThreadContext tc = tl.get();
+		Connection c = tc.transactionConnections.get(ds);
 		if (c == null) return false;
 		c.commit();
+		c.close();
 		return true;
 	}
 
@@ -91,13 +95,41 @@ public class ThreadContext {
 	 * @throws SQLException
 	 */
 	public static boolean rollbackTransaction(DataSource ds) throws SQLException {
-		ThreadLocal<Connection> tl = tls.get(ds);
-		if (tl == null) return false;
-		tls.remove(ds);
-		Connection c = tl.get();
+		ThreadContext tc = tl.get();
+		Connection c = tc.transactionConnections.get(ds);
+		tc.transactionConnections.remove(ds);
 		if (c == null) return false;
 		c.rollback();
+		c.close();
 		return true;
+	}
+
+	/**
+	 * Rolls back the current transaction, ignoring any {@code SQLException}s thrown.
+	 * &nbsp; This is a convenience method for use in finally blocks, where you feel
+	 * there isn't anything you can do about it anyway.
+	 * @param ds
+	 * @return
+	 * @throws SQLException
+	 */
+	public static boolean rollbackTransactionIgnoreException(DataSource ds) {
+		ThreadContext tc = tl.get();
+		Connection c = tc.transactionConnections.get(ds);
+		tc.transactionConnections.remove(ds);
+		if (c == null) return false;
+		try {
+			c.rollback();
+			c.close();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
 	}
 
 	/**
@@ -106,9 +138,9 @@ public class ThreadContext {
 	 * @return null is not currently in a transaction
 	 */
 	public static Connection getConnection(DataSource ds) {
-		ThreadLocal<Connection> tl = tls.get(ds);
-		if (tl == null) return null;
-		return tl.get();
+		ThreadContext tc = tl.get();
+		Connection c = tc.transactionConnections.get(ds);
+		return c;
 	}
 
 	/**
@@ -122,14 +154,12 @@ public class ThreadContext {
 	 * @param newName
 	 */
 	public static void setDatabaseOverride(DataSource ds, String oldName, String newName) {
-		ThreadLocal<Map<String, String>> tl = schemaOverrides.get(ds);
-		if (tl == null) {
-			tl = new ThreadLocal<Map<String, String>>();
-			ThreadLocal<Map<String, String>> tmp = schemaOverrides.put(ds, tl);
-			if (tmp != null) tl = tmp;
+		ThreadContext tc = tl.get();
+		Map<String, String> overrides = tc.schemaOverrides.get(ds);
+		if (overrides == null) {
+			overrides = new HashMap<String,String>();
+			tc.schemaOverrides.put(ds, overrides);
 		}
-		Map<String, String> overrides = tl.get();
-		if (overrides == null) tl.set(overrides = new HashMap<String,String>());
 		overrides.put(oldName, newName);
 	}
 
@@ -143,9 +173,8 @@ public class ThreadContext {
 	 * @return
 	 */
 	public static String getDatabaseOverride(DataSource ds, String name) {
-		ThreadLocal<Map<String, String>> tl = schemaOverrides.get(ds);
-		if (tl == null) return name;
-		Map<String, String> overrides = tl.get();
+		ThreadContext tc = tl.get();
+		Map<String, String> overrides = tc.schemaOverrides.get(ds);
 		if (overrides == null) return name;
 		String newName = overrides.get(name);
 		if (newName == null) return name;

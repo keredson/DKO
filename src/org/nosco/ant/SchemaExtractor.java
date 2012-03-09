@@ -13,8 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,7 @@ import org.nosco.Constants.DB_TYPE;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
+import org.nosco.util.Misc;
 
 /**
  * Extracts schema information from a provided database into a JSON file. &nbsp;
@@ -37,15 +40,25 @@ public class SchemaExtractor extends Task {
 
 	private static int[] version = {0,2,0};
 
-	private String fn = null;
 	private DB_TYPE dbType = null;
 	private String url = null;
 	private String username = null;
 	private String password = null;
 	private HashSet<String> includeSchemas = null;
+	private String[] enums = {};
+	private File enumsOut = null;
+	private File out = null;
 
 	public void setOut(String s) {
-		this.fn = s;
+		this.out  = new File(s);
+	}
+
+	public void setEnums(String s) {
+		if (s != null) this.enums = s.split(",");
+	}
+
+	public void setEnumsOut(String s) {
+		this.enumsOut = s==null ? null : new File(s);
 	}
 
 	public void setDBType(String s) {
@@ -117,11 +130,33 @@ public class SchemaExtractor extends Task {
 			json.put("primary_keys", new JSONObject(primaryKeys));
 			json.put("foreign_keys", new JSONObject(foreignKeys));
 
-			File f = new File(fn);
-			System.err.println("writing: "+ f.getAbsolutePath());
-			FileWriter w = new FileWriter(f);
+			System.err.println("writing: "+ out.getAbsolutePath());
+			FileWriter w = new FileWriter(out);
 			w.write(json.toString(4));
 			w.close();
+
+			if (enums!=null && enums.length > 0 && enumsOut != null) {
+				JSONObject allEnums = new JSONObject();
+				for (String x : enums) {
+					x = x.trim();
+					String[] xa = x.split("[.]");
+					if (xa.length != 3) {
+						throw new RuntimeException("'"+ x +"' " +
+								"must be of the format 'schema.table.name_column'");
+					}
+					String schema = xa[0];
+					String table = xa[1];
+					String column = xa[2];
+					allEnums.put(x, getEnums(conn, schema, table, column,
+							primaryKeys.get(schema).get(table)));
+				}
+				System.err.println("writing: "+ enumsOut.getAbsolutePath());
+				FileWriter w2 = new FileWriter(enumsOut);
+				w2.write(allEnums.toString(4));
+				w2.close();
+			}
+
+
 
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -135,6 +170,34 @@ public class SchemaExtractor extends Task {
 		}
 
 
+	}
+
+	private JSONObject getEnums(Connection conn, String schema, String table, String column,
+			Set<String> pks) throws SQLException {
+		String sep =".";
+		if (conn.getClass().getName().startsWith("com.microsoft")) {
+			sep ="..";
+	    }
+		JSONObject ret = new JSONObject();
+		String sql = "select "+ column +", "+ Misc.join(", ", pks) +" "
+				+ "from "+ schema + sep + table +";";
+		System.err.println(sql);
+		Statement s = conn.createStatement();
+		s.execute(sql);
+		ResultSet rs = s.getResultSet();
+		while (rs.next()) {
+			String name = rs.getString(1);
+			JSONArray values = new JSONArray();
+			for (String key : pks) {
+				values.put(rs.getObject(key));
+			}
+			try {
+				ret.put(name, values);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	    return ret;
 	}
 
 	private static Set<String> ignoredSchemas = new HashSet<String>() {{
@@ -332,7 +395,7 @@ public class SchemaExtractor extends Task {
 
 			Set<String> pkColumns = pkTables.get(table);
 			if (pkColumns==null) {
-				pkColumns = new HashSet<String>();
+				pkColumns = new LinkedHashSet<String>();
 				pkTables.put(table,pkColumns);
 			}
 

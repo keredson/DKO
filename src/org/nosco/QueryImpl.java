@@ -30,6 +30,7 @@ import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
+import org.nosco.Table.__PrimaryKey;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 import org.nosco.util.Tuple;
@@ -1057,6 +1058,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 			ret.add(s);
 		}
 		return ret;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public T get(__PrimaryKey<T> pk) {
+		return get(tables.get(0).PK().eq(pk));
 	}
 
 }

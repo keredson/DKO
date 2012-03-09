@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
+import org.nosco.Table.__PrimaryKey;
 
 class InMemoryQuery<T extends Table> implements Query<T> {
 
@@ -315,6 +316,13 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 			ret.add(s);
 		}
 		return ret;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public T get(__PrimaryKey<T> pk) {
+		if (cache==null || cache.size() == 0) return null;
+		return get(cache.get(0).PK().eq(pk));
 	}
 
 }

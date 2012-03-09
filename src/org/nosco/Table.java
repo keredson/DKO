@@ -239,6 +239,14 @@ public abstract class Table {
 
 	}
 
+	public static interface __PrimaryKey<S extends Table> {
+		<R> R get(Field<R> field);
+	}
+
+	public static interface __SimplePrimaryKey<S extends Table,V> extends __PrimaryKey<S> {
+		public V value();
+	}
+
 	@Override
 	public int hashCode() {
 	    final int prime = 31;

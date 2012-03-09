@@ -66,6 +66,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public T get(Condition... conditions);
 
 	/**
+	 * Returns the only element that matches the conditions.  If more than one match, throws a RuntimeException.
+	 * Equivalent to .where(conditions).getTheOnly()
+	 * @param conditions
+	 * @return
+	 */
+	public T get(Table.__PrimaryKey<T> pk);
+
+	/**
 	 * Returns the database-calculated count of the query.
 	 * Does not download the objects into the JVM.
 	 * Much faster than .asList().size() or counting the objects yourself.

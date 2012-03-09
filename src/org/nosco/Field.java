@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import org.nosco.Condition.Binary;
 import org.nosco.Condition.Ternary;
+import org.nosco.Table.__PrimaryKey;
+import org.nosco.Table.__SimplePrimaryKey;
 
 
 /**
@@ -79,6 +81,10 @@ public class Field<T> implements Cloneable {
 	 */
 	public Condition eq(Field<T> v) {
 		return new Binary(this, "=", v);
+	}
+
+	public Condition eq(__SimplePrimaryKey<?,T> v) {
+		return eq(v.value());
 	}
 
 	/**
@@ -336,7 +342,7 @@ public class Field<T> implements Cloneable {
 	 * Represents a foreign key constraint.
 	 * @author Derek Anderson
 	 */
-	public static class FK {
+	public static class FK<S extends Table> {
 
 		public final int INDEX;
 		@SuppressWarnings("rawtypes")
@@ -372,13 +378,23 @@ public class Field<T> implements Cloneable {
 			return fields;
 		}
 
+		public Condition eq(Table.__PrimaryKey<S> pk) {
+			Condition ret = null;
+			for (int i=0; i<REFERENCING_FIELDS.length; ++i) {
+				@SuppressWarnings("unchecked")
+				Condition c = REFERENCING_FIELDS[i].eq(pk.get(REFERENCED_FIELDS[i]));
+				ret = ret == null ? c : ret.and(c);
+			}
+			return ret;
+		}
+
 	}
 
 	/**
 	 * Represents a primary key constraint.
 	 * @author Derek Anderson
 	 */
-	public static class PK {
+	public static class PK<S extends Table> {
 
 		@SuppressWarnings("rawtypes")
 		private final Field[] FIELDS;
@@ -393,6 +409,16 @@ public class Field<T> implements Cloneable {
 			Field[] fields = new Field[FIELDS.length];
 			System.arraycopy(FIELDS, 0, fields, 0, FIELDS.length);
 			return fields;
+		}
+
+		public Condition eq(Table.__PrimaryKey<S> pk) {
+			Condition ret = null;
+			for (@SuppressWarnings("rawtypes") Field f : GET_FIELDS()) {
+				@SuppressWarnings("unchecked")
+				Condition c = f.eq(pk.get(f));
+				ret = ret == null ? c : ret.and(c);
+			}
+			return ret;
 		}
 
 	}

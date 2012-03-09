@@ -57,7 +57,7 @@ class ClassGenerator {
 
 	public static void go(String dir, String pkg, String[] stripPrefixes,
 		String[] stripSuffixes, String metadataFile, String fakefksFile,
-		String typeMappingsFile, String dataSource, String callbackPackage)
+		String typeMappingsFile, String dataSource, String callbackPackage, JSONObject enums)
 				throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
@@ -135,7 +135,7 @@ class ClassGenerator {
 				}
 
 				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName,
-						callbackPackage);
+						callbackPackage, enums);
 			}
 		}
 
@@ -212,7 +212,8 @@ class ClassGenerator {
 	}
 
 	private void generate(String schema, String table, JSONObject columns, JSONArray pks,
-			List<FK> fks, List<FK> fksIn, String dataSourceName, String callbackPackage)
+			List<FK> fks, List<FK> fksIn, String dataSourceName, String callbackPackage,
+			JSONObject enums)
 	throws IOException, JSONException {
 		String className = genTableClassName(table);
 		Set<String> pkSet = new HashSet<String>();
@@ -256,7 +257,7 @@ class ClassGenerator {
 		br.write("\n");
 
 		// write primary keys
-		br.write("\tpublic static Field.PK PK = new Field.PK(");
+		br.write("\tpublic static Field.PK<"+ className +"> PK = new Field.PK<"+ className +">(");
 		for (int i=0; i<pks.length(); ++i) {
 			br.write(pks.getString(i).toUpperCase());
 			if (i<pks.length()-1) br.write(", ");
@@ -272,8 +273,8 @@ class ClassGenerator {
 				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
 			}
 			String fkName = genFKName(fk.columns.keySet(), referencedTable);
-			br.write("\tpublic static final Field.FK FK_"+ fkName);
-			br.write(" = new Field.FK("+ index +", "+ className +".class, ");
+			br.write("\tpublic static final Field.FK<"+ referencedTableClassName +"> FK_"+ fkName);
+			br.write(" = new Field.FK<"+ referencedTableClassName +">("+ index +", "+ className +".class, ");
 			br.write(referencedTableClassName +".class");
 			for (Entry<String, String> e : fk.columns.entrySet()) {
 				br.write(", "+ e.getKey().toUpperCase());
@@ -286,6 +287,48 @@ class ClassGenerator {
 			++index;
 		}
 		br.write("\n");
+
+		// write enums
+		for (String column : columns.keySet()) {
+			String enumKey = schema +"."+ table +"."+ column;
+			if (!enums.has(enumKey)) continue;
+			JSONObject instances = enums.optJSONObject(enumKey);
+			boolean simple = pkSet.size() == 1;
+			if (simple) {
+				String pk = pkSet.iterator().next();
+				String pkType = getFieldType(schema, table, pk, columns.getString(pk));
+				br.write("\tpublic enum PKS implements Table.__SimplePrimaryKey<"+ className +", "+ pkType +"> {\n\n");
+				int count = 0;
+				for (String name : instances.keySet()) {
+					++ count;
+					String value = instances.optJSONArray(name).getString(0);
+					if ("java.lang.String".equals(pkType)) value = "\""+ value +"\"";
+					br.write("\t\t"+ name.toUpperCase().replaceAll("\\W", "_"));
+					br.write("("+ value +")");
+					if (count < instances.keySet().size()) br.write(",\n");
+					else br.write(";\n\n");
+				}
+				br.write("\t\tpublic final "+ pkType +" "+ getFieldName(pk) +";\n");
+				br.write("\t\tPKS("+ pkType +" v) {\n");
+				br.write("\t\t\t"+ getFieldName(pk) +" = v;\n");
+				br.write("\t\t}\n");
+				br.write("\t\t@SuppressWarnings(\"unchecked\")\n");
+				br.write("\t\t@Override\n");
+				br.write("\t\tpublic <R> R get(Field<R> field) {\n");
+				br.write("\t\t\tif (field=="+ className +"."+ getFieldName(pk)
+						+") return (R) Integer.valueOf("+ getFieldName(pk) +"); \n");
+				br.write("\t\t\tif ("+ className +"."+ getFieldName(pk)
+						+".sameField(field)) return (R) Integer.valueOf("
+						+ getFieldName(pk) +");\n");
+				br.write("\t\t\tthrow new RuntimeException(\"field \"+ field +\" is not part of this primary key\");\n");
+				br.write("\t\t}\n");
+				br.write("\t\t@Override\n");
+				br.write("\t\tpublic "+ pkType +" value() {\n");
+				br.write("\t\t\treturn "+ getFieldName(pk)+ ";\n");
+				br.write("\t\t}\n\n");
+				br.write("\t}\n");
+			}
+		}
 
 		// write field value references
 		for (String column : columns.keySet()) {

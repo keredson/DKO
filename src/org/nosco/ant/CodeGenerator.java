@@ -3,6 +3,7 @@ package org.nosco.ant;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.util.zip.ZipFile;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.nosco.json.JSONException;
+import org.nosco.json.JSONObject;
 
 /**
  * Using the {@code schemas.json} file produced by the {@code SchemaExtractor}, this Ant task
@@ -41,6 +43,7 @@ public class CodeGenerator extends Task {
 	private String callbackPackage = null;
 	private File javaOutputDir = null;
 	private File typeMappings = null;
+	private File enumsFile = null;
 
 	public void setJarfile(String s) {
 		this.jarfile = new File(s);
@@ -78,6 +81,10 @@ public class CodeGenerator extends Task {
 
 	public void setSchemas(String s) {
 		this.schemas = new File(s);
+	}
+
+	public void setEnums(String s) {
+		this.enumsFile = new File(s);
 	}
 
 	public void setTypeMappings(String s) {
@@ -149,10 +156,13 @@ public class CodeGenerator extends Task {
 			org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
 					schemas.getAbsolutePath());
 
+			JSONObject enums = enumsFile!=null && enumsFile.exists() ?
+					readJSONObject(enumsFile) : new JSONObject();
+
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
 					fake_fks.getAbsolutePath(), typeMappings==null ? null : typeMappings.getAbsolutePath(),
-					dataSource, callbackPackage);
+					dataSource, callbackPackage, enums);
 
 			if (this.srcjarfile != null) {
 				System.out.println("writing " + srcjarfile.getAbsolutePath());
@@ -230,6 +240,14 @@ public class CodeGenerator extends Task {
 			throw new BuildException(e);
 		}
 
+	}
+
+	static JSONObject readJSONObject(File enumsFile) throws IOException, JSONException {
+		BufferedReader br = new BufferedReader(new FileReader(enumsFile));
+		StringBuffer sb = new StringBuffer();
+		String s = null;
+		while ((s=br.readLine())!=null) sb.append(s).append('\n');
+		return new JSONObject(sb.toString());
 	}
 
 	private boolean up2date() throws ZipException, IOException {

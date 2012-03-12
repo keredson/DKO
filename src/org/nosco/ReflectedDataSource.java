@@ -12,7 +12,7 @@ import javax.sql.DataSource;
  * This class will, given a class name and a method, call that method to get an
  * actual {@code javax.sql.DataSource}. &nbsp; It is then cached, and all other calls
  * are passed through.
- * 
+ *
  * @author Derek Anderson
  */
 public class ReflectedDataSource implements DataSource {
@@ -44,7 +44,7 @@ public class ReflectedDataSource implements DataSource {
 				m = Class.forName(cls).getMethod(method, String.class);
 				ds = (DataSource) m.invoke(null, schema);
 			}
-			System.err.println("ds: "+ ds);
+			//System.err.println("ds: "+ ds);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

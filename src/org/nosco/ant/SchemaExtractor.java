@@ -54,7 +54,7 @@ public class SchemaExtractor extends Task {
 	}
 
 	public void setEnums(String s) {
-		if (s != null) this.enums = s.split(",");
+		if (s != null && s.length() > 0) this.enums = s.split(",");
 	}
 
 	public void setEnumsOut(String s) {
@@ -110,7 +110,7 @@ public class SchemaExtractor extends Task {
 	public void setSchemas(String s) {
 		this.includeSchemas = new HashSet<String>();
 		for (String schema : s.split(",")) {
-			this.includeSchemas.add(schema);
+			this.includeSchemas.add(schema.trim());
 		}
 	}
 
@@ -174,6 +174,8 @@ public class SchemaExtractor extends Task {
 
 	private JSONObject getEnums(Connection conn, String schema, String table, String column,
 			Set<String> pks) throws SQLException {
+		if (pks == null) throw new RuntimeException("primary keys not set for enum table: "
+			+ schema +"."+ table +"."+ column);
 		String sep =".";
 		if (conn.getClass().getName().startsWith("com.microsoft")) {
 			sep ="..";

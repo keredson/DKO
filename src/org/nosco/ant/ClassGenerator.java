@@ -419,6 +419,24 @@ class ClassGenerator {
 			br.write("\"+"+ getInstanceFieldName(pk));
 			br.write("+\"");
 		}
+		for (String column : columns.keySet()) {
+			if (!"name".equalsIgnoreCase(column)) continue;
+			// if "name" exists but isn't a PK, we should still use it for toString()
+			br.write(" "+ column +":");
+			br.write("\"+"+ getInstanceFieldName(column));
+			br.write("+\"");
+		}
+		br.write("]\";\n");
+		br.write("\t}\n\n");
+
+		// write toString
+		br.write("\t public String toStringDetailed() {\n");
+		br.write("\t\treturn \"["+ className);
+		for (String column : columns.keySet()) {
+			br.write(" "+ column +":");
+			br.write("\"+"+ getInstanceFieldName(column));
+			br.write("+\"");
+		}
 		br.write("]\";\n");
 		br.write("\t}\n\n");
 

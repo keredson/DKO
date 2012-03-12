@@ -3,6 +3,7 @@ package org.nosco;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
@@ -51,9 +52,25 @@ public class Bulk {
 	 * @throws SQLException
 	 */
 	public <T extends Table> int insertAll(Iterable<T> iterable) throws SQLException {
+		return insertAll(iterable, null, -1);
+	}
+	/**
+	 * Inserts all objects from the source iterable into the target DataSource. &nbsp;
+	 * On error aborts. &nbsp; Callback called every {@code frequency} seconds with the
+	 * number of rows already inserted. &nbsp;
+	 * If thread is interrupted returns the number of rows inserted before the interruption.
+	 * @param iterable
+	 * @param callback
+	 * @param frequency
+	 * @return
+	 * @throws SQLException
+	 */
+	public <T extends Table> int insertAll(Iterable<T> iterable, StatusCallback callback,
+			double frequency) throws SQLException {
 		int count = 0;
 		int resCount = 0;
 		boolean first = true;
+		double lastCallback = System.currentTimeMillis() / 1000.0;
 		Connection conn = null;
 		Field<?>[] fields = null;
 		PreparedStatement psInsert = null;
@@ -80,7 +97,17 @@ public class Bulk {
 				}
 				psInsert.addBatch();
 				if (count % BATCH_SIZE == 0) {
-					for (int k : psInsert.executeBatch()) resCount += k;
+					for (int k : psInsert.executeBatch()) {
+						resCount += k;
+					}
+					if (Thread.interrupted()) {
+						return resCount;
+					}
+				}
+				if (callback!=null && ((System.currentTimeMillis()/1000.0)
+						- lastCallback > frequency)) {
+					callback.call(count);
+					lastCallback = System.currentTimeMillis() / 1000.0;
 				}
 			}
 			if (count % BATCH_SIZE != 0) {
@@ -104,6 +131,7 @@ public class Bulk {
 	/**
 	 * Updates all objects (based on their primary keys) from the source iterable into the
 	 * target DataSource. &nbsp; On error aborts. &nbsp;
+	 * If thread is interrupted returns the number of rows inserted before the interruption. &nbsp;
 	 * <p>Note that classes without primary keys are not supported at this time.
 	 * @param iterable
 	 * @return
@@ -149,7 +177,12 @@ public class Bulk {
 				}
 				psUpdate.addBatch();
 				if (count % BATCH_SIZE == 0) {
-					for (int k : psUpdate.executeBatch()) resCount += k;
+					for (int k : psUpdate.executeBatch()) {
+						resCount += k;
+					}
+					if (Thread.interrupted()) {
+						return resCount;
+					}
 				}
 			}
 			if (count % BATCH_SIZE != 0) {
@@ -299,7 +332,12 @@ public class Bulk {
 				}
 			}
 			if (count % BATCH_SIZE != 0) {
-				for (int k : psDelete.executeBatch()) resCount += k;
+				for (int k : psDelete.executeBatch()) {
+					resCount += k;
+				}
+				if (Thread.interrupted()) {
+					return resCount;
+				}
 			}
 			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
 			if (!ThreadContext.inTransaction(ds)) {
@@ -372,6 +410,16 @@ public class Bulk {
 		Misc.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
+	}
+
+	/**
+	 * A callback interface for bulk load operations. &nbsp; Calls with the current
+	 * count of rows inserted, updated or deleted every {@code frequency} seconds
+	 * the bulk operation takes.
+	 * @author Derek Anderson
+	 */
+	public static interface StatusCallback {
+		public void call(int count);
 	}
 
 }

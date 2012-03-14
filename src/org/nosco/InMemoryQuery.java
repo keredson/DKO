@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -323,6 +324,12 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	public T get(__PrimaryKey<T> pk) {
 		if (cache==null || cache.size() == 0) return null;
 		return get(cache.get(0).PK().eq(pk));
+	}
+
+	@Override
+	public Query<T> use(Connection conn) {
+		// do nothing
+		return this;
 	}
 
 }

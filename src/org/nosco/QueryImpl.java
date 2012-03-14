@@ -31,6 +31,8 @@ import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
 import org.nosco.Table.__PrimaryKey;
+import org.nosco.datasource.MirroredDataSource;
+import org.nosco.datasource.SingleConnectionDataSource;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree;
 import org.nosco.util.Tuple;
@@ -205,16 +207,18 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public int count() throws SQLException {
 		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
+		_preExecute(conn);
+		Misc.log(sql, null);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
 		rs.next();
 		int count = rs.getInt(1);
 		rs.close();
 		ps.close();
+		_postExecute(conn);
 		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
@@ -327,9 +331,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 		Connection conn = getConnRW();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps, bindings);
+		_preExecute(conn);
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
+		_postExecute(conn);
 		if (!ThreadContext.inTransaction(ds)) {
 			if (!conn.getAutoCommit()) conn.commit();
 			conn.close();
@@ -634,9 +640,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 		Connection conn = getConnRW();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		q.setBindings(ps);
+		_preExecute(conn);
 		ps.execute();
 		int count = ps.getUpdateCount();
 		ps.close();
+		_postExecute(conn);
 
 		if (count==1) {
 			if (getDBType()==DB_TYPE.MYSQL) {
@@ -868,12 +876,14 @@ class QueryImpl<T extends Table> implements Query<T> {
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
+		_preExecute(conn);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
 		rs.next();
 		Double ret = rs.getDouble(1);
 		rs.close();
 		ps.close();
+		_postExecute(conn);
 		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
@@ -892,6 +902,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
+		_preExecute(conn);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
 		Map<Object, Integer> result = new LinkedHashMap<Object, Integer>();
@@ -905,6 +916,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 		rs.close();
 		ps.close();
+		_postExecute(conn);
 		if (!ThreadContext.inTransaction(ds)) {
 			conn.close();
 		}
@@ -1064,6 +1076,25 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public T get(__PrimaryKey<T> pk) {
 		return get(tables.get(0).PK().eq(pk));
+	}
+
+	@Override
+	public Query<T> use(Connection conn) {
+		return use(new SingleConnectionDataSource(conn));
+	}
+
+	void _preExecute(Connection conn) throws SQLException {
+		if (conditions == null) return;
+		for (Condition c : conditions) {
+			c._preExecute(conn);
+		}
+	}
+
+	void _postExecute(Connection conn) throws SQLException {
+		if (conditions == null) return;
+		for (Condition c : conditions) {
+			c._postExecute(conn);
+		}
 	}
 
 }

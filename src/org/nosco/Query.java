@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -340,6 +341,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> use(DataSource ds);
+
+	/**
+	 * Use a given java.sql.Connection. &nbsp;
+	 * Note user is responsible for eventually closing the connection.
+	 * @param ds
+	 * @return
+	 */
+	public Query<T> use(Connection conn);
 
 	/**
 	 * Performs a cross join.  Note that this can result in an extraordinary number

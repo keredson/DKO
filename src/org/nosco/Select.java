@@ -156,10 +156,12 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	public Iterator<T> iterator() {
 		try {
 			conn = query.getConnR();
-			Tuple<String, List<Object>> ret = getSQL(new SqlContext(query));
+			SqlContext context = new SqlContext(query);
+			Tuple<String, List<Object>> ret = getSQL(context);
 			ps = conn.prepareStatement(ret.a);
 			Misc.log(sql, ret.b);
 			query.setBindings(ps, ret.b);
+			query._preExecute(conn);
 			ps.execute();
 			rs = ps.getResultSet();
 			//m = query.getType().getMethod("INSTANTIATE", Map.class);
@@ -259,6 +261,11 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	}
 
 	private void cleanUp() {
+		try {
+			query._postExecute(conn);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		if (!ThreadContext.inTransaction(query.ds)) {
 			try {
 				conn.close();

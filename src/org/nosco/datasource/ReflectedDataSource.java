@@ -1,4 +1,4 @@
-package org.nosco;
+package org.nosco.datasource;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;

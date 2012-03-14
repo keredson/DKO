@@ -324,7 +324,11 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition in(Collection<T> set) {
-		return new Condition.In(this, " in ", set);
+		if (set.size() < 256) {
+			return new Condition.In(this, " in ", set);
+		} else {
+			return new Condition.InTmpTable<T>(this, set);
+		}
 	}
 
 	/**

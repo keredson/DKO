@@ -70,7 +70,7 @@ class DataSourceGenerator {
 
 		br.write("package "+ pkg +";\n");
 		br.write("\n");
-		br.write("import org.nosco.ReflectedDataSource;\n");
+		br.write("import org.nosco.datasource.ReflectedDataSource;\n");
 		br.write("\n");
 		br.write("public class "+ name +" extends ReflectedDataSource {\n");
 		br.write("\n");

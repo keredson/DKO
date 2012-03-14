@@ -1,9 +1,15 @@
 package org.nosco;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +31,100 @@ import org.nosco.util.Tuple;
  * @author Derek Anderson
  */
 public abstract class Condition {
+
+	static class InTmpTable<T> extends Condition {
+
+		private Field<T> field;
+		private Collection<T> set;
+		private String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
+		private String type = null;
+
+		public InTmpTable(Field<T> field, Collection<T> set) {
+			this.field = field;
+			// we make a set because we create a PK index on the tmp table
+			this.set = new LinkedHashSet<T>(set);
+			if (Integer.class.equals(field.TYPE)) type = "int";
+			if (Long.class.equals(field.TYPE)) type = "long";
+			if (String.class.equals(field.TYPE)) type = "varchar(4096)";
+			if (Character.class.equals(field.TYPE)) type = "char(1)";
+			if (type == null) throw new RuntimeException("unsupported type for temp table " +
+					"generation: "+ field.TYPE);
+		}
+
+		@Override
+		boolean matches(Table t) {
+			return set.contains(t.get(field));
+		}
+
+		@Override
+		protected void getSQL(StringBuffer sb, List<Object> bindings,
+				SqlContext context) {
+			sb.append(' ');
+			sb.append(derefField(field, context));
+			sb.append(" in ");
+			sb.append("(select id from "+ tmpTableName +")");
+		}
+
+		@Override
+		public void _preExecute(Connection conn) throws SQLException {
+			Statement stmt = null;
+			PreparedStatement ps = null;
+			try {
+				stmt = conn.createStatement();
+				String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +", PRIMARY KEY (id))";
+				Misc.log(sql, null);
+				stmt.execute(sql);
+				ps = conn.prepareStatement("insert into "+ tmpTableName +" values (?)");
+				int i = 0;
+				int added = 0;
+				for (T t : set) {
+					++i;
+					if (t instanceof Character) ps.setString(1, t.toString());
+					else ps.setObject(1, t);
+					ps.addBatch();
+					if (i%64 == 0) for (int x : ps.executeBatch()) added += x;
+				}
+				if (i%64 != 0) {
+					for (int x : ps.executeBatch()) {
+						added += x;
+					}
+				}
+			} catch (SQLException e) {
+				throw e;
+			} finally {
+				try {
+					if (stmt!=null && !stmt.isClosed()) stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (ps!=null && !ps.isClosed()) ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void _postExecute(Connection conn) throws SQLException {
+			Statement stmt = null;
+			try {
+				stmt = conn.createStatement();
+				String sql = "DROP TABLE "+ tmpTableName;
+				Misc.log(sql, null);
+				stmt.execute(sql);
+			} catch (SQLException e) {
+				throw e;
+			} finally {
+				try {
+					if (stmt!=null && !stmt.isClosed()) stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
 
 	/**
 	 * always true
@@ -627,6 +727,14 @@ public abstract class Condition {
 			sb.append(")");
 		}
 
+	}
+
+	void _preExecute(Connection conn) throws SQLException {
+		// default to do nothing
+	}
+
+	void _postExecute(Connection conn) throws SQLException {
+		// default to do nothing
 	}
 
 }

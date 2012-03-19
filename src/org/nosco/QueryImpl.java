@@ -55,7 +55,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
 	Tree<Field.FK> fks = null;
-	Map<String,String> fkPathTableToTableNameMap = null;
+	Map<String,TableInfo> fkPathTableToTableInfoMap = null;
 	private List<DIRECTION> orderByDirections = null;
 	private List<Field<?>> orderByFields = null;
 	int top = 0;
@@ -68,13 +68,14 @@ class QueryImpl<T extends Table> implements Query<T> {
 		addTable(table);
 	}
 
-	private void addTable(Table table) {
+	private TableInfo addTable(Table table) {
 		tables.add(table);
 		String tableName = genTableName(table, tableNames);
 		tableNames.add(tableName);
 		TableInfo info = new TableInfo(table, tableName, null);
 		info.nameAutogenned = true;
 		tableInfos.add(info);
+		return info;
 	}
 
 	QueryImpl(QueryImpl<T> q) {
@@ -85,8 +86,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 		if (q.fks!=null) {
 			fks = q.fks.clone();
 		}
-		if (q.fkPathTableToTableNameMap!=null) {
-			fkPathTableToTableNameMap = new HashMap<String,String>(q.fkPathTableToTableNameMap);
+		if (q.fkPathTableToTableInfoMap!=null) {
+			fkPathTableToTableInfoMap = new HashMap<String,TableInfo>(q.fkPathTableToTableInfoMap);
 		}
 		tables.addAll(q.tables);
 		tableNames.addAll(q.tableNames);
@@ -188,6 +189,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	Connection getConnR() throws SQLException {
+		ThreadContext.incrementConnectionCount();
 		if (ThreadContext.inTransaction(ds)) {
 			return ThreadContext.getConnection(ds);
 		}
@@ -198,6 +200,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	Connection getConnRW() throws SQLException {
+		ThreadContext.incrementConnectionCount();
 		if (ThreadContext.inTransaction(ds)) {
 			return ThreadContext.getConnection(ds);
 		}
@@ -682,7 +685,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public Query<T> with(final Field.FK... fkFields) {
 		final QueryImpl<T> q = new QueryImpl<T>(this);
 		if (q.conditions==null) q.conditions = new ArrayList<Condition>();
-		if (q.fks==null) q.fks = new Tree<Field.FK>();
+		//if (q.fks==null) q.fks = new Tree<Field.FK>();
+		if (q.fkPathTableToTableInfoMap == null) q.fkPathTableToTableInfoMap = new HashMap<String,TableInfo>();
 		try {
 
 			final Table[] baseTables = new Table[fkFields.length+1];
@@ -693,56 +697,33 @@ class QueryImpl<T extends Table> implements Query<T> {
 				Field[] reffedFields = field.REFERENCED_FIELDS();
 				Table refingTable = (Table) refingFields[0].TABLE.newInstance();
 				Table reffedTable = (Table) reffedFields[0].TABLE.newInstance();
+				FK[] path = new FK[i+1];
+				System.arraycopy(fkFields, 0, path, 0, i+1);
 				if (refingTable.sameTable(baseTables[i])) {
 					baseTables[i+1] = reffedTable;
+					String fkPathKey = genTableNameFromFKPathKey(path, i, reffedTable);
+					if (!q.fkPathTableToTableInfoMap.containsKey(fkPathKey)) {
+						TableInfo info = q.addTable(reffedTable);
+						info.path = path;
+						System.err.println(fkPathKey);
+						q.fkPathTableToTableInfoMap.put(fkPathKey, info);
+					}
 				} else if (reffedTable.sameTable(baseTables[i])) {
-					throw new IllegalArgumentException("reverse rels not supported yet");
+					baseTables[i+1] = refingTable;
+					String fkPathKey = genTableNameFromFKPathKey(path, i, refingTable);
+					if (!q.fkPathTableToTableInfoMap.containsKey(fkPathKey)) {
+						TableInfo info = q.addTable(refingTable);
+						info.path = path;
+						System.err.println(fkPathKey);
+						q.fkPathTableToTableInfoMap.put(fkPathKey, info);
+					}
 				} else {
 					throw new IllegalArgumentException("you have a break in your FK chain");
 				}
-			}
-
-			q.fks.add(new Tree.Callback<Field.FK>() {
-				public void call(FK fkField, int offset, FK[] path) {
-					try {
-						Field[] refingFields = fkField.REFERENCING_FIELDS();
-						Field[] reffedFields = fkField.REFERENCED_FIELDS();
-						Table refingTable = (Table) refingFields[0].TABLE.newInstance();
-						Table reffedTable = (Table) reffedFields[0].TABLE.newInstance();
-						if (refingTable.sameTable(baseTables[offset-1])) {
-							String reffedTableName = genTableName(reffedTable, q.tableNames);
-							q.tables.add(reffedTable);
-							q.tableNames.add(reffedTableName);
-							FK[] actualPath = new FK[offset];
-							System.arraycopy(path, 0, actualPath, 0, offset);
-							q.tableInfos.add(new TableInfo(reffedTable, reffedTableName, actualPath));
-							if (q.fkPathTableToTableNameMap == null) q.fkPathTableToTableNameMap = new HashMap<String,String>();
-							q.fkPathTableToTableNameMap.put(
-									genTableNameFromFKPathKey(fkFields, offset, reffedTable),
-									reffedTableName);
-							String refingTableName =q.fkPathTableToTableNameMap.get(
-									genTableNameFromFKPathKey(fkFields, offset, refingTable));
-							for (int j=0; j<refingFields.length; ++j) {
-								q.conditions.add(new Condition.Binary(refingFields[j].from(
-										refingTableName),
-										"=",
-										reffedFields[j].from(reffedTableName))
-									.or(refingFields[j].from(refingTableName).isNull()));
-							}
-						} else if (reffedTable.sameTable(baseTables[offset-1])) {
-							throw new IllegalArgumentException("reverse rels not supported yet");
-						} else {
-							throw new IllegalArgumentException("you have a break in your FK chain");
-						}
-					} catch (SecurityException e) {
-						e.printStackTrace();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
+				for (int j=0; j<refingFields.length; ++j) {
+					q.conditions.add(refingFields[j].eq(reffedFields[j]));
 				}
-			}, fkFields);
+			}
 
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -754,7 +735,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return q;
 	}
 
-	private static String genTableNameFromFKPathKey(FK[] fkFields, int offset, Table refingTable) {
+	static String genTableNameFromFKPathKey(FK[] fkFields, int offset, Table refingTable) {
 		StringBuffer sb = new StringBuffer();
 		for (int i=0; i<offset; ++i) {
 			FK fkField = fkFields[i];
@@ -793,14 +774,17 @@ class QueryImpl<T extends Table> implements Query<T> {
 	static class TableInfo implements Cloneable {
 
 		Table table = null;
+		Class<? extends Table> tableClass = null;
 		String tableName = null;
 		int start = -1;
 		int end = -1;
 		FK[] path = null;
+		TableInfo fkInfo = null;
 		boolean nameAutogenned = false;
 
 		public TableInfo(Table table, String tableName, FK[] path) {
 			this.table = table;
+			this.tableClass = table.getClass();
 			this.tableName = tableName;
 			this.path  = path;
 		}
@@ -808,6 +792,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		@Override
 		protected Object clone() throws CloneNotSupportedException {
 			TableInfo x = new TableInfo(table, tableName, path);
+			x.tableClass = tableClass;
 			x.start = start;
 			x.end = end;
 			x.nameAutogenned = nameAutogenned;

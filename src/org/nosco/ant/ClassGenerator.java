@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.nosco.Field;
+import org.nosco.Query;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -513,7 +515,7 @@ class ClassGenerator {
 		}
 
 		// write SET_FK
-		br.write("\tprotected void SET_FK(Field.FK field, Object v) {\n");
+		br.write("\tprotected void SET_FK(Field.FK<?> field, Object v) {\n");
 		br.write("\t\tif (false);\n");
 		for (FK fk : fks) {
 			String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
@@ -531,6 +533,36 @@ class ClassGenerator {
 		br.write("\t\telse {throw new RuntimeException(\"unknown FK\");}\n");
 		br.write("\t}\n\n");
 
+		// write SET_FK_SET
+		/*
+	protected void SET_FK_SET(Field.FK field, Query<?> v) {
+		if (false);
+		if (Instrument.FK_INSTRUMENT_TYPE.equals(field)) {
+		    __NOSCO_CACHED_FK_SET___instrument___instrument_type_id = (Query<Instrument>) v;
+		}
+		else {throw new RuntimeException("unknown FK");}
+	}
+		 */
+		br.write("\t@SuppressWarnings(\"unchecked\")\n");
+		br.write("\tprotected void SET_FK_SET(Field.FK<?> fk, Query<?> v) {\n");
+		br.write("\t\tif (false);\n");
+		for (FK fk : fksIn) {
+		    String relatedSchema = fk.reffing[0];
+		    String relatedTable = fk.reffing[1];
+		    String relatedTableClassName = this.genTableClassName(relatedTable);
+			if (!schema.equals(relatedSchema)) {
+				relatedTableClassName = pkg +"."+ relatedSchema +"."+ relatedTableClassName;
+			}
+			String fkName = "FK_"+ genFKName(fk.columns.keySet(), fk.reffed[1]);
+		    String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
+		    		+ Misc.join("__", fk.columns.keySet());
+		    br.write("\t\telse if ("+ relatedTableClassName +"."+ fkName +".equals(fk)) {\n");
+		    br.write("\t\t\t"+ localVar +" = (Query<"+ relatedTableClassName +">) v;\n");
+		    br.write("\t\t}\n");
+		}
+		br.write("\t\telse {throw new RuntimeException(\"unknown FK\");}\n");
+		br.write("\t}\n\n");
+
 		// write the getTableFKSet() functions
 		Map<String, Integer> reffingCounts = new HashMap<String,Integer>();
 		for (FK fk : fksIn) {
@@ -544,8 +576,8 @@ class ClassGenerator {
 		    String relatedTable = fk.reffing[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
 		    //String method = genFKMethodName(fk.columns.keySet(), relatedTableClassName);
-			if (!schema.equals(fk.reffing[0])) {
-				relatedTableClassName = pkg +"."+ fk.reffing[0] +"."+ relatedTableClassName;
+			if (!schema.equals(relatedSchema)) {
+				relatedTableClassName = pkg +"."+ relatedSchema +"."+ relatedTableClassName;
 			}
 		    String method = getInstanceMethodName(relatedTable);
 		    if (reffingCounts.get(relatedTable) > 1) {

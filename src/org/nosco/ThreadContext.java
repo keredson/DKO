@@ -37,6 +37,7 @@ public class ThreadContext {
 			new HashMap<DataSource,Map<String,String>>();
 	private Map<DataSource,Connection> transactionConnections =
 			new HashMap<DataSource,Connection>();
+	private long connectionCount = 0;
 
 	private ThreadContext() {}
 
@@ -141,6 +142,30 @@ public class ThreadContext {
 		ThreadContext tc = tl.get();
 		Connection c = tc.transactionConnections.get(ds);
 		return c;
+	}
+
+	/**
+	 * Gets number of connections for this thread.
+	 */
+	public static long getConnectionCount() {
+		ThreadContext tc = tl.get();
+		return tc.connectionCount;
+	}
+
+	/**
+	 * Increments the number of connections for this thread.
+	 */
+	public static long incrementConnectionCount() {
+		ThreadContext tc = tl.get();
+		return ++tc.connectionCount;
+	}
+
+	/**
+	 * Sets the number of connections for this thread.
+	 */
+	public static void setConnectionCount(long count) {
+		ThreadContext tc = tl.get();
+		tc.connectionCount = count;
 	}
 
 	/**

@@ -23,7 +23,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 
 	List<T> cache = null;
 
-	public InMemoryQuery(Query<T> query) {
+	InMemoryQuery(Query<T> query) {
 		cache = new ArrayList<T>();
 		for (T t : query) {
 			cache.add(t);
@@ -31,6 +31,10 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	private InMemoryQuery(InMemoryQuery<T> q) {
+		cache = new ArrayList<T>();
+	}
+
+	InMemoryQuery() {
 		cache = new ArrayList<T>();
 	}
 

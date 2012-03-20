@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -225,7 +226,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			int objectSize = tableInfos.size();
 			Table[] objects = new Table[objectSize];
 			@SuppressWarnings("unchecked")
-			Set<Table>[] inMemoryCacheSets = new HashSet[objectSize];
+			LinkedHashSet<Table>[] inMemoryCacheSets = new LinkedHashSet[objectSize];
 			InMemoryQuery[] inMemoryCaches = new InMemoryQuery[objectSize];
 			QueryImpl.TableInfo baseTableInfo = null;
 			for (int i=0; i<objectSize; ++i) {
@@ -258,10 +259,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 								fk.referencing.equals(objects[j].getClass())) {
 							//String key = key4IMQ(tj.path);
 							InMemoryQuery<Table> cache = inMemoryCaches[j];
-							Set<Table> cacheSet = inMemoryCacheSets[j];
+							LinkedHashSet<Table> cacheSet = inMemoryCacheSets[j];
 							if (cache == null) {
 								cache = new InMemoryQuery<Table>();
-								cacheSet = new HashSet<Table>();
+								cacheSet = new LinkedHashSet<Table>();
 								cacheSet.add(objects[j]);
 								inMemoryCaches[j] = cache;
 								inMemoryCacheSets[j] = cacheSet;
@@ -289,9 +290,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 						QueryImpl.TableInfo ti = tableInfos.get(i);
 						if (i == 0) baseTableInfo = ti;
 						if (ti.path == null) {
-							if (next != null) continue;
-							//System.out.println(ti.start +" "+ ti.end);
-							next = (T) constructor.newInstance(selectedFields, peekRow, ti.start, ti.end);
 							peekObjects[i] = next;
 						} else {
 							Table fkv = constructors.get(ti.table.getClass())
@@ -301,6 +299,22 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 						if (objects[i]==null ? peekObjects[i]!=null : !objects[i].equals(peekObjects[i])) {
 							Set<Table> cache = inMemoryCacheSets[i];
 							if (cache!=null) cache.add(peekObjects[i]);
+						}
+					}
+
+					for (int i=0; i<objectSize; ++i) {
+						QueryImpl.TableInfo ti = tableInfos.get(i);
+						for (int j=i+1; j<objectSize; ++j) {
+							QueryImpl.TableInfo tj = tableInfos.get(j);
+							if (tj.path == null) continue;
+							if(Misc.startsWith(tj.path, ti.path)) {
+								FK fk = tj.path[tj.path.length-1];
+								if (fk.referencing.equals(peekObjects[i].getClass()) &&
+										fk.referenced.equals(peekObjects[j].getClass())) {
+									Method method = fkSetMethods.get(peekObjects[i].getClass());
+									method.invoke(peekObjects[i], fk, peekObjects[j]);
+								}
+							}
 						}
 					}
 

@@ -155,13 +155,17 @@ public class ThreadContext {
 	/**
 	 * Increments the number of connections for this thread.
 	 */
-	public static long incrementConnectionCount() {
+	static long incrementConnectionCount() {
 		ThreadContext tc = tl.get();
 		return ++tc.connectionCount;
 	}
 
 	/**
-	 * Sets the number of connections for this thread.
+	 * Sets the number of connections for this thread. &nbsp;
+	 * It makes sense to set this when you want to use incremental measuring. &nbsp;
+	 * For instance, in a test case, you can set to 0, then confirm only n connections
+	 * were made. (where each connection is another SQL query)
+	 *
 	 */
 	public static void setConnectionCount(long count) {
 		ThreadContext tc = tl.get();

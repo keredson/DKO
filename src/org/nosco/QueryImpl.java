@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
+import org.nosco.Field.PK;
 import org.nosco.Table.__Alias;
 import org.nosco.Table.__PrimaryKey;
 import org.nosco.datasource.MirroredDataSource;
@@ -50,12 +51,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 	// these should be cloned
 	List<Condition> conditions = null;
 	List<Table> tables = new ArrayList<Table>();
-	List<String> tableNames = new ArrayList<String>();
+	Set<String> usedTableNames = new HashSet<String>();
 	List<TableInfo> tableInfos = new ArrayList<TableInfo>();
+	List<Join> joins = new ArrayList<Join>();
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
 	Tree<Field.FK> fks = null;
-	Map<String,TableInfo> fkPathTableToTableInfoMap = null;
 	private List<DIRECTION> orderByDirections = null;
 	private List<Field<?>> orderByFields = null;
 	int top = 0;
@@ -70,8 +71,8 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	private TableInfo addTable(Table table) {
 		tables.add(table);
-		String tableName = genTableName(table, tableNames);
-		tableNames.add(tableName);
+		String tableName = genTableName(table, usedTableNames);
+		usedTableNames.add(tableName);
 		TableInfo info = new TableInfo(table, tableName, null);
 		info.nameAutogenned = true;
 		tableInfos.add(info);
@@ -86,11 +87,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 		if (q.fks!=null) {
 			fks = q.fks.clone();
 		}
-		if (q.fkPathTableToTableInfoMap!=null) {
-			fkPathTableToTableInfoMap = new HashMap<String,TableInfo>(q.fkPathTableToTableInfoMap);
-		}
 		tables.addAll(q.tables);
-		tableNames.addAll(q.tableNames);
+		joins.addAll(q.joins);
+		usedTableNames.addAll(q.usedTableNames);
 		try { for (TableInfo x : q.tableInfos) tableInfos.add((TableInfo) x.clone()); }
 		catch (CloneNotSupportedException e) { /* ignore */ }
 		if (q.deferSet!=null) {
@@ -147,7 +146,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		try {
 			Table table = alias.table.getConstructor().newInstance();
 			tables.add(table);
-			tableNames.add(alias.alias);
+			usedTableNames.add(alias.alias);
 			TableInfo info = new TableInfo(table, alias.alias, null);
 			info.nameAutogenned = false;
 			tableInfos.add(info);
@@ -209,7 +208,9 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public int count() throws SQLException {
-		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
+		SqlContext context = new SqlContext(this);
+		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) +
+				this.getJoinClause(context) + getWhereClauseAndSetBindings();
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
@@ -489,6 +490,27 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return tables.get(0).getClass();
 	}
 
+	/**
+	 * @param context
+	 * @return
+	 */
+	String getJoinClause(SqlContext context) {
+		StringBuffer sb = new StringBuffer();
+		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		for (Join join : joins) {
+			TableInfo tableInfo = join.tableInfo;
+			Table table = tableInfo.table;
+			sb.append(" ");
+			sb.append(join.type);
+			sb.append(" ");
+			sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
+						+ sep + table.TABLE_NAME() +" "+ tableInfo.tableName);
+			sb.append(" on ");
+			sb.append(join.condition.getSQL(context));
+		}
+		return sb.toString();
+	}
+
 	@Override
 	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
 		QueryImpl<T> q = new QueryImpl<T>(this);
@@ -527,11 +549,19 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return proposed;
 	}
 
+	List<TableInfo> getAllTableInfos() {
+		List<TableInfo> all = new ArrayList<TableInfo>(tableInfos);
+		for (Join join : joins) {
+			all.add(join.tableInfo);
+		}
+		return all;
+	}
+
 	Field<?>[] getSelectFields(boolean bind) {
 		if (!bind && fields==null || bind && boundFields==null) {
 			List<Field<?>> fields = new ArrayList<Field<?>>();
 			int c = 0;
-			for (TableInfo ti : tableInfos) {
+			for (TableInfo ti : getAllTableInfos()) {
 				ti.start = c;
 				String tableName = bind ? ti.tableName : null;
 				for (Field<?> field : ti.table.FIELDS()) {
@@ -671,11 +701,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	public Collection<String> getTableNameList() {
 		List<String> names = new ArrayList<String>();
-		List<String> tableNames = new LinkedList<String>(this.tableNames);
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		for (Table t : tables) {
+		for (TableInfo ti : tableInfos) {
+			Table t = ti.table;
 			names.add(ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
-					+ sep + t.TABLE_NAME() +" "+ tableNames.remove(0));
+					+ sep + t.TABLE_NAME() +" "+ ti.tableName);
 		}
 		return names;
 	}
@@ -683,10 +713,15 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Query<T> with(final Field.FK... fkFields) {
-		final QueryImpl<T> q = new QueryImpl<T>(this);
+		QueryImpl<T> q = new QueryImpl<T>(this);
+		if (q.orderByFields == null) {
+			Table t = q.tables.get(0);
+			PK pk = t.PK();
+			if (pk != null) q = (QueryImpl<T>) q.orderBy(pk.GET_FIELDS());
+			else q = (QueryImpl<T>) q.orderBy(t.FIELDS());
+		}
 		if (q.conditions==null) q.conditions = new ArrayList<Condition>();
 		//if (q.fks==null) q.fks = new Tree<Field.FK>();
-		if (q.fkPathTableToTableInfoMap == null) q.fkPathTableToTableInfoMap = new HashMap<String,TableInfo>();
 		try {
 
 			final Table[] baseTables = new Table[fkFields.length+1];
@@ -699,29 +734,56 @@ class QueryImpl<T extends Table> implements Query<T> {
 				Table reffedTable = (Table) reffedFields[0].TABLE.newInstance();
 				FK[] path = new FK[i+1];
 				System.arraycopy(fkFields, 0, path, 0, i+1);
+				boolean alreadyAdded = false;
+				for (TableInfo ti : q.getAllTableInfos()) {
+					if (Misc.deepEqual(path, ti.path)) {
+						// we've already added this FK
+						alreadyAdded = true;
+						// set this so our FK chain detection works
+						baseTables[i+1] = ti.table;
+						break;
+					}
+				}
+				if (alreadyAdded) continue;
+
+				// create the condition
+				Condition condition = null;
+				for (int j=0; j<refingFields.length; ++j) {
+					Condition condition2 = refingFields[j].eq(reffedFields[j]);
+					if (condition == null) condition = condition2;
+					else condition = condition.and(condition2);
+				}
+
 				if (refingTable.sameTable(baseTables[i])) {
 					baseTables[i+1] = reffedTable;
-					String fkPathKey = genTableNameFromFKPathKey(path, i, reffedTable);
-					if (!q.fkPathTableToTableInfoMap.containsKey(fkPathKey)) {
-						TableInfo info = q.addTable(reffedTable);
-						info.path = path;
-						System.err.println(fkPathKey);
-						q.fkPathTableToTableInfoMap.put(fkPathKey, info);
-					}
+
+					String tableName = genTableName(reffedTable, q.usedTableNames);
+					q.usedTableNames.add(tableName);
+					TableInfo info = new TableInfo(reffedTable, tableName, path);
+					info.nameAutogenned = true;
+					//q.tableInfos.add(info);
+					Join join = new Join();
+					join.condition = condition;
+					join.tableInfo = info;
+					join.type = "left outer join";
+					q.joins.add(join);
+					//TableInfo info = q.addTable(reffedTable);
 				} else if (reffedTable.sameTable(baseTables[i])) {
 					baseTables[i+1] = refingTable;
-					String fkPathKey = genTableNameFromFKPathKey(path, i, refingTable);
-					if (!q.fkPathTableToTableInfoMap.containsKey(fkPathKey)) {
-						TableInfo info = q.addTable(refingTable);
-						info.path = path;
-						System.err.println(fkPathKey);
-						q.fkPathTableToTableInfoMap.put(fkPathKey, info);
-					}
+					String tableName = genTableName(refingTable, q.usedTableNames);
+					q.usedTableNames.add(tableName);
+					TableInfo info = new TableInfo(refingTable, tableName, path);
+					info.nameAutogenned = true;
+					Join join = new Join();
+					join.condition = condition;
+					join.tableInfo = info;
+					join.type = "left outer join";
+					q.joins.add(join);
+//					TableInfo info = q.addTable(refingTable);
+//					info.path = path;
+//					q.conditions.add(condition);
 				} else {
 					throw new IllegalArgumentException("you have a break in your FK chain");
-				}
-				for (int j=0; j<refingFields.length; ++j) {
-					q.conditions.add(refingFields[j].eq(reffedFields[j]));
 				}
 			}
 
@@ -769,6 +831,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public int size() throws SQLException {
 		return count();
+	}
+
+	static class Join implements Cloneable {
+		String type = null;
+		TableInfo tableInfo = null;
+		Condition condition = null;
 	}
 
 	static class TableInfo implements Cloneable {
@@ -825,10 +893,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
 			throws SQLException {
 		SqlContext context = new SqlContext(this);
-		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
-		sql = "select "+ Condition.derefField(byField, context)
-				+", sum("+ Condition.derefField(sumField, context) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, context);
+		String sql = Misc.join(", ", getTableNameList()) + getJoinClause(context)
+				+ getWhereClauseAndSetBindings();
+		sql = "select "+ Util.derefField(byField, context)
+				+", sum("+ Util.derefField(sumField, context) +") from "+ sql
+				+" group by "+ Util.derefField(byField, context);
 		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -854,9 +923,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Double sum(Field<? extends Number> sumField) throws SQLException {
-		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 		SqlContext context = new SqlContext(this);
-		sql = "select sum("+ Condition.derefField(sumField, context) +") from "+ sql;
+		String sql = Misc.join(", ", getTableNameList()) + getJoinClause(context)
+				+ getWhereClauseAndSetBindings();
+		sql = "select sum("+ Util.derefField(sumField, context) +") from "+ sql;
 		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -878,11 +948,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
-		String sql = Misc.join(", ", getTableNameList()) + getWhereClauseAndSetBindings();
 		SqlContext context = new SqlContext(this);
-		sql = "select "+ Condition.derefField(byField, context)
-				+", count("+ Condition.derefField(byField, context) +") from "+ sql
-				+" group by "+ Condition.derefField(byField, context);
+		String sql = Misc.join(", ", getTableNameList()) + getJoinClause(context)
+				+ getWhereClauseAndSetBindings();
+		sql = "select "+ Util.derefField(byField, context)
+				+", count("+ Util.derefField(byField, context) +") from "+ sql
+				+" group by "+ Util.derefField(byField, context);
 		Misc.log(sql, null);
 		Connection conn = getConnR();
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -952,11 +1023,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 		try {
 			Table table = tableAlias.table.getConstructor().newInstance();
 			q.tables.add(table);
-			if (q.tableNames.contains(tableAlias.alias)) {
+			if (q.usedTableNames.contains(tableAlias.alias)) {
 				throw new RuntimeException("table alias "+ tableAlias.alias
 						+" already exists in this query");
 			}
-			q.tableNames.add(tableAlias.alias);
+			q.usedTableNames.add(tableAlias.alias);
 			q.tableInfos.add(new TableInfo(table, tableAlias.alias, null));
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();

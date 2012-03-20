@@ -9,11 +9,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
@@ -60,7 +63,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 			constructor.setAccessible(true);
 
-			for (TableInfo tableInfo : query.tableInfos) {
+			for (TableInfo tableInfo : query.getAllTableInfos()) {
 				Constructor<? extends Table> constructor = tableInfo.tableClass.getDeclaredConstructor(
 						new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 				constructor.setAccessible(true);
@@ -123,6 +126,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		}
 		sb.append(" from ");
 		sb.append(Misc.join(", ", query.getTableNameList()));
+		sb.append(query.getJoinClause(context));
 		Tuple<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
 		sb.append(ret.a);
 
@@ -134,7 +138,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			String[] tmp = new String[x];
 			for (int i=0; i<x; ++i) {
 				DIRECTION direction = directions.get(i);
-				tmp[i] = fields.get(i) + (direction==DESCENDING ? " DESC" : "");
+				tmp[i] = Util.derefField(fields.get(i), context) + (direction==DESCENDING ? " DESC" : "");
 			}
 			sb.append(Misc.join(", ", tmp));
 		}
@@ -190,6 +194,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private Object[] peekNextRow() throws SQLException {
 		if (done) return null;
 		if (nextRow != null) return nextRow;
+		if (rs == null) return null;
 		if (!rs.next()) {
 			cleanUp();
 			return null;
@@ -216,12 +221,15 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		try {
 			Object[] fieldValues = getNextRow();
 			if (fieldValues == null) return false;
-			int objectSize = query.tableInfos.size();
+			List<TableInfo> tableInfos = query.getAllTableInfos();
+			int objectSize = tableInfos.size();
 			Table[] objects = new Table[objectSize];
-			InMemoryQuery[] inMemoryCaches  = new InMemoryQuery[objectSize];
+			@SuppressWarnings("unchecked")
+			Set<Table>[] inMemoryCacheSets = new HashSet[objectSize];
+			InMemoryQuery[] inMemoryCaches = new InMemoryQuery[objectSize];
 			QueryImpl.TableInfo baseTableInfo = null;
 			for (int i=0; i<objectSize; ++i) {
-				QueryImpl.TableInfo ti = query.tableInfos.get(i);
+				QueryImpl.TableInfo ti = tableInfos.get(i);
 				if (i == 0) baseTableInfo = ti;
 				if (ti.path == null) {
 					if (next != null) continue;
@@ -235,11 +243,11 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				}
 			}
 			for (int i=0; i<objectSize; ++i) {
-				QueryImpl.TableInfo ti = query.tableInfos.get(i);
+				QueryImpl.TableInfo ti = tableInfos.get(i);
 				for (int j=i+1; j<objectSize; ++j) {
-					QueryImpl.TableInfo tj = query.tableInfos.get(j);
+					QueryImpl.TableInfo tj = tableInfos.get(j);
 					if (tj.path == null) continue;
-					if(startsWith(tj.path, ti.path)) {
+					if(Misc.startsWith(tj.path, ti.path)) {
 						FK fk = tj.path[tj.path.length-1];
 						if (fk.referencing.equals(objects[i].getClass()) &&
 								fk.referenced.equals(objects[j].getClass())) {
@@ -250,10 +258,13 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 								fk.referencing.equals(objects[j].getClass())) {
 							//String key = key4IMQ(tj.path);
 							InMemoryQuery<Table> cache = inMemoryCaches[j];
+							Set<Table> cacheSet = inMemoryCacheSets[j];
 							if (cache == null) {
 								cache = new InMemoryQuery<Table>();
-								cache.cache.add(objects[j]);
+								cacheSet = new HashSet<Table>();
+								cacheSet.add(objects[j]);
 								inMemoryCaches[j] = cache;
+								inMemoryCacheSets[j] = cacheSet;
 								Method method = fkSetSetMethods.get(fk);
 								method.invoke(objects[i], fk, cache);
 							}
@@ -275,7 +286,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					Table[] peekObjects = new Table[objectSize];
 
 					for (int i=0; i<objectSize; ++i) {
-						QueryImpl.TableInfo ti = query.tableInfos.get(i);
+						QueryImpl.TableInfo ti = tableInfos.get(i);
 						if (i == 0) baseTableInfo = ti;
 						if (ti.path == null) {
 							if (next != null) continue;
@@ -288,13 +299,18 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 							peekObjects[i] = fkv;
 						}
 						if (objects[i]==null ? peekObjects[i]!=null : !objects[i].equals(peekObjects[i])) {
-							InMemoryQuery<Table> cache = inMemoryCaches[i];
-							if (cache!=null) cache.cache.add(peekObjects[i]);
+							Set<Table> cache = inMemoryCacheSets[i];
+							if (cache!=null) cache.add(peekObjects[i]);
 						}
 					}
 
 					peekRow = getNextRow();
 				}
+			}
+
+			for (int i=0; i<objectSize; ++i) {
+				if (inMemoryCaches[i]==null || inMemoryCacheSets[i]==null) continue;
+				inMemoryCaches[i].cache = new ArrayList<Table>(inMemoryCacheSets[i]);
 			}
 
 		} catch (SQLException e) {
@@ -342,14 +358,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			}
 		}
 		this.done = true;
-	}
-
-	private boolean startsWith(FK[] path, FK[] path2) {
-		if (path2 == null) return true;
-		for (int i=0; i<path2.length; ++i) {
-			if (path[i] != path2[i]) return false;
-		}
-		return true;
 	}
 
 	@Override

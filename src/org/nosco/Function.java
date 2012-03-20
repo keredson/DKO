@@ -153,7 +153,7 @@ public abstract class Function {
 				for (int i=0; i<objects.length; ++i) {
 					Object o = objects[i];
 					if (o instanceof Field) {
-						sb.append(Condition.derefField((Field<?>) o, context));
+						sb.append(Util.derefField((Field<?>) o, context));
 					} else {
 						sb.append("?");
 						if (bindings == null) bindings = new ArrayList<Object>();

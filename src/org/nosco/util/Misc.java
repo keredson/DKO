@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nosco.Constants;
+import org.nosco.Field.FK;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 
@@ -67,5 +68,27 @@ public class Misc {
 		if ("1".equals(s)) return true;
 		return false;
 	}
+
+	public static boolean startsWith(FK<?>[] path, FK<?>[] path2) {
+		if (path2 == null) return true;
+		for (int i=0; i<path2.length; ++i) {
+			if (path[i] != path2[i]) return false;
+		}
+		return true;
+	}
+
+	public static boolean deepEqual(Object[] path, Object[] path2) {
+		if (path == null && path2 == null) return true;
+		if (path == path2) return true;
+		if ((path != null && path2 == null)) return false;
+		if ((path == null && path2 != null)) return false;
+		if (path.length != path2.length) return false;
+		for (int i=0; i<path2.length; ++i) {
+			if (path[i]==null ? path2[i]!=null : path[i] != path2[i]
+					&& !path[i].equals(path2[i])) return false;
+		}
+		return true;
+	}
+
 
 }

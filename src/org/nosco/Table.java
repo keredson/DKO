@@ -195,6 +195,7 @@ public abstract class Table {
 	 * @return
 	 */
 	public boolean sameTable(Table t) {
+		if (t == null) return false;
 		return t.SCHEMA_NAME() == SCHEMA_NAME() && t.TABLE_NAME() == TABLE_NAME();
 	}
 

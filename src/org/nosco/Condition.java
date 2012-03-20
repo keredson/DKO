@@ -60,7 +60,7 @@ public abstract class Condition {
 		protected void getSQL(StringBuffer sb, List<Object> bindings,
 				SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, context));
+			sb.append(Util.derefField(field, context));
 			sb.append(" in ");
 			sb.append("(select id from "+ tmpTableName +")");
 		}
@@ -401,7 +401,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, context));
+			sb.append(Util.derefField(field, context));
 			sb.append(cmp1);
 			if (function1 == null) {
 				sb.append("?");
@@ -453,7 +453,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, context));
+			sb.append(Util.derefField(field, context));
 			sb.append(cmp);
 		}
 
@@ -512,7 +512,7 @@ public abstract class Condition {
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
 			if (v!=null) {
-				sb.append(derefField(field, context));
+				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
 				sb.append("?");
 				bindings.add(v);
@@ -525,9 +525,9 @@ public abstract class Condition {
 						if (tableNames.size() > 2) {
 							throw new RuntimeException("field ambigious");
 						} else if (tableNames.size() < 2) {
-							sb.append(derefField(field, context));
+							sb.append(Util.derefField(field, context));
 							sb.append(cmp);
-							sb.append(derefField(field2, context));
+							sb.append(Util.derefField(field2, context));
 						} else {
 							Iterator<String> i = tableNames.iterator();
 							sb.append(i.next() + "."+ field);
@@ -540,12 +540,12 @@ public abstract class Condition {
 						e.printStackTrace();
 					}
 				} else {
-					sb.append(derefField(field, context));
+					sb.append(Util.derefField(field, context));
 					sb.append(cmp);
-					sb.append(derefField(field2, context));
+					sb.append(Util.derefField(field2, context));
 				}
 			} else if (s!=null) {
-				sb.append(derefField(field, context));
+				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
 				sb.append('(');
 				SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
@@ -558,12 +558,12 @@ public abstract class Condition {
 				bindings.addAll(ret.b);
 				sb.append(')');
 			} else if (function!=null) {
-				sb.append(derefField(field, context));
+				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
 				sb.append(function.getSQL(context));
 				bindings.addAll(function.getSQLBindings());
 			} else {
-				sb.append(derefField(field, context));
+				sb.append(Util.derefField(field, context));
 				sb.append(" is null");
 			}
 		}
@@ -607,7 +607,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');
-			sb.append(derefField(field, context));
+			sb.append(Util.derefField(field, context));
 			sb.append(cmp);
 			sb.append('(');
 			if (set != null && set.length > 0) {
@@ -654,41 +654,6 @@ public abstract class Condition {
 
 	private static boolean eq(Object a, Object b) {
 		return a == b || (a != null && a.equals(b));
-	}
-
-	/**
-	 * Internal function.  Do not use.  Subject to change.
-	 */
-	public static String derefField(Field<?> field, SqlContext context) {
-		if (field.isBound()) return field.toString();
-		List<String> selectedTables = new ArrayList<String>();
-		List<TableInfo> unboundTables = new ArrayList<TableInfo>();
-		SqlContext tmp = context;
-		while (tmp != null) {
-			for (TableInfo info : tmp.tableInfos) {
-				selectedTables.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
-				if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
-					unboundTables.add(info);
-				}
-			}
-			tmp = tmp.parentContext;
-		}
-		if (unboundTables.size() < 1) {
-			throw new RuntimeException("field "+ field +
-					" is not from one of the selected tables {"+
-					Misc.join(",", selectedTables) +"}");
-		} else if (unboundTables.size() > 1) {
-			List<String> x = new ArrayList<String>();
-			for (TableInfo info : unboundTables) {
-				x.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
-			}
-			throw new RuntimeException("field "+ field +
-					" is ambigious over the tables {"+ Misc.join(",", x) +"}");
-		} else {
-			TableInfo theOne = unboundTables.iterator().next();
-			return (theOne.tableName == null ? theOne.table.TABLE_NAME() : theOne.tableName)
-					+ "."+ field;
-		}
 	}
 
 	static class Exists extends Condition {

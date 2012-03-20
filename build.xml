@@ -13,9 +13,17 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
     <mkdir dir="bin_test"/>
-    <exec executable="hg" outputproperty="hgid">
+    <exec executable="hg" outputproperty="hg_id">
         <arg value="id"/>
         <arg value="-i"/>
+    </exec>
+    <exec executable="hg" outputproperty="hg_branch">
+        <arg value="id"/>
+        <arg value="-b"/>
+    </exec>
+    <exec executable="hg" outputproperty="hg_tag">
+        <arg value="id"/>
+        <arg value="-t"/>
     </exec>
   </target>
 
@@ -53,7 +61,7 @@
     <mkdir dir="${dist}/lib"/>
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/lib/nosco-${DSTAMP}-${hgid}.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/lib/nosco-${DSTAMP}-${hg_branch}-${hg_tag}-${hg_id}.jar" basedir="${build}"/>
   </target>
 
   <target name="clean" description="clean up" >

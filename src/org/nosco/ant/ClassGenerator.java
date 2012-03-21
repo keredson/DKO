@@ -308,8 +308,8 @@ class ClassGenerator {
 					br.write("\t\t"+ name.toUpperCase().replaceAll("\\W", "_"));
 					br.write("("+ value +")");
 					if (count < instances.keySet().size()) br.write(",\n");
-					else br.write(";\n\n");
 				}
+				br.write(";\n\n");
 				br.write("\t\tpublic final "+ pkType +" "+ getFieldName(pk) +";\n");
 				br.write("\t\tPKS("+ pkType +" v) {\n");
 				br.write("\t\t\t"+ getFieldName(pk) +" = v;\n");

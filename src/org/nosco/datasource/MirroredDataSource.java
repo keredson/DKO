@@ -3,6 +3,7 @@ package org.nosco.datasource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Random;
 
 import javax.sql.DataSource;
 
@@ -82,8 +83,8 @@ public class MirroredDataSource implements DataSource {
 		// for now we randomly select the mirror
 		// TODO: implement other strategies
 		if (mirrors.length == 0) return getConnection();
-		// cast will never overflow because will always be <= mirrors.length
-		int i = (int) Math.round(Math.random() * mirrors.length);
+		Random random = new Random();
+		int i = random.nextInt(mirrors.length);
 		return mirrors[i].getConnection();
 	}
 

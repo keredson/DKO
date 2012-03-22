@@ -827,6 +827,23 @@ class ClassGenerator {
 			br.write(";\n");
 			coveredTypes.add(actualType);
 		}
+		for (String actualType : this.schemaTypeMappings.values()) {
+			for (String x : typeMappingFunctions.keySet()) {
+				if (coveredTypes.contains(actualType)) continue;
+				String[] y = x.split(" ");
+				if (y==null || y.length!=2) {
+					throw new RuntimeException("bad key in type_mappings: '"+ x +"'. must be of " +
+							"the form 'com.something.ClassA com.else.ClassB'");
+				}
+				if (actualType.equals(y[0])) {
+					br.write("\t\tif (o instanceof "+ actualType +") return ");
+					br.write(typeMappingFunctions.optString(actualType +" "+ y[1])
+							.replaceAll("[%]s", "(("+ actualType +")o)"));
+					br.write(";\n");
+					coveredTypes.add(actualType);
+				}
+			}
+		}
 		br.write("\t\treturn o;\n");
 		br.write("\t}\n\n");
 

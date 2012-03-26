@@ -786,14 +786,17 @@ class ClassGenerator {
 
 		// write the compare function
 		br.write("\t@Override\n");
+		br.write("\t@SuppressWarnings({\"rawtypes\",\"unchecked\"})\n");
 		br.write("\tpublic int compareTo("+ className +" o) {\n");
 		br.write("\t\tint v = 0;\n");
 		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
-			br.write("\t\tv = "+ getInstanceFieldName(column) +"==null ? (o."
-					+ getInstanceFieldName(column) +"==null ? 0 : -1) : "
-					+ getInstanceFieldName(column) +".compareTo(o."
-					+ getInstanceFieldName(column) +");\n");
-			br.write("\t\tif (v != 0) return v;\n");
+			String fieldName = getInstanceFieldName(column);
+			br.write("\t\tif ("+ fieldName +" instanceof Comparable) {");
+			br.write("\t\t\tv = "+ fieldName +"==null ? (o."+ fieldName
+					+ "==null ? 0 : -1) : ((Comparable) "
+					+ fieldName +").compareTo(o."+ fieldName +");\n");
+			br.write("\t\t\tif (v != 0) return v;\n");
+			br.write("\t\t}\n");
 		}
 		br.write("\t\treturn 0;\n");
 		br.write("\t}\n\n");

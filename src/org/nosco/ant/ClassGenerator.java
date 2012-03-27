@@ -733,6 +733,9 @@ class ClassGenerator {
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_POST = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_PRE = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_POST = null;\n");
+		br.write("\tprivate static Method __NOSCO_CALLBACK_HASH_CODE = null;\n");
+		br.write("\tprivate static Method __NOSCO_CALLBACK_EQUALS = null;\n");
+		br.write("\tprivate static Method __NOSCO_CALLBACK_COMPARE_TO = null;\n");
 		br.write("\tstatic {\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
 				+"."+ schema +"."+ className +"CB\").getMethod(\"preInsert\", "
@@ -746,6 +749,15 @@ class ClassGenerator {
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
 				+"."+ schema +"."+ className +"CB\").getMethod(\"postUpdate\", "
 				+ className +".class, DataSource.class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_HASH_CODE = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"hashCode\", "
+				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_EQUALS = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"equals\", "
+				+ className +".class, Object.class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
+		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_COMPARE_TO = Class.forName(\""+ callbackPackage
+				+"."+ schema +"."+ className +"CB\").getMethod(\"compareTo\", "
+				+ className +".class, " + className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t}\n");
 
 		// write the alias function
@@ -760,6 +772,10 @@ class ClassGenerator {
 		// write the hashcode function
 		br.write("\t@Override\n");
 		br.write("\tpublic int hashCode() {\n");
+		br.write("\t\tif (__NOSCO_CALLBACK_HASH_CODE!=null) "
+				+ "try { return (Integer) __NOSCO_CALLBACK_HASH_CODE.invoke(null, this); }"
+				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\tfinal int prime = 31;\n");
 		br.write("\t\tint result = 1;\n");
 		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
@@ -772,6 +788,10 @@ class ClassGenerator {
 		// write the equals function
 		br.write("\t@Override\n");
 		br.write("\tpublic boolean equals(Object other) {\n");
+		br.write("\t\tif (__NOSCO_CALLBACK_EQUALS!=null) "
+				+ "try { return (Boolean) __NOSCO_CALLBACK_EQUALS.invoke(null, this, other); }"
+				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\treturn (other == this) || ((other != null) \n");
 		br.write("\t\t\t&& (other instanceof "+ className +")\n");
 		br.write("\t\t\n");
@@ -788,6 +808,10 @@ class ClassGenerator {
 		br.write("\t@Override\n");
 		br.write("\t@SuppressWarnings({\"rawtypes\",\"unchecked\"})\n");
 		br.write("\tpublic int compareTo("+ className +" o) {\n");
+		br.write("\t\tif (__NOSCO_CALLBACK_COMPARE_TO!=null) "
+				+ "try { return (Integer) __NOSCO_CALLBACK_COMPARE_TO.invoke(null, this, o); }"
+				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
+				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\tint v = 0;\n");
 		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
 			String fieldName = getInstanceFieldName(column);

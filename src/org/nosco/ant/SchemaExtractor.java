@@ -13,9 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -182,7 +181,7 @@ public class SchemaExtractor extends Task {
 	    }
 		JSONObject ret = new JSONObject();
 		String sql = "select "+ column +", "+ Misc.join(", ", pks) +" "
-				+ "from "+ schema + sep + table +";";
+				+ "from "+ schema + sep + table +" order by "+ column +";";
 		System.err.println(sql);
 		Statement s = conn.createStatement();
 		s.execute(sql);
@@ -220,11 +219,11 @@ public class SchemaExtractor extends Task {
 	private Map<String, Map<String, Map<String, String>>> getSchemasMySQL(
 			Connection conn)
 			throws SQLException {
-		Map<String, Map<String, Map<String, String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
+		Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 
 		Statement s = conn.createStatement();
 		s.execute("select table_schema, table_name, column_name, data_type "
-				+ "from information_schema.columns;");
+				+ "from information_schema.columns order by table_schema, table_name, column_name;");
 		ResultSet rs = s.getResultSet();
 		while (rs.next()) {
 			String schema = rs.getString("table_schema");
@@ -239,13 +238,13 @@ public class SchemaExtractor extends Task {
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables == null) {
-				tables = new HashMap<String, Map<String, String>>();
+				tables = new LinkedHashMap<String, Map<String, String>>();
 				schemas.put(schema, tables);
 			}
 
 			Map<String, String> columns = tables.get(table);
 			if (columns == null) {
-				columns = new HashMap<String, String>();
+				columns = new LinkedHashMap<String, String>();
 				tables.put(table, columns);
 			}
 
@@ -259,11 +258,11 @@ public class SchemaExtractor extends Task {
 
 	private Map<String, Map<String, Map<String, String>>> getSchemasMSSQL(Connection conn)
 			throws SQLException {
-		Map<String, Map<String, Map<String, String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
+		Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 
 		List<String> dbs = new ArrayList<String>();
 		Statement s = conn.createStatement();
-		s.execute("SELECT name FROM sys.databases;");
+		s.execute("SELECT name FROM sys.databases order by name;");
 		ResultSet rs = s.getResultSet();
 		while (rs.next()) {
 			String schema = rs.getString("name");
@@ -287,13 +286,14 @@ public class SchemaExtractor extends Task {
 			try {
 				s.execute("use \"" + db + "\";");
 				s.execute("select table_schema, table_name, column_name, data_type, " +
-						"character_maximum_length from information_schema.columns;");
+						"character_maximum_length from information_schema.columns order by " +
+						"table_schema, table_name, column_name;");
 				ResultSet rs2 = s.getResultSet();
 				while (rs2.next()) {
 					String schema = db; // +"."+ rs2.getString("table_schema");
 					Map<String, Map<String, String>> tables = schemas.get(schema);
 					if (tables == null) {
-						tables = new HashMap<String, Map<String, String>>();
+						tables = new LinkedHashMap<String, Map<String, String>>();
 						schemas.put(schema, tables);
 					}
 
@@ -309,7 +309,7 @@ public class SchemaExtractor extends Task {
 
 					Map<String, String> columns = tables.get(table);
 					if (columns == null) {
-						columns = new HashMap<String, String>();
+						columns = new LinkedHashMap<String, String>();
 						tables.put(table, columns);
 					}
 
@@ -340,16 +340,16 @@ public class SchemaExtractor extends Task {
 	}
 
 	private Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
+	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 		Map<String,Map<String,Set<String>>> primaryKeys =
-			new HashMap<String, Map<String, Set<String>>>();
+			new LinkedHashMap<String, Map<String, Set<String>>>();
 
 	    Statement s = conn.createStatement();
-	    s.execute("SELECT name FROM sys.databases;");
+	    s.execute("SELECT name FROM sys.databases order by name;");
 	    ResultSet rs2 = s.getResultSet();
 	    while (rs2.next()) {
 		String schema = rs2.getString("name");
-		Map<String, Map<String, String>> tables = new HashMap<String, Map<String, String>>();
+		Map<String, Map<String, String>> tables = new LinkedHashMap<String, Map<String, String>>();
 		schemas.put(schema,tables);
 	    }
 	    rs2.close();
@@ -366,7 +366,7 @@ public class SchemaExtractor extends Task {
 				"information_schema.constraint_column_usage b " +
 				"where constraint_type = 'PRIMARY KEY' " +
 				"and a.constraint_name = b.constraint_name " +
-				"order by a.table_name");
+				"order by a.table_catalog, a.table_name, b.column_name, a.constraint_name;");
 		ResultSet rs = s.getResultSet();
 		while (rs.next()) {
 			String schema = rs.getString("table_catalog");
@@ -379,19 +379,19 @@ public class SchemaExtractor extends Task {
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {
-				tables = new HashMap<String, Map<String, String>>();
+				tables = new LinkedHashMap<String, Map<String, String>>();
 				schemas.put(schema,tables);
 			}
 
 			Map<String, Set<String>> pkTables = primaryKeys.get(schema);
 			if (pkTables==null) {
-				pkTables = new HashMap<String, Set<String>>();
+				pkTables = new LinkedHashMap<String, Set<String>>();
 				primaryKeys.put(schema,pkTables);
 			}
 
 			Map<String, String> columns = tables.get(table);
 			if (columns==null) {
-				columns = new HashMap<String, String>();
+				columns = new LinkedHashMap<String, String>();
 				tables.put(table,columns);
 			}
 
@@ -412,13 +412,14 @@ public class SchemaExtractor extends Task {
 	}
 
 	private Map<String,Map<String,Set<String>>> getPrimaryKeysMySQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new HashMap<String, Map<String, Map<String, String>>>();
+	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 		Map<String,Map<String,Set<String>>> primaryKeys =
-			new HashMap<String, Map<String, Set<String>>>();
+			new LinkedHashMap<String, Map<String, Set<String>>>();
 
 		Statement s = conn.createStatement();
 		s.execute("select table_schema, table_name, column_name, column_key " +
-				"from information_schema.columns;");
+				"from information_schema.columns " +
+				"order by table_schema, table_name, column_name, column_key;");
 		ResultSet rs = s.getResultSet();
 		while (rs.next()) {
 			String schema = rs.getString("table_schema");
@@ -432,19 +433,19 @@ public class SchemaExtractor extends Task {
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {
-				tables = new HashMap<String, Map<String, String>>();
+				tables = new LinkedHashMap<String, Map<String, String>>();
 				schemas.put(schema,tables);
 			}
 
 			Map<String, Set<String>> pkTables = primaryKeys.get(schema);
 			if (pkTables==null) {
-				pkTables = new HashMap<String, Set<String>>();
+				pkTables = new LinkedHashMap<String, Set<String>>();
 				primaryKeys.put(schema,pkTables);
 			}
 
 			Map<String, String> columns = tables.get(table);
 			if (columns==null) {
-				columns = new HashMap<String, String>();
+				columns = new LinkedHashMap<String, String>();
 				tables.put(table,columns);
 			}
 
@@ -482,7 +483,7 @@ public class SchemaExtractor extends Task {
 	private static Map<String, Map<String,Object>> getForeignKeysMySQL(
 			Connection conn) throws SQLException {
 	    Map<String, Map<String,Object>> foreignKeys =
-			new HashMap<String, Map<String,Object>>();
+			new LinkedHashMap<String, Map<String,Object>>();
 
 		Statement s = conn.createStatement();
 		s.execute("select constraint_name, table_schema, table_name, column_name, " +
@@ -495,7 +496,7 @@ public class SchemaExtractor extends Task {
 				"  and referenced_table_schema is not null " +
 				"  and referenced_table_name is not null " +
 				"  and referenced_column_name is not null " +
-				"order by constraint_name;");
+				"order by constraint_name, table_schema, table_name, column_name;");
 		ResultSet rs = s.getResultSet();
 
 		while (rs.next()) {
@@ -509,13 +510,13 @@ public class SchemaExtractor extends Task {
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {
-			    fk = new HashMap<String,Object>();
+			    fk = new LinkedHashMap<String,Object>();
 			    String[] reffing = {schema, table};
 			    fk.put("reffing", reffing);
 			    String[] reffed = {referenced_schema, referenced_table};
 			    fk.put("reffed", reffed);
 				foreignKeys.put(constraint_name,fk);
-				fk.put("columns", new HashMap<String,String>());
+				fk.put("columns", new LinkedHashMap<String,String>());
 			}
 
 			@SuppressWarnings("unchecked")

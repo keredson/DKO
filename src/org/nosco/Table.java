@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.nosco.Field.PK;
+import org.nosco.util.Misc;
 
 
 
@@ -39,12 +40,6 @@ public abstract class Table {
 	 */
 	@SuppressWarnings("rawtypes")
 	public abstract Field[] FIELDS();
-
-	/**
-	 * Please do not use.
-	 * @return
-	 */
-	public abstract Field.PK PK();
 
 	/**
 	 * Please do not use.
@@ -252,7 +247,7 @@ public abstract class Table {
 	public int hashCode() {
 	    final int prime = 31;
 	    int result = 1;
-	    Field.PK pk = this.PK();
+	    Field.PK<?> pk = Misc.getPK(this);
 	    Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
 	    for (Field<?> f : fields) {
 	    	Object o = this.get(f);
@@ -266,7 +261,7 @@ public abstract class Table {
 		if (other == this) return true;
 		if (other == null) return false;
 		if (!(other instanceof Table)) return false;
-	    Field.PK pk = this.PK();
+	    Field.PK<?> pk = Misc.getPK(this);
 	    Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
 	    for (Field<?> f : fields) {
 	    	Object o1 = this.get(f);

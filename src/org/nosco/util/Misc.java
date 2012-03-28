@@ -8,7 +8,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nosco.Constants;
+import org.nosco.Field;
 import org.nosco.Field.FK;
+import org.nosco.Field.PK;
+import org.nosco.Table;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 
@@ -89,6 +92,17 @@ public class Misc {
 		}
 		return true;
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Table> Field.PK<T> getPK(T t) {
+		try {
+			return (PK<T>) t.getClass().getField("PK").get(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 
 }

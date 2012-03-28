@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.nosco.Field;
-import org.nosco.Query;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -265,7 +263,6 @@ class ClassGenerator {
 			if (i<pks.length()-1) br.write(", ");
 		}
 		br.write(");\n");
-		br.write("\tpublic org.nosco.Field.PK PK() { return PK; }\n\n");
 
 		// write foreign keys
 		for (FK fk : fks) {

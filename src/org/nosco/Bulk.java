@@ -153,7 +153,7 @@ public class Bulk {
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					conn = q.getConnRW();
 					fields = table.FIELDS();
-					pks = table.PK() == null ? null : table.PK().GET_FIELDS();
+					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
@@ -230,7 +230,7 @@ public class Bulk {
 					conn = q.getConnRW();
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
-					pks = table.PK() == null ? null : table.PK().GET_FIELDS();
+					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
@@ -310,7 +310,7 @@ public class Bulk {
 					first = false;
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					conn = q.getConnRW();
-					pks = table.PK() == null ? null : table.PK().GET_FIELDS();
+					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
 					if (pks == null || pks.length == 0) {
 						throw new RuntimeException("cannot bulk delete from tha PK-less table");
 					}

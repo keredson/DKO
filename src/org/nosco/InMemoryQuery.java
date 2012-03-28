@@ -18,6 +18,7 @@ import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
 import org.nosco.Table.__PrimaryKey;
+import org.nosco.util.Misc;
 
 class InMemoryQuery<T extends Table> implements Query<T> {
 
@@ -327,7 +328,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	@Override
 	public T get(__PrimaryKey<T> pk) {
 		if (cache==null || cache.size() == 0) return null;
-		return get(cache.get(0).PK().eq(pk));
+		return get(Misc.getPK(cache.get(0)).eq(pk));
 	}
 
 	@Override

@@ -710,7 +710,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		DBQuery<T> q = new DBQuery<T>(this);
 		if (q.orderByFields == null) {
 			Table t = q.tables.get(0);
-			PK pk = t.PK();
+			PK pk = Misc.getPK(tables.get(0));
 			if (pk != null) q = (DBQuery<T>) q.orderBy(pk.GET_FIELDS());
 			else q = (DBQuery<T>) q.orderBy(t.FIELDS());
 		}
@@ -1037,12 +1037,11 @@ class DBQuery<T extends Table> implements Query<T> {
 		return ret;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T get(__PrimaryKey<T> pk) {
-		return get(tables.get(0).PK().eq(pk));
+		return get(Misc.getPK((T)tables.get(0)).eq(pk));
 	}
-
+	
 	@Override
 	public Query<T> use(Connection conn) {
 		return use(new SingleConnectionDataSource(conn));

@@ -80,7 +80,7 @@ public class Bulk {
 				count += 1;
 				if (first) {
 					first = false;
-					QueryImpl<T> q = (QueryImpl<T>) new QueryImpl<T>(table.getClass()).use(ds);
+					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					conn = q.getConnRW();
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
@@ -150,7 +150,7 @@ public class Bulk {
 			for (T table : iterable) {
 				if (first) {
 					first = false;
-					QueryImpl<T> q = (QueryImpl<T>) new QueryImpl<T>(table.getClass()).use(ds);
+					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					conn = q.getConnRW();
 					fields = table.FIELDS();
 					pks = table.PK() == null ? null : table.PK().GET_FIELDS();
@@ -226,7 +226,7 @@ public class Bulk {
 			for (T table : iterable) {
 				if (first) {
 					first = false;
-					QueryImpl<T> q = (QueryImpl<T>) new QueryImpl<T>(table.getClass()).use(ds);
+					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					conn = q.getConnRW();
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
@@ -308,7 +308,7 @@ public class Bulk {
 			for (T table : iterable) {
 				if (first) {
 					first = false;
-					QueryImpl<T> q = (QueryImpl<T>) new QueryImpl<T>(table.getClass()).use(ds);
+					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					conn = q.getConnRW();
 					pks = table.PK() == null ? null : table.PK().GET_FIELDS();
 					if (pks == null || pks.length == 0) {
@@ -355,7 +355,7 @@ public class Bulk {
 	}
 
 	private <T extends Table> PreparedStatement createInsertPS(Connection conn,
-			QueryImpl<T> q, Table table, Field[] fields) throws SQLException {
+			DBQuery<T> q, Table table, Field[] fields) throws SQLException {
 		PreparedStatement ps;
 		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
@@ -376,7 +376,7 @@ public class Bulk {
 	}
 
 	private <T extends Table> PreparedStatement createUpdatePS(Connection conn,
-			QueryImpl<T> q, Table table, Field[] fields, Field[] pks) throws SQLException {
+			DBQuery<T> q, Table table, Field[] fields, Field[] pks) throws SQLException {
 		if (pks == null || pks.length == 0) throw new RuntimeException("cannot mass update on a table without primary keys");
 		PreparedStatement ps;
 		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
@@ -396,7 +396,7 @@ public class Bulk {
 	}
 
 	private <T extends Table> PreparedStatement createDeletePS(Connection conn,
-			QueryImpl<T> q, Table table, Field[] pks) throws SQLException {
+			DBQuery<T> q, Table table, Field[] pks) throws SQLException {
 		PreparedStatement ps;
 		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();

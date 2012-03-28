@@ -25,7 +25,7 @@ public class QueryFactory {
 	 * @return
 	 */
 	public <T extends Table> Query<T> getQuery(Class<T> cls) {
-		return new QueryImpl<T>(cls);
+		return new DBQuery<T>(cls);
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class QueryFactory {
 	 * @return
 	 */
 	public <T extends Table> Query<T> getQuery(Class<T> cls, DataSource ds) {
-		return new QueryImpl<T>(cls, ds);
+		return new DBQuery<T>(cls, ds);
 	}
 
 }

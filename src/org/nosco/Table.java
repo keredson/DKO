@@ -219,12 +219,12 @@ public abstract class Table {
 		public __Alias(Class<S> table, String alias) {
 			this.table = table;
 			this.alias = alias;
-			Query<S> all = new QueryImpl<S>(this);
+			Query<S> all = new DBQuery<S>(this);
 			try {
 				java.lang.reflect.Field f = table.getDeclaredField("ALL");
 				f.setAccessible(true);
 				@SuppressWarnings("unchecked")
-				QueryImpl<S> q = (QueryImpl<S>) f.get(null);
+				DBQuery<S> q = (DBQuery<S>) f.get(null);
 				all = all.use(q.ds);
 			} catch (SecurityException e) {
 				e.printStackTrace();

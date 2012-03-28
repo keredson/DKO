@@ -4,13 +4,11 @@ import static org.nosco.Constants.DIRECTION.ASCENDING;
 import static org.nosco.Constants.DIRECTION.DESCENDING;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +16,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,11 +32,10 @@ import org.nosco.Table.__PrimaryKey;
 import org.nosco.datasource.MirroredDataSource;
 import org.nosco.datasource.SingleConnectionDataSource;
 import org.nosco.util.Misc;
-import org.nosco.util.Tree;
 import org.nosco.util.Tuple;
 
 
-class QueryImpl<T extends Table> implements Query<T> {
+class DBQuery<T extends Table> implements Query<T> {
 
 	// genned once and cached
 	private String sql;
@@ -56,7 +52,6 @@ class QueryImpl<T extends Table> implements Query<T> {
 	List<Join> joins = new ArrayList<Join>();
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
-	Tree<Field.FK> fks = null;
 	private List<DIRECTION> orderByDirections = null;
 	private List<Field<?>> orderByFields = null;
 	int top = 0;
@@ -65,7 +60,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	DataSource ds = null;
 	String globallyAppliedSelectFunction = null;
 
-	QueryImpl(Table table) {
+	DBQuery(Table table) {
 		addTable(table);
 	}
 
@@ -79,13 +74,10 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return info;
 	}
 
-	QueryImpl(QueryImpl<T> q) {
+	DBQuery(DBQuery<T> q) {
 		if (q.conditions!=null) {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
-		}
-		if (q.fks!=null) {
-			fks = q.fks.clone();
 		}
 		tables.addAll(q.tables);
 		joins.addAll(q.joins);
@@ -118,7 +110,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
 	}
 
-	QueryImpl(Class<? extends Table> tableClass) {
+	DBQuery(Class<? extends Table> tableClass) {
 		try {
 			Table table = tableClass.getConstructor().newInstance();
 			addTable(table);
@@ -137,12 +129,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 		}
 	}
 
-	QueryImpl(Class<? extends Table> tableClass, DataSource ds) {
+	DBQuery(Class<? extends Table> tableClass, DataSource ds) {
 		this(tableClass);
 		this.ds = ds;
 	}
 
-	public QueryImpl(__Alias<? extends Table> alias) {
+	public DBQuery(__Alias<? extends Table> alias) {
 		try {
 			Table table = alias.table.getConstructor().newInstance();
 			tables.add(table);
@@ -172,7 +164,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> where(Condition... conditions) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.conditions = new ArrayList<Condition>();
 		if (this.conditions!=null) q.conditions.addAll(this.conditions);
 		for (Condition c : conditions) {
@@ -232,7 +224,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@Override
 	public T get(Condition... conditions) {
 		//Field[] fields = tables.get(0).FIELDS();
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		if (conditions!=null && conditions.length>0) {
 			if (q.conditions == null) q.conditions = new ArrayList<Condition>();
 			for (Condition condition : conditions) {
@@ -244,7 +236,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> exclude(Condition... conditions) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.conditions = new ArrayList<Condition>();
 		if (conditions!=null) q.conditions.addAll(this.conditions);
 		for (Condition c : conditions) {
@@ -260,17 +252,17 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> distinct() {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.distinct  = true;
 		return q;
 	}
 
 	@Override
 	public Query<T> deferFields(Field<?>... fields) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.deferSet = new HashSet<Field<?>>();
 		if (deferSet!=null) q.deferSet.addAll(deferSet);
-		for (Field field : fields) {
+		for (Field<?> field : fields) {
 			q.deferSet.add(field);
 		}
 		return q;
@@ -278,7 +270,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> onlyFields(Field<?>... fields) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySet = new HashSet<Field<?>>();
 		//if (onlySet!=null) q.onlySet.addAll(onlySet);
 		/*for (Field<?> f : Table.GET_TABLE_PK(q.tables.get(0)).GET_FIELDS()) {
@@ -350,7 +342,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public int deleteAll() throws SQLException {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		Connection conn = q.getConnRW();
 		if (q.getDBType()==DB_TYPE.MYSQL) {
 			if (q.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
@@ -432,6 +424,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return getWhereClauseAndSetBindings(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	Tuple<String,List<Object>> getWhereClauseAndBindings(SqlContext context) {
 		StringBuffer sb = new StringBuffer();
 		List<Object> bindings = new ArrayList<Object>();
@@ -450,6 +443,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 				Collections.unmodifiableList(bindings));
 	}
 
+	@SuppressWarnings("unchecked")
 	String getWhereClauseAndSetBindings(boolean bindTables) {
 		if (sql==null) {
 
@@ -513,7 +507,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.orderByDirections = new ArrayList<DIRECTION>();
 		if (orderByDirections!=null) q.orderByDirections.addAll(orderByDirections);
 		q.orderByFields = new ArrayList<Field<?>>();
@@ -534,7 +528,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> limit(int i) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.top  = i;
 		return q;
 	}
@@ -629,7 +623,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> set(Field<?> field, Object value) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		if (q.data==null) q.data = new HashMap<Field<?>, Object>();
 		q.data.put(field, value);
 		return q;
@@ -637,7 +631,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> set(Map<Field<?>, Object> values) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		if (q.data==null) q.data = new HashMap<Field<?>, Object>();
 		q.data.putAll(values);
 		return q;
@@ -645,7 +639,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Object insert() throws SQLException {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		Table table = q.tables.get(0);
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
@@ -713,12 +707,12 @@ class QueryImpl<T extends Table> implements Query<T> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Query<T> with(final Field.FK... fkFields) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		if (q.orderByFields == null) {
 			Table t = q.tables.get(0);
 			PK pk = t.PK();
-			if (pk != null) q = (QueryImpl<T>) q.orderBy(pk.GET_FIELDS());
-			else q = (QueryImpl<T>) q.orderBy(t.FIELDS());
+			if (pk != null) q = (DBQuery<T>) q.orderBy(pk.GET_FIELDS());
+			else q = (DBQuery<T>) q.orderBy(t.FIELDS());
 		}
 		if (q.conditions==null) q.conditions = new ArrayList<Condition>();
 		//if (q.fks==null) q.fks = new Tree<Field.FK>();
@@ -797,6 +791,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 		return q;
 	}
 
+	@SuppressWarnings("rawtypes")
 	static String genTableNameFromFKPathKey(FK[] fkFields, int offset, Table refingTable) {
 		StringBuffer sb = new StringBuffer();
 		for (int i=0; i<offset; ++i) {
@@ -837,41 +832,6 @@ class QueryImpl<T extends Table> implements Query<T> {
 		String type = null;
 		TableInfo tableInfo = null;
 		Condition condition = null;
-	}
-
-	static class TableInfo implements Cloneable {
-
-		Table table = null;
-		Class<? extends Table> tableClass = null;
-		String tableName = null;
-		int start = -1;
-		int end = -1;
-		FK[] path = null;
-		TableInfo fkInfo = null;
-		boolean nameAutogenned = false;
-
-		public TableInfo(Table table, String tableName, FK[] path) {
-			this.table = table;
-			this.tableClass = table.getClass();
-			this.tableName = tableName;
-			this.path  = path;
-		}
-
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			TableInfo x = new TableInfo(table, tableName, path);
-			x.tableClass = tableClass;
-			x.start = start;
-			x.end = end;
-			x.nameAutogenned = nameAutogenned;
-			return x;
-		}
-
-		@Override
-		public String toString() {
-			return "[TableInfo "+ table +", "+ tableName +", nameAutogenned="+ nameAutogenned +"]";
-		}
-
 	}
 
 	@Override
@@ -980,14 +940,14 @@ class QueryImpl<T extends Table> implements Query<T> {
 	}
 
 	public Query<T> use(DataSource ds) {
-		final QueryImpl<T> q = new QueryImpl<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.ds  = ds;
 		return q;
 	}
 
 	@Override
 	public Query<T> cross(Table t) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.addTable(t);
 		for (Field<?> field : t.FIELDS()) {
 			this.deferFields(field.from("i2"));
@@ -997,21 +957,11 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> cross(Class<? extends Table> tableClass) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		try {
 			Table table = tableClass.getConstructor().newInstance();
 			q.addTable(table);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return q;
@@ -1019,7 +969,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> cross(__Alias<? extends Table> tableAlias) {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		try {
 			Table table = tableAlias.table.getConstructor().newInstance();
 			q.tables.add(table);
@@ -1029,17 +979,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 			}
 			q.usedTableNames.add(tableAlias.alias);
 			q.tableInfos.add(new TableInfo(table, tableAlias.alias, null));
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return q;
@@ -1061,14 +1001,14 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> max() {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.globallyAppliedSelectFunction = "max";
 		return q;
 	}
 
 	@Override
 	public Query<T> min() {
-		QueryImpl<T> q = new QueryImpl<T>(this);
+		DBQuery<T> q = new DBQuery<T>(this);
 		q.globallyAppliedSelectFunction = "min";
 		return q;
 	}
@@ -1085,38 +1025,7 @@ class QueryImpl<T extends Table> implements Query<T> {
 
 	@Override
 	public <S> Iterable<S> select(final Field<S> field) {
-		final QueryImpl<T> q = this;
-		return new Iterable<S>() {
-			private Iterable<T> it1 = q.all();
-			@Override
-			public Iterator<S> iterator() {
-				return new Iterator<S>() {
-					private S next = null;
-					private Iterator<T> it = it1.iterator();
-					@Override
-					public boolean hasNext() {
-						if (next != null) return true;
-						if (it.hasNext()) {
-							next = it.next().get(field);
-							return true;
-						}
-						return false;
-					}
-					@Override
-					public S next() {
-						if (hasNext()) {
-							S tmp = next;
-							next = null;
-							return tmp;
-						}
-						throw new RuntimeException("no more available");
-					}
-					@Override
-					public void remove() {
-						throw new RuntimeException("remove not implemented");
-					}
-				};
-			}};
+		return new SelectSingleColumn<S>(this, field);
 	}
 
 	@Override

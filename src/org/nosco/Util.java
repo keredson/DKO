@@ -3,7 +3,6 @@ package org.nosco;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nosco.QueryImpl.TableInfo;
 import org.nosco.util.Misc;
 
 class Util {

@@ -7,12 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nosco.Constants.DB_TYPE;
-import org.nosco.QueryImpl.Join;
-import org.nosco.QueryImpl.TableInfo;
+import org.nosco.DBQuery.Join;
 
 class SqlContext {
 
-	SqlContext(QueryImpl<?> q) {
+	SqlContext(DBQuery<?> q) {
 		tableNameMap = q.tableNameMap;
 		tableInfos = new ArrayList<TableInfo>(q.tableInfos);
 		for (Join join : q.joins) tableInfos.add(join.tableInfo);

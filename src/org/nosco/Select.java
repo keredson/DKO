@@ -22,7 +22,6 @@ import java.util.Set;
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
-import org.nosco.QueryImpl.TableInfo;
 import org.nosco.util.Misc;
 import org.nosco.util.Tree.Callback;
 import org.nosco.util.Tuple;
@@ -39,7 +38,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	}
 
 	private String sql;
-	private QueryImpl<T> query;
+	private DBQuery<T> query;
 	private PreparedStatement ps;
 	private ResultSet rs;
 	private T next;
@@ -57,7 +56,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private boolean done = false;
 
 	@SuppressWarnings("unchecked")
-	Select(QueryImpl<T> query) {
+	Select(DBQuery<T> query) {
 		this.query = query;
 		try {
 			constructor = (Constructor<T>) query.getType().getDeclaredConstructor(
@@ -103,7 +102,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		return getSQL(new SqlContext(query)).a;
 	}
 
-	QueryImpl<T> getUnderlyingQuery() {
+	DBQuery<T> getUnderlyingQuery() {
 		return query;
 	}
 
@@ -228,9 +227,9 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			@SuppressWarnings("unchecked")
 			LinkedHashSet<Table>[] inMemoryCacheSets = new LinkedHashSet[objectSize];
 			InMemoryQuery[] inMemoryCaches = new InMemoryQuery[objectSize];
-			QueryImpl.TableInfo baseTableInfo = null;
+			TableInfo baseTableInfo = null;
 			for (int i=0; i<objectSize; ++i) {
-				QueryImpl.TableInfo ti = tableInfos.get(i);
+				TableInfo ti = tableInfos.get(i);
 				if (i == 0) baseTableInfo = ti;
 				if (ti.path == null) {
 					if (next != null) continue;
@@ -244,9 +243,9 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				}
 			}
 			for (int i=0; i<objectSize; ++i) {
-				QueryImpl.TableInfo ti = tableInfos.get(i);
+				TableInfo ti = tableInfos.get(i);
 				for (int j=i+1; j<objectSize; ++j) {
-					QueryImpl.TableInfo tj = tableInfos.get(j);
+					TableInfo tj = tableInfos.get(j);
 					if (tj.path == null) continue;
 					if(Misc.startsWith(tj.path, ti.path)) {
 						FK fk = tj.path[tj.path.length-1];
@@ -287,7 +286,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					Table[] peekObjects = new Table[objectSize];
 
 					for (int i=0; i<objectSize; ++i) {
-						QueryImpl.TableInfo ti = tableInfos.get(i);
+						TableInfo ti = tableInfos.get(i);
 						if (i == 0) baseTableInfo = ti;
 						if (ti.path == null) {
 							peekObjects[i] = next;
@@ -303,9 +302,9 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					}
 
 					for (int i=0; i<objectSize; ++i) {
-						QueryImpl.TableInfo ti = tableInfos.get(i);
+						TableInfo ti = tableInfos.get(i);
 						for (int j=i+1; j<objectSize; ++j) {
-							QueryImpl.TableInfo tj = tableInfos.get(j);
+							TableInfo tj = tableInfos.get(j);
 							if (tj.path == null) continue;
 							if(Misc.startsWith(tj.path, ti.path)) {
 								FK fk = tj.path[tj.path.length-1];

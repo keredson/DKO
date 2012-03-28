@@ -2,19 +2,15 @@ package org.nosco;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.nosco.QueryImpl.TableInfo;
 import org.nosco.util.Misc;
 import org.nosco.util.Tuple;
 
@@ -182,14 +178,14 @@ public abstract class Condition {
 
 	}
 
-	List bindings = null;
+	List<Object> bindings = null;
 
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
 	String getSQL(SqlContext context) {
 		StringBuffer sb = new StringBuffer();
-		bindings = new ArrayList();
+		bindings = new ArrayList<Object>();
 		getSQL(sb, bindings, context);
 		return sb.toString();
 	}
@@ -197,7 +193,7 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	List getSQLBindings() {
+	List<?> getSQLBindings() {
 		return bindings;
 	}
 
@@ -350,7 +346,7 @@ public abstract class Condition {
 
 	static class Ternary extends Condition {
 
-		private Field field;
+		private Field<?> field;
 		private String cmp1;
 		private String cmp2;
 		private Object v1;
@@ -358,7 +354,7 @@ public abstract class Condition {
 		private Function function1;
 		private Function function2;
 
-		public Ternary(Field field, String cmp1, Object v1, String cmp2, Object v2) {
+		public Ternary(Field<?> field, String cmp1, Object v1, String cmp2, Object v2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -368,7 +364,7 @@ public abstract class Condition {
 			function2 = null;
 		}
 
-		public Ternary(Field field, String cmp1, Function f1, String cmp2, Object v2) {
+		public Ternary(Field<?> field, String cmp1, Function f1, String cmp2, Object v2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -378,7 +374,7 @@ public abstract class Condition {
 			function2 = null;
 		}
 
-		public Ternary(Field field, String cmp1, Object v1, String cmp2, Function f2) {
+		public Ternary(Field<?> field, String cmp1, Object v1, String cmp2, Function f2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -388,7 +384,7 @@ public abstract class Condition {
 			function2 = f2;
 		}
 
-		public Ternary(Field field, String cmp1, Function f1, String cmp2, Function f2) {
+		public Ternary(Field<?> field, String cmp1, Function f1, String cmp2, Function f2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -420,6 +416,7 @@ public abstract class Condition {
 			}
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
 		boolean matches(Table t) {
 			if (!cmp1.trim().equalsIgnoreCase("between")) {
@@ -461,10 +458,10 @@ public abstract class Condition {
 		boolean matches(Table t) {
 			Object v = t.get(field);
 			if (" is null".equals(this.cmp)) {
-				return t == null;
+				return v == null;
 			}
 			if (" is not null".equals(this.cmp)) {
-				return t != null;
+				return v != null;
 			}
 			throw new IllegalStateException("unknown comparision function '"+ cmp
 					+"' for in-memory conditional check");
@@ -507,7 +504,6 @@ public abstract class Condition {
 			this.function  = f;
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(' ');

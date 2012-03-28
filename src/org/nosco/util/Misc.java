@@ -26,11 +26,11 @@ public class Misc {
 	    return sb.toString();
 	}
 
-	public static String join(String s, Object... c) {
+	public static <T extends Object> String join(String s, T... c) {
 		if(c==null || c.length==0) return "";
 	    StringBuilder sb = new StringBuilder();
 	    for (Object o : c) {
-	    	sb.append(o);
+	    	sb.append(o==null ? "" : o.toString());
 	    	sb.append(s);
 	    }
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();

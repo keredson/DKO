@@ -50,7 +50,7 @@ public abstract class Function {
 	 * @return
 	 */
 	public static <T> Function COALESCE(Field<? extends T>... fields) {
-		return new SimpleFunction("coalesce", fields);
+		return new SimpleFunction("coalesce", (Object[]) fields);
 	}
 
 	/**

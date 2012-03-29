@@ -20,7 +20,7 @@ import org.nosco.util.Misc;
  *
  * @author Derek Anderson
  */
-public abstract class Table implements Comparable<Table> {
+public abstract class Table {
 
 	/**
 	 * Please do not use.

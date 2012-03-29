@@ -1,5 +1,7 @@
 package org.nosco;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,7 @@ import org.nosco.util.Misc;
 
 class Util {
 
-	public static String derefField(Field<?> field, SqlContext context) {
+	static String derefField(Field<?> field, SqlContext context) {
 		if (field.isBound()) return field.toString();
 		List<String> selectedTables = new ArrayList<String>();
 		List<TableInfo> unboundTables = new ArrayList<TableInfo>();
@@ -37,6 +39,29 @@ class Util {
 			return (theOne.tableName == null ? theOne.table.TABLE_NAME() : theOne.tableName)
 					+ "."+ field;
 		}
+	}
+
+	/**
+	 * @param rs
+	 * @param type
+	 * @param i
+	 * @return
+	 * @throws SQLException 
+	 */
+	static Object fixObjectType(ResultSet rs, Class<?> type, int i) throws SQLException {
+		if (type == Long.class) return rs.getLong(i);
+		if (type == Double.class) {
+			double v = rs.getDouble(i);
+			return rs.wasNull() ? null : v;
+		}
+		if (type == Character.class) {
+			String s = rs.getString(i);
+			if (s != null && s.length() > 0) return s.charAt(0);
+			else return null;
+		}
+		Object o = rs.getObject(i);
+		if (o instanceof Short) o = ((Short)o).intValue();
+		return o;
 	}
 
 

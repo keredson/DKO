@@ -201,16 +201,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		}
 		nextRow = new Object[selectedFields.length];
 		for (int i=0; i<selectedFields.length; ++i) {
-			if (selectedFields[i].TYPE == Long.class) nextRow[i] = rs.getLong(i+1);
-			else if (selectedFields[i].TYPE == Double.class) {
-				nextRow[i] = rs.getDouble(i+1);
-				if (rs.wasNull()) nextRow[i] = null;
-			}
-			else if (selectedFields[i].TYPE == Character.class) {
-				String s = rs.getString(i+1);
-				if (s != null && s.length() > 0) nextRow[i] = s.charAt(0);
-			}
-			else nextRow[i] = rs.getObject(i+1);
+			nextRow[i] = Util.fixObjectType(rs, selectedFields[i].TYPE, i+1);
 		}
 		return nextRow;
 	}

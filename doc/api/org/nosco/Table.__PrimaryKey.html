@@ -90,6 +90,8 @@ org.nosco</FONT>
 <BR>
 Interface Table.__PrimaryKey&lt;S extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt;</H2>
 <DL>
+<DT><DT><B>Type Parameters:</B><DD><CODE>S</CODE> - </DL>
+<DL>
 <DT><B>All Known Subinterfaces:</B> <DD><A HREF="../../org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco">Table.__SimplePrimaryKey</A>&lt;S,V&gt;</DD>
 </DL>
 <DL>
@@ -101,6 +103,24 @@ Interface Table.__PrimaryKey&lt;S extends <A HREF="../../org/nosco/Table.html" t
 </PRE>
 
 <P>
+Represents a primary key of a row. &nbsp; Supports compound primary keys. &nbsp;
+ Each attribute is accessible by calling <code>get(field)</code>.
+ <p>
+ Use with enums. &nbsp; Nosco generated enums of table values are always 
+ <code>__PrimaryKey</code>s. &nbsp; They can be used in comparisons to foreign keys. &nbsp;
+ For instance, assume tables A and B, with a FK from A to B (and A has been enumed):
+ 
+ <pre>  <code>B.ALL.where(A.FK_B.eq(A.PKS.INSTANCE_ONE))</code></pre>
+   
+ <code>A.PKS.INSTANCE_ONE</code> is an instance of this class. &nbsp; <code>A.FK_B</code> is an
+ instance of <code>Field.FK</code>. &nbsp; <code>B.ALL</code> is an instance of <code>Query&lt;B&gt;</code>.
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>Derek Anderson</DD>
+</DL>
 <HR>
 
 <P>

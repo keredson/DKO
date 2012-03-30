@@ -94,7 +94,7 @@ java.lang.Object
   <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Diff.RowChange&lt;T&gt;</B>
 </PRE>
 <DL>
-<DT><DT><B>Type Parameters:</B><DD><CODE>T</CODE> - </DL>
+<DT><DT><B>Type Parameters:</B><DD><CODE>T</CODE> - the type of the row that changed</DL>
 <DL>
 <DT><B>Enclosing class:</B><DD><A HREF="../../org/nosco/Diff.html" title="class in org.nosco">Diff</A></DD>
 </DL>
@@ -104,9 +104,13 @@ java.lang.Object
 </PRE>
 
 <P>
+Represents a change in a row. &nbsp; (either an ADD, UPDATE, or DELETE)
+<P>
+
+<P>
 <DL>
 <DT><B>Author:</B></DT>
-  <DD>derek</DD>
+  <DD>Derek Anderson</DD>
 </DL>
 <HR>
 
@@ -126,7 +130,7 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#getChanges()">getChanges</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A collection of fields and values that changed (if it's an UPDATE)</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -134,7 +138,7 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#getObject()">getObject</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The object representing the row that changed</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -142,7 +146,7 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#isAdd()">isAdd</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If row change was an ADD</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -150,7 +154,7 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#isDelete()">isDelete</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If row change was a DELETE</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -158,7 +162,7 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#isUpdate()">isUpdate</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If row change was an UPDATE</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -196,9 +200,11 @@ getObject</H3>
 <PRE>
 public <A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> <B>getObject</B>()</PRE>
 <DL>
+<DD>The object representing the row that changed
+<P>
 <DD><DL>
 
-<DT><B>Returns:</B><DD>the o</DL>
+<DT><B>Returns:</B><DD>the object representing the row that changed</DL>
 </DD>
 </DL>
 <HR>
@@ -208,9 +214,11 @@ getChanges</H3>
 <PRE>
 public java.util.Collection&lt;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A>,?&gt;&gt; <B>getChanges</B>()</PRE>
 <DL>
+<DD>A collection of fields and values that changed (if it's an UPDATE)
+<P>
 <DD><DL>
 
-<DT><B>Returns:</B><DD>the o</DL>
+<DT><B>Returns:</B><DD>a collection of fields and values that changed (if it's an UPDATE)</DL>
 </DD>
 </DL>
 <HR>
@@ -220,8 +228,11 @@ isUpdate</H3>
 <PRE>
 public boolean <B>isUpdate</B>()</PRE>
 <DL>
+<DD>If row change was an UPDATE
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>true if row change was an UPDATE</DL>
 </DD>
 </DL>
 <HR>
@@ -231,8 +242,11 @@ isAdd</H3>
 <PRE>
 public boolean <B>isAdd</B>()</PRE>
 <DL>
+<DD>If row change was an ADD
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>true if row change was an ADD</DL>
 </DD>
 </DL>
 <HR>
@@ -242,8 +256,11 @@ isDelete</H3>
 <PRE>
 public boolean <B>isDelete</B>()</PRE>
 <DL>
+<DD>If row change was a DELETE
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>true if row change was a DELETE</DL>
 </DD>
 </DL>
 <HR>

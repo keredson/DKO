@@ -239,7 +239,7 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Diff.html" title="class in org.nosco"><B>Diff</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class offers diff logic.<DT><A HREF="./org/nosco/Diff.html#Diff()"><B>Diff()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>Diff.FieldChange</B></A>&lt;<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">S</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco"><B>Diff.RowChange</B></A>&lt;<A HREF="./org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Table.html#dirty()"><B>dirty()</B></A> - 
+<DT><A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>Diff.FieldChange</B></A>&lt;<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">S</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a changed field between two versions of a row.<DT><A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco"><B>Diff.RowChange</B></A>&lt;<A HREF="./org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a change in a row.<DT><A HREF="./org/nosco/Table.html#dirty()"><B>dirty()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Returns true if the object has been modified
 <DT><A HREF="./org/nosco/Query.html#distinct()"><B>distinct()</B></A> - 
@@ -299,7 +299,7 @@ Static variable in class org.nosco.<A HREF="./org/nosco/Condition.html" title="c
 <DD>always false
 <DT><A HREF="./org/nosco/Diff.FieldChange.html#field"><B>field</B></A> - 
 Variable in class org.nosco.<A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>
-<DD>&nbsp;
+<DD>The field that changed.
 <DT><A HREF="./org/nosco/Field.html" title="class in org.nosco"><B>Field</B></A>&lt;<A HREF="./org/nosco/Field.html" title="type parameter in Field">T</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class represents a column in a table.<DT><A HREF="./org/nosco/Field.html#Field(int, java.lang.Class, java.lang.String, java.lang.Class)"><B>Field(int, Class&lt;? extends Table&gt;, String, Class&lt;T&gt;)</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>&nbsp;
@@ -352,7 +352,7 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Diff.RowChange.html#getChanges()"><B>getChanges()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
-<DD>&nbsp;
+<DD>A collection of fields and values that changed (if it's an UPDATE)
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getClientInfo(java.lang.String)"><B>getClientInfo(String)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
@@ -421,7 +421,7 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDat
 <DD>Returns a connection from a randomly selected mirror.
 <DT><A HREF="./org/nosco/Diff.RowChange.html#getObject()"><B>getObject()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
-<DD>&nbsp;
+<DD>The object representing the row that changed
 <DT><A HREF="./org/nosco/QueryFactory.html#getQuery(java.lang.Class)"><B>getQuery(Class&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/QueryFactory.html" title="class in org.nosco">QueryFactory</A>
 <DD>Creates a query centered around the given class.
@@ -527,13 +527,13 @@ Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title=
 <DD>Returns true if currently inside a transaction.
 <DT><A HREF="./org/nosco/Diff.RowChange.html#isAdd()"><B>isAdd()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
-<DD>&nbsp;
+<DD>If row change was an ADD
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#isClosed()"><B>isClosed()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Diff.RowChange.html#isDelete()"><B>isDelete()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
-<DD>&nbsp;
+<DD>If row change was a DELETE
 <DT><A HREF="./org/nosco/Query.html#isEmpty()"><B>isEmpty()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Returns whether the SQL returned any rows or not.
@@ -548,7 +548,7 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Diff.RowChange.html#isUpdate()"><B>isUpdate()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
-<DD>&nbsp;
+<DD>If row change was an UPDATE
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#isValid(int)"><B>isValid(int)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
@@ -943,7 +943,7 @@ Constructor for class org.nosco.<A HREF="./org/nosco/Table.html" title="class in
 <DT><A HREF="./org/nosco/Table.__Alias.html" title="class in org.nosco"><B>Table.__Alias</B></A>&lt;<A HREF="./org/nosco/Table.__Alias.html" title="type parameter in Table.__Alias">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This is used for conditional statements where the fields are ambiguous.<DT><A HREF="./org/nosco/Table.__Alias.html#Table.__Alias(java.lang.Class, java.lang.String)"><B>Table.__Alias(Class&lt;S&gt;, String)</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Table.__Alias.html" title="class in org.nosco">Table.__Alias</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco"><B>Table.__PrimaryKey</B></A>&lt;<A HREF="./org/nosco/Table.__PrimaryKey.html" title="type parameter in Table.__PrimaryKey">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco"><B>Table.__SimplePrimaryKey</B></A>&lt;<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">V</A>&gt; - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Table.html#TABLE_NAME()"><B>TABLE_NAME()</B></A> - 
+<DT><A HREF="./org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco"><B>Table.__PrimaryKey</B></A>&lt;<A HREF="./org/nosco/Table.__PrimaryKey.html" title="type parameter in Table.__PrimaryKey">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a primary key of a row.<DT><A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco"><B>Table.__SimplePrimaryKey</B></A>&lt;<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">V</A>&gt; - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a simple (ie: non-compound) primary key of a row.<DT><A HREF="./org/nosco/Table.html#TABLE_NAME()"><B>TABLE_NAME()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Please do not use.
 <DT><A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco"><B>ThreadContext</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class is used to control thread-based context operations.<DT><A HREF="./org/nosco/Query.html#toMemory()"><B>toMemory()</B></A> - 
@@ -1033,10 +1033,10 @@ Static method in enum org.nosco.<A HREF="./org/nosco/Constants.DIRECTION.html" t
 the order they are declared.
 <DT><A HREF="./org/nosco/Diff.FieldChange.html#version1"><B>version1</B></A> - 
 Variable in class org.nosco.<A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>
-<DD>&nbsp;
+<DD>The value it changed from.
 <DT><A HREF="./org/nosco/Diff.FieldChange.html#version2"><B>version2</B></A> - 
 Variable in class org.nosco.<A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>
-<DD>&nbsp;
+<DD>The value it changed to.
 </DL>
 <HR>
 <A NAME="_W_"><!-- --></A><H2>

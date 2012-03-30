@@ -102,17 +102,19 @@ java.lang.Object
 This class offers diff logic. &nbsp; Let's assume you have two databases with identical
  schemas containing a <code>Question</code> table.  If you wanted to compare them (to perhaps sync
  them), you could do the following:
- <pre>  <code>Datasource aDS = [...]; // first datasource
-  Datasource bDS = [...]; // second datasource
+ <pre>  <code>Datasource dsA = [...]; // first database
+  Datasource dsB = [...]; // second database
    
-  Iterable&lt;Question&gt; allAs = Question.ALL.use(aDS).orderBy(Question.ID);
-  Iterable&lt;Question&gt; allBs = Question.ALL.use(bDS).orderBy(Question.ID);
+  Iterable&lt;Question&gt; allAs = Question.ALL.use(dsA).orderBy(Question.ID);
+  Iterable&lt;Question&gt; allBs = Question.ALL.use(dsB).orderBy(Question.ID);
    
   Iterable&lt;RowChange&lt;Question&gt;&gt; changes = Diff.streamingDiff(allAs, allBs);
   for (RowChange&lt;Question&gt; change : changes) {
     // do something
-  }
- </code></pre>
+  }</code></pre>
+ 
+ Note: It's very important these are sorted in ascending order by their natural
+ ordering!  &nbsp; You will get nonsensical diffs otherwise.
 <P>
 
 <P>
@@ -137,7 +139,7 @@ This class offers diff logic. &nbsp; Let's assume you have two databases with id
 <TD><CODE><B><A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>&lt;<A HREF="../../org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">T</A> extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="../../org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">S</A>&gt;</B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Represents a changed field between two versions of a row.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -145,7 +147,7 @@ This class offers diff logic. &nbsp; Let's assume you have two databases with id
 <TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt;</B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Represents a change in a row.</TD>
 </TR>
 </TABLE>
 &nbsp;

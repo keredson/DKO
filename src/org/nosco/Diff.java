@@ -14,17 +14,20 @@ import java.util.Set;
  * This class offers diff logic. &nbsp; Let's assume you have two databases with identical
  * schemas containing a {@code Question} table.  If you wanted to compare them (to perhaps sync
  * them), you could do the following:
- * <pre>  {@code Datasource aDS = [...]; // first datasource
- *  Datasource bDS = [...]; // second datasource
+ * <pre>  {@code Datasource dsA = [...]; // first database
+ *  Datasource dsB = [...]; // second database
  *   
- *  Iterable<Question> allAs = Question.ALL.use(aDS).orderBy(Question.ID);
- *  Iterable<Question> allBs = Question.ALL.use(bDS).orderBy(Question.ID);
+ *  Iterable<Question> allAs = Question.ALL.use(dsA).orderBy(Question.ID);
+ *  Iterable<Question> allBs = Question.ALL.use(dsB).orderBy(Question.ID);
  *   
  *  Iterable<RowChange<Question>> changes = Diff.streamingDiff(allAs, allBs);
  *  for (RowChange<Question> change : changes) {
  *    // do something
- *  }
- * }</pre>
+ *  }}</pre>
+ * 
+ * Note: It's very important these are sorted in ascending order by their natural
+ * ordering!  &nbsp; You will get nonsensical diffs otherwise.
+ *  
  * @author Derek Anderson
  */
 public class Diff {
@@ -181,14 +184,25 @@ public class Diff {
 	}
 
 	/**
-	 * @author derek
+	 * Represents a changed field between two versions of a row.
+	 * 
+	 * @author Derek Anderson
 	 *
-	 * @param <T>
-	 * @param <S>
+	 * @param <T> the type of the row that changed
+	 * @param <S> the type of the field that changed
 	 */
 	public static class FieldChange<T extends Table, S> {
+		/**
+		 * The field that changed.
+		 */
 		public final Field<S> field;
+		/**
+		 * The value it changed from.
+		 */
 		public final S version1;
+		/**
+		 * The value it changed to.
+		 */
 		public final S version2;
 
 		private FieldChange(Field<S> field, S v1, S v2) {
@@ -199,9 +213,11 @@ public class Diff {
 	}
 
 	/**
-	 * @author derek
+	 * Represents a change in a row. &nbsp; (either an ADD, UPDATE, or DELETE)
+	 * 
+	 * @author Derek Anderson
 	 *
-	 * @param <T>
+	 * @param <T> the type of the row that changed
 	 */
 	public static class RowChange<T extends Table> {
 
@@ -217,27 +233,41 @@ public class Diff {
 		}
 
 		/**
-		 * @return the o
+		 * The object representing the row that changed
+		 * @return the object representing the row that changed
 		 */
 		public T getObject() {
 			return o;
 		}
 
 		/**
-		 * @return the o
+		 * A collection of fields and values that changed (if it's an UPDATE)
+		 * @return a collection of fields and values that changed (if it's an UPDATE)
 		 */
 		public Collection<FieldChange<T, ?>> getChanges() {
 			return updates;
 		}
 
+		/**
+		 * If row change was an UPDATE
+		 * @return true if row change was an UPDATE
+		 */
 		public boolean isUpdate() {
 			return type == CHANGE_TYPE.UPDATE;
 		}
 
+		/**
+		 * If row change was an ADD
+		 * @return true if row change was an ADD
+		 */
 		public boolean isAdd() {
 			return type == CHANGE_TYPE.ADD;
 		}
 
+		/**
+		 * If row change was a DELETE
+		 * @return true if row change was a DELETE
+		 */
 		public boolean isDelete() {
 			return type == CHANGE_TYPE.DELETE;
 		}

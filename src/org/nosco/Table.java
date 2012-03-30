@@ -235,10 +235,36 @@ public abstract class Table {
 
 	}
 
+	/**
+	 * Represents a primary key of a row. &nbsp; Supports compound primary keys. &nbsp;
+	 * Each attribute is accessible by calling {@code get(field)}.
+	 * <p>
+	 * Use with enums. &nbsp; Nosco generated enums of table values are always 
+	 * {@code __PrimaryKey}s. &nbsp; They can be used in comparisons to foreign keys. &nbsp;
+	 * For instance, assume tables A and B, with a FK from A to B (and A has been enumed):
+	 * 
+	 * <pre>  {@code B.ALL.where(A.FK_B.eq(A.PKS.INSTANCE_ONE))}</pre>
+	 *   
+	 * {@code A.PKS.INSTANCE_ONE} is an instance of this class. &nbsp; {@code A.FK_B} is an
+	 * instance of {@code Field.FK}. &nbsp; {@code B.ALL} is an instance of {@code Query<B>}.
+	 * 
+	 * @author Derek Anderson
+	 *
+	 * @param <S>
+	 */
 	public static interface __PrimaryKey<S extends Table> {
 		<R> R get(Field<R> field);
 	}
 
+	/**
+	 * Represents a simple (ie: non-compound) primary key of a row. &nbsp; 
+	 * Attribute is accessible by calling {@code get(field)} or by calling {@code value()}.
+	 * 
+	 * @author Derek Anderson
+	 *
+	 * @param <S>
+	 * @param <V>
+	 */
 	public static interface __SimplePrimaryKey<S extends Table,V> extends __PrimaryKey<S> {
 		public V value();
 	}

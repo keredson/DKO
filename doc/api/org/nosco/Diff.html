@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-Condition.Literal (Nosco API)
+Diff (Nosco API)
 </TITLE>
 
 
@@ -13,7 +13,7 @@ Condition.Literal (Nosco API)
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Condition.Literal (Nosco API)";
+        parent.document.title="Diff (Nosco API)";
     }
 }
 </SCRIPT>
@@ -38,7 +38,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Condition.Literal.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Diff.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -53,11 +53,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/Constants.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Constants.DIRECTION.html" title="enum in org.nosco"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?org/nosco/Condition.Literal.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="Condition.Literal.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?org/nosco/Diff.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Diff.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -74,7 +74,7 @@ function windowTitle()
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#nested_classes_inherited_from_class_org.nosco.Condition">NESTED</A>&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.nosco.Condition">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
@@ -88,26 +88,31 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.nosco</FONT>
 <BR>
-Class Condition.Literal</H2>
+Class Diff</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><A HREF="../../org/nosco/Condition.html" title="class in org.nosco">org.nosco.Condition</A>
-      <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Condition.Literal</B>
+  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Diff</B>
 </PRE>
-<DL>
-<DT><B>Enclosing class:</B><DD><A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></DD>
-</DL>
 <HR>
 <DL>
-<DT><PRE>public static class <B>Condition.Literal</B><DT>extends <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></DL>
+<DT><PRE>public class <B>Diff</B><DT>extends java.lang.Object</DL>
 </PRE>
 
 <P>
-Use this class to add custom SQL code to your where clause. &nbsp;
- For Example:
- <pre>   <code>SomeClass.ALL.where(new Condition.Literal("id = 1"));</code></pre>
- Obviously this should be used sparingly, and can break compatibility between
- different databases. &nbsp;  But it's here if you really need it.
+This class offers diff logic. &nbsp; Let's assume you have two databases with identical
+ schemas containing a <code>Question</code> table.  If you wanted to compare them (to perhaps sync
+ them), you could do the following:
+ <pre>  <code>Datasource aDS = [...]; // first datasource
+  Datasource bDS = [...]; // second datasource
+   
+  Iterable&lt;Question&gt; allAs = Question.ALL.use(aDS).orderBy(Question.ID);
+  Iterable&lt;Question&gt; allBs = Question.ALL.use(bDS).orderBy(Question.ID);
+   
+  Iterable&lt;RowChange&lt;Question&gt;&gt; changes = Diff.streamingDiff(allAs, allBs);
+  for (RowChange&lt;Question&gt; change : changes) {
+    // do something
+  }
+ </code></pre>
 <P>
 
 <P>
@@ -126,33 +131,21 @@ Use this class to add custom SQL code to your where clause. &nbsp;
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Nested Class Summary</B></FONT></TH>
 </TR>
-</TABLE>
-&nbsp;<A NAME="nested_classes_inherited_from_class_org.nosco.Condition"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Nested classes/interfaces inherited from class org.nosco.<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></B></TH>
-</TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../org/nosco/Condition.Literal.html" title="class in org.nosco">Condition.Literal</A></CODE></TD>
-</TR>
-</TABLE>
-&nbsp;
-<!-- =========== FIELD SUMMARY =========== -->
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;class</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>&lt;<A HREF="../../org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">T</A> extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="../../org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">S</A>&gt;</B></CODE>
 
-<A NAME="field_summary"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Field Summary</B></FONT></TH>
-</TR>
-</TABLE>
-&nbsp;<A NAME="fields_inherited_from_class_org.nosco.Condition"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Fields inherited from class org.nosco.<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></B></TH>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../org/nosco/Condition.html#FALSE">FALSE</A>, <A HREF="../../org/nosco/Condition.html#TRUE">TRUE</A></CODE></TD>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;class</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt;</B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -165,7 +158,7 @@ Use this class to add custom SQL code to your where clause. &nbsp;
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../org/nosco/Condition.Literal.html#Condition.Literal(java.lang.String)">Condition.Literal</A></B>(java.lang.String&nbsp;s)</CODE>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#Diff()">Diff</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -182,22 +175,40 @@ Use this class to add custom SQL code to your where clause. &nbsp;
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>protected &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Condition.Literal.html#getSQL(java.lang.StringBuffer, java.util.List, org.nosco.SqlContext)">getSQL</A></B>(java.lang.StringBuffer&nbsp;sb,
-       java.util.List&lt;java.lang.Object&gt;&nbsp;bindings,
-       org.nosco.SqlContext&nbsp;context)</CODE>
-
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Internal function.</TD>
+java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
 </TR>
 </TABLE>
-&nbsp;<A NAME="methods_inherited_from_class_org.nosco.Condition"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Methods inherited from class org.nosco.<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></B></TH>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable)">streamingDiff</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+              java.lang.Iterable&lt;T&gt;&nbsp;to)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of two input streams.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../org/nosco/Condition.html#and(org.nosco.Condition...)">and</A>, <A HREF="../../org/nosco/Condition.html#not()">not</A>, <A HREF="../../org/nosco/Condition.html#or(org.nosco.Condition...)">or</A></CODE></TD>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)">streamingDiffActualized</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                        java.lang.Iterable&lt;T&gt;&nbsp;to)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -222,10 +233,10 @@ Use this class to add custom SQL code to your where clause. &nbsp;
 </TR>
 </TABLE>
 
-<A NAME="Condition.Literal(java.lang.String)"><!-- --></A><H3>
-Condition.Literal</H3>
+<A NAME="Diff()"><!-- --></A><H3>
+Diff</H3>
 <PRE>
-public <B>Condition.Literal</B>(java.lang.String&nbsp;s)</PRE>
+public <B>Diff</B>()</PRE>
 <DL>
 </DL>
 
@@ -239,21 +250,45 @@ public <B>Condition.Literal</B>(java.lang.String&nbsp;s)</PRE>
 </TR>
 </TABLE>
 
-<A NAME="getSQL(java.lang.StringBuffer, java.util.List, org.nosco.SqlContext)"><!-- --></A><H3>
-getSQL</H3>
+<A NAME="streamingDiff(java.lang.Iterable, java.lang.Iterable)"><!-- --></A><H3>
+streamingDiff</H3>
 <PRE>
-protected void <B>getSQL</B>(java.lang.StringBuffer&nbsp;sb,
-                      java.util.List&lt;java.lang.Object&gt;&nbsp;bindings,
-                      org.nosco.SqlContext&nbsp;context)</PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                                    java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
 <DL>
-<DD><B>Description copied from class: <CODE><A HREF="../../org/nosco/Condition.html#getSQL(java.lang.StringBuffer, java.util.List, org.nosco.SqlContext)">Condition</A></CODE></B></DD>
-<DD>Internal function.  Do not use.  Subject to change.
+<DD>This will create a streaming diff of two input streams.  &nbsp; The diff is 
+ calculated on the fly as you iterate over the returned object, avoiding having to 
+ load either source input stream (or the resultant stream) into memory all at once.
+ <p>
+ Note: It's critically important that the two input lists are sorted by their
+ natural ordering. &nbsp; This algorithm will not work otherwise.
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../org/nosco/Condition.html#getSQL(java.lang.StringBuffer, java.util.List, org.nosco.SqlContext)">getSQL</A></CODE> in class <CODE><A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></DL>
+<DT><B>Parameters:</B><DD><CODE>from</CODE> - a sorted <code>Iterable</code><DD><CODE>to</CODE> - a sorted <code>Iterable</code>
+<DT><B>Returns:</B><DD></DL>
 </DD>
-<DD><DL>
 </DL>
+<HR>
+
+<A NAME="streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)"><!-- --></A><H3>
+streamingDiffActualized</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiffActualized</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                                          java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
+<DL>
+<DD>This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you. &nbsp; Of note:
+ <ul>
+ <li>The incoming streams are still processed as a stream, meaning they're never loaded
+ into memory in their entirety.
+ <li>This will block until the entire diff is created.
+ <li>In a worst-case scenario, the resultant <code>List</code> will be the size of both inputs
+ combined.
+ </ul>
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>from</CODE> - a sorted Iterable<DD><CODE>to</CODE> - a sorted Iterable
+<DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
@@ -272,7 +307,7 @@ protected void <B>getSQL</B>(java.lang.StringBuffer&nbsp;sb,
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Condition.Literal.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Diff.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -287,11 +322,11 @@ protected void <B>getSQL</B>(java.lang.StringBuffer&nbsp;sb,
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/Constants.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Constants.DIRECTION.html" title="enum in org.nosco"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?org/nosco/Condition.Literal.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="Condition.Literal.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?org/nosco/Diff.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Diff.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -308,7 +343,7 @@ protected void <B>getSQL</B>(java.lang.StringBuffer&nbsp;sb,
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#nested_classes_inherited_from_class_org.nosco.Condition">NESTED</A>&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.nosco.Condition">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>

@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-Table.__SimplePrimaryKey (Nosco API)
+Diff.RowChange (Nosco API)
 </TITLE>
 
 
@@ -13,7 +13,7 @@ Table.__SimplePrimaryKey (Nosco API)
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Table.__SimplePrimaryKey (Nosco API)";
+        parent.document.title="Diff.RowChange (Nosco API)";
     }
 }
 </SCRIPT>
@@ -38,7 +38,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Table.__SimplePrimaryKey.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Diff.RowChange.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -53,11 +53,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/ThreadContext.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../org/nosco/Field.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?org/nosco/Table.__SimplePrimaryKey.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="Table.__SimplePrimaryKey.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?org/nosco/Diff.RowChange.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Diff.RowChange.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -88,19 +88,26 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHO
 <FONT SIZE="-1">
 org.nosco</FONT>
 <BR>
-Interface Table.__SimplePrimaryKey&lt;S extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>,V&gt;</H2>
+Class Diff.RowChange&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt;</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Diff.RowChange&lt;T&gt;</B>
+</PRE>
 <DL>
-<DT><B>All Superinterfaces:</B> <DD><A HREF="../../org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco">Table.__PrimaryKey</A>&lt;S&gt;</DD>
-</DL>
+<DT><DT><B>Type Parameters:</B><DD><CODE>T</CODE> - </DL>
 <DL>
-<DT><B>Enclosing class:</B><DD><A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A></DD>
+<DT><B>Enclosing class:</B><DD><A HREF="../../org/nosco/Diff.html" title="class in org.nosco">Diff</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public static interface <B>Table.__SimplePrimaryKey&lt;S extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>,V&gt;</B><DT>extends <A HREF="../../org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco">Table.__PrimaryKey</A>&lt;S&gt;</DL>
+<DT><PRE>public static class <B>Diff.RowChange&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt;</B><DT>extends java.lang.Object</DL>
 </PRE>
 
 <P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>derek</DD>
+</DL>
 <HR>
 
 <P>
@@ -115,20 +122,60 @@ Interface Table.__SimplePrimaryKey&lt;S extends <A HREF="../../org/nosco/Table.h
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">V</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Table.__SimplePrimaryKey.html#value()">value</A></B>()</CODE>
+<CODE>&nbsp;java.util.Collection&lt;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A>,?&gt;&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#getChanges()">getChanges</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#getObject()">getObject</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#isAdd()">isAdd</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#isDelete()">isDelete</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#isUpdate()">isUpdate</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.RowChange.html#toString()">toString</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 </TABLE>
-&nbsp;<A NAME="methods_inherited_from_class_org.nosco.Table.__PrimaryKey"><!-- --></A>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Methods inherited from interface org.nosco.<A HREF="../../org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco">Table.__PrimaryKey</A></B></TH>
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../org/nosco/Table.__PrimaryKey.html#get(org.nosco.Field)">get</A></CODE></TD>
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -144,13 +191,70 @@ Interface Table.__SimplePrimaryKey&lt;S extends <A HREF="../../org/nosco/Table.h
 </TR>
 </TABLE>
 
-<A NAME="value()"><!-- --></A><H3>
-value</H3>
+<A NAME="getObject()"><!-- --></A><H3>
+getObject</H3>
 <PRE>
-<A HREF="../../org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">V</A> <B>value</B>()</PRE>
+public <A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> <B>getObject</B>()</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>the o</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getChanges()"><!-- --></A><H3>
+getChanges</H3>
+<PRE>
+public java.util.Collection&lt;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A>,?&gt;&gt; <B>getChanges</B>()</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>the o</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isUpdate()"><!-- --></A><H3>
+isUpdate</H3>
+<PRE>
+public boolean <B>isUpdate</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isAdd()"><!-- --></A><H3>
+isAdd</H3>
+<PRE>
+public boolean <B>isAdd</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isDelete()"><!-- --></A><H3>
+isDelete</H3>
+<PRE>
+public boolean <B>isDelete</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="toString()"><!-- --></A><H3>
+toString</H3>
+<PRE>
+public java.lang.String <B>toString</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Overrides:</B><DD><CODE>toString</CODE> in class <CODE>java.lang.Object</CODE></DL>
 </DD>
 <DD><DL>
 </DL>
@@ -172,7 +276,7 @@ value</H3>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Table.__SimplePrimaryKey.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Diff.RowChange.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -187,11 +291,11 @@ value</H3>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/ThreadContext.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../org/nosco/Field.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?org/nosco/Table.__SimplePrimaryKey.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="Table.__SimplePrimaryKey.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?org/nosco/Diff.RowChange.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Diff.RowChange.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {

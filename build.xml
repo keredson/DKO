@@ -72,6 +72,9 @@
   </target>
   
   <target name="javadoc" description="generate javadoc" >
+    <delete includeemptydirs="true">
+      <fileset dir="doc/api" includes="**/*.html"/>
+    </delete>
     <javadoc packagenames="org.nosco.*"
            sourcepath="src"
            excludepackagenames="org.nosco.json.*,org.nosco.util.*,org.nosco.QueryImpl,org.nosco.RSArgsParser"
@@ -80,6 +83,7 @@
            author="true"
            version="true"
            use="true"
+           additionalparam="-notimestamp"
            windowtitle="Nosco API">
       <doctitle><![CDATA[<h1>Nosco</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>]]></bottom>

@@ -5,30 +5,72 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
- * 
+ * This class offers diff logic. &nbsp; Let's assume you have two databases with identical
+ * schemas containing a {@code Question} table.  If you wanted to compare them (to perhaps sync
+ * them), you could do the following:
+ * <pre>  {@code Datasource aDS = [...]; // first datasource
+ *  Datasource bDS = [...]; // second datasource
+ *   
+ *  Iterable<Question> allAs = Question.ALL.use(aDS).orderBy(Question.ID);
+ *  Iterable<Question> allBs = Question.ALL.use(bDS).orderBy(Question.ID);
+ *   
+ *  Iterable<RowChange<Question>> changes = Diff.streamingDiff(allAs, allBs);
+ *  for (RowChange<Question> change : changes) {
+ *    // do something
+ *  }
+ * }</pre>
  * @author Derek Anderson
  */
 public class Diff {
 
 	/**
-	 * @param a
-	 * @param b
+	 * This will create a streaming diff of two input streams.  &nbsp; The diff is 
+	 * calculated on the fly as you iterate over the returned object, avoiding having to 
+	 * load either source input stream (or the resultant stream) into memory all at once.
+	 * <p>
+	 * Note: It's critically important that the two input lists are sorted by their
+	 * natural ordering. &nbsp; This algorithm will not work otherwise.
+	 * @param from a sorted {@code Iterable}
+	 * @param to a sorted {@code Iterable}
 	 * @return
 	 */
 	public static <T extends Table> Iterable<RowChange<T>> streamingDiff(
-			final Iterable<T> a, final Iterable<T> b) {
+			final Iterable<T> from, final Iterable<T> to) {
 		return new Iterable<RowChange<T>>() {
 			@Override
 			public Iterator<RowChange<T>> iterator() {
-				return new ChangeIterator<T>(a.iterator(), b.iterator());
+				return new ChangeIterator<T>(from.iterator(), to.iterator());
 			}
 		};
 	}
+	
+	/**
+	 * This is identical to {@code streamingDiff(from, to)}, but the resultant {@code Iterable}
+	 * actualized into a {@code List} for you. &nbsp; Of note:
+	 * <ul>
+	 * <li>The incoming streams are still processed as a stream, meaning they're never loaded
+	 * into memory in their entirety.
+	 * <li>This will block until the entire diff is created.
+	 * <li>In a worst-case scenario, the resultant {@code List} will be the size of both inputs
+	 * combined.
+	 * </ul>
+	 * @param from a sorted Iterable
+	 * @param to a sorted Iterable
+	 * @return
+	 */
+	public static <T extends Table> List<RowChange<T>> streamingDiffActualized(
+			final Iterable<T> from, final Iterable<T> to) {
+		List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
+		for (RowChange<T> v : streamingDiff(from, to)) ret.add(v);
+		return ret;
+	}	
+	
 
 	private static enum CHANGE_TYPE {
 		ADD, UPDATE, DELETE

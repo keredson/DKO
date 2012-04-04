@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.nosco.Table;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -30,6 +32,7 @@ class ClassGenerator {
 
 	private final String pkg;
 	private final String dir;
+	private final String pkgDir;
 
 	private String[] stripPrefixes;
 
@@ -44,6 +47,7 @@ class ClassGenerator {
 	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
 		this.dir = dir;
 		this.pkg = pkg;
+		pkgDir = Misc.join("/", pkg.split("[.]"));
 		this.stripPrefixes = stripPrefixes.clone();
 		this.stripSuffixes = stripSuffixes.clone();
 	}
@@ -108,13 +112,14 @@ class ClassGenerator {
 		for (String schema : schemas.keySet()) {
 			JSONObject tables = schemas.getJSONObject(schema);
 
-			generator.tableToClassName = new HashMap<String,String>();
+			generator.tableToClassName = new LinkedHashMap<String,String>();
 
 			for (String table : new TreeSet<String>(tables.keySet())) {
 				// we process these in order to avoid naming conflicts when you have
 				// both plural and singular tables of the same root word
 				generator.genTableClassName(table);
 			}
+			generator.genTableToClassMap(schema);
 
 			for (String table : tables.keySet()) {
 			    // skip these junk mssql tables
@@ -137,8 +142,32 @@ class ClassGenerator {
 				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName,
 						callbackPackage, enums);
 			}
+			
 		}
 
+	}
+
+	private void genTableToClassMap(String schema) throws IOException {
+		File file = new File(Misc.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
+		System.out.println("writing: "+ file.getAbsolutePath());
+		BufferedWriter br = new BufferedWriter(new FileWriter(file));
+		br.write("package "+ pkg +"."+ schema +";\n\n");
+		br.write("import java.util.Collections;\n");
+		br.write("import java.util.Map;\n");
+		br.write("import java.util.HashMap;\n");
+		br.write("import org.nosco.Table;\n\n");
+		br.write("public class _TableToClassMap {\n");
+		br.write("\tpublic static final Map<String, Class<? extends Table>> IT;\n");
+		br.write("\tstatic {\n");
+		br.write("\t\tMap<String, Class<? extends Table>> it = new HashMap<String, Class<? extends Table>>();\n");
+		for (Entry<String, String> e : this.tableToClassName.entrySet()) {
+			br.write("\t\tit.put(\""+ e.getKey() +"\", "+ e.getValue() +".class);\n");
+		}
+		br.write("\t\tIT = Collections.unmodifiableMap(it);\n");
+		br.write("\t}\n");
+		// end class
+		br.write("}\n");
+		br.close();
 	}
 
 	private static void splitFK(String schema, String table, List<FK> fks, List<FK> fksIn,
@@ -223,7 +252,6 @@ class ClassGenerator {
 		}
 		int fieldCount = columns.keySet().size();
 
-		String pkgDir = Misc.join("/", pkg.split("[.]"));
 		new File(Misc.join("/", dir, pkgDir, schema)).mkdirs();
 		File file = new File(Misc.join("/", dir, pkgDir, schema, className+".java"));
 		System.out.println("writing: "+ file.getAbsolutePath());
@@ -939,6 +967,7 @@ class ClassGenerator {
 		else if (s.endsWith("us"));
 		else if (s.endsWith("is"));
 		else if (s.endsWith("as"));
+		else if (s.endsWith("xes")) s = s.substring(0,s.length()-2);
 		else if (s.endsWith("ies")) s = s.substring(0,s.length()-3)+"y";
 		else if (s.endsWith("s")) s = s.substring(0,s.length()-1);
 		return s;

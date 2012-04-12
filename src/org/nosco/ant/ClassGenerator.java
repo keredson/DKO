@@ -148,6 +148,8 @@ class ClassGenerator {
 	}
 
 	private void genTableToClassMap(String schema) throws IOException {
+		File targetDir = new File(Misc.join("/", dir, pkgDir, schema));
+		if (!targetDir.isDirectory()) targetDir.mkdirs();
 		File file = new File(Misc.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
 		System.out.println("writing: "+ file.getAbsolutePath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));

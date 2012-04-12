@@ -142,7 +142,7 @@ class ClassGenerator {
 				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName,
 						callbackPackage, enums);
 			}
-			
+
 		}
 
 	}
@@ -711,7 +711,7 @@ class ClassGenerator {
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean insert(DataSource ds) throws SQLException {\n");
-		br.write("\t\tif (!dirty()) return false;\n");
+		//br.write("\t\tif (!dirty()) return false;\n");
 		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
 		for (String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");

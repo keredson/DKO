@@ -16,25 +16,25 @@ import java.util.Set;
  * them), you could do the following:
  * <pre>  {@code Datasource dsA = [...]; // first database
  *  Datasource dsB = [...]; // second database
- *   
+ *
  *  Iterable<Question> allAs = Question.ALL.use(dsA).orderBy(Question.ID);
  *  Iterable<Question> allBs = Question.ALL.use(dsB).orderBy(Question.ID);
- *   
+ *
  *  Iterable<RowChange<Question>> changes = Diff.streamingDiff(allAs, allBs);
  *  for (RowChange<Question> change : changes) {
  *    // do something
  *  }}</pre>
- * 
+ *
  * Note: It's very important these are sorted in ascending order by their natural
  * ordering!  &nbsp; You will get nonsensical diffs otherwise.
- *  
+ *
  * @author Derek Anderson
  */
 public class Diff {
 
 	/**
-	 * This will create a streaming diff of two input streams.  &nbsp; The diff is 
-	 * calculated on the fly as you iterate over the returned object, avoiding having to 
+	 * This will create a streaming diff of two input streams.  &nbsp; The diff is
+	 * calculated on the fly as you iterate over the returned object, avoiding having to
 	 * load either source input stream (or the resultant stream) into memory all at once.
 	 * <p>
 	 * Note: It's critically important that the two input lists are sorted by their
@@ -48,11 +48,33 @@ public class Diff {
 		return new Iterable<RowChange<T>>() {
 			@Override
 			public Iterator<RowChange<T>> iterator() {
-				return new ChangeIterator<T>(from.iterator(), to.iterator());
+				return new ChangeIterator<T>(from.iterator(), to.iterator(), false);
 			}
 		};
 	}
-	
+
+	/**
+	 * This will create a streaming diff of two input streams.  &nbsp; The diff is
+	 * calculated on the fly as you iterate over the returned object, avoiding having to
+	 * load either source input stream (or the resultant stream) into memory all at once.
+	 * <p>
+	 * Note: It's critically important that the two input lists are sorted by their
+	 * natural ordering. &nbsp; This algorithm will not work otherwise.
+	 * @param from a sorted {@code Iterable}
+	 * @param to a sorted {@code Iterable}
+	 * @param emitUnchanged controls whether or not unchanged objects are returned (with an {@code UNCHANGED} change type)
+	 * @return
+	 */
+	public static <T extends Table> Iterable<RowChange<T>> streamingDiff(
+			final Iterable<T> from, final Iterable<T> to, final boolean emitUnchanged) {
+		return new Iterable<RowChange<T>>() {
+			@Override
+			public Iterator<RowChange<T>> iterator() {
+				return new ChangeIterator<T>(from.iterator(), to.iterator(), emitUnchanged);
+			}
+		};
+	}
+
 	/**
 	 * This is identical to {@code streamingDiff(from, to)}, but the resultant {@code Iterable}
 	 * actualized into a {@code List} for you. &nbsp; Of note:
@@ -72,11 +94,11 @@ public class Diff {
 		List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
 		for (RowChange<T> v : streamingDiff(from, to)) ret.add(v);
 		return ret;
-	}	
-	
+	}
+
 
 	private static enum CHANGE_TYPE {
-		ADD, UPDATE, DELETE
+		ADD, UPDATE, DELETE, UNCHANGED
 	}
 
 	private static class ChangeIterator<T extends Table> implements
@@ -87,10 +109,12 @@ public class Diff {
 		private T b = null;
 		RowChange<T> next = null;
 		Map<Class<?>, Set<Field<?>>> fieldsForClass = new HashMap<Class<?>, Set<Field<?>>>();
+		private boolean emitUnchanged;
 
-		private ChangeIterator(Iterator<T> a, Iterator<T> b) {
+		private ChangeIterator(Iterator<T> a, Iterator<T> b, boolean emitUnchanged) {
 			this.A = a;
 			this.B = b;
+			this.emitUnchanged = emitUnchanged;
 		}
 
 		@Override
@@ -156,10 +180,17 @@ public class Diff {
 						}
 					}
 					if (diffs.size() > 0) {
-						next = new RowChange<T>(CHANGE_TYPE.UPDATE, a, diffs);
+						next = new RowChange<T>(CHANGE_TYPE.UPDATE, b, diffs);
 						a = null;
 						b = null;
 						return true;
+					} else {
+						if (emitUnchanged) {
+							next = new RowChange<T>(CHANGE_TYPE.UNCHANGED, a, null);
+							a = null;
+							b = null;
+							return true;
+						}
 					}
 					a = null;
 					b = null;
@@ -185,7 +216,7 @@ public class Diff {
 
 	/**
 	 * Represents a changed field between two versions of a row.
-	 * 
+	 *
 	 * @author Derek Anderson
 	 *
 	 * @param <T> the type of the row that changed
@@ -214,7 +245,7 @@ public class Diff {
 
 	/**
 	 * Represents a change in a row. &nbsp; (either an ADD, UPDATE, or DELETE)
-	 * 
+	 *
 	 * @author Derek Anderson
 	 *
 	 * @param <T> the type of the row that changed
@@ -270,6 +301,14 @@ public class Diff {
 		 */
 		public boolean isDelete() {
 			return type == CHANGE_TYPE.DELETE;
+		}
+
+		/**
+		 * If row change was a UNCHANGED
+		 * @return true if row change was a UNCHANGED
+		 */
+		public boolean isUnchanged() {
+			return type == CHANGE_TYPE.UNCHANGED;
 		}
 
 		@Override

@@ -4,10 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
+import org.nosco.Diff.RowChange;
 import org.nosco.util.Misc;
 
 /**
@@ -34,6 +38,7 @@ public class Bulk {
 
 	private DataSource ds;
 	private static final int BATCH_SIZE = 64;
+	private final static String EOQ = "EOQ";
 
 	/**
 	 * Specify the target DataSource.
@@ -114,7 +119,7 @@ public class Bulk {
 				for (int k : psInsert.executeBatch()) resCount += k;
 			}
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (conn!=null && !ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -123,9 +128,16 @@ public class Bulk {
 			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
-			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
+			safeClose(psInsert);
 			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
+	}
+
+	private static void safeClose(PreparedStatement ps) {
+		// c3p0 sometimes throws a NPE on isClosed()
+		try { if (ps != null && !ps.isClosed()) ps.close(); }
+		catch (NullPointerException e) { /* ignore */ }
+		catch (SQLException e) { /* ignore */ }
 	}
 
 	/**
@@ -189,7 +201,7 @@ public class Bulk {
 				for (int k : psUpdate.executeBatch()) resCount += k;
 			}
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (conn!=null && !ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -198,7 +210,7 @@ public class Bulk {
 			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
-			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
+			safeClose(psUpdate);
 			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
@@ -214,7 +226,6 @@ public class Bulk {
 	 */
 	public <T extends Table> int insertOrUpdateAll(Iterable<T> iterable) throws SQLException {
 		int count = 0;
-		int resCount = 0;
 		boolean first = true;
 		Connection conn = null;
 		Field<?>[] fields = null;
@@ -273,7 +284,7 @@ public class Bulk {
 			}
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (conn!=null && !ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -282,8 +293,8 @@ public class Bulk {
 			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
-			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
-			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
+			safeClose(psInsert);
+			safeClose(psUpdate);
 			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
@@ -340,7 +351,7 @@ public class Bulk {
 				}
 			}
 			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (conn!=null && !ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -349,7 +360,7 @@ public class Bulk {
 			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
-			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
+			safeClose(psDelete);
 			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
 		}
 	}
@@ -420,6 +431,155 @@ public class Bulk {
 	 */
 	public static interface StatusCallback {
 		public void call(int count);
+	}
+
+	private static class QueueIterator<T extends Table> implements Iterator<T> {
+		@SuppressWarnings("rawtypes")
+		private BlockingQueue queue;
+		QueueIterator(BlockingQueue queue) {
+			this.queue = queue;
+		}
+		T next = null;
+		boolean eoq = false;
+		@Override
+		public boolean hasNext() {
+			if (next != null) return true;
+			if (eoq) return false;
+			Object o;
+			try {
+				o = queue.take();
+				if (EOQ.equals(o)) {
+					eoq = true;
+					return false;
+				}
+				next = (T) o;
+				return true;
+			} catch (InterruptedException e) {
+				return false;
+			}
+		}
+		@Override
+		public T next() {
+			T o = next;
+			next = null;
+			return o;
+		}
+		@Override
+		public void remove() {}
+	};
+
+	private static class Counter {
+		int count = 0;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public <T extends Table> int commitDiff(final Iterable<RowChange<T>> diff) {
+		final Bulk bulk = this;
+		final BlockingQueue adds = new ArrayBlockingQueue(10*1024);
+		final BlockingQueue updates = new ArrayBlockingQueue(10*1024);
+		final BlockingQueue deletes = new ArrayBlockingQueue(10*1024);
+		final Counter count = new Counter();
+
+		Thread prodThread = new Thread() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void run() {
+				for (RowChange<T> rc : diff) {
+					count.count++;
+					try {
+						if (rc.isAdd()) adds.put(rc.getObject());
+						if (rc.isUpdate()) updates.put(rc.getObject());
+						if (rc.isDelete()) deletes.put(rc.getObject());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				try {
+					adds.put(EOQ);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				try {
+					updates.put(EOQ);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				try {
+					deletes.put(EOQ);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		Thread addThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+					bulk.insertAll(new Iterable<T>() {
+						@Override
+						public Iterator<T> iterator() {
+							return new QueueIterator<T>(adds);
+						}});
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		Thread updateThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+					bulk.updateAll(new Iterable<T>() {
+						@Override
+						public Iterator<T> iterator() {
+							return new QueueIterator<T>(updates);
+						}});
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		Thread deleteThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+					bulk.deleteAll(new Iterable<T>() {
+						@Override
+						public Iterator<T> iterator() {
+							return new QueueIterator<T>(deletes);
+						}});
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		prodThread.start();
+		addThread.start();
+		updateThread.start();
+		deleteThread.start();
+
+		try {
+			prodThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			addThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			updateThread.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			deleteThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		return count.count;
 	}
 
 }

@@ -136,8 +136,7 @@ public class Bulk {
 	private static void safeClose(PreparedStatement ps) {
 		// c3p0 sometimes throws a NPE on isClosed()
 		try { if (ps != null && !ps.isClosed()) ps.close(); }
-		catch (NullPointerException e) { /* ignore */ }
-		catch (SQLException e) { /* ignore */ }
+		catch (Throwable e) { /* ignore */ }
 	}
 
 	private static void safeClose(Connection conn, DataSource ds) {
@@ -146,8 +145,7 @@ public class Bulk {
 				conn.close();
 			}
 		}
-		catch (NullPointerException e) { /* ignore */ }
-		catch (SQLException e) { /* ignore */ }
+		catch (Throwable e) { /* ignore */ }
 	}
 
 	/**

@@ -129,13 +129,23 @@ public class Bulk {
 			throw e;
 		} finally {
 			safeClose(psInsert);
-			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
+			safeClose(conn, ds);
 		}
 	}
 
 	private static void safeClose(PreparedStatement ps) {
 		// c3p0 sometimes throws a NPE on isClosed()
 		try { if (ps != null && !ps.isClosed()) ps.close(); }
+		catch (NullPointerException e) { /* ignore */ }
+		catch (SQLException e) { /* ignore */ }
+	}
+
+	private static void safeClose(Connection conn, DataSource ds) {
+		try {
+			if (conn != null && !conn.isClosed() && !ThreadContext.inTransaction(ds)) {
+				conn.close();
+			}
+		}
 		catch (NullPointerException e) { /* ignore */ }
 		catch (SQLException e) { /* ignore */ }
 	}
@@ -203,7 +213,7 @@ public class Bulk {
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
 			if (conn!=null && !ThreadContext.inTransaction(ds)) {
 				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
+				safeClose(conn, ds);
 			}
 			return resCount;
 		} catch (SQLException e) {
@@ -211,7 +221,7 @@ public class Bulk {
 			throw e;
 		} finally {
 			safeClose(psUpdate);
-			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
+			safeClose(conn, ds);
 		}
 	}
 
@@ -295,7 +305,7 @@ public class Bulk {
 		} finally {
 			safeClose(psInsert);
 			safeClose(psUpdate);
-			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
+			safeClose(conn, ds);
 		}
 	}
 
@@ -361,7 +371,7 @@ public class Bulk {
 			throw e;
 		} finally {
 			safeClose(psDelete);
-			if (conn != null && !ThreadContext.inTransaction(ds)) conn.close();
+			safeClose(conn, ds);
 		}
 	}
 

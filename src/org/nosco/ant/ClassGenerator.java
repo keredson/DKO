@@ -425,7 +425,7 @@ class ClassGenerator {
 		br.write("\tpublic <S> void set(Field<S> _field, S _value) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
-			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(schema, table, column, columns.getString(column)) +") _value;\n");
+			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(schema, table, column, columns.getString(column)) +") _value; else\n");
 		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");

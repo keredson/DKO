@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,7 +21,6 @@ import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.util.Misc;
-import org.nosco.util.Tree.Callback;
 import org.nosco.util.Tuple;
 
 
@@ -54,6 +51,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private Connection conn;
 	private Object[] nextRow;
 	private boolean done = false;
+	Object[] lastFieldValues;
 
 	@SuppressWarnings("unchecked")
 	Select(DBQuery<T> query) {
@@ -211,6 +209,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		if (next!=null) return true;
 		try {
 			Object[] fieldValues = getNextRow();
+			this.lastFieldValues = fieldValues;
 			if (fieldValues == null) return false;
 			List<TableInfo> tableInfos = query.getAllTableInfos();
 			int objectSize = tableInfos.size();

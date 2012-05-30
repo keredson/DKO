@@ -1041,7 +1041,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	public T get(__PrimaryKey<T> pk) {
 		return get(Misc.getPK((T)tables.get(0)).eq(pk));
 	}
-	
+
 	@Override
 	public Query<T> use(Connection conn) {
 		return use(new SingleConnectionDataSource(conn));
@@ -1059,6 +1059,16 @@ class DBQuery<T extends Table> implements Query<T> {
 		for (Condition c : conditions) {
 			c._postExecute(conn);
 		}
+	}
+
+	@Override
+	public Field<?>[] getSelectFields() {
+		return this.getSelectFields(false);
+	}
+
+	@Override
+	public Iterable<Object[]> asIterableOfObjectArrays() {
+		return new SelectAsObjectArrayIterable(new Select<T>(this));
 	}
 
 }

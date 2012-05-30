@@ -2,6 +2,7 @@ package org.nosco;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -419,5 +420,20 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public DataSource getDataSource();
+
+	/**
+	 * Returns an array of the fields to be selected for this query.
+	 * @return
+	 */
+	public Field<?>[] getSelectFields();
+
+	/**
+	 * Returns the results of the query as a {@code Iterator} of {@code Object[]}s. &nbsp;
+	 * Usually used with {@code cross()} and {@code getSelectFields()}. (the latter to know
+	 * which array elements are from what fields) &nbsp;
+	 * Use sparingly. &nbsp;
+	 * @return
+	 */
+	public Iterable<Object[]> asIterableOfObjectArrays();
 
 }

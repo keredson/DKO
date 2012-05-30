@@ -23,9 +23,11 @@ import org.nosco.util.Misc;
 class InMemoryQuery<T extends Table> implements Query<T> {
 
 	List<T> cache = null;
+	private Field<?>[] selectFields;
 
 	InMemoryQuery(Query<T> query) {
 		cache = new ArrayList<T>();
+		this.selectFields = query.getSelectFields();
 		for (T t : query) {
 			cache.add(t);
 		}
@@ -335,6 +337,18 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	public Query<T> use(Connection conn) {
 		// do nothing
 		return this;
+	}
+
+	@Override
+	public Field<?>[] getSelectFields() {
+		Field<?>[] ret = new Field<?>[selectFields.length];
+		System.arraycopy(selectFields, 0, ret, 0, selectFields.length);
+		return ret;
+	}
+
+	@Override
+	public Iterable<Object[]> asIterableOfObjectArrays() {
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -52,6 +52,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private Object[] nextRow;
 	private boolean done = false;
 	Object[] lastFieldValues;
+	private boolean hideDups = true;
 
 	@SuppressWarnings("unchecked")
 	Select(DBQuery<T> query) {
@@ -61,7 +62,8 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 			constructor.setAccessible(true);
 
-			for (TableInfo tableInfo : query.getAllTableInfos()) {
+			List<TableInfo> tableInfos = query.getAllTableInfos();
+			for (TableInfo tableInfo : tableInfos) {
 				Constructor<? extends Table> constructor = tableInfo.tableClass.getDeclaredConstructor(
 						new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 				constructor.setAccessible(true);
@@ -89,6 +91,10 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					/* ignore */
 				}
 			}
+
+			// don't apply this technique if only one table.
+			if (tableInfos.size() == 1) hideDups = false;
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -263,7 +269,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				}
 			}
 
-			boolean sameObject = true;
+			boolean sameObject = hideDups ;
 			while (sameObject) {
 				Object[] peekRow = peekNextRow();
 				if (peekRow == null) break;

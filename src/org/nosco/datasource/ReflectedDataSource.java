@@ -118,4 +118,8 @@ public class ReflectedDataSource implements DataSource {
 		return ds.getConnection(arg0, arg1);
 	}
 
+	public DataSource getUnderlyingDataSource() {
+		return ds;
+	}
+
 }

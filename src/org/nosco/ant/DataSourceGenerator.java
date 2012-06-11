@@ -17,6 +17,7 @@ import org.nosco.util.Misc;
 class DataSourceGenerator {
 
 	public static String getDataSourceName(String dataSource) {
+		if (dataSource == null) return null;
 		String[] x = dataSource.split("=");
 		String name = x[0].trim();
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);

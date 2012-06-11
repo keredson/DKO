@@ -43,6 +43,19 @@ class ClassGenerator {
 	private JSONObject typeMappingFunctions = new JSONObject();
 	private Map<Pattern, String> schemaTypeMappings;
 
+	@SuppressWarnings("serial")
+	final static Set<String> KEYWORDS = Collections.unmodifiableSet(new HashSet<String>() {{
+		String[] kws = {"abstract", "continue", "for", "new", "switch", "assert",
+				"default", "goto", "package", "synchronized", "boolean", "do",
+				"if", "private", "this", "break", "double", "implements", "protected",
+				"throw", "byte", "else", "import", "public", "throws", "case", "enum",
+				"instanceof", "return", "transient", "catch", "extends", "int",
+				"short", "try", "char", "final", "interface", "static", "void",
+				"class", "finally", "long", "strictfp", "volatile", "const", "float",
+				"native", "super", "while"};
+		for (String kw : kws) this.add(kw);
+	}});
+
 
 	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
 		this.dir = dir;
@@ -60,7 +73,7 @@ class ClassGenerator {
 	}
 
 	public static void go(String dir, String pkg, String[] stripPrefixes,
-		String[] stripSuffixes, String metadataFile, String fakefksFile,
+		String[] stripSuffixes, String metadataFile, File fakeFKsFile,
 		String typeMappingsFile, String dataSource, String callbackPackage, JSONObject enums)
 				throws IOException, JSONException {
 
@@ -71,8 +84,7 @@ class ClassGenerator {
 		JSONObject metadata = new JSONObject(sb.toString());
 
 		JSONObject fakeFKs = new JSONObject();
-		File fakeFKsFile = new File(fakefksFile);
-		if (fakeFKsFile.exists()) {
+		if (fakeFKsFile!=null && fakeFKsFile.exists()) {
 			br = new BufferedReader(new FileReader(fakeFKsFile));
 			sb = new StringBuffer();
 			s = null;
@@ -147,7 +159,14 @@ class ClassGenerator {
 
 	}
 
+	private static String sanitizeJavaKeywords(String s) {
+		if (KEYWORDS.contains(s)) return s+"_";
+		return s;
+
+	}
+
 	private void genTableToClassMap(String schema) throws IOException {
+		schema = sanitizeJavaKeywords(schema);
 		File targetDir = new File(Misc.join("/", dir, pkgDir, schema));
 		if (!targetDir.isDirectory()) targetDir.mkdirs();
 		File file = new File(Misc.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
@@ -254,11 +273,13 @@ class ClassGenerator {
 		}
 		int fieldCount = columns.keySet().size();
 
-		new File(Misc.join("/", dir, pkgDir, schema)).mkdirs();
-		File file = new File(Misc.join("/", dir, pkgDir, schema, className+".java"));
+		String pkgName = sanitizeJavaKeywords(schema);
+
+		new File(Misc.join("/", dir, pkgDir, pkgName)).mkdirs();
+		File file = new File(Misc.join("/", dir, pkgDir, pkgName, className+".java"));
 		System.out.println("writing: "+ file.getAbsolutePath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
-		br.write("package "+ pkg +"."+ schema +";\n\n");
+		br.write("package "+ pkg +"."+ pkgName +";\n\n");
 		br.write("import java.lang.reflect.Method;\n");
 		br.write("import java.lang.reflect.InvocationTargetException;\n");
 		br.write("import java.sql.SQLException;\n");
@@ -276,11 +297,11 @@ class ClassGenerator {
 		int index = 0;
 		for (String column : columns.keySet()) {
 			br.write("\tpublic static final Field<");
-			br.write(getFieldType(schema, table, column, columns.getString(column)));
+			br.write(getFieldType(pkgName, table, column, columns.getString(column)));
 			br.write("> "+ getFieldName(column));
-			br.write(" = new Field<"+ getFieldType(schema, table, column, columns.getString(column)));
+			br.write(" = new Field<"+ getFieldType(pkgName, table, column, columns.getString(column)));
 			br.write(">("+ index +", "+ className +".class, \""+ column);
-			br.write("\", "+ getFieldType(schema, table, column, columns.getString(column)) +".class");
+			br.write("\", "+ getFieldType(pkgName, table, column, columns.getString(column)) +".class");
 			br.write(");\n");
 			++index;
 		}
@@ -298,8 +319,8 @@ class ClassGenerator {
 		for (FK fk : fks) {
 			String referencedTable = fk.reffed[1];
 			String referencedTableClassName = genTableClassName(referencedTable);
-			if (!schema.equals(fk.reffed[0])) {
-				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
+			if (!pkgName.equals(sanitizeJavaKeywords(fk.reffed[0]))) {
+				referencedTableClassName = pkg +"."+ sanitizeJavaKeywords(fk.reffed[0]) +"."+ referencedTableClassName;
 			}
 			String fkName = genFKName(fk.columns.keySet(), referencedTable);
 			br.write("\tpublic static final Field.FK<"+ referencedTableClassName +"> FK_"+ fkName);
@@ -319,13 +340,13 @@ class ClassGenerator {
 
 		// write enums
 		for (String column : columns.keySet()) {
-			String enumKey = schema +"."+ table +"."+ column;
+			String enumKey = pkgName +"."+ table +"."+ column;
 			if (!enums.has(enumKey)) continue;
 			JSONObject instances = enums.optJSONObject(enumKey);
 			boolean simple = pkSet.size() == 1;
 			if (simple) {
 				String pk = pkSet.iterator().next();
-				String pkType = getFieldType(schema, table, pk, columns.getString(pk));
+				String pkType = getFieldType(pkgName, table, pk, columns.getString(pk));
 				br.write("\tpublic enum PKS implements Table.__SimplePrimaryKey<"+ className +", "+ pkType +"> {\n\n");
 				int count = 0;
 				for (String name : instances.keySet()) {
@@ -361,7 +382,7 @@ class ClassGenerator {
 
 		// write field value references
 		for (String column : columns.keySet()) {
-			br.write("\tprivate "+ getFieldType(schema, table, column, columns.getString(column)));
+			br.write("\tprivate "+ getFieldType(pkgName, table, column, columns.getString(column)));
 			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
 		}
 		br.write("\n");
@@ -377,7 +398,7 @@ class ClassGenerator {
 		for (String column : columns.keySet()) {
 			br.write("\t\t\tif (fields[i]=="+ getFieldName(column) +") {\n");
 			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = ");
-			String assignment = convertToActualType(schema, table, column,
+			String assignment = convertToActualType(pkgName, table, column,
 					columns.getString(column),
 					"("+ getFieldClassType(columns.getString(column)).getName()+ ") objects[i]");
 			br.write(assignment);
@@ -425,7 +446,7 @@ class ClassGenerator {
 		br.write("\tpublic <S> void set(Field<S> _field, S _value) {\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
-			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(schema, table, column, columns.getString(column)) +") _value; else\n");
+			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(pkgName, table, column, columns.getString(column)) +") _value; else\n");
 		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
@@ -437,7 +458,11 @@ class ClassGenerator {
 		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
 		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("
-		+ className +".class).use("+ pkg +"."+ dataSourceName +"."+ schema.toUpperCase() +");\n\n");
+		+ className +".class)");
+		if (dataSourceName != null) {
+			br.write(".use("+ pkg +"."+ dataSourceName +"."+ pkgName.toUpperCase() +")");
+		}
+		br.write(";\n\n");
 
 		// write toString
 		br.write("\t public String toString() {\n");
@@ -471,7 +496,7 @@ class ClassGenerator {
 
 		// write getters and setters
 		for (String column : columns.keySet()) {
-			String cls = getFieldType(schema, table, column, columns.getString(column));
+			String cls = getFieldType(pkgName, table, column, columns.getString(column));
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\t"+ className +" _tmp = ALL.onlyFields(");
@@ -499,7 +524,7 @@ class ClassGenerator {
 				br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
 				br.write("("+ getFieldClassType(columns.getString(column)).getName() +" v) {\n");
 				br.write("\t\treturn set"+ getInstanceMethodName(column) +"("+
-						this.convertToActualType(schema, table, column,
+						this.convertToActualType(pkgName, table, column,
 								columns.getString(column), "v") +");\n");
 				br.write("\t}\n\n");
 			}
@@ -507,12 +532,12 @@ class ClassGenerator {
 
 		// write getters and setters for FKs
 		for (FK fk : fks) {
-			String referencedSchema = fk.reffed[0];
+			String referencedSchema = sanitizeJavaKeywords(fk.reffed[0]);
 			String referencedTable = fk.reffed[1];
 			//String referencedColumn = referenced.getString(2);
 			String referencedTableClassName = genTableClassName(referencedTable);
-			if (!schema.equals(fk.reffed[0])) {
-				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
+			if (!pkgName.equals(referencedSchema)) {
+				referencedTableClassName = pkg +"."+ referencedSchema +"."+ referencedTableClassName;
 		}
 			String methodName = genFKMethodName(fk.columns.keySet(), referencedTable);
 			String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
@@ -548,8 +573,9 @@ class ClassGenerator {
 			String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
 			String referencedTable = fk.reffed[1];
 			String referencedTableClassName = genTableClassName(referencedTable);
-			if (!schema.equals(fk.reffed[0])) {
-				referencedTableClassName = pkg +"."+ fk.reffed[0] +"."+ referencedTableClassName;
+			String referencedSchema = sanitizeJavaKeywords(fk.reffed[0]);
+			if (!pkgName.equals(referencedSchema)) {
+				referencedTableClassName = pkg +"."+ referencedSchema +"."+ referencedTableClassName;
 		}
 			br.write("\t\telse if (field == FK_"+ genFKName(fk.columns.keySet(), referencedTable) +") {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = ("+ referencedTableClassName +") v;\n");
@@ -574,10 +600,10 @@ class ClassGenerator {
 		br.write("\tprotected void SET_FK_SET(Field.FK<?> fk, Query<?> v) {\n");
 		br.write("\t\tif (false);\n");
 		for (FK fk : fksIn) {
-		    String relatedSchema = fk.reffing[0];
+		    String relatedSchema = sanitizeJavaKeywords(fk.reffing[0]);
 		    String relatedTable = fk.reffing[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
-			if (!schema.equals(relatedSchema)) {
+			if (!pkgName.equals(relatedSchema)) {
 				relatedTableClassName = pkg +"."+ relatedSchema +"."+ relatedTableClassName;
 			}
 			String fkName = "FK_"+ genFKName(fk.columns.keySet(), fk.reffed[1]);
@@ -599,11 +625,11 @@ class ClassGenerator {
 		    reffingCounts.put(relatedTable, c+1);
 		}
 		for (FK fk : fksIn) {
-		    String relatedSchema = fk.reffing[0];
+		    String relatedSchema = sanitizeJavaKeywords(fk.reffing[0]);
 		    String relatedTable = fk.reffing[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
 		    //String method = genFKMethodName(fk.columns.keySet(), relatedTableClassName);
-			if (!schema.equals(relatedSchema)) {
+			if (!pkgName.equals(relatedSchema)) {
 				relatedTableClassName = pkg +"."+ relatedSchema +"."+ relatedTableClassName;
 			}
 		    String method = getInstanceMethodName(relatedTable);
@@ -675,7 +701,7 @@ class ClassGenerator {
 		for (String column : columns.keySet()) {
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\tupdates.put("+ getFieldName(column) +", "
-			+ convertToOriginalType(schema, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
+			+ convertToOriginalType(pkgName, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
 			br.write("\t\t}\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
@@ -728,7 +754,7 @@ class ClassGenerator {
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (String column : columns.keySet()) {
 			br.write("\t\tupdates.put("+ getFieldName(column) +", "
-		+ convertToOriginalType(schema, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
+		+ convertToOriginalType(pkgName, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\t\tquery.insert();\n");
@@ -765,25 +791,25 @@ class ClassGenerator {
 		br.write("\tprivate static Method __NOSCO_CALLBACK_COMPARE_TO = null;\n");
 		br.write("\tstatic {\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"preInsert\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
 				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"postInsert\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
 				+ className +".class, DataSource.class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"preUpdate\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
 				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"postUpdate\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
 				+ className +".class, DataSource.class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_HASH_CODE = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"hashCode\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"hashCode\", "
 				+ className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_EQUALS = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"equals\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"equals\", "
 				+ className +".class, Object.class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_COMPARE_TO = Class.forName(\""+ callbackPackage
-				+"."+ schema +"."+ className +"CB\").getMethod(\"compareTo\", "
+				+"."+ pkgName +"."+ className +"CB\").getMethod(\"compareTo\", "
 				+ className +".class, " + className +".class);\n\t\t} catch (Exception e) { /* ignore */ }\n");
 		br.write("\t}\n");
 
@@ -869,7 +895,7 @@ class ClassGenerator {
 			String origType = null;
 			for (String column : columns.keySet()) {
 				String type = columns.getString(column);
-				if (actualType.equals(this.getFieldType(schema, table, column, type))) {
+				if (actualType.equals(this.getFieldType(pkgName, table, column, type))) {
 					origType = this.getFieldClassType(type).getName();
 					break;
 				}
@@ -1045,11 +1071,13 @@ class ClassGenerator {
 		if ("mediumtext".equals(type)) return String.class;
 		if ("ntext".equals(type)) return String.class;
 		if ("xml".equals(type)) return String.class;
+		if ("character varying".equals(type)) return String.class;
 		if ("int".equals(type)) return Integer.class;
 		if ("mediumint".equals(type)) return Integer.class;
 		if ("smallint".equals(type)) return Integer.class;
 		if ("tinyint".equals(type)) return Integer.class;
 		if ("bigint".equals(type)) return Long.class;
+		if ("integer".equals(type)) return Integer.class;
 		if ("decimal".equals(type)) return Double.class;
 		if ("money".equals(type)) return Double.class;
 		if ("numeric".equals(type)) return Double.class;

@@ -1,6 +1,7 @@
 package org.nosco.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -103,6 +104,21 @@ public class Misc {
 		}
 	}
 
-
+	public static String readFileToString(File file) {
+		try {
+			FileReader reader = new FileReader(file);
+			StringBuffer sb = new StringBuffer();
+			int chars;
+			char[] buf = new char[1024];
+			while ((chars = reader.read(buf)) > 0) {
+				sb.append(buf, 0, chars);
+			}
+			reader.close();
+			return sb.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

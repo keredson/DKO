@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Table.__Alias;
 
@@ -350,6 +351,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> use(Connection conn);
+
+	/**
+	 * Use a given database type. &nbsp;
+	 * This is usually automatically detected from the {@code DataSource} or the {@code Connection}.
+	 * @param type
+	 * @return
+	 */
+	public Query<T> use(DB_TYPE type);
 
 	/**
 	 * Performs a cross join.  Note that this can result in an extraordinary number

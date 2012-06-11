@@ -43,6 +43,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	private Field<?>[] boundFields;
 	List<Object> bindings = null;
 	Map<String,Set<String>> tableNameMap = null;
+	DB_TYPE detectedDbType = null;
 
 	// these should be cloned
 	List<Condition> conditions = null;
@@ -59,6 +60,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	boolean distinct = false;
 	DataSource ds = null;
 	String globallyAppliedSelectFunction = null;
+	DB_TYPE dbType = null;
 
 	DBQuery(Table table) {
 		addTable(table);
@@ -108,6 +110,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		distinct = q.distinct;
 		ds = q.ds;
 		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
+		dbType = q.dbType;
 	}
 
 	DBQuery(Class<? extends Table> tableClass) {
@@ -174,9 +177,10 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	DB_TYPE getDBType() {
-		//return DB_TYPE.MYSQL;
-		return DB_TYPE.SQLSERVER;
-		//return ConnectionManager.instance().getDBType(tables.get(0).SCHEMA_NAME());
+		if (dbType != null) return dbType;
+		if (detectedDbType != null) return detectedDbType;
+		detectedDbType = DB_TYPE.detect(ds);
+		return detectedDbType;
 	}
 
 	Connection getConnR() throws SQLException {
@@ -941,7 +945,7 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	public Query<T> use(DataSource ds) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.ds  = ds;
+		q.ds = ds;
 		return q;
 	}
 
@@ -1069,6 +1073,13 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public Iterable<Object[]> asIterableOfObjectArrays() {
 		return new SelectAsObjectArrayIterable(new Select<T>(this));
+	}
+
+	@Override
+	public Query<T> use(DB_TYPE type) {
+		DBQuery<T> q = new DBQuery<T>(this);
+		q.dbType = type;
+		return q;
 	}
 
 }

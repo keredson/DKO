@@ -100,4 +100,8 @@ public class MirroredDataSource implements DataSource {
 				+ Misc.join(",", mirrors) +"]";
 	}
 
+	public DataSource getPrimaryDataSource() {
+		return primary;
+	}
+
 }

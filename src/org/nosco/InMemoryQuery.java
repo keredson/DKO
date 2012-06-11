@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
@@ -349,6 +350,12 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	@Override
 	public Iterable<Object[]> asIterableOfObjectArrays() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Query<T> use(DB_TYPE type) {
+		// ignore
+		return this;
 	}
 
 }

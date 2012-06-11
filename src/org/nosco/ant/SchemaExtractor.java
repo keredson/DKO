@@ -65,6 +65,8 @@ public class SchemaExtractor extends Task {
 			this.dbType  = Constants.DB_TYPE.SQLSERVER;
 		if ("mysql".equalsIgnoreCase(s))
 			this.dbType  = Constants.DB_TYPE.MYSQL;
+		if ("hsql".equalsIgnoreCase(s) || "hsqldb".equalsIgnoreCase(s))
+			this.dbType  = Constants.DB_TYPE.HSQL;
 	}
 
 	public void setURL(String s) {
@@ -72,6 +74,22 @@ public class SchemaExtractor extends Task {
 		if (url.startsWith("jdbc:sqlserver")) {
 			try {
 				Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+				dbType = DB_TYPE.SQLSERVER;
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (url.startsWith("jdbc:hsqldb")) {
+			try {
+				Driver d = (Driver) Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
+				dbType = DB_TYPE.HSQL;
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -208,12 +226,8 @@ public class SchemaExtractor extends Task {
 
 	private Map<String, Map<String, Map<String, String>>> getSchemas(
 			Connection conn) throws SQLException {
-	    if (conn.getClass().getName().startsWith("com.mysql")) {
+		if (dbType == DB_TYPE.SQLSERVER) return getSchemasMSSQL(conn);
 		return getSchemasMySQL(conn);
-	    } else if (conn.getClass().getName().startsWith("com.microsoft")) {
-		return getSchemasMSSQL(conn);
-	    }
-	    return null;
 	}
 
 	private Map<String, Map<String, Map<String, String>>> getSchemasMySQL(
@@ -226,10 +240,10 @@ public class SchemaExtractor extends Task {
 				+ "from information_schema.columns order by table_schema, table_name, column_name;");
 		ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String schema = rs.getString("table_schema");
-			String table = rs.getString("table_name");
-			String column = rs.getString("column_name");
-			String type = rs.getString("data_type");
+			String schema = rs.getString("table_schema").toLowerCase();
+			String table = rs.getString("table_name").toLowerCase();
+			String column = rs.getString("column_name").toLowerCase();
+			String type = rs.getString("data_type").toLowerCase();
 
 			if (ignoredSchemas.contains(schema))
 				continue;
@@ -331,12 +345,9 @@ public class SchemaExtractor extends Task {
 	}
 
 	private Map<String,Map<String,Set<String>>> getPrimaryKeys(Connection conn) throws SQLException {
-	    if (conn.getClass().getName().startsWith("com.mysql")) {
+		if (dbType == DB_TYPE.SQLSERVER) return getPrimaryKeysMSSQL(conn);
+		if (dbType == DB_TYPE.HSQL) return getPrimaryKeysHSQL(conn);
 		return getPrimaryKeysMySQL(conn);
-	    } else if (conn.getClass().getName().startsWith("com.microsoft")) {
-		return getPrimaryKeysMSSQL(conn);
-	    }
-	    return null;
 	}
 
 	private Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(Connection conn) throws SQLException {
@@ -411,6 +422,61 @@ public class SchemaExtractor extends Task {
 		return primaryKeys;
 	}
 
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysHSQL(Connection conn) throws SQLException {
+	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		Map<String,Map<String,Set<String>>> primaryKeys =
+			new LinkedHashMap<String, Map<String, Set<String>>>();
+
+	    Statement s = conn.createStatement();
+		s.execute("select a.table_catalog, a.table_name, b.column_name, a.constraint_name " +
+				"from information_schema.table_constraints a, " +
+				"information_schema.constraint_column_usage b " +
+				"where constraint_type = 'PRIMARY KEY' " +
+				"and a.constraint_name = b.constraint_name " +
+				"order by a.table_catalog, a.table_name, b.column_name, a.constraint_name;");
+		ResultSet rs = s.getResultSet();
+		while (rs.next()) {
+			String schema = rs.getString("table_catalog").toLowerCase();
+			String table = rs.getString("table_name").toLowerCase();
+			String column = rs.getString("column_name").toLowerCase();
+
+			if (ignoredSchemas.contains(schema)) continue;
+			if (includeSchemas != null && !includeSchemas.contains(schema))
+				continue;
+
+			Map<String, Map<String, String>> tables = schemas.get(schema);
+			if (tables==null) {
+				tables = new LinkedHashMap<String, Map<String, String>>();
+				schemas.put(schema,tables);
+			}
+
+			Map<String, Set<String>> pkTables = primaryKeys.get(schema);
+			if (pkTables==null) {
+				pkTables = new LinkedHashMap<String, Set<String>>();
+				primaryKeys.put(schema,pkTables);
+			}
+
+			Map<String, String> columns = tables.get(table);
+			if (columns==null) {
+				columns = new LinkedHashMap<String, String>();
+				tables.put(table,columns);
+			}
+
+			Set<String> pkColumns = pkTables.get(table);
+			if (pkColumns==null) {
+				pkColumns = new LinkedHashSet<String>();
+				pkTables.put(table,pkColumns);
+			}
+
+			pkColumns.add(column);
+		}
+		rs.close();
+
+		s.close();
+
+		return primaryKeys;
+	}
+
 	private Map<String,Map<String,Set<String>>> getPrimaryKeysMySQL(Connection conn) throws SQLException {
 	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 		Map<String,Map<String,Set<String>>> primaryKeys =
@@ -465,22 +531,19 @@ public class SchemaExtractor extends Task {
 	    return primaryKeys;
 	}
 
-	private static Map<String, Map<String,Object>> getForeignKeys(
+	private Map<String, Map<String,Object>> getForeignKeys(
 		Connection conn) throws SQLException {
-	    if (conn.getClass().getName().startsWith("com.mysql")) {
+		if (dbType == DB_TYPE.SQLSERVER) return getForeignKeysMSSQL(conn);
+		if (dbType == DB_TYPE.HSQL) return getForeignKeysHSQL(conn);
 		return getForeignKeysMySQL(conn);
-	    } else if (conn.getClass().getName().startsWith("com.microsoft")) {
-		return getForeignKeysMSSQL(conn);
-	    }
-	    return null;
 	}
 
-	private static Map<String, Map<String,Object>> getForeignKeysMSSQL(
+	private Map<String, Map<String,Object>> getForeignKeysMSSQL(
 		Connection conn) {
 	    return null;
 	}
 
-	private static Map<String, Map<String,Object>> getForeignKeysMySQL(
+	private Map<String, Map<String,Object>> getForeignKeysMySQL(
 			Connection conn) throws SQLException {
 	    Map<String, Map<String,Object>> foreignKeys =
 			new LinkedHashMap<String, Map<String,Object>>();
@@ -507,6 +570,54 @@ public class SchemaExtractor extends Task {
 			String referenced_schema = rs.getString("referenced_table_schema");
 			String referenced_table = rs.getString("referenced_table_name");
 			String referenced_column = rs.getString("referenced_column_name");
+
+			Map<String, Object> fk = foreignKeys.get(constraint_name);
+			if (fk==null) {
+			    fk = new LinkedHashMap<String,Object>();
+			    String[] reffing = {schema, table};
+			    fk.put("reffing", reffing);
+			    String[] reffed = {referenced_schema, referenced_table};
+			    fk.put("reffed", reffed);
+				foreignKeys.put(constraint_name,fk);
+				fk.put("columns", new LinkedHashMap<String,String>());
+			}
+
+			@SuppressWarnings("unchecked")
+			Map<String,String> columns = (Map<String,String>) fk.get("columns");
+			columns.put(column, referenced_column);
+
+		}
+
+		return foreignKeys;
+	}
+
+	private Map<String, Map<String,Object>> getForeignKeysHSQL(
+			Connection conn) throws SQLException {
+	    Map<String, Map<String,Object>> foreignKeys =
+			new LinkedHashMap<String, Map<String,Object>>();
+
+		Statement s = conn.createStatement();
+		s.execute("select fk_name, pktable_schem, pktable_name, pkcolumn_name, " +
+				"  fktable_schem, fktable_name, " +
+				"  fkcolumn_name " +
+				"from information_schema.SYSTEM_CROSSREFERENCE " +
+				"where pktable_schem is not null " +
+				"  and pktable_name is not null " +
+				"  and pkcolumn_name is not null " +
+				"  and fktable_schem is not null " +
+				"  and fktable_name is not null " +
+				"  and fkcolumn_name is not null " +
+				"order by fk_name, pktable_schem, pktable_name, pkcolumn_name;");
+		ResultSet rs = s.getResultSet();
+
+		while (rs.next()) {
+			String constraint_name = rs.getString("fk_name").toLowerCase();
+			String schema = rs.getString("pktable_schem").toLowerCase();
+			String table = rs.getString("pktable_name").toLowerCase();
+			String column = rs.getString("pkcolumn_name").toLowerCase();
+			String referenced_schema = rs.getString("fktable_schem").toLowerCase();
+			String referenced_table = rs.getString("fktable_name").toLowerCase();
+			String referenced_column = rs.getString("fkcolumn_name").toLowerCase();
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {

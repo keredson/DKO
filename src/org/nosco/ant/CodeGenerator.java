@@ -18,6 +18,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
+import org.nosco.util.Misc;
 
 /**
  * Using the {@code schemas.json} file produced by the {@code SchemaExtractor}, this Ant task
@@ -147,21 +148,23 @@ public class CodeGenerator extends Task {
 
 		try {
 			String timestamp = String.valueOf(schemas.lastModified()) + ":"
-					+ String.valueOf(fake_fks.lastModified());
+					+ (fake_fks == null ? "null" : String.valueOf(fake_fks.lastModified()));
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
 					tempDir.getAbsolutePath() + File.separator + ".timestamp")));
 			bw.write(timestamp);
 			bw.close();
 
-			org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
-					schemas.getAbsolutePath());
+			if (dataSource != null) {
+				org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
+						schemas.getAbsolutePath());
+			}
 
 			JSONObject enums = enumsFile!=null && enumsFile.exists() ?
 					readJSONObject(enumsFile) : new JSONObject();
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
-					fake_fks.getAbsolutePath(), typeMappings==null ? null : typeMappings.getAbsolutePath(),
+					fake_fks, typeMappings==null ? null : typeMappings.getAbsolutePath(),
 					dataSource, callbackPackage, enums);
 
 			if (this.srcjarfile != null) {
@@ -188,6 +191,12 @@ public class CodeGenerator extends Task {
 
 			System.out.println("compiling " + tempDir.getAbsolutePath());
 
+			if (!javacExists()) {
+				throw new RuntimeException("Command '"+ javac +"' does not exist.  Please " +
+						"install the JDK, add javac to your PATH, or specify a path to it " +
+						"via the 'javac' property in the noscogen ant task.");
+			}
+
 			List<String> files = new ArrayList<String>();
 			files.add(javac);
 			if (debug) files.add("-g");
@@ -199,12 +208,12 @@ public class CodeGenerator extends Task {
 				files.add("-source");
 				files.add(javacSource);
 			}
-			String[] options = {"-cp", classpath, "-d", classesDir.getAbsolutePath() };
+			String[] options = {"-cp", classpath, "-d" + classesDir.getAbsolutePath() };
 			for (String s : options) files.add(s);
 			findJava(tempDir, files);
 			String[] cmd = new String[files.size()];
 			files.toArray(cmd);
-			// System.out.println(Misc.join(" ", cmd));
+			System.out.println(Misc.join(" ", cmd));
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -240,6 +249,22 @@ public class CodeGenerator extends Task {
 			throw new BuildException(e);
 		}
 
+	}
+
+	private boolean javacExists() {
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(javac);
+			int ret = p.waitFor();
+			if (ret == 2) return true;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	static JSONObject readJSONObject(File enumsFile) throws IOException, JSONException {

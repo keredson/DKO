@@ -29,7 +29,6 @@ public class Constants {
 		SQL92;
 
 		static DB_TYPE detect(DataSource ds) {
-			if (ds == null) return null;
 			while (true) {
 				if (ds instanceof MirroredDataSource) {
 					ds = ((MirroredDataSource)ds).getPrimaryDataSource();
@@ -39,6 +38,7 @@ public class Constants {
 					ds = ((ReflectedDataSource)ds).getUnderlyingDataSource();
 					continue;
 				}
+				if (ds == null) return null;
 				break;
 			}
 

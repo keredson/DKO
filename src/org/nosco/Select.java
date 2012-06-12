@@ -116,7 +116,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		StringBuffer sb = new StringBuffer();
 		sb.append("select ");
 		if (query.distinct) sb.append("distinct ");
-		if (query.getDBType()==DB_TYPE.SQLSERVER && query.top>0) {
+		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0) {
 			sb.append(" top ").append(query.top).append(" ");
 		}
 		if (query.globallyAppliedSelectFunction == null) {
@@ -129,7 +129,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			sb.append(Misc.join(", ", x));
 		}
 		sb.append(" from ");
-		sb.append(Misc.join(", ", query.getTableNameList()));
+		sb.append(Misc.join(", ", query.getTableNameList(context)));
 		sb.append(query.getJoinClause(context));
 		Tuple<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
 		sb.append(ret.a);
@@ -147,7 +147,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			sb.append(Misc.join(", ", tmp));
 		}
 
-		if (query.getDBType()!=DB_TYPE.SQLSERVER && query.top>0) {
+		if (context.dbType!=DB_TYPE.SQLSERVER && query.top>0) {
 			sb.append(" limit ").append(query.top);
 		}
 
@@ -173,8 +173,8 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			conn = query.getConnR();
 			SqlContext context = new SqlContext(query);
 			Tuple<String, List<Object>> ret = getSQL(context);
-			ps = conn.prepareStatement(ret.a);
 			Misc.log(sql, ret.b);
+			ps = conn.prepareStatement(ret.a);
 			query.setBindings(ps, ret.b);
 			query._preExecute(conn);
 			ps.execute();

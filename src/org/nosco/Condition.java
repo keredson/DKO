@@ -682,6 +682,7 @@ public abstract class Condition {
 			sb.append(" exists (");
 			SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
 			innerContext.parentContext = context;
+			innerContext.dbType = context.dbType;
 			Tuple<String, List<Object>> ret = s.getSQL(innerContext);
 			sb.append(ret.a);
 			bindings.addAll(ret.b);

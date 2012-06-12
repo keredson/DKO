@@ -494,7 +494,9 @@ class DBQuery<T extends Table> implements Query<T> {
 	 */
 	String getJoinClause(SqlContext context) {
 		StringBuffer sb = new StringBuffer();
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		DB_TYPE dbType = context == null ? null : context.dbType;
+		if (dbType == null) dbType = getDBType();
+		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (Join join : joins) {
 			TableInfo tableInfo = join.tableInfo;
 			Table table = tableInfo.table;
@@ -697,9 +699,15 @@ class DBQuery<T extends Table> implements Query<T> {
 		return null;
 	}
 
-	public Collection<String> getTableNameList() {
+	Collection<String> getTableNameList() {
+		return getTableNameList(null);
+	}
+
+	Collection<String> getTableNameList(SqlContext context) {
+		DB_TYPE dbType = context == null ? null : context.dbType;
+		if (dbType == null) dbType = getDBType();
 		List<String> names = new ArrayList<String>();
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (TableInfo ti : tableInfos) {
 			Table t = ti.table;
 			names.add(ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())

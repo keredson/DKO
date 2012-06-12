@@ -160,6 +160,7 @@ class ClassGenerator {
 	}
 
 	private static String sanitizeJavaKeywords(String s) {
+		s = s.toLowerCase();
 		if (KEYWORDS.contains(s)) return s+"_";
 		return s;
 
@@ -170,7 +171,7 @@ class ClassGenerator {
 		File targetDir = new File(Misc.join("/", dir, pkgDir, schema));
 		if (!targetDir.isDirectory()) targetDir.mkdirs();
 		File file = new File(Misc.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
-		System.out.println("writing: "+ file.getAbsolutePath());
+		System.out.println("writing: "+ file.getPath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
 		br.write("package "+ pkg +"."+ schema +";\n\n");
 		br.write("import java.util.Collections;\n");
@@ -383,6 +384,7 @@ class ClassGenerator {
 		// write field value references
 		for (String column : columns.keySet()) {
 			br.write("\tprivate "+ getFieldType(pkgName, table, column, columns.getString(column)));
+			//System.err.println("column: "+ column +" -> "+ getInstanceFieldName(column));
 			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
 		}
 		br.write("\n");
@@ -933,8 +935,8 @@ class ClassGenerator {
 	}
 
 	private static String getInstanceFieldName(String column) {
-	    if ("class".equals(column)) column = "JAVA_KEYWORD_class";
-	    if ("for".equals(column)) column = "JAVA_KEYWORD_for";
+		column = column.toLowerCase();
+		if (KEYWORDS.contains(column)) column = "NOSCO_JAVA_KEYWORD_PROTECTION" + column;
 	    column = column.replace("-", "_DASH_");
 	    return underscoreToCamelCase(column, false);
 	}

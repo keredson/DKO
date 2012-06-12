@@ -392,17 +392,17 @@ class ClassGenerator {
 		// write constructors
 		br.write("\tpublic "+ className +"() {}\n\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tprotected "+ className +"(Field[] fields, Object[] objects, int start, int end) {\n");
-		br.write("\t\tif (fields.length != objects.length)\n\t\t\tthrow new IllegalArgumentException(");
-		br.write("\"fields.length != objects.length => \"+ fields.length +\" != \"+ objects.length");
+		br.write("\tprotected "+ className +"(Field[] _fields, Object[] _objects, int _start, int _end) {\n");
+		br.write("\t\tif (_fields.length != _objects.length)\n\t\t\tthrow new IllegalArgumentException(");
+		br.write("\"fields.length != objects.length => \"+ _fields.length +\" != \"+ _objects.length");
 		br.write(" +\"\");\n");
-		br.write("\t\tfor (int i=start; i<end; ++i) {\n");
+		br.write("\t\tfor (int _i=_start; _i<_end; ++_i) {\n");
 		for (String column : columns.keySet()) {
-			br.write("\t\t\tif (fields[i]=="+ getFieldName(column) +") {\n");
+			br.write("\t\t\tif (_fields[_i]=="+ getFieldName(column) +") {\n");
 			br.write("\t\t\t\t"+ getInstanceFieldName(column) +" = ");
-			String assignment = convertToActualType(pkgName, table, column,
+			String assignment = convertToActualType(schema, table, column,
 					columns.getString(column),
-					"("+ getFieldClassType(columns.getString(column)).getName()+ ") objects[i]");
+					"("+ getFieldClassType(columns.getString(column)).getName()+ ") _objects[_i]");
 			br.write(assignment);
 			br.write(";\n");
 			br.write("\t\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
@@ -659,9 +659,9 @@ class ClassGenerator {
 		br.write("\t\t return save(ALL.getDataSource());\n");
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tpublic boolean save(DataSource ds) throws SQLException {\n");
+		br.write("\tpublic boolean save(DataSource _ds) throws SQLException {\n");
 		br.write("\t\tif (!dirty()) return false;\n");
-		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
+		br.write("\t\tQuery<"+ className +"> query = ALL.use(_ds)");
 		for (String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
@@ -670,8 +670,8 @@ class ClassGenerator {
 			br.write("\t\tthrow new RuntimeException(\"save() is ambiguous on objects without PKs - use insert() or update()\");\n");
 		} else {
 			br.write("\t\tint size = query.size();\n");
-			br.write("\t\tif (size == 0) return this.insert(ds);\n");
-			br.write("\t\telse if (size == 1) return this.update(ds);\n");
+			br.write("\t\tif (size == 0) return this.insert(_ds);\n");
+			br.write("\t\telse if (size == 1) return this.update(_ds);\n");
 			br.write("\t\telse throw new RuntimeException(\"more than one result was returned " +
 					"for a query that specified all the PKs.  this is bad.\");\n");
 			br.write("\t\t\n");
@@ -683,9 +683,9 @@ class ClassGenerator {
 		br.write("\t\t return update(ALL.getDataSource());\n");
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tpublic boolean update(DataSource ds) throws SQLException {\n");
+		br.write("\tpublic boolean update(DataSource _ds) throws SQLException {\n");
 		br.write("\t\tif (!dirty()) return false;\n");
-		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
+		br.write("\t\tQuery<"+ className +"> query = ALL.use(_ds)");
 		for (String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
@@ -709,7 +709,7 @@ class ClassGenerator {
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\tint count = query.update();\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_UPDATE_POST!=null) "
-				+ "try { __NOSCO_CALLBACK_UPDATE_POST.invoke(null, this, ds); }"
+				+ "try { __NOSCO_CALLBACK_UPDATE_POST.invoke(null, this, _ds); }"
 				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\treturn count==1;\n");
@@ -720,8 +720,8 @@ class ClassGenerator {
 		br.write("\t\t return delete(ALL.getDataSource());\n");
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tpublic boolean delete(DataSource ds) throws SQLException {\n");
-		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
+		br.write("\tpublic boolean delete(DataSource _ds) throws SQLException {\n");
+		br.write("\t\tQuery<"+ className +"> query = ALL.use(_ds)");
 		for (String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
@@ -740,9 +740,9 @@ class ClassGenerator {
 		br.write("\t\t return insert(ALL.getDataSource());\n");
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tpublic boolean insert(DataSource ds) throws SQLException {\n");
+		br.write("\tpublic boolean insert(DataSource _ds) throws SQLException {\n");
 		//br.write("\t\tif (!dirty()) return false;\n");
-		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
+		br.write("\t\tQuery<"+ className +"> query = ALL.use(_ds)");
 		for (String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 		}
@@ -761,7 +761,7 @@ class ClassGenerator {
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\t\tquery.insert();\n");
 		br.write("\t\t\tif (__NOSCO_CALLBACK_INSERT_POST!=null) "
-				+ "try { __NOSCO_CALLBACK_INSERT_POST.invoke(null, this, ds); }"
+				+ "try { __NOSCO_CALLBACK_INSERT_POST.invoke(null, this, _ds); }"
 				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\t\treturn true;\n");
@@ -772,8 +772,8 @@ class ClassGenerator {
 		br.write("\t\t return exists(ALL.getDataSource());\n");
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tpublic boolean exists(DataSource ds) throws SQLException {\n");
-		br.write("\t\tQuery<"+ className +"> query = ALL.use(ds)");
+		br.write("\tpublic boolean exists(DataSource _ds) throws SQLException {\n");
+		br.write("\t\tQuery<"+ className +"> query = ALL.use(_ds)");
 		for (String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
 			br.write(".where("+ getFieldName(column) +".eq("+ getInstanceFieldName(column) +"))");
 		}

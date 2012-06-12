@@ -89,6 +89,9 @@ Variable in class org.nosco.<A HREF="./org/nosco/Table.__Alias.html" title="clas
 <DT><A HREF="./org/nosco/Condition.html#and(org.nosco.Condition...)"><B>and(Condition...)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Condition.html" title="class in org.nosco">Condition</A>
 <DD>Creates a condition that represents the logical AND between this condition and the given conditions.
+<DT><A HREF="./org/nosco/Query.html#asIterableOfObjectArrays()"><B>asIterableOfObjectArrays()</B></A> - 
+Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
+<DD>Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s.
 <DT><A HREF="./org/nosco/Query.html#asList()"><B>asList()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Runs the query, populating a list with all the values returned.
@@ -156,6 +159,9 @@ Constructor for class org.nosco.ant.<A HREF="./org/nosco/ant/CodeGenerator.html"
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#commit()"><B>commit()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Bulk.html#commitDiff(java.lang.Iterable)"><B>commitDiff(Iterable&lt;Diff.RowChange&lt;T&gt;&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/ThreadContext.html#commitTransaction(javax.sql.DataSource)"><B>commitTransaction(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
@@ -422,12 +428,18 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDat
 <DT><A HREF="./org/nosco/Diff.RowChange.html#getObject()"><B>getObject()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
 <DD>The object representing the row that changed
+<DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#getPrimaryDataSource()"><B>getPrimaryDataSource()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/QueryFactory.html#getQuery(java.lang.Class)"><B>getQuery(Class&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/QueryFactory.html" title="class in org.nosco">QueryFactory</A>
 <DD>Creates a query centered around the given class.
 <DT><A HREF="./org/nosco/QueryFactory.html#getQuery(java.lang.Class, javax.sql.DataSource)"><B>getQuery(Class&lt;T&gt;, DataSource)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/QueryFactory.html" title="class in org.nosco">QueryFactory</A>
 <DD>Creates a query centered around the given class using the given datasource.
+<DT><A HREF="./org/nosco/Query.html#getSelectFields()"><B>getSelectFields()</B></A> - 
+Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
+<DD>Returns an array of the fields to be selected for this query.
 <DT><A HREF="./org/nosco/Condition.html#getSQL(java.lang.StringBuffer, java.util.List, org.nosco.SqlContext)"><B>getSQL(StringBuffer, List&lt;Object&gt;, SqlContext)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Condition.html" title="class in org.nosco">Condition</A>
 <DD>Internal function.
@@ -448,6 +460,9 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getTypeMap()"><B>getTypeMap()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ReflectedDataSource.html#getUnderlyingDataSource()"><B>getUnderlyingDataSource()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ReflectedDataSource.html" title="class in org.nosco.datasource">ReflectedDataSource</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getWarnings()"><B>getWarnings()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
@@ -501,6 +516,9 @@ Variable in class org.nosco.<A HREF="./org/nosco/Field.FK.html" title="class in 
 <DT><A HREF="./org/nosco/Field.html#INDEX"><B>INDEX</B></A> - 
 Variable in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/InitializedDataSource.html" title="class in org.nosco.datasource"><B>InitializedDataSource</B></A> - Class in <A HREF="./org/nosco/datasource/package-summary.html">org.nosco.datasource</A><DD>&nbsp;<DT><A HREF="./org/nosco/datasource/InitializedDataSource.html#InitializedDataSource()"><B>InitializedDataSource()</B></A> - 
+Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/InitializedDataSource.html" title="class in org.nosco.datasource">InitializedDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#insert()"><B>insert()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Inserts the values set by .set(key,value).
@@ -546,6 +564,9 @@ Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.n
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#isReadOnly()"><B>isReadOnly()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Diff.RowChange.html#isUnchanged()"><B>isUnchanged()</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
+<DD>If row change was a UNCHANGED
 <DT><A HREF="./org/nosco/Diff.RowChange.html#isUpdate()"><B>isUpdate()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
 <DD>If row change was an UPDATE
@@ -919,6 +940,9 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable)"><B>streamingDiff(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
 <DD>This will create a streaming diff of two input streams.
+<DT><A HREF="./org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable, boolean)"><B>streamingDiff(Iterable&lt;T&gt;, Iterable&lt;T&gt;, boolean)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
+<DD>This will create a streaming diff of two input streams.
 <DT><A HREF="./org/nosco/Diff.html#streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)"><B>streamingDiffActualized(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
 <DD>This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
@@ -962,6 +986,9 @@ Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class
 <DT><A HREF="./org/nosco/Field.html#toString()"><B>toString()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Table.html#toStringDetailed()"><B>toStringDetailed()</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
+<DD>The <code>toString()</code> methods generated by nosco print out PK values.
 <DT><A HREF="./org/nosco/Condition.html#TRUE"><B>TRUE</B></A> - 
 Static variable in class org.nosco.<A HREF="./org/nosco/Condition.html" title="class in org.nosco">Condition</A>
 <DD>always true
@@ -1009,6 +1036,9 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Query.html#use(java.sql.Connection)"><B>use(Connection)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Use a given java.sql.Connection.
+<DT><A HREF="./org/nosco/Query.html#use(org.nosco.Constants.DB_TYPE)"><B>use(Constants.DB_TYPE)</B></A> - 
+Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
+<DD>Use a given database type.
 </DL>
 <HR>
 <A NAME="_V_"><!-- --></A><H2>

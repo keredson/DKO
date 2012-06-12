@@ -158,6 +158,14 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.Iterable&lt;java.lang.Object[]&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Query.html#asIterableOfObjectArrays()">asIterableOfObjectArrays</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.util.List&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Query.html#asList()">asList</A></B>()</CODE>
 
@@ -307,6 +315,14 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the DataSource this query is currently using.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Query.html#getSelectFields()">getSelectFields</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns an array of the fields to be selected for this query.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -516,6 +532,14 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use a given java.sql.Connection.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Query.html#use(org.nosco.Constants.DB_TYPE)">use</A></B>(<A HREF="../../org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco">Constants.DB_TYPE</A>&nbsp;type)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use a given database type.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -1271,6 +1295,24 @@ use</H3>
 </DL>
 <HR>
 
+<A NAME="use(org.nosco.Constants.DB_TYPE)"><!-- --></A><H3>
+use</H3>
+<PRE>
+<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt; <B>use</B>(<A HREF="../../org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco">Constants.DB_TYPE</A>&nbsp;type)</PRE>
+<DL>
+<DD>Use a given database type. &nbsp;
+ This is usually automatically detected from the <code>DataSource</code> or the <code>Connection</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>type</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="cross(org.nosco.Table)"><!-- --></A><H3>
 cross</H3>
 <PRE>
@@ -1404,6 +1446,43 @@ javax.sql.DataSource <B>getDataSource</B>()</PRE>
 <DL>
 <DD>Returns the DataSource this query is currently using. &nbsp;
  Returns null for in-memory queries.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getSelectFields()"><!-- --></A><H3>
+getSelectFields</H3>
+<PRE>
+<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;[] <B>getSelectFields</B>()</PRE>
+<DL>
+<DD>Returns an array of the fields to be selected for this query.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asIterableOfObjectArrays()"><!-- --></A><H3>
+asIterableOfObjectArrays</H3>
+<PRE>
+java.lang.Iterable&lt;java.lang.Object[]&gt; <B>asIterableOfObjectArrays</B>()</PRE>
+<DL>
+<DD>Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s. &nbsp;
+ Usually used with <code>cross()</code> and <code>getSelectFields()</code>. (the latter to know
+ which array elements are from what fields) &nbsp;
+ Use sparingly. &nbsp;
 <P>
 <DD><DL>
 </DL>

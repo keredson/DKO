@@ -104,15 +104,15 @@ This class offers diff logic. &nbsp; Let's assume you have two databases with id
  them), you could do the following:
  <pre>  <code>Datasource dsA = [...]; // first database
   Datasource dsB = [...]; // second database
-   
+
   Iterable&lt;Question&gt; allAs = Question.ALL.use(dsA).orderBy(Question.ID);
   Iterable&lt;Question&gt; allBs = Question.ALL.use(dsB).orderBy(Question.ID);
-   
+
   Iterable&lt;RowChange&lt;Question&gt;&gt; changes = Diff.streamingDiff(allAs, allBs);
   for (RowChange&lt;Question&gt; change : changes) {
     // do something
   }</code></pre>
- 
+
  Note: It's very important these are sorted in ascending order by their natural
  ordering!  &nbsp; You will get nonsensical diffs otherwise.
 <P>
@@ -201,6 +201,25 @@ java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
+java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable, boolean)">streamingDiff</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+              java.lang.Iterable&lt;T&gt;&nbsp;to,
+              boolean&nbsp;emitUnchanged)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of two input streams.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
 java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
 </TR>
 </TABLE>
@@ -258,8 +277,8 @@ streamingDiff</H3>
 public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
                                                                                     java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
 <DL>
-<DD>This will create a streaming diff of two input streams.  &nbsp; The diff is 
- calculated on the fly as you iterate over the returned object, avoiding having to 
+<DD>This will create a streaming diff of two input streams.  &nbsp; The diff is
+ calculated on the fly as you iterate over the returned object, avoiding having to
  load either source input stream (or the resultant stream) into memory all at once.
  <p>
  Note: It's critically important that the two input lists are sorted by their
@@ -267,6 +286,27 @@ public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>from</CODE> - a sorted <code>Iterable</code><DD><CODE>to</CODE> - a sorted <code>Iterable</code>
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="streamingDiff(java.lang.Iterable, java.lang.Iterable, boolean)"><!-- --></A><H3>
+streamingDiff</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                                    java.lang.Iterable&lt;T&gt;&nbsp;to,
+                                                                                    boolean&nbsp;emitUnchanged)</PRE>
+<DL>
+<DD>This will create a streaming diff of two input streams.  &nbsp; The diff is
+ calculated on the fly as you iterate over the returned object, avoiding having to
+ load either source input stream (or the resultant stream) into memory all at once.
+ <p>
+ Note: It's critically important that the two input lists are sorted by their
+ natural ordering. &nbsp; This algorithm will not work otherwise.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>from</CODE> - a sorted <code>Iterable</code><DD><CODE>to</CODE> - a sorted <code>Iterable</code><DD><CODE>emitUnchanged</CODE> - controls whether or not unchanged objects are returned (with an <code>UNCHANGED</code> change type)
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>

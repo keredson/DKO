@@ -15,9 +15,7 @@ public class TestHSQLDB extends SharedDBTests {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		File tmp = new File("bin/jpetstore.jsqldb");
 		JDBCDataSource ds = new JDBCDataSource();
-		//ds.setUrl("jdbc:hsqldb:file:"+tmp.getAbsolutePath()+";shutdown=true");
 		ds.setDatabase("jdbc:hsqldb:mem:tmp");
 		ds.setUser("sa");
 		Connection conn = ds.getConnection();
@@ -39,7 +37,6 @@ public class TestHSQLDB extends SharedDBTests {
 		conn.commit();
 		conn.close();
 		this.ds = ds;
-		System.err.println("done!!!");
 	}
 
 	@Override

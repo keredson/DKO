@@ -180,6 +180,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		if (dbType != null) return dbType;
 		if (detectedDbType != null) return detectedDbType;
 		detectedDbType = DB_TYPE.detect(ds);
+		if (detectedDbType == null) detectedDbType = DB_TYPE.SQL92;
 		return detectedDbType;
 	}
 

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.nosco.util.Misc;
-import org.nosco.util.Tuple;
 
 /**
  * This class represents a SQL conditional statement.  (ie: the contents of the {@code where} clause)
@@ -549,7 +548,7 @@ public abstract class Condition {
 				if (" in ".equals(cmp)) {
 					innerContext.maxFields = 1;
 				}
-				Tuple<String, List<Object>> ret = s.getSQL(innerContext);
+				Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 				sb.append(ret.a);
 				bindings.addAll(ret.b);
 				sb.append(')');
@@ -683,7 +682,7 @@ public abstract class Condition {
 			SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
 			innerContext.parentContext = context;
 			innerContext.dbType = context.dbType;
-			Tuple<String, List<Object>> ret = s.getSQL(innerContext);
+			Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 			sb.append(ret.a);
 			bindings.addAll(ret.b);
 			sb.append(")");

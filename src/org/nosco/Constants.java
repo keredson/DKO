@@ -9,6 +9,7 @@ import java.util.WeakHashMap;
 
 import javax.sql.DataSource;
 
+import org.nosco.datasource.ConnectionCountingDataSource;
 import org.nosco.datasource.MirroredDataSource;
 import org.nosco.datasource.ReflectedDataSource;
 
@@ -24,6 +25,13 @@ public class Constants {
 		DESCENDING
 	}
 
+	/**
+	 * Used for tweaking generated SQL by database type.
+	 * You can override the detected type by passing one of these constants
+	 * into Query.use(DB_TYPE type).
+	 *
+	 * @author Derek Anderson
+	 */
 	public enum DB_TYPE {
 		MYSQL,
 		SQLSERVER,
@@ -51,6 +59,10 @@ public class Constants {
 				}
 				if (underlying instanceof ReflectedDataSource) {
 					underlying = ((ReflectedDataSource)underlying).getUnderlyingDataSource();
+					continue;
+				}
+				if (underlying instanceof ConnectionCountingDataSource) {
+					underlying = ((ConnectionCountingDataSource)underlying).getUnderlyingDataSource();
 					continue;
 				}
 				if (underlying == null) return null;
@@ -99,7 +111,7 @@ public class Constants {
 			// try from the class name
 			String className = conn.getClass().getName();
 			if (className.contains("SQLServer")) return SQLSERVER;
-			System.err.println(className);
+			//System.err.println(className);
 
 			// try from the jdbc metadata
 			DatabaseMetaData metaData = conn.getMetaData();
@@ -126,6 +138,7 @@ public class Constants {
 	}
 
 	public static final String PROP_LOG_SQL = "org.nosco.log_sql";
+	public static final String PROP_LOG = "org.nosco.log";
 
 }
 

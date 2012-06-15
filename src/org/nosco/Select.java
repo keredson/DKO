@@ -17,11 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
 import org.nosco.util.Misc;
-import org.nosco.util.Tuple;
 
 
 
@@ -53,6 +54,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private boolean done = false;
 	Object[] lastFieldValues;
 	private boolean hideDups = true;
+	private boolean shouldCloseConnection = true;
 
 	@SuppressWarnings("unchecked")
 	Select(DBQuery<T> query) {
@@ -110,7 +112,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		return query;
 	}
 
-	protected Tuple<String,List<Object>> getSQL(SqlContext context) {
+	protected Tuple2<String,List<Object>> getSQL(SqlContext context) {
 		selectedFields = query.getSelectFields(false);
 		selectedBoundFields = query.getSelectFields(true);
 		StringBuffer sb = new StringBuffer();
@@ -131,7 +133,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		sb.append(" from ");
 		sb.append(Misc.join(", ", query.getTableNameList(context)));
 		sb.append(query.getJoinClause(context));
-		Tuple<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
+		Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
 		sb.append(ret.a);
 
 		List<DIRECTION> directions = query.getOrderByDirections();
@@ -160,7 +162,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		}
 
 		sql = sb.toString();
-		return new Tuple<String,List<Object>>(sb.toString(), ret.b);
+		return new Tuple2<String,List<Object>>(sb.toString(), ret.b);
 	}
 
 //	protected List<Object> getSQLBindings() {
@@ -170,9 +172,12 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	@Override
 	public Iterator<T> iterator() {
 		try {
-			conn = query.getConnR();
+			DataSource ds = query.getDataSource();
+			Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
+			conn = connInfo.a;
+			shouldCloseConnection  = connInfo.b;
 			SqlContext context = new SqlContext(query);
-			Tuple<String, List<Object>> ret = getSQL(context);
+			Tuple2<String, List<Object>> ret = getSQL(context);
 			Misc.log(sql, ret.b);
 			ps = conn.prepareStatement(ret.a);
 			query.setBindings(ps, ret.b);
@@ -358,7 +363,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		if (!ThreadContext.inTransaction(query.ds)) {
+		if (shouldCloseConnection) {
 			try {
 				conn.close();
 			} catch (SQLException e) {

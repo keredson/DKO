@@ -28,15 +28,10 @@ import javax.sql.DataSource;
  * transaction (as long as they're still within the same thread).
  *
  * @author Derek Anderson
+ * @deprecated please use Context.getThreadContext()
  */
 public class ThreadContext {
 
-	// these hashmaps don't need to be synchronized/thread-safe, since they're
-	// only ever being called by one thread thanks to being in a ThreadLocal.
-	private Map<DataSource,Map<String,String>> schemaOverrides =
-			new HashMap<DataSource,Map<String,String>>();
-	private Map<DataSource,Connection> transactionConnections =
-			new HashMap<DataSource,Connection>();
 	private long connectionCount = 0;
 
 	private ThreadContext() {}
@@ -52,10 +47,10 @@ public class ThreadContext {
 	 * Returns true if currently inside a transaction.
 	 * @param ds
 	 * @return
+	 * @deprecated please use Context.inTransaction(ds);
 	 */
 	public static boolean inTransaction(DataSource ds) {
-		ThreadContext tc = tl.get();
-		return tc.transactionConnections.containsKey(ds);
+		return Context.inTransaction(ds);
 	}
 
 	/**
@@ -63,15 +58,10 @@ public class ThreadContext {
 	 * @param ds
 	 * @return
 	 * @throws SQLException
+	 * @deprecated please use Context.getThreadContext().startTransaction(ds);
 	 */
 	public static boolean startTransaction(DataSource ds) throws SQLException {
-		ThreadContext tc = tl.get();
-		Connection c = tc.transactionConnections.get(ds);
-		if (c != null) return false;
-		c = ds.getConnection();
-		c.setAutoCommit(false);
-		tc.transactionConnections.put(ds, c);
-		return true;
+		return Context.getThreadContext().startTransaction(ds);
 	}
 
 	/**
@@ -79,14 +69,10 @@ public class ThreadContext {
 	 * @param ds
 	 * @return
 	 * @throws SQLException
+	 * @deprecated please use Context.getThreadContext().commitTransaction(ds);
 	 */
 	public static boolean commitTransaction(DataSource ds) throws SQLException {
-		ThreadContext tc = tl.get();
-		Connection c = tc.transactionConnections.get(ds);
-		if (c == null) return false;
-		c.commit();
-		c.close();
-		return true;
+		return Context.getThreadContext().commitTransaction(ds);
 	}
 
 	/**
@@ -94,15 +80,10 @@ public class ThreadContext {
 	 * @param ds
 	 * @return
 	 * @throws SQLException
+	 * @deprecated please use Context.getThreadContext().rollbackTransactionThrowSQLException(ds);
 	 */
 	public static boolean rollbackTransaction(DataSource ds) throws SQLException {
-		ThreadContext tc = tl.get();
-		Connection c = tc.transactionConnections.get(ds);
-		tc.transactionConnections.remove(ds);
-		if (c == null) return false;
-		c.rollback();
-		c.close();
-		return true;
+		return Context.getThreadContext().rollbackTransactionThrowSQLException(ds);
 	}
 
 	/**
@@ -112,36 +93,20 @@ public class ThreadContext {
 	 * @param ds
 	 * @return
 	 * @throws SQLException
+	 * @deprecated please use Context.getThreadContext().rollbackTransaction(ds);
 	 */
 	public static boolean rollbackTransactionIgnoreException(DataSource ds) {
-		ThreadContext tc = tl.get();
-		Connection c = tc.transactionConnections.get(ds);
-		tc.transactionConnections.remove(ds);
-		if (c == null) return false;
-		try {
-			c.rollback();
-			c.close();
-			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			try {
-				c.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			return false;
-		}
+		return Context.getThreadContext().rollbackTransaction(ds);
 	}
 
 	/**
 	 * Gets the connection for this transaction.
 	 * @param ds
 	 * @return null is not currently in a transaction
+	 * @deprecated please use Context.getConnection(ds);
 	 */
 	public static Connection getConnection(DataSource ds) {
-		ThreadContext tc = tl.get();
-		Connection c = tc.transactionConnections.get(ds);
-		return c;
+		return Context.getConnection(ds);
 	}
 
 	/**
@@ -181,15 +146,10 @@ public class ThreadContext {
 	 * @param ds
 	 * @param oldName
 	 * @param newName
+	 * @deprecated please use {@code Context.getThreadContext().overrideSchema(ds, oldName, newName)}
 	 */
 	public static void setDatabaseOverride(DataSource ds, String oldName, String newName) {
-		ThreadContext tc = tl.get();
-		Map<String, String> overrides = tc.schemaOverrides.get(ds);
-		if (overrides == null) {
-			overrides = new HashMap<String,String>();
-			tc.schemaOverrides.put(ds, overrides);
-		}
-		overrides.put(oldName, newName);
+		Context.getThreadContext().overrideSchema(ds, oldName, newName);
 	}
 
 	/**
@@ -200,14 +160,10 @@ public class ThreadContext {
 	 * @param ds
 	 * @param name
 	 * @return
+	 * @deprecated please use {@code Context.getSchemaToUse(ds, name)}
 	 */
 	public static String getDatabaseOverride(DataSource ds, String name) {
-		ThreadContext tc = tl.get();
-		Map<String, String> overrides = tc.schemaOverrides.get(ds);
-		if (overrides == null) return name;
-		String newName = overrides.get(name);
-		if (newName == null) return name;
-		return newName;
+		return Context.getSchemaToUse(ds, name);
 	}
 
 }

@@ -186,15 +186,6 @@ public abstract class Table {
 	}
 
 	/**
-	 * Please do not use.
-	 * @return
-	 */
-	public boolean sameTable(Table t) {
-		if (t == null) return false;
-		return t.SCHEMA_NAME() == SCHEMA_NAME() && t.TABLE_NAME() == TABLE_NAME();
-	}
-
-	/**
 	 * This is used for conditional statements where the fields are ambiguous. (ie: a self-join) &nbsp;
 	 * All generated subclasses of {@code Table} will contain a static {@code MyTable.as(String s)} method. &nbsp;
 	 * It will return an instance of this class. &nbsp; You will likely never have to create one manually. &nbsp;

@@ -32,7 +32,6 @@ import org.nosco.Table.__PrimaryKey;
 import org.nosco.datasource.MirroredDataSource;
 import org.nosco.datasource.SingleConnectionDataSource;
 import org.nosco.util.Misc;
-import org.nosco.util.Tuple;
 
 
 class DBQuery<T extends Table> implements Query<T> {
@@ -46,6 +45,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	DB_TYPE detectedDbType = null;
 
 	// these should be cloned
+	Class<? extends Table> type = null;
 	List<Condition> conditions = null;
 	List<Table> tables = new ArrayList<Table>();
 	Set<String> usedTableNames = new HashSet<String>();
@@ -59,6 +59,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	private Map<Field<?>,Object> data = null;
 	boolean distinct = false;
 	DataSource ds = null;
+	DataSource defaultDS = null;
 	String globallyAppliedSelectFunction = null;
 	DB_TYPE dbType = null;
 
@@ -81,6 +82,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
 		}
+		type = q.type;
 		tables.addAll(q.tables);
 		joins.addAll(q.joins);
 		usedTableNames.addAll(q.usedTableNames);
@@ -111,10 +113,12 @@ class DBQuery<T extends Table> implements Query<T> {
 		ds = q.ds;
 		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
 		dbType = q.dbType;
+		defaultDS = q.defaultDS;
 	}
 
 	DBQuery(Class<? extends Table> tableClass) {
 		try {
+			type = tableClass;
 			Table table = tableClass.getConstructor().newInstance();
 			addTable(table);
 		} catch (IllegalArgumentException e) {
@@ -132,12 +136,25 @@ class DBQuery<T extends Table> implements Query<T> {
 		}
 	}
 
+	private DataSource getDefaultDS() {
+		try {
+			if (defaultDS != null) return defaultDS;
+			java.lang.reflect.Field field = type.getDeclaredField("__DEFAULT_DATASOURCE");
+			field.setAccessible(true);
+			return defaultDS = (DataSource) field.get(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	DBQuery(Class<? extends Table> tableClass, DataSource ds) {
 		this(tableClass);
 		this.ds = ds;
 	}
 
 	public DBQuery(__Alias<? extends Table> alias) {
+		type = alias.table;
 		try {
 			Table table = alias.table.getConstructor().newInstance();
 			tables.add(table);
@@ -179,28 +196,28 @@ class DBQuery<T extends Table> implements Query<T> {
 	DB_TYPE getDBType() {
 		if (dbType != null) return dbType;
 		if (detectedDbType != null) return detectedDbType;
-		detectedDbType = DB_TYPE.detect(ds);
+		detectedDbType = DB_TYPE.detect(getDataSource());
 		if (detectedDbType == null) detectedDbType = DB_TYPE.SQL92;
 		return detectedDbType;
 	}
 
-	Connection getConnR() throws SQLException {
+	Tuple2<Connection,Boolean> getConnR(DataSource ds) throws SQLException {
 		ThreadContext.incrementConnectionCount();
 		if (ThreadContext.inTransaction(ds)) {
-			return ThreadContext.getConnection(ds);
+			return new Tuple2<Connection,Boolean>(ThreadContext.getConnection(ds), false);
 		}
 		if (ds.isWrapperFor(MirroredDataSource.class)) {
-			return ds.unwrap(MirroredDataSource.class).getMirroredConnection();
+			return new Tuple2<Connection,Boolean>(ds.unwrap(MirroredDataSource.class).getMirroredConnection(), true);
 		}
-		return ds.getConnection();
+		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}
 
-	Connection getConnRW() throws SQLException {
+	Tuple2<Connection,Boolean> getConnRW(DataSource ds) throws SQLException {
 		ThreadContext.incrementConnectionCount();
 		if (ThreadContext.inTransaction(ds)) {
-			return ThreadContext.getConnection(ds);
+			return new Tuple2<Connection,Boolean>(ThreadContext.getConnection(ds), false);
 		}
-		return ds.getConnection();
+		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}
 
 	@Override
@@ -208,7 +225,8 @@ class DBQuery<T extends Table> implements Query<T> {
 		SqlContext context = new SqlContext(this);
 		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) +
 				this.getJoinClause(context) + getWhereClauseAndSetBindings();
-		Connection conn = getConnR();
+		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(conn);
@@ -220,7 +238,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		rs.close();
 		ps.close();
 		_postExecute(conn);
-		if (!ThreadContext.inTransaction(ds)) {
+		if (connInfo.b) {
 			conn.close();
 		}
 		return count;
@@ -308,12 +326,13 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public int update() throws SQLException {
 		if (data==null || data.size()==0) return 0;
+		DataSource ds = getDataSource();
 		Table table = tables.get(0);
 		this.tableInfos.get(0).tableName = null;
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(table.SCHEMA_NAME() +sep+ table.TABLE_NAME());
+		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME()) +sep+ table.TABLE_NAME());
 		sb.append(" set ");
 		String[] fields = new String[data.size()];
 		List<Object> bindings = new ArrayList<Object>();
@@ -329,7 +348,8 @@ class DBQuery<T extends Table> implements Query<T> {
 		String sql = sb.toString();
 
 		Misc.log(sql, bindings);
-		Connection conn = getConnRW();
+		Tuple2<Connection,Boolean> info = getConnRW(ds);
+		Connection conn = info.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps, bindings);
 		_preExecute(conn);
@@ -337,7 +357,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		int count = ps.getUpdateCount();
 		ps.close();
 		_postExecute(conn);
-		if (!ThreadContext.inTransaction(ds)) {
+		if (info.b) {
 			if (!conn.getAutoCommit()) conn.commit();
 			conn.close();
 		}
@@ -348,13 +368,15 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public int deleteAll() throws SQLException {
 		DBQuery<T> q = new DBQuery<T>(this);
-		Connection conn = q.getConnRW();
+		DataSource ds = getDataSource();
+		Tuple2<Connection,Boolean> info = q.getConnRW(ds);
+		Connection conn = info.a;
 		if (q.getDBType()==DB_TYPE.MYSQL) {
 			if (q.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
 			Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
-			String sql = "delete from "+ ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
+			String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ "." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -362,7 +384,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -373,7 +395,7 @@ class DBQuery<T extends Table> implements Query<T> {
 					"is not yet supported");
 			Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
-			String sql = "delete from "+ ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
+			String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ ".dbo." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Misc.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -381,7 +403,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -395,7 +417,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			ps.execute();
 			int count = ps.getUpdateCount();
 			ps.close();
-			if (!ThreadContext.inTransaction(ds)) {
+			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
@@ -430,7 +452,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	Tuple<String,List<Object>> getWhereClauseAndBindings(SqlContext context) {
+	Tuple2<String,List<Object>> getWhereClauseAndBindings(SqlContext context) {
 		StringBuffer sb = new StringBuffer();
 		List<Object> bindings = new ArrayList<Object>();
 		if (conditions!=null && conditions.size()>0) {
@@ -443,7 +465,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			}
 			sb.append(Misc.join(" and", tmp));
 		}
-		return new Tuple<String,List<Object>>(
+		return new Tuple2<String,List<Object>>(
 				sb.toString(),
 				Collections.unmodifiableList(bindings));
 	}
@@ -647,11 +669,12 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public Object insert() throws SQLException {
 		DBQuery<T> q = new DBQuery<T>(this);
+		DataSource ds = getDataSource();
 		Table table = q.tables.get(0);
 		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME()));
+		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME()));
 		sb.append(sep+ table.TABLE_NAME());
 		sb.append(" (");
 		String[] fields = new String[q.data.size()];
@@ -671,7 +694,8 @@ class DBQuery<T extends Table> implements Query<T> {
 		String sql = sb.toString();
 
 		Misc.log(sql, q.bindings);
-		Connection conn = getConnRW();
+		Tuple2<Connection,Boolean> info = getConnRW(ds);
+		Connection conn = info.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		q.setBindings(ps);
 		_preExecute(conn);
@@ -692,7 +716,7 @@ class DBQuery<T extends Table> implements Query<T> {
 				}
 			}
 		}
-		if (!ThreadContext.inTransaction(ds)) {
+		if (info.b) {
 			if (!conn.getAutoCommit()) conn.commit();
 			conn.close();
 		}
@@ -705,13 +729,15 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	Collection<String> getTableNameList(SqlContext context) {
+		DBQuery<?> rootQuery = context == null ? this : context.getRootQuery();
+		DataSource ds = rootQuery.getDataSource();
 		DB_TYPE dbType = context == null ? null : context.dbType;
-		if (dbType == null) dbType = getDBType();
+		if (dbType == null) dbType = rootQuery.getDBType();
 		List<String> names = new ArrayList<String>();
 		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (TableInfo ti : tableInfos) {
 			Table t = ti.table;
-			names.add(ThreadContext.getDatabaseOverride(ds, t.SCHEMA_NAME())
+			names.add(Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ sep + t.TABLE_NAME() +" "+ ti.tableName);
 		}
 		return names;
@@ -761,7 +787,7 @@ class DBQuery<T extends Table> implements Query<T> {
 					else condition = condition.and(condition2);
 				}
 
-				if (refingTable.sameTable(baseTables[i])) {
+				if (Util.sameTable(refingTable, baseTables[i])) {
 					baseTables[i+1] = reffedTable;
 
 					String tableName = genTableName(reffedTable, q.usedTableNames);
@@ -775,7 +801,7 @@ class DBQuery<T extends Table> implements Query<T> {
 					join.type = "left outer join";
 					q.joins.add(join);
 					//TableInfo info = q.addTable(reffedTable);
-				} else if (reffedTable.sameTable(baseTables[i])) {
+				} else if (Util.sameTable(reffedTable, baseTables[i])) {
 					baseTables[i+1] = refingTable;
 					String tableName = genTableName(refingTable, q.usedTableNames);
 					q.usedTableNames.add(tableName);
@@ -872,7 +898,8 @@ class DBQuery<T extends Table> implements Query<T> {
 				+", sum("+ Util.derefField(sumField, context) +") from "+ sql
 				+" group by "+ Util.derefField(byField, context);
 		Misc.log(sql, null);
-		Connection conn = getConnR();
+		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
@@ -888,7 +915,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		}
 		rs.close();
 		ps.close();
-		if (!ThreadContext.inTransaction(ds)) {
+		if (connInfo.b) {
 			conn.close();
 		}
 		return (Map<S, Double>) result;
@@ -901,7 +928,8 @@ class DBQuery<T extends Table> implements Query<T> {
 				+ getWhereClauseAndSetBindings();
 		sql = "select sum("+ Util.derefField(sumField, context) +") from "+ sql;
 		Misc.log(sql, null);
-		Connection conn = getConnR();
+		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(conn);
@@ -912,7 +940,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		rs.close();
 		ps.close();
 		_postExecute(conn);
-		if (!ThreadContext.inTransaction(ds)) {
+		if (connInfo.b) {
 			conn.close();
 		}
 		return ret;
@@ -928,7 +956,8 @@ class DBQuery<T extends Table> implements Query<T> {
 				+", count("+ Util.derefField(byField, context) +") from "+ sql
 				+" group by "+ Util.derefField(byField, context);
 		Misc.log(sql, null);
-		Connection conn = getConnR();
+		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(conn);
@@ -946,7 +975,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		rs.close();
 		ps.close();
 		_postExecute(conn);
-		if (!ThreadContext.inTransaction(ds)) {
+		if (connInfo.b) {
 			conn.close();
 		}
 		return (Map<S, Integer>) result;
@@ -1033,7 +1062,10 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public DataSource getDataSource() {
-		return ds;
+		if (ds != null) return ds;
+		DataSource ds = Context.getDataSource(type);
+		if (ds != null) return ds;
+		return getDefaultDS();
 	}
 
 	@Override

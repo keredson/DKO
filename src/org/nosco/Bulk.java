@@ -76,6 +76,7 @@ public class Bulk {
 		int resCount = 0;
 		boolean first = true;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
+		Tuple2<Connection, Boolean> connInfo = null;
 		Connection conn = null;
 		Field<?>[] fields = null;
 		PreparedStatement psInsert = null;
@@ -86,7 +87,8 @@ public class Bulk {
 				if (first) {
 					first = false;
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					conn = q.getConnRW();
+					connInfo = q.getConnRW(ds);
+					conn = connInfo.a;
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
 				}
@@ -119,17 +121,17 @@ public class Bulk {
 				for (int k : psInsert.executeBatch()) resCount += k;
 			}
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
-			if (conn!=null && !ThreadContext.inTransaction(ds)) {
+			if (conn!=null && connInfo.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
 			return resCount;
 		} catch (SQLException e) {
-			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
+			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
 			safeClose(psInsert);
-			safeClose(conn, ds);
+			safeClose(connInfo, ds);
 		}
 	}
 
@@ -139,10 +141,10 @@ public class Bulk {
 		catch (Throwable e) { /* ignore */ }
 	}
 
-	private static void safeClose(Connection conn, DataSource ds) {
+	private static void safeClose(Tuple2<Connection, Boolean> connInfo, DataSource ds) {
 		try {
-			if (conn != null && !conn.isClosed() && !ThreadContext.inTransaction(ds)) {
-				conn.close();
+			if (connInfo != null && connInfo.a != null && !connInfo.a.isClosed() && connInfo.b) {
+				connInfo.a.close();
 			}
 		}
 		catch (Throwable e) { /* ignore */ }
@@ -161,6 +163,7 @@ public class Bulk {
 		int count = 0;
 		int resCount = 0;
 		boolean first = true;
+		Tuple2<Connection, Boolean> connInfo = null;
 		Connection conn = null;
 		Field<?>[] fields = null;
 		PreparedStatement psUpdate = null;
@@ -171,7 +174,8 @@ public class Bulk {
 				if (first) {
 					first = false;
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					conn = q.getConnRW();
+					connInfo = q.getConnRW(ds);
+					conn = connInfo.a;
 					fields = table.FIELDS();
 					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
@@ -209,17 +213,17 @@ public class Bulk {
 				for (int k : psUpdate.executeBatch()) resCount += k;
 			}
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (conn!=null && !ThreadContext.inTransaction(ds)) {
+			if (conn!=null && connInfo.b) {
 				if (!conn.getAutoCommit()) conn.commit();
-				safeClose(conn, ds);
+				safeClose(connInfo, ds);
 			}
 			return resCount;
 		} catch (SQLException e) {
-			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
+			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
 			safeClose(psUpdate);
-			safeClose(conn, ds);
+			safeClose(connInfo, ds);
 		}
 	}
 
@@ -235,6 +239,7 @@ public class Bulk {
 	public <T extends Table> int insertOrUpdateAll(Iterable<T> iterable) throws SQLException {
 		int count = 0;
 		boolean first = true;
+		Tuple2<Connection, Boolean> connInfo = null;
 		Connection conn = null;
 		Field<?>[] fields = null;
 		PreparedStatement psInsert = null;
@@ -246,7 +251,8 @@ public class Bulk {
 				if (first) {
 					first = false;
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					conn = q.getConnRW();
+					connInfo = q.getConnRW(ds);
+					conn = connInfo.a;
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
 					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
@@ -292,18 +298,18 @@ public class Bulk {
 			}
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (conn!=null && !ThreadContext.inTransaction(ds)) {
+			if (conn!=null && connInfo.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
 			return count;
 		} catch (SQLException e) {
-			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
+			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
 			safeClose(psInsert);
 			safeClose(psUpdate);
-			safeClose(conn, ds);
+			safeClose(connInfo, ds);
 		}
 	}
 
@@ -319,6 +325,7 @@ public class Bulk {
 		int count = 0;
 		int resCount = 0;
 		boolean first = true;
+		Tuple2<Connection, Boolean> connInfo = null;
 		Connection conn = null;
 		PreparedStatement psDelete = null;
 		Field<?>[] pks = null;
@@ -328,7 +335,8 @@ public class Bulk {
 				if (first) {
 					first = false;
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					conn = q.getConnRW();
+					connInfo = q.getConnRW(ds);
+					conn = connInfo.a;
 					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
 					if (pks == null || pks.length == 0) {
 						throw new RuntimeException("cannot bulk delete from tha PK-less table");
@@ -359,17 +367,17 @@ public class Bulk {
 				}
 			}
 			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
-			if (conn!=null && !ThreadContext.inTransaction(ds)) {
+			if (conn!=null && connInfo.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
 			return resCount;
 		} catch (SQLException e) {
-			if (!ThreadContext.inTransaction(ds) && !conn.getAutoCommit()) conn.rollback();
+			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
 			safeClose(psDelete);
-			safeClose(conn, ds);
+			safeClose(connInfo, ds);
 		}
 	}
 
@@ -379,7 +387,7 @@ public class Bulk {
 		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
+		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" (");
 		sb.append(Misc.join(",", fields));
@@ -401,7 +409,7 @@ public class Bulk {
 		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
+		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" set ");
 		sb.append(Misc.join("=?, ", fields));
@@ -420,7 +428,7 @@ public class Bulk {
 		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		StringBuffer sb = new StringBuffer();
 		sb.append("delete from ");
-		sb.append(ThreadContext.getDatabaseOverride(ds, table.SCHEMA_NAME())
+		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" where ");
 		sb.append(Misc.join("=? and ", pks));

@@ -52,13 +52,20 @@ public class Misc {
 	public static void log(String sql, List<Object> bindings) {
 		PrintStream log = null; //System.out;
 		String property = System.getProperty(Constants.PROP_LOG_SQL);
+		String property2 = System.getProperty(Constants.PROP_LOG);
 		if ("System.err".equalsIgnoreCase(property))
 			log = System.err;
 		if ("System.out".equalsIgnoreCase(property))
 			log = System.out;
 		if (log == null && Misc.truthy(property))
 			log = System.err;
-		if (log == null) return;//*/
+		if ("System.err".equalsIgnoreCase(property2))
+			log = System.err;
+		if ("System.out".equalsIgnoreCase(property2))
+			log = System.out;
+		if (log == null && Misc.truthy(property2))
+			log = System.err;
+		if (log == null) return;
 		log.println("==> "+ sql +"");
 		if (bindings != null && bindings.size() > 0)
 			log.println("^^^ ["+ join("|", bindings) +"]");

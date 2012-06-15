@@ -159,7 +159,7 @@ class ClassGenerator {
 
 	}
 
-	private static String sanitizeJavaKeywords(String s) {
+	static String sanitizeJavaKeywords(String s) {
 		s = s.toLowerCase();
 		if (KEYWORDS.contains(s)) return s+"_";
 		return s;
@@ -461,10 +461,11 @@ class ClassGenerator {
 
 		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("
 		+ className +".class)");
-		if (dataSourceName != null) {
-			br.write(".use("+ pkg +"."+ dataSourceName +"."+ pkgName.toUpperCase() +")");
-		}
+		//if (dataSourceName != null) {
+		//	br.write(".use("+ pkg +"."+ dataSourceName +"."+ pkgName.toUpperCase() +")");
+		//}
 		br.write(";\n\n");
+		br.write("\tstatic DataSource __DEFAULT_DATASOURCE = "+ pkg +"." + dataSourceName +".INSTANCE;\n\n");
 
 		// write toString
 		br.write("\t public String toString() {\n");

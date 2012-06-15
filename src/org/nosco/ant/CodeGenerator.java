@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -154,11 +155,6 @@ public class CodeGenerator extends Task {
 			bw.write(timestamp);
 			bw.close();
 
-			if (dataSource != null) {
-				org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
-						schemas.getAbsolutePath());
-			}
-
 			JSONObject enums = enumsFile!=null && enumsFile.exists() ?
 					readJSONObject(enumsFile) : new JSONObject();
 
@@ -166,6 +162,11 @@ public class CodeGenerator extends Task {
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
 					fake_fks, typeMappings==null ? null : typeMappings.getAbsolutePath(),
 					dataSource, callbackPackage, enums);
+
+			if (dataSource != null) {
+				org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
+						schemas.getAbsolutePath());
+			}
 
 			if (this.srcjarfile != null) {
 				System.out.println("writing " + srcjarfile.getAbsolutePath());

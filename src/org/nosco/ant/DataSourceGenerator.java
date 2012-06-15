@@ -10,11 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nosco.Context;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 import org.nosco.util.Misc;
 
 class DataSourceGenerator {
+
+	static final String _DEFAULT_PACKAGE_DATASOURCE_LOADER = "_DEFAULT_PACKAGE_DATASOURCE_LOADER";
 
 	public static String getDataSourceName(String dataSource) {
 		if (dataSource == null) return null;
@@ -64,29 +67,31 @@ class DataSourceGenerator {
 		String method = getMethodName(dataSource);
 		List<String> schemaList = getSchemaList(metadataFile);
 
-		File file = new File(Misc.join("/", dir, pkgDir, name + ".java"));
-		System.out.println("writing: "+ file.getAbsolutePath());
-
-		BufferedWriter br = new BufferedWriter(new FileWriter(file));
-
-		br.write("package "+ pkg +";\n");
-		br.write("\n");
-		br.write("import org.nosco.datasource.ReflectedDataSource;\n");
-		br.write("\n");
-		br.write("public class "+ name +" extends ReflectedDataSource {\n");
-		br.write("\n");
-		br.write("	public "+ name +"(String schema) {\n");
-		br.write("		super(\""+ cls +"\", \""+ method +"\", schema);\n");
-		br.write("	}\n");
-		br.write("\n");
 		for (String schema : schemaList) {
-			br.write("	public static "+ name +" "+ schema.toUpperCase()
-					+" = new "+ name +"(\""+ schema +"\");\n");
-		}
-		br.write("\n");
-		br.write("}\n");
 
-		br.close();
+			String pkgName = ClassGenerator.sanitizeJavaKeywords(schema);
+
+			File file = new File(Misc.join("/", dir, pkgDir, name + ".java"));
+			System.out.println("writing: "+ file.getAbsolutePath());
+
+			BufferedWriter br = new BufferedWriter(new FileWriter(file));
+
+			br.write("package "+ pkg +";\n");
+			br.write("\n");
+			br.write("import org.nosco.Context;\n");
+			br.write("import org.nosco.datasource.ReflectedDataSource;\n");
+			br.write("\n");
+			br.write("public class "+ name +" {\n");
+			br.write("\n");
+			br.write("\n");
+			br.write("\tpublic static "+ "ReflectedDataSource" +" "+ "INSTANCE"
+					+" = new "+ "ReflectedDataSource" +"(\""+ cls +"\", \""+ method +"\");\n");
+			br.write("\n");
+			br.write("}\n");
+
+			br.close();
+
+		}
 
 	}
 

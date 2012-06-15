@@ -46,7 +46,7 @@ class Util {
 	 * @param type
 	 * @param i
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	static Object fixObjectType(ResultSet rs, Class<?> type, int i) throws SQLException {
 		if (type == Long.class) return rs.getLong(i);
@@ -63,6 +63,17 @@ class Util {
 		if (o instanceof Short) o = ((Short)o).intValue();
 		return o;
 	}
+
+	/**
+	 * Please do not use.
+	 * @return
+	 */
+	static boolean sameTable(Table t1, Table t2) {
+		if (t1 == null && t2 == null) return true;
+		if (t1 == null || t2 == null) return false;
+		return t1.SCHEMA_NAME() == t2.SCHEMA_NAME() && t1.TABLE_NAME() == t2.TABLE_NAME();
+	}
+
 
 
 }

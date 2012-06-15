@@ -119,6 +119,7 @@ public class ReflectedDataSource implements DataSource {
 	}
 
 	public DataSource getUnderlyingDataSource() {
+		checkDS();
 		return ds;
 	}
 

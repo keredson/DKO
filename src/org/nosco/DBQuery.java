@@ -140,11 +140,12 @@ class DBQuery<T extends Table> implements Query<T> {
 			if (defaultDS != null) return defaultDS;
 			java.lang.reflect.Field field = type.getDeclaredField("__DEFAULT_DATASOURCE");
 			field.setAccessible(true);
-			return defaultDS = (DataSource) field.get(null);
+			defaultDS = (DataSource) field.get(null);
+			return defaultDS;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	DBQuery(Class<? extends Table> tableClass, DataSource ds) {

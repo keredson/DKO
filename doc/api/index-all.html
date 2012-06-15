@@ -163,19 +163,28 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DT><A HREF="./org/nosco/Bulk.html#commitDiff(java.lang.Iterable)"><B>commitDiff(Iterable&lt;Diff.RowChange&lt;T&gt;&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.html#commitTransaction(javax.sql.DataSource)"><B>commitTransaction(DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Commits the current transaction.
 <DT><A HREF="./org/nosco/ThreadContext.html#commitTransaction(javax.sql.DataSource)"><B>commitTransaction(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Commits the current transaction.
+<DD><B>Deprecated.</B>&nbsp;<I>please use Context.getThreadContext().commitTransaction(ds);</I>
 <DT><A HREF="./org/nosco/Condition.html" title="class in org.nosco"><B>Condition</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class represents a SQL conditional statement.<DT><A HREF="./org/nosco/Condition.html#Condition()"><B>Condition()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Condition.html" title="class in org.nosco">Condition</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Condition.Literal.html" title="class in org.nosco"><B>Condition.Literal</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Use this class to add custom SQL code to your where clause.<DT><A HREF="./org/nosco/Condition.Literal.html#Condition.Literal(java.lang.String)"><B>Condition.Literal(String)</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Condition.Literal.html" title="class in org.nosco">Condition.Literal</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource"><B>ConnectionCountingDataSource</B></A> - Class in <A HREF="./org/nosco/datasource/package-summary.html">org.nosco.datasource</A><DD>This class wraps a <code>DataSource</code> and counts the connections it returns.<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#ConnectionCountingDataSource(javax.sql.DataSource)"><B>ConnectionCountingDataSource(DataSource)</B></A> - 
+Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Constants.html" title="class in org.nosco"><B>Constants</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Defines constants for use in this API.<DT><A HREF="./org/nosco/Constants.html#Constants()"><B>Constants()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco"><B>Constants.DB_TYPE</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Constants.DIRECTION.html" title="enum in org.nosco"><B>Constants.DIRECTION</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Query.html#count()"><B>count()</B></A> - 
+<DT><A HREF="./org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco"><B>Constants.DB_TYPE</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Used for tweaking generated SQL by database type.<DT><A HREF="./org/nosco/Constants.DIRECTION.html" title="enum in org.nosco"><B>Constants.DIRECTION</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Context.html" title="class in org.nosco"><B>Context</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class is used for tweaking query executions.<DT><A HREF="./org/nosco/Context.html#Context()"><B>Context()</B></A> - 
+Constructor for class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco"><B>Context.Undoer</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Allows you to undo any context change.<DT><A HREF="./org/nosco/Query.html#count()"><B>count()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Returns the database-calculated count of the query.
 <DT><A HREF="./org/nosco/Query.html#countBy(org.nosco.Field)"><B>countBy(Field&lt;S&gt;)</B></A> - 
@@ -318,6 +327,9 @@ Constructor for class org.nosco.<A HREF="./org/nosco/Field.PK.html" title="class
 <DT><A HREF="./org/nosco/Table.html#FIELDS()"><B>FIELDS()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Please do not use.
+<DT><A HREF="./org/nosco/Context.Undoer.html#finalize()"><B>finalize()</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#first()"><B>first()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Gets the first item in the query.
@@ -365,6 +377,15 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getClientInfo()"><B>getClientInfo()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.html#getConnection(javax.sql.DataSource)"><B>getConnection(DataSource)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Gets the connection for this transaction.
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#getConnection()"><B>getConnection()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#getConnection(java.lang.String, java.lang.String)"><B>getConnection(String, String)</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#getConnection()"><B>getConnection()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
 <DD>&nbsp;
@@ -385,13 +406,16 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/SingleConne
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/ThreadContext.html#getConnection(javax.sql.DataSource)"><B>getConnection(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Gets the connection for this transaction.
+<DD><B>Deprecated.</B>&nbsp;<I>please use Context.getConnection(ds);</I>
 <DT><A HREF="./org/nosco/ThreadContext.html#getConnectionCount()"><B>getConnectionCount()</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Gets number of connections for this thread.
+<DD><B>Deprecated.</B>&nbsp;<I>please use the <code>ConnectionCountingDataSource</code> wrapper</I>
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#getCount()"><B>getCount()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/ThreadContext.html#getDatabaseOverride(javax.sql.DataSource, java.lang.String)"><B>getDatabaseOverride(DataSource, String)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>All extracted schemas contain the database names they're extracted from.
+<DD><B>Deprecated.</B>&nbsp;<I>please use <code>Context.getSchemaToUse(ds, name)</code></I>
 <DT><A HREF="./org/nosco/Query.html#getDataSource()"><B>getDataSource()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Returns the DataSource this query is currently using.
@@ -401,6 +425,9 @@ Static method in class org.nosco.<A HREF="./org/nosco/Function.html" title="clas
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getHoldability()"><B>getHoldability()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#getLoginTimeout()"><B>getLoginTimeout()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#getLoginTimeout()"><B>getLoginTimeout()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
 <DD>&nbsp;
@@ -409,6 +436,9 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ReflectedDa
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/SingleConnectionDataSource.html#getLoginTimeout()"><B>getLoginTimeout()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/SingleConnectionDataSource.html" title="class in org.nosco.datasource">SingleConnectionDataSource</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#getLogWriter()"><B>getLogWriter()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#getLogWriter()"><B>getLogWriter()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
@@ -455,14 +485,26 @@ Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in or
 <DT><A HREF="./org/nosco/Query.html#getTheOnly()"><B>getTheOnly()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Returns the only object returned by this query.
+<DT><A HREF="./org/nosco/Context.html#getThreadContext()"><B>getThreadContext()</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.html#getThreadGroupContext()"><B>getThreadGroupContext()</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Threads spawned by default share their parent's thread group.
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getTransactionIsolation()"><B>getTransactionIsolation()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getTypeMap()"><B>getTypeMap()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#getUnderlyingDataSource()"><B>getUnderlyingDataSource()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/ReflectedDataSource.html#getUnderlyingDataSource()"><B>getUnderlyingDataSource()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ReflectedDataSource.html" title="class in org.nosco.datasource">ReflectedDataSource</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.html#getVMContext()"><B>getVMContext()</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#getWarnings()"><B>getWarnings()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
@@ -516,9 +558,6 @@ Variable in class org.nosco.<A HREF="./org/nosco/Field.FK.html" title="class in 
 <DT><A HREF="./org/nosco/Field.html#INDEX"><B>INDEX</B></A> - 
 Variable in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/datasource/InitializedDataSource.html" title="class in org.nosco.datasource"><B>InitializedDataSource</B></A> - Class in <A HREF="./org/nosco/datasource/package-summary.html">org.nosco.datasource</A><DD>&nbsp;<DT><A HREF="./org/nosco/datasource/InitializedDataSource.html#InitializedDataSource()"><B>InitializedDataSource()</B></A> - 
-Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/InitializedDataSource.html" title="class in org.nosco.datasource">InitializedDataSource</A>
-<DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#insert()"><B>insert()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Inserts the values set by .set(key,value).
@@ -540,9 +579,12 @@ Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.no
 Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>Inserts all objects from the source iterable into the
  target DataSource.
+<DT><A HREF="./org/nosco/Context.html#inTransaction(javax.sql.DataSource)"><B>inTransaction(DataSource)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Returns true if currently inside a transaction.
 <DT><A HREF="./org/nosco/ThreadContext.html#inTransaction(javax.sql.DataSource)"><B>inTransaction(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Returns true if currently inside a transaction.
+<DD><B>Deprecated.</B>&nbsp;<I>please use Context.inTransaction(ds);</I>
 <DT><A HREF="./org/nosco/Diff.RowChange.html#isAdd()"><B>isAdd()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>
 <DD>If row change was an ADD
@@ -572,6 +614,9 @@ Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class
 <DD>If row change was an UPDATE
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#isValid(int)"><B>isValid(int)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#isWrapperFor(java.lang.Class)"><B>isWrapperFor(Class&lt;?&gt;)</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#isWrapperFor(java.lang.Class)"><B>isWrapperFor(Class&lt;?&gt;)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
@@ -685,7 +730,11 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Query.html#orderBy(org.nosco.Constants.DIRECTION, org.nosco.Field...)"><B>orderBy(Constants.DIRECTION, Field&lt;?&gt;...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Same as .orderBy(fields), but allows you to specify the direction.
-<DT><A HREF="./org/nosco/package-summary.html"><B>org.nosco</B></A> - package org.nosco<DD>&nbsp;<DT><A HREF="./org/nosco/ant/package-summary.html"><B>org.nosco.ant</B></A> - package org.nosco.ant<DD>&nbsp;<DT><A HREF="./org/nosco/datasource/package-summary.html"><B>org.nosco.datasource</B></A> - package org.nosco.datasource<DD>&nbsp;</DL>
+<DT><A HREF="./org/nosco/package-summary.html"><B>org.nosco</B></A> - package org.nosco<DD>&nbsp;<DT><A HREF="./org/nosco/ant/package-summary.html"><B>org.nosco.ant</B></A> - package org.nosco.ant<DD>&nbsp;<DT><A HREF="./org/nosco/datasource/package-summary.html"><B>org.nosco.datasource</B></A> - package org.nosco.datasource<DD>&nbsp;<DT><A HREF="./org/nosco/Context.html#overrideSchema(javax.sql.DataSource, java.lang.String, java.lang.String)"><B>overrideSchema(DataSource, String, String)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>All generated classes have their schema embedded in them, and always specify their
+ schema when performing a query.
+</DL>
 <HR>
 <A NAME="_P_"><!-- --></A><H2>
 <B>P</B></H2>
@@ -716,6 +765,9 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#prepareStatement(java.lang.String, java.lang.String[])"><B>prepareStatement(String, String[])</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Constants.html#PROP_LOG"><B>PROP_LOG</B></A> - 
+Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Constants.html#PROP_LOG_SQL"><B>PROP_LOG_SQL</B></A> - 
 Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
@@ -756,12 +808,18 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#rollback(java.sql.Savepoint)"><B>rollback(Savepoint)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.html#rollbackTransaction(javax.sql.DataSource)"><B>rollbackTransaction(DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Rolls back the current transaction.
 <DT><A HREF="./org/nosco/ThreadContext.html#rollbackTransaction(javax.sql.DataSource)"><B>rollbackTransaction(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Rolls back the current transaction.
+<DD><B>Deprecated.</B>&nbsp;<I>please use Context.getThreadContext().rollbackTransactionThrowSQLException(ds);</I>
 <DT><A HREF="./org/nosco/ThreadContext.html#rollbackTransactionIgnoreException(javax.sql.DataSource)"><B>rollbackTransactionIgnoreException(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Rolls back the current transaction, ignoring any <code>SQLException</code>s thrown.
+<DD><B>Deprecated.</B>&nbsp;<I>please use Context.getThreadContext().rollbackTransaction(ds);</I>
+<DT><A HREF="./org/nosco/Context.html#rollbackTransactionThrowSQLException(javax.sql.DataSource)"><B>rollbackTransactionThrowSQLException(DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Rolls back the current transaction.
 </DL>
 <HR>
 <A NAME="_S_"><!-- --></A><H2>
@@ -770,9 +828,6 @@ Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title=
 <DT><A HREF="./org/nosco/Field.html#sameField(org.nosco.Field)"><B>sameField(Field&lt;?&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/Table.html#sameTable(org.nosco.Table)"><B>sameTable(Table)</B></A> - 
-Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
-<DD>Please do not use.
 <DT><A HREF="./org/nosco/Table.html#save()"><B>save()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Creates and executes an insert or update statement for this object
@@ -802,6 +857,9 @@ Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.n
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#setAutoCommit(boolean)"><B>setAutoCommit(boolean)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.Undoer.html#setAutoUndo(boolean)"><B>setAutoUndo(boolean)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/ant/CodeGenerator.html#setCallbackPackage(java.lang.String)"><B>setCallbackPackage(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/CodeGenerator.html" title="class in org.nosco.ant">CodeGenerator</A>
 <DD>&nbsp;
@@ -819,13 +877,25 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/ThreadContext.html#setConnectionCount(long)"><B>setConnectionCount(long)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Sets the number of connections for this thread.
+<DD><B>Deprecated.</B>&nbsp;<I>please use the <code>ConnectionCountingDataSource</code> wrapper</I>
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#setCount(int)"><B>setCount(int)</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/ThreadContext.html#setDatabaseOverride(javax.sql.DataSource, java.lang.String, java.lang.String)"><B>setDatabaseOverride(DataSource, String, String)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>All extracted schemas contain the database names they're extracted from.
+<DD><B>Deprecated.</B>&nbsp;<I>please use <code>Context.getThreadContext().overrideSchema(ds, oldName, newName)</code></I>
 <DT><A HREF="./org/nosco/ant/CodeGenerator.html#setDataSource(java.lang.String)"><B>setDataSource(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/CodeGenerator.html" title="class in org.nosco.ant">CodeGenerator</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.html#setDataSource(javax.sql.DataSource)"><B>setDataSource(DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Sets a default <code>DataSource</code> for this context.
+<DT><A HREF="./org/nosco/Context.html#setDataSource(java.lang.Package, javax.sql.DataSource)"><B>setDataSource(Package, DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Sets a default <code>DataSource</code> for all classes in this package in this context.
+<DT><A HREF="./org/nosco/Context.html#setDataSource(java.lang.Class, javax.sql.DataSource)"><B>setDataSource(Class&lt;? extends Table&gt;, DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Sets a default <code>DataSource</code> for the specified class in this context.
 <DT><A HREF="./org/nosco/ant/SchemaExtractor.html#setDBType(java.lang.String)"><B>setDBType(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant">SchemaExtractor</A>
 <DD>&nbsp;
@@ -862,6 +932,9 @@ Method in class org.nosco.ant.<A HREF="./org/nosco/ant/CodeGenerator.html" title
 <DT><A HREF="./org/nosco/ant/CodeGenerator.html#setJavaOutputDir(java.lang.String)"><B>setJavaOutputDir(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/CodeGenerator.html" title="class in org.nosco.ant">CodeGenerator</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#setLoginTimeout(int)"><B>setLoginTimeout(int)</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#setLoginTimeout(int)"><B>setLoginTimeout(int)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
 <DD>&nbsp;
@@ -870,6 +943,9 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ReflectedDa
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/SingleConnectionDataSource.html#setLoginTimeout(int)"><B>setLoginTimeout(int)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/SingleConnectionDataSource.html" title="class in org.nosco.datasource">SingleConnectionDataSource</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#setLogWriter(java.io.PrintWriter)"><B>setLogWriter(PrintWriter)</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#setLogWriter(java.io.PrintWriter)"><B>setLogWriter(PrintWriter)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
@@ -931,9 +1007,12 @@ Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/Singl
 <DT><A HREF="./org/nosco/Query.html#size()"><B>size()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Same as .count()
+<DT><A HREF="./org/nosco/Context.html#startTransaction(javax.sql.DataSource)"><B>startTransaction(DataSource)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
+<DD>Starts a new transaction.
 <DT><A HREF="./org/nosco/ThreadContext.html#startTransaction(javax.sql.DataSource)"><B>startTransaction(DataSource)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco">ThreadContext</A>
-<DD>Starts a new transaction.
+<DD><B>Deprecated.</B>&nbsp;<I>please use Context.getThreadContext().startTransaction(ds);</I>
 <DT><A HREF="./org/nosco/Query.html#stats(org.nosco.Field...)"><B>stats(Field&lt;?&gt;...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Not implemented yet.
@@ -970,7 +1049,7 @@ Constructor for class org.nosco.<A HREF="./org/nosco/Table.__Alias.html" title="
 <DT><A HREF="./org/nosco/Table.__PrimaryKey.html" title="interface in org.nosco"><B>Table.__PrimaryKey</B></A>&lt;<A HREF="./org/nosco/Table.__PrimaryKey.html" title="type parameter in Table.__PrimaryKey">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a primary key of a row.<DT><A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco"><B>Table.__SimplePrimaryKey</B></A>&lt;<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">S</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">V</A>&gt; - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a simple (ie: non-compound) primary key of a row.<DT><A HREF="./org/nosco/Table.html#TABLE_NAME()"><B>TABLE_NAME()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Please do not use.
-<DT><A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco"><B>ThreadContext</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class is used to control thread-based context operations.<DT><A HREF="./org/nosco/Query.html#toMemory()"><B>toMemory()</B></A> - 
+<DT><A HREF="./org/nosco/ThreadContext.html" title="class in org.nosco"><B>ThreadContext</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD><B>Deprecated.</B>&nbsp;<I>please use Context.getThreadContext()</I><DT><A HREF="./org/nosco/Query.html#toMemory()"><B>toMemory()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Evaluates the given query into memory and returns to you a new query backed by
  this in-memory store.
@@ -1002,6 +1081,12 @@ Variable in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org
 <DL>
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource"><B>UnClosableConnection</B></A> - Class in <A HREF="./org/nosco/datasource/package-summary.html">org.nosco.datasource</A><DD>This class wraps a connection, but intercepts calls to <code>close()</code>.<DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#UnClosableConnection(java.sql.Connection)"><B>UnClosableConnection(Connection)</B></A> - 
 Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableConnection.html" title="class in org.nosco.datasource">UnClosableConnection</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Context.Undoer.html#undo()"><B>undo()</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#unwrap(java.lang.Class)"><B>unwrap(Class&lt;T&gt;)</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#unwrap(java.lang.Class)"><B>unwrap(Class&lt;T&gt;)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
@@ -1075,6 +1160,9 @@ Variable in class org.nosco.<A HREF="./org/nosco/Diff.FieldChange.html" title="c
 <DT><A HREF="./org/nosco/Query.html#where(org.nosco.Condition...)"><B>where(Condition...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Adds conditions to the query.
+<DT><A HREF="./org/nosco/Context.Undoer.html#willAutoUndo()"><B>willAutoUndo()</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#with(org.nosco.Field.FK...)"><B>with(Field.FK...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Joins on foreign keys.

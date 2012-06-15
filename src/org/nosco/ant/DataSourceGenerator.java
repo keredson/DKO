@@ -3,17 +3,14 @@ package org.nosco.ant;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nosco.Context;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
-import org.nosco.util.Misc;
 
 class DataSourceGenerator {
 
@@ -59,8 +56,8 @@ class DataSourceGenerator {
 	}
 
 	public static void go(String dir, String pkg, String dataSource, String metadataFile) throws IOException {
-		String pkgDir = Misc.join("/", pkg.split("[.]"));
-		new File(Misc.join("/", dir, pkgDir)).mkdirs();
+		String pkgDir = Util.join("/", pkg.split("[.]"));
+		new File(Util.join("/", dir, pkgDir)).mkdirs();
 
 		String name = getDataSourceName(dataSource);
 		String cls = getClassName(dataSource);
@@ -71,7 +68,7 @@ class DataSourceGenerator {
 
 			String pkgName = ClassGenerator.sanitizeJavaKeywords(schema);
 
-			File file = new File(Misc.join("/", dir, pkgDir, name + ".java"));
+			File file = new File(Util.join("/", dir, pkgDir, name + ".java"));
 			System.out.println("writing: "+ file.getAbsolutePath());
 
 			BufferedWriter br = new BufferedWriter(new FileWriter(file));

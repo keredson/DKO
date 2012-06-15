@@ -22,11 +22,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.nosco.Table;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
-import org.nosco.util.Misc;
 
 class ClassGenerator {
 
@@ -60,7 +58,7 @@ class ClassGenerator {
 	public ClassGenerator(String dir, String pkg, String[] stripPrefixes, String[] stripSuffixes) {
 		this.dir = dir;
 		this.pkg = pkg;
-		pkgDir = Misc.join("/", pkg.split("[.]"));
+		pkgDir = Util.join("/", pkg.split("[.]"));
 		this.stripPrefixes = stripPrefixes.clone();
 		this.stripSuffixes = stripSuffixes.clone();
 	}
@@ -168,9 +166,9 @@ class ClassGenerator {
 
 	private void genTableToClassMap(String schema) throws IOException {
 		schema = sanitizeJavaKeywords(schema);
-		File targetDir = new File(Misc.join("/", dir, pkgDir, schema));
+		File targetDir = new File(Util.join("/", dir, pkgDir, schema));
 		if (!targetDir.isDirectory()) targetDir.mkdirs();
-		File file = new File(Misc.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
+		File file = new File(Util.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
 		System.out.println("writing: "+ file.getPath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
 		br.write("package "+ pkg +"."+ schema +";\n\n");
@@ -276,8 +274,8 @@ class ClassGenerator {
 
 		String pkgName = sanitizeJavaKeywords(schema);
 
-		new File(Misc.join("/", dir, pkgDir, pkgName)).mkdirs();
-		File file = new File(Misc.join("/", dir, pkgDir, pkgName, className+".java"));
+		new File(Util.join("/", dir, pkgDir, pkgName)).mkdirs();
+		File file = new File(Util.join("/", dir, pkgDir, pkgName, className+".java"));
 		System.out.println("writing: "+ file.getAbsolutePath());
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
 		br.write("package "+ pkg +"."+ pkgName +";\n\n");
@@ -611,7 +609,7 @@ class ClassGenerator {
 			}
 			String fkName = "FK_"+ genFKName(fk.columns.keySet(), fk.reffed[1]);
 		    String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
-		    		+ Misc.join("__", fk.columns.keySet());
+		    		+ Util.join("__", fk.columns.keySet());
 		    br.write("\t\telse if ("+ relatedTableClassName +"."+ fkName +".equals(fk)) {\n");
 		    br.write("\t\t\t"+ localVar +" = (Query<"+ relatedTableClassName +">) v;\n");
 		    br.write("\t\t}\n");
@@ -637,11 +635,11 @@ class ClassGenerator {
 			}
 		    String method = getInstanceMethodName(relatedTable);
 		    if (reffingCounts.get(relatedTable) > 1) {
-			    String tmp = Misc.join("_", fk.columns.keySet());
+			    String tmp = Util.join("_", fk.columns.keySet());
 				method = method + "_" + getInstanceMethodName(tmp);
 		    }
 		    String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
-		    		+ Misc.join("__", fk.columns.keySet());
+		    		+ Util.join("__", fk.columns.keySet());
 		    br.write("\tprivate Query<"+ relatedTableClassName +"> "+ localVar +" = null;\n");
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() {\n");
 		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");

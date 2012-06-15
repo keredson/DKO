@@ -19,7 +19,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
-import org.nosco.util.Misc;
 
 /**
  * Using the {@code schemas.json} file produced by the {@code SchemaExtractor}, this Ant task
@@ -214,7 +213,7 @@ public class CodeGenerator extends Task {
 			findJava(tempDir, files);
 			String[] cmd = new String[files.size()];
 			files.toArray(cmd);
-			System.out.println(Misc.join(" ", cmd));
+			System.out.println(Util.join(" ", cmd));
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));

@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-MirroredDataSource (Nosco API)
+ConnectionCountingDataSource (Nosco API)
 </TITLE>
 
 
@@ -13,7 +13,7 @@ MirroredDataSource (Nosco API)
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="MirroredDataSource (Nosco API)";
+        parent.document.title="ConnectionCountingDataSource (Nosco API)";
     }
 }
 </SCRIPT>
@@ -38,7 +38,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/MirroredDataSource.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/ConnectionCountingDataSource.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -53,11 +53,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/nosco/datasource/ReflectedDataSource.html" title="class in org.nosco.datasource"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/nosco/datasource/MirroredDataSource.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="MirroredDataSource.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/nosco/datasource/ConnectionCountingDataSource.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="ConnectionCountingDataSource.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -88,23 +88,22 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.nosco.datasource</FONT>
 <BR>
-Class MirroredDataSource</H2>
+Class ConnectionCountingDataSource</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.nosco.datasource.MirroredDataSource</B>
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.nosco.datasource.ConnectionCountingDataSource</B>
 </PRE>
 <DL>
 <DT><B>All Implemented Interfaces:</B> <DD>java.sql.Wrapper, javax.sql.CommonDataSource, javax.sql.DataSource</DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>MirroredDataSource</B><DT>extends java.lang.Object<DT>implements javax.sql.DataSource</DL>
+<DT><PRE>public class <B>ConnectionCountingDataSource</B><DT>extends java.lang.Object<DT>implements javax.sql.DataSource</DL>
 </PRE>
 
 <P>
-This class wraps other <code>javax.sql.DataSource</code> instances.  It usually passes
- through calls to the primary, but if <code>getMirroredConnection()</code>
- is called a random mirror is used instead.
+This class wraps a <code>DataSource</code> and counts the connections it returns.
+ Mostly used for testing.
 <P>
 
 <P>
@@ -125,13 +124,10 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#MirroredDataSource(javax.sql.DataSource, javax.sql.DataSource...)">MirroredDataSource</A></B>(javax.sql.DataSource&nbsp;primary,
-                   javax.sql.DataSource...&nbsp;mirrors)</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#ConnectionCountingDataSource(javax.sql.DataSource)">ConnectionCountingDataSource</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class usually passes
- through calls to the primary, but if <code>getMirroredConnection()</code>
- is called a random mirror is used instead.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -146,7 +142,7 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.sql.Connection</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#getConnection()">getConnection</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#getConnection()">getConnection</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -154,7 +150,7 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.sql.Connection</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#getConnection(java.lang.String, java.lang.String)">getConnection</A></B>(java.lang.String&nbsp;arg0,
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#getConnection(java.lang.String, java.lang.String)">getConnection</A></B>(java.lang.String&nbsp;arg0,
               java.lang.String&nbsp;arg1)</CODE>
 
 <BR>
@@ -163,7 +159,15 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#getLoginTimeout()">getLoginTimeout</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#getCount()">getCount</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#getLoginTimeout()">getLoginTimeout</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -171,23 +175,15 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.io.PrintWriter</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#getLogWriter()">getLogWriter</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#getLogWriter()">getLogWriter</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.sql.Connection</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#getMirroredConnection()">getMirroredConnection</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a connection from a randomly selected mirror.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;javax.sql.DataSource</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#getPrimaryDataSource()">getPrimaryDataSource</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#getUnderlyingDataSource()">getUnderlyingDataSource</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -195,7 +191,7 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;boolean</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#isWrapperFor(java.lang.Class)">isWrapperFor</A></B>(java.lang.Class&lt;?&gt;&nbsp;arg0)</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#isWrapperFor(java.lang.Class)">isWrapperFor</A></B>(java.lang.Class&lt;?&gt;&nbsp;arg0)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -203,7 +199,7 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#setLoginTimeout(int)">setLoginTimeout</A></B>(int&nbsp;arg0)</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#setCount(int)">setCount</A></B>(int&nbsp;count)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -211,15 +207,15 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#setLogWriter(java.io.PrintWriter)">setLogWriter</A></B>(java.io.PrintWriter&nbsp;arg0)</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#setLoginTimeout(int)">setLoginTimeout</A></B>(int&nbsp;arg0)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#toString()">toString</A></B>()</CODE>
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#setLogWriter(java.io.PrintWriter)">setLogWriter</A></B>(java.io.PrintWriter&nbsp;arg0)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -234,7 +230,7 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 </TR>
 </TABLE>
 </CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/nosco/datasource/MirroredDataSource.html#unwrap(java.lang.Class)">unwrap</A></B>(java.lang.Class&lt;T&gt;&nbsp;arg0)</CODE>
+<TD><CODE><B><A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html#unwrap(java.lang.Class)">unwrap</A></B>(java.lang.Class&lt;T&gt;&nbsp;arg0)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -246,7 +242,7 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 <TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</CODE></TD>
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -262,18 +258,11 @@ This class wraps other <code>javax.sql.DataSource</code> instances.  It usually 
 </TR>
 </TABLE>
 
-<A NAME="MirroredDataSource(javax.sql.DataSource, javax.sql.DataSource...)"><!-- --></A><H3>
-MirroredDataSource</H3>
+<A NAME="ConnectionCountingDataSource(javax.sql.DataSource)"><!-- --></A><H3>
+ConnectionCountingDataSource</H3>
 <PRE>
-public <B>MirroredDataSource</B>(javax.sql.DataSource&nbsp;primary,
-                          javax.sql.DataSource...&nbsp;mirrors)</PRE>
+public <B>ConnectionCountingDataSource</B>(javax.sql.DataSource&nbsp;ds)</PRE>
 <DL>
-<DD>This class usually passes
- through calls to the primary, but if <code>getMirroredConnection()</code>
- is called a random mirror is used instead.
-<P>
-<DL>
-<DT><B>Parameters:</B><DD><CODE>primary</CODE> - <DD><CODE>mirrors</CODE> - </DL>
 </DL>
 
 <!-- ============ METHOD DETAIL ========== -->
@@ -285,6 +274,34 @@ public <B>MirroredDataSource</B>(javax.sql.DataSource&nbsp;primary,
 <B>Method Detail</B></FONT></TH>
 </TR>
 </TABLE>
+
+<A NAME="getCount()"><!-- --></A><H3>
+getCount</H3>
+<PRE>
+public int <B>getCount</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setCount(int)"><!-- --></A><H3>
+setCount</H3>
+<PRE>
+public void <B>setCount</B>(int&nbsp;count)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
 
 <A NAME="getLogWriter()"><!-- --></A><H3>
 getLogWriter</H3>
@@ -405,28 +422,6 @@ public java.sql.Connection <B>getConnection</B>()
 </DL>
 <HR>
 
-<A NAME="getMirroredConnection()"><!-- --></A><H3>
-getMirroredConnection</H3>
-<PRE>
-public java.sql.Connection <B>getMirroredConnection</B>()
-                                          throws java.sql.SQLException</PRE>
-<DL>
-<DD>Returns a connection from a randomly selected mirror. &nbsp;
- Feel free to override this method to implement other
- load balancing stratigies in your own code.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-
-<DT><B>Returns:</B><DD>
-<DT><B>Throws:</B>
-<DD><CODE>java.sql.SQLException</CODE></DL>
-</DD>
-</DL>
-<HR>
-
 <A NAME="getConnection(java.lang.String, java.lang.String)"><!-- --></A><H3>
 getConnection</H3>
 <PRE>
@@ -445,24 +440,10 @@ public java.sql.Connection <B>getConnection</B>(java.lang.String&nbsp;arg0,
 </DL>
 <HR>
 
-<A NAME="toString()"><!-- --></A><H3>
-toString</H3>
+<A NAME="getUnderlyingDataSource()"><!-- --></A><H3>
+getUnderlyingDataSource</H3>
 <PRE>
-public java.lang.String <B>toString</B>()</PRE>
-<DL>
-<DD><DL>
-<DT><B>Overrides:</B><DD><CODE>toString</CODE> in class <CODE>java.lang.Object</CODE></DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getPrimaryDataSource()"><!-- --></A><H3>
-getPrimaryDataSource</H3>
-<PRE>
-public javax.sql.DataSource <B>getPrimaryDataSource</B>()</PRE>
+public javax.sql.DataSource <B>getUnderlyingDataSource</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -487,7 +468,7 @@ public javax.sql.DataSource <B>getPrimaryDataSource</B>()</PRE>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/MirroredDataSource.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/ConnectionCountingDataSource.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -502,11 +483,11 @@ public javax.sql.DataSource <B>getPrimaryDataSource</B>()</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/nosco/datasource/ReflectedDataSource.html" title="class in org.nosco.datasource"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/nosco/datasource/MirroredDataSource.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="MirroredDataSource.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/nosco/datasource/ConnectionCountingDataSource.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="ConnectionCountingDataSource.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {

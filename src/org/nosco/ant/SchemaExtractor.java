@@ -26,7 +26,6 @@ import org.nosco.Constants.DB_TYPE;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
-import org.nosco.util.Misc;
 
 /**
  * Extracts schema information from a provided database into a JSON file. &nbsp;
@@ -198,7 +197,7 @@ public class SchemaExtractor extends Task {
 			sep ="..";
 	    }
 		JSONObject ret = new JSONObject();
-		String sql = "select "+ column +", "+ Misc.join(", ", pks) +" "
+		String sql = "select "+ column +", "+ Util.join(", ", pks) +" "
 				+ "from "+ schema + sep + table +" order by "+ column +";";
 		System.err.println(sql);
 		Statement s = conn.createStatement();

@@ -83,8 +83,83 @@ function windowTitle()
 </CENTER>
 <HR SIZE="4" NOSHADE>
 <B>Contents</B><UL>
+<LI><A HREF="#class">Deprecated Classes</A>
+<LI><A HREF="#method">Deprecated Methods</A>
 </UL>
 
+<A NAME="class"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Deprecated Classes</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html" title="class in org.nosco">org.nosco.ThreadContext</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.getThreadContext()</I>&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+<A NAME="method"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Deprecated Methods</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#commitTransaction(javax.sql.DataSource)">org.nosco.ThreadContext.commitTransaction(DataSource)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.getThreadContext().commitTransaction(ds);</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#getConnection(javax.sql.DataSource)">org.nosco.ThreadContext.getConnection(DataSource)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.getConnection(ds);</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#getConnectionCount()">org.nosco.ThreadContext.getConnectionCount()</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use the <code>ConnectionCountingDataSource</code> wrapper</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#getDatabaseOverride(javax.sql.DataSource, java.lang.String)">org.nosco.ThreadContext.getDatabaseOverride(DataSource, String)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use <code>Context.getSchemaToUse(ds, name)</code></I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#inTransaction(javax.sql.DataSource)">org.nosco.ThreadContext.inTransaction(DataSource)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.inTransaction(ds);</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#rollbackTransaction(javax.sql.DataSource)">org.nosco.ThreadContext.rollbackTransaction(DataSource)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.getThreadContext().rollbackTransactionThrowSQLException(ds);</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#rollbackTransactionIgnoreException(javax.sql.DataSource)">org.nosco.ThreadContext.rollbackTransactionIgnoreException(DataSource)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.getThreadContext().rollbackTransaction(ds);</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#setConnectionCount(long)">org.nosco.ThreadContext.setConnectionCount(long)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use the <code>ConnectionCountingDataSource</code> wrapper</I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#setDatabaseOverride(javax.sql.DataSource, java.lang.String, java.lang.String)">org.nosco.ThreadContext.setDatabaseOverride(DataSource, String, String)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use <code>Context.getThreadContext().overrideSchema(ds, oldName, newName)</code></I>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><A HREF="org/nosco/ThreadContext.html#startTransaction(javax.sql.DataSource)">org.nosco.ThreadContext.startTransaction(DataSource)</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<I>please use Context.getThreadContext().startTransaction(ds);</I>&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
 <HR>
 
 

@@ -31,7 +31,6 @@ import org.nosco.Table.__Alias;
 import org.nosco.Table.__PrimaryKey;
 import org.nosco.datasource.MirroredDataSource;
 import org.nosco.datasource.SingleConnectionDataSource;
-import org.nosco.util.Misc;
 
 
 class DBQuery<T extends Table> implements Query<T> {
@@ -202,9 +201,9 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	Tuple2<Connection,Boolean> getConnR(DataSource ds) throws SQLException {
-		ThreadContext.incrementConnectionCount();
-		if (ThreadContext.inTransaction(ds)) {
-			return new Tuple2<Connection,Boolean>(ThreadContext.getConnection(ds), false);
+		Context context = Context.getThreadContext();
+		if (context.inTransaction(ds)) {
+			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
 		}
 		if (ds.isWrapperFor(MirroredDataSource.class)) {
 			return new Tuple2<Connection,Boolean>(ds.unwrap(MirroredDataSource.class).getMirroredConnection(), true);
@@ -213,9 +212,9 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	Tuple2<Connection,Boolean> getConnRW(DataSource ds) throws SQLException {
-		ThreadContext.incrementConnectionCount();
-		if (ThreadContext.inTransaction(ds)) {
-			return new Tuple2<Connection,Boolean>(ThreadContext.getConnection(ds), false);
+		Context context = Context.getThreadContext();
+		if (context.inTransaction(ds)) {
+			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
 		}
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}
@@ -223,14 +222,14 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public int count() throws SQLException {
 		SqlContext context = new SqlContext(this);
-		String sql = "select count(1) from "+ Misc.join(", ", getTableNameList()) +
+		String sql = "select count(1) from "+ Util.join(", ", getTableNameList()) +
 				this.getJoinClause(context) + getWhereClauseAndSetBindings();
 		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(conn);
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		ps.execute();
 		ResultSet rs = ps.getResultSet();
 		rs.next();
@@ -341,13 +340,13 @@ class DBQuery<T extends Table> implements Query<T> {
 			fields[i++] = entry.getKey().NAME+"=?";
 			bindings.add(entry.getValue());
 		}
-		sb.append(Misc.join(", ", fields));
+		sb.append(Util.join(", ", fields));
 		sb.append(" ");
 		sb.append(getWhereClauseAndSetBindings(false));
 		bindings.addAll(this.bindings);
 		String sql = sb.toString();
 
-		Misc.log(sql, bindings);
+		Util.log(sql, bindings);
 		Tuple2<Connection,Boolean> info = getConnRW(ds);
 		Connection conn = info.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -378,7 +377,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			q.tableInfos.get(0).tableName = null;
 			String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ "." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
-			Misc.log(sql, null);
+			Util.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			ps.execute();
@@ -397,7 +396,7 @@ class DBQuery<T extends Table> implements Query<T> {
 			q.tableInfos.get(0).tableName = null;
 			String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ ".dbo." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
-			Misc.log(sql, null);
+			Util.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			ps.execute();
@@ -410,8 +409,8 @@ class DBQuery<T extends Table> implements Query<T> {
 			return count;
 
 		} else {
-			String sql = "delete from "+ Misc.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
-			Misc.log(sql, null);
+			String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
+			Util.log(sql, null);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			ps.execute();
@@ -463,7 +462,7 @@ class DBQuery<T extends Table> implements Query<T> {
 				tmp[i++] = condition.getSQL(context);
 				bindings.addAll(condition.getSQLBindings());
 			}
-			sb.append(Misc.join(" and", tmp));
+			sb.append(Util.join(" and", tmp));
 		}
 		return new Tuple2<String,List<Object>>(
 				sb.toString(),
@@ -494,7 +493,7 @@ class DBQuery<T extends Table> implements Query<T> {
 					tmp[i++] = condition.getSQL(context);
 					bindings.addAll(condition.getSQLBindings());
 				}
-				sb.append(Misc.join(" and", tmp));
+				sb.append(Util.join(" and", tmp));
 			}
 
 			sql = sb.toString();
@@ -687,13 +686,13 @@ class DBQuery<T extends Table> implements Query<T> {
 			q.bindings.add(entry.getValue());
 			++i;
 		}
-		sb.append(Misc.join(", ", fields));
+		sb.append(Util.join(", ", fields));
 		sb.append(") values (");
-		sb.append(Misc.join(", ", bindStrings));
+		sb.append(Util.join(", ", bindStrings));
 		sb.append(")");
 		String sql = sb.toString();
 
-		Misc.log(sql, q.bindings);
+		Util.log(sql, q.bindings);
 		Tuple2<Connection,Boolean> info = getConnRW(ds);
 		Connection conn = info.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -749,7 +748,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		DBQuery<T> q = new DBQuery<T>(this);
 		if (q.orderByFields == null) {
 			Table t = q.tables.get(0);
-			PK pk = Misc.getPK(tables.get(0));
+			PK pk = Util.getPK(tables.get(0));
 			if (pk != null) q = (DBQuery<T>) q.orderBy(pk.GET_FIELDS());
 			else q = (DBQuery<T>) q.orderBy(t.FIELDS());
 		}
@@ -769,7 +768,7 @@ class DBQuery<T extends Table> implements Query<T> {
 				System.arraycopy(fkFields, 0, path, 0, i+1);
 				boolean alreadyAdded = false;
 				for (TableInfo ti : q.getAllTableInfos()) {
-					if (Misc.deepEqual(path, ti.path)) {
+					if (Util.deepEqual(path, ti.path)) {
 						// we've already added this FK
 						alreadyAdded = true;
 						// set this so our FK chain detection works
@@ -892,12 +891,12 @@ class DBQuery<T extends Table> implements Query<T> {
 	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
 			throws SQLException {
 		SqlContext context = new SqlContext(this);
-		String sql = Misc.join(", ", getTableNameList()) + getJoinClause(context)
+		String sql = Util.join(", ", getTableNameList()) + getJoinClause(context)
 				+ getWhereClauseAndSetBindings();
 		sql = "select "+ Util.derefField(byField, context)
 				+", sum("+ Util.derefField(sumField, context) +") from "+ sql
 				+" group by "+ Util.derefField(byField, context);
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -924,10 +923,10 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public Double sum(Field<? extends Number> sumField) throws SQLException {
 		SqlContext context = new SqlContext(this);
-		String sql = Misc.join(", ", getTableNameList()) + getJoinClause(context)
+		String sql = Util.join(", ", getTableNameList()) + getJoinClause(context)
 				+ getWhereClauseAndSetBindings();
 		sql = "select sum("+ Util.derefField(sumField, context) +") from "+ sql;
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -950,12 +949,12 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
 		SqlContext context = new SqlContext(this);
-		String sql = Misc.join(", ", getTableNameList()) + getJoinClause(context)
+		String sql = Util.join(", ", getTableNameList()) + getJoinClause(context)
 				+ getWhereClauseAndSetBindings();
 		sql = "select "+ Util.derefField(byField, context)
 				+", count("+ Util.derefField(byField, context) +") from "+ sql
 				+" group by "+ Util.derefField(byField, context);
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		Connection conn = connInfo.a;
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -1084,7 +1083,7 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public T get(__PrimaryKey<T> pk) {
-		return get(Misc.getPK((T)tables.get(0)).eq(pk));
+		return get(Util.getPK((T)tables.get(0)).eq(pk));
 	}
 
 	@Override

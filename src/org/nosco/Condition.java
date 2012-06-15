@@ -11,7 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.nosco.util.Misc;
 
 /**
  * This class represents a SQL conditional statement.  (ie: the contents of the {@code where} clause)
@@ -67,7 +66,7 @@ public abstract class Condition {
 			try {
 				stmt = conn.createStatement();
 				String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +", PRIMARY KEY (id))";
-				Misc.log(sql, null);
+				Util.log(sql, null);
 				stmt.execute(sql);
 				ps = conn.prepareStatement("insert into "+ tmpTableName +" values (?)");
 				int i = 0;
@@ -106,7 +105,7 @@ public abstract class Condition {
 			try {
 				stmt = conn.createStatement();
 				String sql = "DROP TABLE "+ tmpTableName;
-				Misc.log(sql, null);
+				Util.log(sql, null);
 				stmt.execute(sql);
 			} catch (SQLException e) {
 				throw e;

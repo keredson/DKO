@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Diff.RowChange;
-import org.nosco.util.Misc;
 
 /**
  * Provides optimized methods for CRUD operations on collections. &nbsp;
@@ -177,7 +176,7 @@ public class Bulk {
 					connInfo = q.getConnRW(ds);
 					conn = connInfo.a;
 					fields = table.FIELDS();
-					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
+					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
@@ -255,7 +254,7 @@ public class Bulk {
 					conn = connInfo.a;
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
-					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
+					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
@@ -337,7 +336,7 @@ public class Bulk {
 					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					connInfo = q.getConnRW(ds);
 					conn = connInfo.a;
-					pks = Misc.getPK(table) == null ? null : Misc.getPK(table).GET_FIELDS();
+					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
 					if (pks == null || pks.length == 0) {
 						throw new RuntimeException("cannot bulk delete from tha PK-less table");
 					}
@@ -390,14 +389,14 @@ public class Bulk {
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" (");
-		sb.append(Misc.join(",", fields));
+		sb.append(Util.join(",", fields));
 		String[] bindStrings = new String[fields.length];
 		for (int i=0; i < fields.length; ++i) bindStrings[i] = "?";
 		sb.append(") values (");
-		sb.append(Misc.join(", ", bindStrings));
+		sb.append(Util.join(", ", bindStrings));
 		sb.append(")");
 		String sql = sb.toString();
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
 	}
@@ -412,12 +411,12 @@ public class Bulk {
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" set ");
-		sb.append(Misc.join("=?, ", fields));
+		sb.append(Util.join("=?, ", fields));
 		sb.append("=?  where ");
-		sb.append(Misc.join("=? and ", pks));
+		sb.append(Util.join("=? and ", pks));
 		sb.append("=?;");
 		String sql = sb.toString();
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
 	}
@@ -431,10 +430,10 @@ public class Bulk {
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" where ");
-		sb.append(Misc.join("=? and ", pks));
+		sb.append(Util.join("=? and ", pks));
 		sb.append("=?;");
 		String sql = sb.toString();
-		Misc.log(sql, null);
+		Util.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
 	}

@@ -7,7 +7,6 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
-import org.nosco.util.Misc;
 
 /**
  * This class wraps other {@code javax.sql.DataSource} instances.  It usually passes
@@ -97,7 +96,7 @@ public class MirroredDataSource implements DataSource {
 	@Override
 	public String toString() {
 		return "[MirroredDataSource primary="+ primary +" mirrors="
-				+ Misc.join(",", mirrors) +"]";
+				+ Util.join(",", mirrors) +"]";
 	}
 
 	public DataSource getPrimaryDataSource() {

@@ -22,8 +22,6 @@ import javax.sql.DataSource;
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.Field.FK;
-import org.nosco.util.Misc;
-
 
 
 class Select<T extends Table> implements Iterable<T>, Iterator<T> {
@@ -122,16 +120,16 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			sb.append(" top ").append(query.top).append(" ");
 		}
 		if (query.globallyAppliedSelectFunction == null) {
-			sb.append(Misc.join(", ", selectedBoundFields));
+			sb.append(Util.join(", ", selectedBoundFields));
 		} else {
 			String[] x = new String[selectedBoundFields.length];
 			for (int i=0; i < x.length; ++i) {
 				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i] +")";
 			}
-			sb.append(Misc.join(", ", x));
+			sb.append(Util.join(", ", x));
 		}
 		sb.append(" from ");
-		sb.append(Misc.join(", ", query.getTableNameList(context)));
+		sb.append(Util.join(", ", query.getTableNameList(context)));
 		sb.append(query.getJoinClause(context));
 		Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
 		sb.append(ret.a);
@@ -146,7 +144,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				DIRECTION direction = directions.get(i);
 				tmp[i] = Util.derefField(fields.get(i), context) + (direction==DESCENDING ? " DESC" : "");
 			}
-			sb.append(Misc.join(", ", tmp));
+			sb.append(Util.join(", ", tmp));
 		}
 
 		if (context.dbType!=DB_TYPE.SQLSERVER && query.top>0) {
@@ -154,7 +152,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		}
 
 		if (selectedFields.length > context.maxFields) {
-			Misc.log(sb.toString(), null);
+			Util.log(sb.toString(), null);
 			throw new RuntimeException("too many fields selected: "+ selectedFields.length
 					+" > "+ context.maxFields +" (note: inner queries inside a 'where x in " +
 							"()' can have at most one returned column.  use onlyFields()" +
@@ -178,7 +176,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			shouldCloseConnection  = connInfo.b;
 			SqlContext context = new SqlContext(query);
 			Tuple2<String, List<Object>> ret = getSQL(context);
-			Misc.log(sql, ret.b);
+			Util.log(sql, ret.b);
 			ps = conn.prepareStatement(ret.a);
 			query.setBindings(ps, ret.b);
 			query._preExecute(conn);
@@ -248,7 +246,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				for (int j=i+1; j<objectSize; ++j) {
 					TableInfo tj = tableInfos.get(j);
 					if (tj.path == null) continue;
-					if(Misc.startsWith(tj.path, ti.path)) {
+					if(Select.startsWith(tj.path, ti.path)) {
 						FK fk = tj.path[tj.path.length-1];
 						if (fk.referencing.equals(objects[i].getClass()) &&
 								fk.referenced.equals(objects[j].getClass())) {
@@ -307,7 +305,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 						for (int j=i+1; j<objectSize; ++j) {
 							TableInfo tj = tableInfos.get(j);
 							if (tj.path == null) continue;
-							if(Misc.startsWith(tj.path, ti.path)) {
+							if(Select.startsWith(tj.path, ti.path)) {
 								FK fk = tj.path[tj.path.length-1];
 								if (fk.referencing.equals(peekObjects[i].getClass()) &&
 										fk.referenced.equals(peekObjects[j].getClass())) {
@@ -385,6 +383,14 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	public void remove() {
 		// TODO Auto-generated method stub
 
+	}
+
+	static boolean startsWith(FK<?>[] path, FK<?>[] path2) {
+		if (path2 == null) return true;
+		for (int i=0; i<path2.length; ++i) {
+			if (path[i] != path2[i]) return false;
+		}
+		return true;
 	}
 
 }

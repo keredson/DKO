@@ -26,6 +26,50 @@ import java.util.Set;
  */
 public abstract class Condition {
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		String sql = getSQL(null);
+		result = prime * result
+				+ ((sql == null) ? 0 : sql.hashCode());
+		for (Object x : bindings) {
+			result = prime * result
+					+ ((x == null) ? 0 : x.hashCode());
+		}
+		//System.err.println("Condition hashCode()" +result);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Condition other = (Condition) obj;
+		String sql = getSQL(null);
+		String sqlOther = other.getSQL(null);
+		if (sql == null) {
+			if (sqlOther != null)
+				return false;
+		} else if (!sql.equals(sqlOther))
+			return false;
+		Iterator<Object> it = bindings.iterator();
+		Iterator<Object> itOther = other.bindings.iterator();
+		while (it.hasNext() && itOther.hasNext()) {
+			Object x = it.next();
+			Object y = itOther.next();;
+			if (x == y) continue;
+			if (x == null || y == null) return false;
+			if (!x.equals(y)) return false;
+		}
+		if (it.hasNext() || itOther.hasNext()) return false;
+		return true;
+	}
+
 	static class InTmpTable<T> extends Condition {
 
 		private Field<T> field;
@@ -514,7 +558,7 @@ public abstract class Condition {
 				if (!field.isBound() && !field2.isBound() && field.sameField(field2)) {
 					try {
 						Table table = field.TABLE.newInstance();
-						String id = table.SCHEMA_NAME() +"."+ table.TABLE_NAME();
+						String id = context.getFullTableName(table);
 						Set<String> tableNames = context.tableNameMap.get(id);
 						if (tableNames.size() > 2) {
 							throw new RuntimeException("field ambigious");
@@ -542,8 +586,7 @@ public abstract class Condition {
 				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
 				sb.append('(');
-				SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
-				innerContext.parentContext = context;
+				SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
 				if (" in ".equals(cmp)) {
 					innerContext.maxFields = 1;
 				}
@@ -678,8 +721,7 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 			sb.append(" exists (");
-			SqlContext innerContext = new SqlContext(s.getUnderlyingQuery());
-			innerContext.parentContext = context;
+			SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
 			innerContext.dbType = context.dbType;
 			Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 			sb.append(ret.a);

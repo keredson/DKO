@@ -16,10 +16,15 @@ class SqlContext {
 	private DBQuery<?> q;
 
 	SqlContext(DBQuery<?> q) {
+		this(q, null);
+	}
+
+	public SqlContext(DBQuery<?> q, SqlContext parentContext) {
 		tableNameMap = q.tableNameMap;
 		tableInfos = new ArrayList<TableInfo>(q.tableInfos);
-		for (Join join : q.joins) tableInfos.add(join.tableInfo);
-		dbType = q.getDBType();
+		for (Join join : q.joins) tableInfos.add(join.reffedTableInfo);
+		this.parentContext = parentContext;
+		dbType = parentContext == null ? q.getDBType() : parentContext.dbType;
 		this.q = q;
 	}
 
@@ -36,6 +41,18 @@ class SqlContext {
 	DBQuery<?> getRootQuery() {
 		if (parentContext != null) return parentContext.getRootQuery();
 		return q;
+	}
+
+	String getFullTableName(Table table) {
+		StringBuilder sb = new StringBuilder();
+		String schema = table.SCHEMA_NAME();
+		if (schema != null) {
+			schema = Context.getSchemaToUse(getRootQuery().getDataSource(), schema);
+			sb.append(schema);
+			sb.append(dbType==Constants.DB_TYPE.SQLSERVER ? ".dbo." : ".");
+		}
+		sb.append(table.TABLE_NAME());
+		return sb.toString();
 	}
 
 }

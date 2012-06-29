@@ -1,16 +1,34 @@
 package test.db;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
 
 import org.hsqldb.jdbc.JDBCDataSource;
-import org.nosco.util.Misc;
 
 public class TestHSQLDB extends SharedDBTests {
 
-	String schema = Misc.readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-schema.sql"));
-	String data = Misc.readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-dataload.sql"));
+	static String readFileToString(File file) {
+		try {
+			FileReader reader = new FileReader(file);
+			StringBuffer sb = new StringBuffer();
+			int chars;
+			char[] buf = new char[1024];
+			while ((chars = reader.read(buf)) > 0) {
+				sb.append(buf, 0, chars);
+			}
+			reader.close();
+			return sb.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	String schema = readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-schema.sql"));
+	String data = readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-dataload.sql"));
 
 	@Override
 	protected void setUp() throws Exception {

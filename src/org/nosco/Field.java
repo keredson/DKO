@@ -54,15 +54,17 @@ public class Field<T> implements Cloneable {
 	public final Class<? extends Table> TABLE;
 	public final String NAME;
 	public final Class<T> TYPE;
+	final String SQL_TYPE;
 
 	String boundTable = null;
 	Field<T> unBound = null;
 
-	public Field(int index, Class<? extends Table> table, String name, Class<T> type) {
+	public Field(int index, Class<? extends Table> table, String name, Class<T> type, String sqlType) {
 		INDEX = index;
 		TABLE = table;
 		NAME = name;
 		TYPE = type;
+		SQL_TYPE = sqlType;
 	}
 
 	/**
@@ -348,6 +350,23 @@ public class Field<T> implements Cloneable {
 	 */
 	public static class FK<S extends Table> {
 
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("FK[");
+			sb.append(referencing.getName());
+			sb.append("(");
+			sb.append(Util.join(",", REFERENCING_FIELDS));
+			sb.append(")");
+			sb.append(" => ");
+			sb.append(referenced.getName());
+			sb.append("(");
+			sb.append(Util.join(",", REFERENCED_FIELDS));
+			sb.append(")");
+			sb.append("]");
+			return sb.toString();
+		}
+
 		public final int INDEX;
 		@SuppressWarnings("rawtypes")
 		private final Field[] REFERENCING_FIELDS;
@@ -399,6 +418,15 @@ public class Field<T> implements Cloneable {
 	 * @author Derek Anderson
 	 */
 	public static class PK<S extends Table> {
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("PK[");
+			sb.append(Util.join(",", FIELDS));
+			sb.append("]");
+			return super.toString();
+		}
 
 		@SuppressWarnings("rawtypes")
 		private final Field[] FIELDS;

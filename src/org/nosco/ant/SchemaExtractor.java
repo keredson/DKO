@@ -611,12 +611,12 @@ public class SchemaExtractor extends Task {
 
 		while (rs.next()) {
 			String constraint_name = rs.getString("fk_name").toLowerCase();
-			String schema = rs.getString("pktable_schem").toLowerCase();
-			String table = rs.getString("pktable_name").toLowerCase();
-			String column = rs.getString("pkcolumn_name").toLowerCase();
-			String referenced_schema = rs.getString("fktable_schem").toLowerCase();
-			String referenced_table = rs.getString("fktable_name").toLowerCase();
-			String referenced_column = rs.getString("fkcolumn_name").toLowerCase();
+			String schema = rs.getString("fktable_schem").toLowerCase();
+			String table = rs.getString("fktable_name").toLowerCase();
+			String column = rs.getString("fkcolumn_name").toLowerCase();
+			String referenced_schema = rs.getString("pktable_schem").toLowerCase();
+			String referenced_table = rs.getString("pktable_name").toLowerCase();
+			String referenced_column = rs.getString("pkcolumn_name").toLowerCase();
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {

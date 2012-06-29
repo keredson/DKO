@@ -1,5 +1,6 @@
 package org.nosco;
 
+import org.nosco.DBQuery.Join;
 import org.nosco.Field.FK;
 
 class TableInfo implements Cloneable {
@@ -12,6 +13,8 @@ class TableInfo implements Cloneable {
 	FK[] path = null;
 	TableInfo fkInfo = null;
 	boolean nameAutogenned = false;
+	Join join = null;
+	int position = -1;
 
 	public TableInfo(Table table, String tableName, FK[] path) {
 		this.table = table;

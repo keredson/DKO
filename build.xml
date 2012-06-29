@@ -138,13 +138,17 @@
 
     <mkdir dir="${reports}"/>
 
-    <junit printsummary="yes" haltonfailure="yes">
+    <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>
         <pathelement location="lib/test.jar"/>
         <pathelement location="${lib_nosco_jar}"/>
         <pathelement location="${dep_junit_jar}"/>
         <pathelement location="${dep_hsqldb_jar}"/>
       </classpath>
+
+      <jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/>
+      <jvmarg value="-Dorg.nosco.log_sql=true"/>
 
       <formatter type="plain"/>
 

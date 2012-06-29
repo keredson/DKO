@@ -70,6 +70,7 @@ INSERT INTO  item (itemid, productid, listprice, unitcost, supplier, status, att
 INSERT INTO  item (itemid, productid, listprice, unitcost, supplier, status, attr1) VALUES('EST-26','K9-CW-01',125.50, 92.00,1,'P','Adult Male');
 INSERT INTO  item (itemid, productid, listprice, unitcost, supplier, status, attr1) VALUES('EST-27','K9-CW-01',155.29, 90.00,1,'P','Adult Female');
 INSERT INTO  item (itemid, productid, listprice, unitcost, supplier, status, attr1) VALUES('EST-28','K9-RT-01',155.29, 90.00,1,'P','Adult Female');
+INSERT INTO  item (itemid, productid, listprice, unitcost, supplier, status, attr1) VALUES('EST-29','K9-RT-01',155.29, 90.00,null,'P','Adult Female');
 
 INSERT INTO inventory (itemid, qty ) VALUES ('EST-1',10000);
 INSERT INTO inventory (itemid, qty ) VALUES ('EST-2',10000);

@@ -288,6 +288,7 @@ class ClassGenerator {
 		br.write("import org.nosco.Field;\n");
 		br.write("import org.nosco.Query;\n");
 		br.write("import org.nosco.QueryFactory;\n");
+		br.write("import org.nosco.Condition;\n");
 		br.write("import org.nosco.Table;\n");
 		br.write("\n");
 		br.write("public class "+ className +" extends Table implements Comparable<"+ className +"> {\n\n");
@@ -296,12 +297,13 @@ class ClassGenerator {
 		int index = 0;
 		for (String column : columns.keySet()) {
 			br.write("\tpublic static final Field<");
-			br.write(getFieldType(pkgName, table, column, columns.getString(column)));
+			String sqlType = columns.getString(column);
+			br.write(getFieldType(pkgName, table, column, sqlType));
 			br.write("> "+ getFieldName(column));
-			br.write(" = new Field<"+ getFieldType(pkgName, table, column, columns.getString(column)));
+			br.write(" = new Field<"+ getFieldType(pkgName, table, column, sqlType));
 			br.write(">("+ index +", "+ className +".class, \""+ column);
-			br.write("\", "+ getFieldType(pkgName, table, column, columns.getString(column)) +".class");
-			br.write(");\n");
+			br.write("\", "+ getFieldType(pkgName, table, column, sqlType) +".class");
+			br.write(", \""+ sqlType +"\");\n");
 			++index;
 		}
 		br.write("\n");
@@ -463,7 +465,10 @@ class ClassGenerator {
 		//	br.write(".use("+ pkg +"."+ dataSourceName +"."+ pkgName.toUpperCase() +")");
 		//}
 		br.write(";\n\n");
-		br.write("\tstatic DataSource __DEFAULT_DATASOURCE = "+ pkg +"." + dataSourceName +".INSTANCE;\n\n");
+		if (dataSourceName != null) {
+			br.write("\tstatic DataSource __DEFAULT_DATASOURCE = "+ pkg +"."
+					+ dataSourceName +".INSTANCE;\n\n");
+		}
 
 		// write toString
 		br.write("\t public String toString() {\n");
@@ -587,16 +592,7 @@ class ClassGenerator {
 		br.write("\t\telse {throw new RuntimeException(\"unknown FK\");}\n");
 		br.write("\t}\n\n");
 
-		// write SET_FK_SET
-		/*
-	protected void SET_FK_SET(Field.FK field, Query<?> v) {
-		if (false);
-		if (Instrument.FK_INSTRUMENT_TYPE.equals(field)) {
-		    __NOSCO_CACHED_FK_SET___instrument___instrument_type_id = (Query<Instrument>) v;
-		}
-		else {throw new RuntimeException("unknown FK");}
-	}
-		 */
+		// write SET_FK_SET methods
 		br.write("\t@SuppressWarnings(\"unchecked\")\n");
 		br.write("\tprotected void SET_FK_SET(Field.FK<?> fk, Query<?> v) {\n");
 		br.write("\t\tif (false);\n");
@@ -642,14 +638,16 @@ class ClassGenerator {
 		    		+ Util.join("__", fk.columns.keySet());
 		    br.write("\tprivate Query<"+ relatedTableClassName +"> "+ localVar +" = null;\n");
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() {\n");
-		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
-		    br.write("\t\telse return "+ relatedTableClassName +".ALL");
+		    br.write("\t\tCondition condition = Condition.TRUE");
 		    for (Entry<String, String> e : fk.columns.entrySet()) {
-			String relatedColumn = e.getKey();
-			String column = e.getValue();
-			br.write(".where("+ relatedTableClassName +"."+ getFieldName(relatedColumn) +".eq(get"+ getInstanceMethodName(column) +"()))");
+				String relatedColumn = e.getKey();
+				String column = e.getValue();
+				br.write(".and("+ relatedTableClassName +"."+ getFieldName(relatedColumn) +".eq(get"+ getInstanceMethodName(column) +"()))");
 		    }
 		    br.write(";\n");
+		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ".where(condition);\n");
+		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
+		    br.write("\t\treturn "+ relatedTableClassName +".ALL.where(condition);\n");
 		    br.write("\t}\n\n");
 		}
 

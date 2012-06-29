@@ -18,6 +18,7 @@ import org.nosco.json.JSONObject;
 class Util {
 
 	static String derefField(Field<?> field, SqlContext context) {
+		if (context == null) return field.toString();
 		if (field.isBound()) return field.toString();
 		List<String> selectedTables = new ArrayList<String>();
 		List<TableInfo> unboundTables = new ArrayList<TableInfo>();
@@ -87,7 +88,7 @@ class Util {
 		try {
 			return (PK<T>) t.getClass().getField("PK").get(null);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		}
 	}
@@ -137,7 +138,7 @@ class Util {
 	}
 
 	static void log(String sql, List<Object> bindings) {
-		PrintStream log = null; //System.out;
+		PrintStream log = null; // System.err || null;
 		String property = System.getProperty(Constants.PROP_LOG_SQL);
 		String property2 = System.getProperty(Constants.PROP_LOG);
 		if ("System.err".equalsIgnoreCase(property))

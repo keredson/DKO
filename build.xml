@@ -1,7 +1,10 @@
 <project name="nosco" default="jar" basedir=".">
-    <description>
-        get to know youe database...
-    </description>
+
+
+
+  <!-- ========[ BEGIN PROPS ]======== -->
+  
+    <description>get to know youe database...</description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
   <property name="build" location="bin"/>
@@ -12,6 +15,12 @@
 
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>
+
+  <!-- ========[ END PROPS ]======== -->
+
+
+
+  <!-- ========[ BEGIN BASIC DEVELOPMENT TASKS ]======== -->
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -39,56 +48,12 @@
     <javac srcdir="${src}" destdir="${build}" debug="on"/>
   </target>
 
-
-  <target name="unit_test_extract_schema" depends="jar">
-    <taskdef name="noscoextractschema" classname="org.nosco.ant.SchemaExtractor" 
-             classpath="${lib_nosco_jar}:${dep_hsqldb_jar}"/>
-    <noscoextractschema
-    	url="jdbc:hsqldb:file:deps/jpetstore/hsql/jpetstore.jsqldb"
-    	username="sa"
-    	password=""
-    	schemas="public"
-    	out="bin/unit_test_schema.json"
-    />
-  </target>
-
-  <target name="unit_test_gen_src" depends="unit_test_extract_schema">
-    <taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator" 
-             classpath="${lib_nosco_jar}"/>
-            
-    <noscogen package="org.nosco.unittest" 
-        debug="true"
-        javaoutputdir="gensrc"
-        jarfile="bin/unittest.jar"
-		schemas="bin/unit_test_schema.json"
-    />
-    <javac srcdir="gensrc" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:/usr/share/java/mysql.jar:${dep_junit_jar}:${dep_hsqldb_jar}"
-   	/>
-  </target>
-
-  <target name="compile_test" depends="unit_test_gen_src"
-        description="compile the source " >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="test" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:/usr/share/java/mysql.jar:${dep_junit_jar}:${dep_hsqldb_jar}"
-   	/>
-  </target>
-
   <target name="jar" depends="compile"
         description="generate the distribution" >
     <!-- Create the distribution directory -->
     <mkdir dir="lib"/>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="${lib_nosco_jar}" basedir="${build}"/>
-  </target>
-
-  <target name="jar_test" depends="compile_test"
-        description="generate the distribution" >
-    <!-- Create the distribution directory -->
-    <mkdir dir="lib"/>
-    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="lib/test.jar" basedir="bin_test"/>
   </target>
 
   <target name="dist" depends="compile"
@@ -134,10 +99,59 @@
     </javadoc>
   </target>
 
-  <target name="unit_test" depends="jar_test">
+  <!-- ========[ END BASIC DEVELOPMENT TASKS ]======== -->
 
+
+  
+  <!-- ========[ BEGIN UNIT TEST SHARED ]======== -->
+
+  <target name="compile-test" depends="unit-test-gen-src-hsql" description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="test" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:/usr/share/java/mysql.jar:${dep_junit_jar}:${dep_hsqldb_jar}"
+   	/>
+  </target>
+  
+  <target name="jar-test" depends="compile-test" description="generate the distribution" >
+    <mkdir dir="lib"/>
+    <jar jarfile="lib/test.jar" basedir="bin_test"/>
+  </target>
+
+  <target name="unit-test" depends="unit-test-hsql">
+  </target>
+
+  <!-- ========[ END UNIT TEST SHARED ]======== -->
+  
+  
+  
+  <!-- ========[ BEGIN UNIT TEST HSQL ]======== -->
+  
+  <target name="unit-test-extract-schema-hsql" depends="jar">
+    <taskdef name="noscoextractschema" classname="org.nosco.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_hsqldb_jar}"/>
+    <noscoextractschema
+    	url="jdbc:hsqldb:file:deps/jpetstore/hsql/jpetstore.jsqldb"
+    	username="sa"
+    	password=""
+    	schemas="public"
+    	out="bin/unit_test_schema.json"
+    />
+  </target>
+
+  <target name="unit-test-gen-src-hsql" depends="unit-test-extract-schema-hsql">
+    <taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <noscogen package="org.nosco.unittest" 
+      debug="true"
+      javaoutputdir="gensrc"
+      jarfile="bin/unittest.jar"
+      schemas="bin/unit_test_schema.json"
+    />
+    <javac srcdir="gensrc" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:/usr/share/java/mysql.jar:${dep_junit_jar}:${dep_hsqldb_jar}"
+   	/>
+  </target>
+
+  <target name="unit-test-hsql" depends="jar-test">
     <mkdir dir="${reports}"/>
-
     <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>
         <pathelement location="lib/test.jar"/>
@@ -145,21 +159,18 @@
         <pathelement location="${dep_junit_jar}"/>
         <pathelement location="${dep_hsqldb_jar}"/>
       </classpath>
-
-      <jvmarg value="-Xdebug"/>
+      <!--jvmarg value="-Xdebug"/>
       <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/>
-      <jvmarg value="-Dorg.nosco.log_sql=true"/>
-
-      <formatter type="plain"/>
-
+      <jvmarg value="-Dorg.nosco.log_sql=true"/-->
+      <!--formatter type="plain"/-->
       <batchtest fork="yes" todir="${reports}">
         <fileset dir="test">
           <include name="**/*TestHSQL*.java"/>
         </fileset>
       </batchtest>
-
     </junit>
+  </target>
 
-</target>
+  <!-- ========[ END UNIT TEST HSQL ]======== -->
 
 </project>

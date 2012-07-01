@@ -79,6 +79,10 @@ public class Constants {
 				cache.put(ds, HSQL);
 				return HSQL;
 			}
+			if (className.contains("com.mysql")) {
+				cache.put(ds, MYSQL);
+				return MYSQL;
+			}
 
 			// attempt to detect from a connection
 			Connection conn = null;

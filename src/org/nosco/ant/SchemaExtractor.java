@@ -68,37 +68,19 @@ public class SchemaExtractor extends Task {
 			this.dbType  = Constants.DB_TYPE.HSQL;
 	}
 
-	public void setURL(String s) {
+	public void setURL(String s) throws Exception {
 		this.url = s;
 		if (url.startsWith("jdbc:sqlserver")) {
-			try {
-				Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
-				dbType = DB_TYPE.SQLSERVER;
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+			dbType = DB_TYPE.SQLSERVER;
+		}
+		if (url.startsWith("jdbc:mysql")) {
+			Driver d = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+			dbType = DB_TYPE.MYSQL;
 		}
 		if (url.startsWith("jdbc:hsqldb")) {
-			try {
-				Driver d = (Driver) Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
-				dbType = DB_TYPE.HSQL;
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Driver d = (Driver) Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
+			dbType = DB_TYPE.HSQL;
 		}
 	}
 
@@ -563,12 +545,12 @@ public class SchemaExtractor extends Task {
 
 		while (rs.next()) {
 			String constraint_name = rs.getString("constraint_name");
-			String schema = rs.getString("table_schema");
-			String table = rs.getString("table_name");
-			String column = rs.getString("column_name");
-			String referenced_schema = rs.getString("referenced_table_schema");
-			String referenced_table = rs.getString("referenced_table_name");
-			String referenced_column = rs.getString("referenced_column_name");
+			String schema = rs.getString("table_schema").toLowerCase();
+			String table = rs.getString("table_name").toLowerCase();
+			String column = rs.getString("column_name").toLowerCase();
+			String referenced_schema = rs.getString("referenced_table_schema").toLowerCase();
+			String referenced_table = rs.getString("referenced_table_name").toLowerCase();
+			String referenced_column = rs.getString("referenced_column_name").toLowerCase();
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {

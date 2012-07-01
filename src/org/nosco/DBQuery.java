@@ -220,8 +220,12 @@ class DBQuery<T extends Table> implements Query<T> {
 		if (context.inTransaction(ds)) {
 			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
 		}
-		if (ds.isWrapperFor(MirroredDataSource.class)) {
-			return new Tuple2<Connection,Boolean>(ds.unwrap(MirroredDataSource.class).getMirroredConnection(), true);
+		try {
+			if (ds.isWrapperFor(MirroredDataSource.class)) {
+				return new Tuple2<Connection,Boolean>(ds.unwrap(MirroredDataSource.class).getMirroredConnection(), true);
+			}
+		} catch (AbstractMethodError e) {
+			/* ignore - mysql doesn't implement this method */
 		}
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}

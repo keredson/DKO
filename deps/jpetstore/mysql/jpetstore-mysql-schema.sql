@@ -1,9 +1,10 @@
-CREATE DATABASE JPETSTORE;
-USE JPETSTORE;
+DROP DATABASE IF EXISTS nosco_test_jpetstore;
+CREATE DATABASE nosco_test_jpetstore;
+USE nosco_test_jpetstore;
 
---DROP INDEX IF EXISTS productCat;
---DROP INDEX IF EXISTS productName;
---DROP INDEX IF EXISTS itemProd;
+-- DROP INDEX IF EXISTS productCat;
+-- DROP INDEX IF EXISTS productName;
+-- DROP INDEX IF EXISTS itemProd;
 
 DROP TABLE IF EXISTS lineitem;
 DROP TABLE IF EXISTS orderstatus;

@@ -21,6 +21,7 @@ import org.nosco.unittest.public_.Supplier;
 public class SharedDBTests extends TestCase {
 
 	DataSource ds = null;
+	ConnectionCountingDataSource ccds = null;
 
 	public void test01() throws SQLException {
 		Connection conn = ds.getConnection();
@@ -68,7 +69,6 @@ public class SharedDBTests extends TestCase {
 		// counts should be the same w/ and w/o the FK reference
 		assertTrue(itemCount == itemCount2);
 		int count = 0;
-		ConnectionCountingDataSource ccds = new ConnectionCountingDataSource(ds);
 		boolean sawEST29 = false;
 		for (Item item : Item.ALL.use(ccds).with(Item.FK_SUPPLIER)) {
 			count++;
@@ -85,7 +85,6 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testFKNoWith() throws SQLException {
-		ConnectionCountingDataSource ccds = new ConnectionCountingDataSource(ds);
 		Undoer x = Context.getVMContext().setDataSource(ccds);
 		for (Item item : Item.ALL) { //.with(Item.FK_SUPPLIER)
 			// this should create O(n) queries because we didn't specify with() above
@@ -101,7 +100,6 @@ public class SharedDBTests extends TestCase {
 		int count1 = Supplier.ALL.count();
 		int count2 = Supplier.ALL.with(Item.FK_SUPPLIER).count();
 		assertTrue(count1 == count2);
-		ConnectionCountingDataSource ccds = new ConnectionCountingDataSource(ds);
 		Undoer y = Context.getVMContext().setDataSource(ccds);
 		for (Supplier s : Supplier.ALL.with(Item.FK_SUPPLIER)) {
 			System.err.println(s);
@@ -116,7 +114,6 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testFKTwoLevels() throws SQLException {
-		ConnectionCountingDataSource ccds = new ConnectionCountingDataSource(ds);
 		Undoer u = Context.getVMContext().setDataSource(ccds);
 		for (Item i : Item.ALL.with(Item.FK_PRODUCTID_PRODUCT, Product.FK_CATEGORY)) {
 			assertNotNull(i);

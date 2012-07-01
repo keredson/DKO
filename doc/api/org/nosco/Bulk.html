@@ -108,7 +108,7 @@ Provides optimized methods for CRUD operations on collections. &nbsp;
  The latter deletes them from the database without transferring everything over the network.
  <p>
  Note that all these functions are streaming enabled. &nbsp; That means the following:
- <pre>   <code>DataSource from new DataSource(from_db...);
+ <pre>   <code>DataSource from = new DataSource(from_db...);
    DataSource to new DataSource(to_db...);
    new Bulk(to).insertAll(MyObject.ALL.use(from).where(conditions...));</code></pre>
  Will move all data from the "from" to the "to" database without having to load the entire

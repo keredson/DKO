@@ -23,8 +23,7 @@ import org.nosco.Field.PK;
 public abstract class Table {
 
 	/**
-	 * Please do not use.
-	 * @return
+	 * @return The database schema
 	 */
 	protected abstract String SCHEMA_NAME();
 
@@ -35,11 +34,10 @@ public abstract class Table {
 	protected abstract String TABLE_NAME();
 
 	/**
-	 * Please do not use.
-	 * @return
+	 * @return A list of the fields defined for this class.
 	 */
 	@SuppressWarnings("rawtypes")
-	protected abstract Field[] FIELDS();
+	public abstract Field[] FIELDS();
 
 	/**
 	 * Please do not use.

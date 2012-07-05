@@ -575,25 +575,40 @@ class DBQuery<T extends Table> implements Query<T> {
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = getDBType();
 		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		for (Join join : joinsToOne) {
-			TableInfo tableInfo = join.reffedTableInfo;
-			Table table = tableInfo.table;
-			sb.append(" ");
-			sb.append(join.type);
-			sb.append(" ");
-			sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
-			sb.append(" on ");
-			sb.append(join.condition.getSQL(context));
-		}
-		for (Join join : joinsToMany) {
-			TableInfo tableInfo = join.reffingTableInfo;
-			Table table = tableInfo.table;
-			sb.append(" ");
-			sb.append(join.type);
-			sb.append(" ");
-			sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
-			sb.append(" on ");
-			sb.append(join.condition.getSQL(context));
+		ArrayList<Join> joinsToOne = new ArrayList<Join>(this.joinsToOne);
+		ArrayList<Join> joinsToMany = new ArrayList<Join>(this.joinsToMany);
+		Set<Class> seen = new HashSet<Class>();
+		seen.add(getType());
+		while (!joinsToOne.isEmpty() || !joinsToMany.isEmpty()) {
+			System.err.println("woot1");
+			for (int i=0; i<joinsToOne.size(); ++i) {
+				Join join  = joinsToOne.get(i);
+				if (!seen.contains(join.reffingTableInfo.tableClass)) continue;
+				seen.add(join.reffedTableInfo.tableClass);
+				joinsToOne.remove(i--);
+				TableInfo tableInfo = join.reffedTableInfo;
+				Table table = tableInfo.table;
+				sb.append(" ");
+				sb.append(join.type);
+				sb.append(" ");
+				sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+				sb.append(" on ");
+				sb.append(join.condition.getSQL(context));
+			}
+			for (int i=0; i<joinsToMany.size(); ++i) {
+				Join join  = joinsToMany.get(i);
+				if (!seen.contains(join.reffedTableInfo.tableClass)) continue;
+				seen.add(join.reffingTableInfo.tableClass);
+				joinsToMany.remove(i--);
+				TableInfo tableInfo = join.reffingTableInfo;
+				Table table = tableInfo.table;
+				sb.append(" ");
+				sb.append(join.type);
+				sb.append(" ");
+				sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+				sb.append(" on ");
+				sb.append(join.condition.getSQL(context));
+			}
 		}
 		return sb.toString();
 	}

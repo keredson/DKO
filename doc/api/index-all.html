@@ -329,7 +329,7 @@ Constructor for class org.nosco.<A HREF="./org/nosco/Field.PK.html" title="class
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Table.html#FIELDS()"><B>FIELDS()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
-<DD>Please do not use.
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Context.Undoer.html#finalize()"><B>finalize()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A>
 <DD>&nbsp;
@@ -345,6 +345,12 @@ Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.n
 <DT><A HREF="./org/nosco/Function.html" title="class in org.nosco"><B>Function</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>A collection of SQL functions.<DT><A HREF="./org/nosco/Function.html#Function()"><B>Function()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>Function.CustomFunction</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>The list of built-in functions is far from comprehensive.<DT><A HREF="./org/nosco/Function.CustomFunction.html#Function.CustomFunction(java.lang.String)"><B>Function.CustomFunction(String)</B></A> - 
+Constructor for class org.nosco.<A HREF="./org/nosco/Function.CustomFunction.html" title="class in org.nosco">Function.CustomFunction</A>
+<DD>For a simple, no argument SQL function like NOW().
+<DT><A HREF="./org/nosco/Function.CustomFunction.html#Function.CustomFunction(java.lang.String, java.lang.Object...)"><B>Function.CustomFunction(String, Object...)</B></A> - 
+Constructor for class org.nosco.<A HREF="./org/nosco/Function.CustomFunction.html" title="class in org.nosco">Function.CustomFunction</A>
+<DD>For functions that take arguments.
 </DL>
 <HR>
 <A NAME="_G_"><!-- --></A><H2>
@@ -478,12 +484,6 @@ Method in class org.nosco.<A HREF="./org/nosco/Condition.html" title="class in o
 <DD>Internal function.
 <DT><A HREF="./org/nosco/Condition.Literal.html#getSQL(java.lang.StringBuffer, java.util.List, org.nosco.SqlContext)"><B>getSQL(StringBuffer, List&lt;Object&gt;, SqlContext)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Condition.Literal.html" title="class in org.nosco">Condition.Literal</A>
-<DD>&nbsp;
-<DT><A HREF="./org/nosco/Function.html#getSQL(org.nosco.SqlContext)"><B>getSQL(SqlContext)</B></A> - 
-Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>&nbsp;
-<DT><A HREF="./org/nosco/Function.html#getSQLBindings()"><B>getSQLBindings()</B></A> - 
-Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#getTheOnly()"><B>getTheOnly()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
@@ -844,7 +844,7 @@ Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.n
  based on if the object came from the database or not.
 <DT><A HREF="./org/nosco/Table.html#SCHEMA_NAME()"><B>SCHEMA_NAME()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
-<DD>Please do not use.
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant"><B>SchemaExtractor</B></A> - Class in <A HREF="./org/nosco/ant/package-summary.html">org.nosco.ant</A><DD>Extracts schema information from a provided database into a JSON file.<DT><A HREF="./org/nosco/ant/SchemaExtractor.html#SchemaExtractor()"><B>SchemaExtractor()</B></A> - 
 Constructor for class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant">SchemaExtractor</A>
 <DD>&nbsp;
@@ -1062,6 +1062,9 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Query.html#top(int)"><B>top(int)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Returns the first n rows of the query.
+<DT><A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html#toString()"><B>toString()</B></A> - 
+Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionCountingDataSource.html" title="class in org.nosco.datasource">ConnectionCountingDataSource</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#toString()"><B>toString()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
 <DD>&nbsp;

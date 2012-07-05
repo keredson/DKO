@@ -109,17 +109,17 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		protected String SCHEMA_NAME() {
+		public String SCHEMA_NAME() {
 			return null;
 		}
 
 		@Override
-		protected String TABLE_NAME() {
+		public String TABLE_NAME() {
 			return tmpTableName;
 		}
 
 		@Override
-		protected Field[] FIELDS() {
+		public Field[] FIELDS() {
 			return fields;
 		}
 

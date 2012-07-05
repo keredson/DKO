@@ -49,8 +49,8 @@ class DBQuery<T extends Table> implements Query<T> {
 	List<Table> tables = new ArrayList<Table>();
 	Set<String> usedTableNames = new HashSet<String>();
 	List<TableInfo> tableInfos = new ArrayList<TableInfo>();
-	List<Join> joins = new ArrayList<Join>();
-	List<Join> otherJoins = new ArrayList<Join>();
+	List<Join> joinsToOne = new ArrayList<Join>();
+	List<Join> joinsToMany = new ArrayList<Join>();
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
 	private List<DIRECTION> orderByDirections = null;
@@ -84,8 +84,8 @@ class DBQuery<T extends Table> implements Query<T> {
 		}
 		type = q.type;
 		tables.addAll(q.tables);
-		joins.addAll(q.joins);
-		otherJoins.addAll(q.otherJoins);
+		joinsToOne.addAll(q.joinsToOne);
+		joinsToMany.addAll(q.joinsToMany);
 		usedTableNames.addAll(q.usedTableNames);
 		try { for (TableInfo x : q.tableInfos) tableInfos.add((TableInfo) x.clone()); }
 		catch (CloneNotSupportedException e) { /* ignore */ }
@@ -193,7 +193,32 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Iterator<T> iterator() {
+		sanityCheckToManyJoins();
 		return new Select<T>(this).iterator();
+	}
+
+	private void sanityCheckToManyJoins() {
+		Field<?>[] selectFields = getSelectFields();
+		for (Join join : this.joinsToMany) {
+			List<Field<?>> missing = new ArrayList<Field<?>>();
+			for (Field<?> f1 : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+				boolean found = false;
+				for (Field<?> f2 : selectFields) {
+					if (f1.sameField(f2)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					missing.add(f1);
+				}
+			}
+			if (!missing.isEmpty()) {
+				String msg = "The following fields have been excluded from your selected fields list: "
+						+ missing +" but are required by the join you're using: "+ join.fk;
+				throw new RuntimeException(msg);
+			}
+		}
 	}
 
 	@Override
@@ -538,8 +563,18 @@ class DBQuery<T extends Table> implements Query<T> {
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = getDBType();
 		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		for (Join join : joins) {
+		for (Join join : joinsToOne) {
 			TableInfo tableInfo = join.reffedTableInfo;
+			Table table = tableInfo.table;
+			sb.append(" ");
+			sb.append(join.type);
+			sb.append(" ");
+			sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+			sb.append(" on ");
+			sb.append(join.condition.getSQL(context));
+		}
+		for (Join join : joinsToMany) {
+			TableInfo tableInfo = join.reffingTableInfo;
 			Table table = tableInfo.table;
 			sb.append(" ");
 			sb.append(join.type);
@@ -591,8 +626,11 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	List<TableInfo> getAllTableInfos() {
 		List<TableInfo> all = new ArrayList<TableInfo>(tableInfos);
-		for (Join join : joins) {
+		for (Join join : joinsToOne) {
 			all.add(join.reffedTableInfo);
+		}
+		for (Join join : joinsToMany) {
+			all.add(join.reffingTableInfo);
 		}
 		return all;
 	}
@@ -827,7 +865,7 @@ class DBQuery<T extends Table> implements Query<T> {
 					info.join = join;
 					join.type = "left outer join";
 					join.fk  = field;
-					q.joins.add(join);
+					q.joinsToOne.add(join);
 				} else if (Util.sameTable(reffedTable, baseTables[i])) {
 					baseTables[i+1] = refingTable;
 					String tableName = genTableName(refingTable, q.usedTableNames);
@@ -839,9 +877,9 @@ class DBQuery<T extends Table> implements Query<T> {
 					join.reffingTableInfo = info;
 					join.reffedTableInfo = prevTableInfo;
 					info.join = join;
-//					join.type = "join";
+					join.type = "left outer join";
 					join.fk  = field;
-					q.otherJoins.add(join);
+					q.joinsToMany.add(join);
 				} else {
 					throw new IllegalArgumentException("you have a break in your FK chain");
 				}

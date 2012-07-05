@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 
 class SelectAsObjectArrayIterable implements Iterable<Object[]>, Iterator<Object[]> {
@@ -12,15 +13,20 @@ class SelectAsObjectArrayIterable implements Iterable<Object[]>, Iterator<Object
 
 	@Override
 	public boolean hasNext() {
-		return select.hasNext();
+		try {
+			return select.peekNextRow() != null;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public Object[] next() {
-		select.next();
-		Object[] ret = new Object[select.lastFieldValues.length];
-		System.arraycopy(select.lastFieldValues, 0, ret, 0, select.lastFieldValues.length);
-		return ret;
+		try {
+			return select.getNextRow();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

@@ -27,14 +27,14 @@ public abstract class Function {
 	 * @return
 	 */
 	public static <T> Function IFNULL(Field<? extends T> f, T v) {
-		return new SimpleFunction("ifnull", "isnull", f, v);
+		return new CustomFunction("ifnull", "isnull", "ifnull", f, v);
 	}
 
 	/**
 	 * @return the sql NOW() function (or GETDATE() on sql server)
 	 */
 	public static Function NOW() {
-		return new SimpleFunction("now", "getdate");
+		return new CustomFunction("now", "getdate", "now");
 	}
 
 	/**
@@ -50,7 +50,7 @@ public abstract class Function {
 	 * @return
 	 */
 	public static <T> Function COALESCE(Field<? extends T>... fields) {
-		return new SimpleFunction("coalesce", (Object[]) fields);
+		return new CustomFunction("coalesce", (Object[]) fields);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class Function {
 	 * @return
 	 */
 	public static <T> Function COALESCE(Field<? extends T> field, T v) {
-		return new SimpleFunction("coalesce", field, v);
+		return new CustomFunction("coalesce", field, v);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public abstract class Function {
 	 * @return
 	 */
 	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2, T v) {
-		return new SimpleFunction("coalesce", f1, f2, v);
+		return new CustomFunction("coalesce", f1, f2, v);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public abstract class Function {
 	 */
 	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2,
 			Field<? extends T> f3, T v) {
-		return new SimpleFunction("coalesce", f1, f2, f3, v);
+		return new CustomFunction("coalesce", f1, f2, f3, v);
 	}
 
 	/**
@@ -102,50 +102,74 @@ public abstract class Function {
 	 */
 	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2,
 			Field<? extends T> f3, Field<? extends T> f4, T v) {
-		return new SimpleFunction("coalesce", f1, f2, f3, f4, v);
+		return new CustomFunction("coalesce", f1, f2, f3, f4, v);
 	}
 
-	public abstract String getSQL(SqlContext context);
+	abstract String getSQL(SqlContext context);
 
-	public abstract Collection<? extends Object> getSQLBindings();
+	abstract Collection<? extends Object> getSQLBindings();
 
 
-	private static class SimpleFunction extends Function {
+	/**
+	 * The list of built-in functions is far from comprehensive.  
+	 * Use this to implement your own one-off functions.
+	 * Please submit functions you think are useful back to the project! 
+	 */
+	public static class CustomFunction extends Function {
 
 		private String mysql;
 		private String sqlserver;
+		private String hsql;
 		private Object[] objects = null;
-		String sql = null;
+		private String sql = null;
 		private List<Object> bindings = null;
 
-		SimpleFunction(String func) {
+		/**
+		 * For a simple, no argument SQL function like NOW().
+		 * @param func
+		 */
+		public CustomFunction(String func) {
 			this.mysql = func;
 			this.sqlserver = func;
+			this.hsql = func;
 		}
 
-		SimpleFunction(String func, Object... objects) {
+		/**
+		 * For functions that take arguments.  The first string is the function name.
+		 * The remaining parameters are passed as arguments.
+		 * If an argument is a field it is referenced to a table in the from clause.
+		 * For all others, the object is passed verbatim to the PreparedStatement with setObject(). 
+		 * @param func the name of the function
+		 * @param objects the arguments of the function
+		 */
+		public CustomFunction(String func, Object... objects) {
 			this.mysql = func;
 			this.sqlserver = func;
+			this.hsql = func;
+			this.objects = objects;
 		}
 
-		SimpleFunction(String mysql, String sqlserver) {
+		CustomFunction(String mysql, String sqlserver, String hsql) {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
+			this.hsql = hsql;
 		}
 
-		SimpleFunction(String mysql, String sqlserver, Object... objects) {
+		CustomFunction(String mysql, String sqlserver, String hsql, Object... objects) {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
+			this.hsql = hsql;
 			this.objects  = objects;
 		}
 
 		@Override
-		public String getSQL(SqlContext context) {
+		String getSQL(SqlContext context) {
 			if (sql != null) return sql;
 			StringBuilder sb = new StringBuilder();
 			switch (context.dbType) {
 			case MYSQL:		sb.append(mysql); break;
 			case SQLSERVER:	sb.append(sqlserver); break;
+			case HSQL:		sb.append(hsql); break;
 			default: throw new RuntimeException("unknown DB_TYPE "+ context.dbType);
 			}
 			sb.append("(");
@@ -168,7 +192,7 @@ public abstract class Function {
 		}
 
 		@Override
-		public Collection<? extends Object> getSQLBindings() {
+		Collection<? extends Object> getSQLBindings() {
 			return bindings == null ? Collections.emptyList() : bindings;
 		}
 

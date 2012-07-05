@@ -80,6 +80,10 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * Returns the database-calculated count of the query.
 	 * Does not download the objects into the JVM.
 	 * Much faster than .asList().size() or counting the objects yourself.
+	 * WARNING: Joins can inflate this number and cause a apparent discrepancy with .asList().size().
+	 * For example, if table A has a FK to table B and you do a query like {@code B.ALL.with(A.B_FK)}
+	 * the size counted by the database likely will be different from the size counted by you counting
+	 * objects.  This is because the database does not merge objects into sets for you like nosco does.
 	 * @return
 	 * @throws SQLException
 	 */

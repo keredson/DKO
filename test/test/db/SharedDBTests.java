@@ -12,10 +12,10 @@ import org.nosco.Context;
 import org.nosco.Context.Undoer;
 import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
-import org.nosco.unittest.public_.Category;
-import org.nosco.unittest.public_.Item;
-import org.nosco.unittest.public_.Product;
-import org.nosco.unittest.public_.Supplier;
+import org.nosco.unittest.nosco_test_jpetstore.Category;
+import org.nosco.unittest.nosco_test_jpetstore.Item;
+import org.nosco.unittest.nosco_test_jpetstore.Product;
+import org.nosco.unittest.nosco_test_jpetstore.Supplier;
 
 
 public class SharedDBTests extends TestCase {
@@ -43,7 +43,7 @@ public class SharedDBTests extends TestCase {
 	public void test04() throws SQLException {
 		int count = 0;
 		for (Item i : Item.ALL.use(ds).top(10)) ++count;
-		assertTrue(count == 10);
+		assertEquals(10, count);
 	}
 
 	public void testWithAndCross() throws SQLException {
@@ -79,9 +79,9 @@ public class SharedDBTests extends TestCase {
 			}
 		}
 		assertTrue(sawEST29);
-		assertTrue(itemCount == count);
+		assertEquals(itemCount, count);
 		// make sure the calls to the FK object didn't gen new queries
-		assertTrue(ccds.getCount() == 1);
+		assertEquals(1, ccds.getCount());
 	}
 
 	public void testFKNoWith() throws SQLException {
@@ -94,22 +94,39 @@ public class SharedDBTests extends TestCase {
 	}
 
 	@SuppressWarnings("unused")
-	public void testFKReverse() throws SQLException {
-		System.err.println("testFKReverse start");
+	public void testFKReverseCounts() throws SQLException {
+		System.err.println("testFKReverseCounts start");
 		Undoer x = Context.getVMContext().setDataSource(ds);
 		int count1 = Supplier.ALL.count();
 		int count2 = Supplier.ALL.with(Item.FK_SUPPLIER).count();
-		assertTrue(count1 == count2);
+		int count3 = 0;
+		int supplierCount = 0;
+		for (Supplier s : Supplier.ALL) {
+			supplierCount += 1;
+			int itemCount = s.getItemSet().count();
+			count3 += Math.max(1, itemCount);
+		}
+		assertEquals(count2, count3);
+		assertEquals(count1, supplierCount);
+	}
+
+	@SuppressWarnings("unused")
+	public void testFKReverse() throws SQLException {
+		System.err.println("testFKReverse start");
+		int count1 = Supplier.ALL.count();
+		int count2 = 0;
 		Undoer y = Context.getVMContext().setDataSource(ccds);
 		for (Supplier s : Supplier.ALL.with(Item.FK_SUPPLIER)) {
+			count2++;
 			System.err.println(s);
 			for (Item i : s.getItemSet()) {
 				System.err.println("\t"+i);
 			}
 			if (s.getSuppid() == 1) assertTrue(s.getItemSet().count() > 0);
-			else assertTrue(s.getItemSet().count() == 0);
+			else assertEquals(0, s.getItemSet().count());
 		}
-		assertTrue(ccds.getCount() == 2);
+		assertEquals(count1, count2);
+		assertEquals(1, ccds.getCount());
 		System.err.println("testFKReverse done");
 	}
 
@@ -121,7 +138,7 @@ public class SharedDBTests extends TestCase {
 			assertNotNull(i.getProductidFK().getCategoryFK());
 			System.err.println(i);
 		}
-		assertTrue(ccds.getCount() == 1);
+		assertEquals(1, ccds.getCount());
 	}
 
 }

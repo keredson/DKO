@@ -638,6 +638,8 @@ class ClassGenerator {
 		    		+ Util.join("__", fk.columns.keySet());
 		    br.write("\tprivate Query<"+ relatedTableClassName +"> "+ localVar +" = null;\n");
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() {\n");
+		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
+		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
 		    br.write("\t\tCondition condition = Condition.TRUE");
 		    for (Entry<String, String> e : fk.columns.entrySet()) {
 				String relatedColumn = e.getKey();
@@ -645,8 +647,6 @@ class ClassGenerator {
 				br.write(".and("+ relatedTableClassName +"."+ getFieldName(relatedColumn) +".eq(get"+ getInstanceMethodName(column) +"()))");
 		    }
 		    br.write(";\n");
-		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ".where(condition);\n");
-		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
 		    br.write("\t\treturn "+ relatedTableClassName +".ALL.where(condition);\n");
 		    br.write("\t}\n\n");
 		}

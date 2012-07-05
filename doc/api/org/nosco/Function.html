@@ -54,7 +54,7 @@ function windowTitle()
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../org/nosco/Field.PK.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/Query.html" title="interface in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?org/nosco/Function.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="Function.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -74,7 +74,7 @@ function windowTitle()
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
@@ -93,6 +93,9 @@ Class Function</H2>
 java.lang.Object
   <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Function</B>
 </PRE>
+<DL>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco">Function.CustomFunction</A></DD>
+</DL>
 <HR>
 <DL>
 <DT><PRE>public abstract class <B>Function</B><DT>extends java.lang.Object</DL>
@@ -118,7 +121,24 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <HR>
 
 <P>
+<!-- ======== NESTED CLASS SUMMARY ======== -->
 
+<A NAME="nested_class_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Nested Class Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;class</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco">Function.CustomFunction</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The list of built-in functions is far from comprehensive.</TD>
+</TR>
+</TABLE>
+&nbsp;
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 
 <A NAME="constructor_summary"><!-- --></A>
@@ -232,22 +252,6 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Function.html#GETDATE()">GETDATE</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>abstract &nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#getSQL(org.nosco.SqlContext)">getSQL</A></B>(org.nosco.SqlContext&nbsp;context)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>abstract &nbsp;java.util.Collection&lt;? extends java.lang.Object&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#getSQLBindings()">getSQLBindings</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -437,28 +441,6 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
-<HR>
-
-<A NAME="getSQL(org.nosco.SqlContext)"><!-- --></A><H3>
-getSQL</H3>
-<PRE>
-public abstract java.lang.String <B>getSQL</B>(org.nosco.SqlContext&nbsp;context)</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSQLBindings()"><!-- --></A><H3>
-getSQLBindings</H3>
-<PRE>
-public abstract java.util.Collection&lt;? extends java.lang.Object&gt; <B>getSQLBindings</B>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-</DL>
 <!-- ========= END OF CLASS DATA ========= -->
 <HR>
 
@@ -491,7 +473,7 @@ public abstract java.util.Collection&lt;? extends java.lang.Object&gt; <B>getSQL
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../org/nosco/Field.PK.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/Query.html" title="interface in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?org/nosco/Function.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="Function.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -511,7 +493,7 @@ public abstract java.util.Collection&lt;? extends java.lang.Object&gt; <B>getSQL
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>

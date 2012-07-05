@@ -22,7 +22,8 @@ class SqlContext {
 	public SqlContext(DBQuery<?> q, SqlContext parentContext) {
 		tableNameMap = q.tableNameMap;
 		tableInfos = new ArrayList<TableInfo>(q.tableInfos);
-		for (Join join : q.joins) tableInfos.add(join.reffedTableInfo);
+		for (Join join : q.joinsToOne) tableInfos.add(join.reffedTableInfo);
+		for (Join join : q.joinsToMany) tableInfos.add(join.reffingTableInfo);
 		this.parentContext = parentContext;
 		dbType = parentContext == null ? q.getDBType() : parentContext.dbType;
 		this.q = q;

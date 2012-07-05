@@ -79,4 +79,9 @@ public class ConnectionCountingDataSource implements DataSource {
 		return ds;
 	}
 
+	@Override
+	public String toString() {
+		return "[ConnectionCountingDataSource count:"+ count +" for:"+ ds +"]";
+	}
+
 }

@@ -113,10 +113,11 @@ public class SchemaExtractor extends Task {
 	}
 
 	public void execute() {
-
+		
 		Connection conn;
 		try {
 
+			System.err.println("connecting to "+ url);
 			conn = DriverManager.getConnection (url, username, password);
 			Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
 			Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);

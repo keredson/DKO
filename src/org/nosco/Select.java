@@ -47,21 +47,21 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	private Constructor<T> constructor;
 	private Map<Class<? extends Table>,Constructor<? extends Table>> constructors =
 			new HashMap<Class<? extends Table>, Constructor<? extends Table>>();
-	private Map<Class<? extends Table>,Method> fkSetMethods =
+	private Map<Class<? extends Table>,Method> fkToOneSetMethods =
 			new HashMap<Class<? extends Table>,Method>();
-	private Map<FK<?>,Method> fkSetSetMethods =
+	private Map<FK<?>,Method> fkToManySetMethods =
 			new HashMap<FK<?>,Method>();
 	private Connection conn;
 	private Queue<Object[]> nextRows = new LinkedList<Object[]>();
 	private boolean done = false;
 	Object[] lastFieldValues;
-	//private boolean hideDups = true;
 	private boolean shouldCloseConnection = true;
 	private SqlContext context = null;
 
 	@SuppressWarnings("unchecked")
 	Select(DBQuery<T> query) {
 		this.query = query;
+		allTableInfos = query.getAllTableInfos();
 		try {
 			constructor = (Constructor<T>) query.getType().getDeclaredConstructor(
 					new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
@@ -78,27 +78,23 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					Method setFKMethod  = (Method) tableInfo.tableClass.getDeclaredMethod(
 							"SET_FK", Field.FK.class, Object.class);
 					setFKMethod.setAccessible(true);
-					fkSetMethods.put(tableInfo.tableClass, setFKMethod);
+					fkToOneSetMethods.put(tableInfo.tableClass, setFKMethod);
 				} catch (NoSuchMethodException e) {
 					/* ignore */
 				}
 			}
 			try {
-				for (Join join : query.otherJoins) {
+				for (Join join : query.joinsToMany) {
 					FK<?> fk = join.fk;
 					Method setFKSetMethod  = (Method) fk.referenced.getDeclaredMethod(
 							"SET_FK_SET", Field.FK.class, Query.class);
 					setFKSetMethod.setAccessible(true);
-					fkSetSetMethods.put(fk, setFKSetMethod);
+					fkToManySetMethods.put(fk, setFKSetMethod);
 					//System.out.println("found "+ setFKSetMethod);
 				}
 			} catch (NoSuchMethodException e) {
 				/* ignore */
 			}
-
-//			// don't apply this technique if only one table.
-//			if (tableInfos.size() == 1) hideDups = false;
-
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -194,14 +190,13 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		return this;
 	}
 
-	private Object[] getNextRow() throws SQLException {
+	Object[] getNextRow() throws SQLException {
 		Object[] tmp = peekNextRow();
 		return nextRows.poll();
 	}
 
-	private Object[] peekNextRow() throws SQLException {
-		if (done) return null;
-		if (nextRows.isEmpty()) readNextRows(BATCH_SIZE);
+	Object[] peekNextRow() throws SQLException {
+		if (!done && nextRows.isEmpty()) readNextRows(BATCH_SIZE);
 		if (nextRows.isEmpty()) return null;
 		else return nextRows.peek();
 	}
@@ -212,7 +207,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 		while (c < max) {
 			if (!rs.next()) {
 				cleanUp();
-				preFetchOtherJoins();
+				//preFetchOtherJoins();
 				return c;
 			}
 			++c;
@@ -222,14 +217,14 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			}
 			nextRows.add(nextRow);
 		}
-		preFetchOtherJoins();
+		//preFetchOtherJoins();
 		return c;
 	}
 
-	private Map<Join,Query> ttbMap = new HashMap<Join,Query>();
+	private Map<Join,InMemoryQuery> ttbMap = new HashMap<Join,InMemoryQuery>();
 
 	private void preFetchOtherJoins() {
-		for (Join join : query.otherJoins) {
+		for (Join join : query.joinsToMany) {
 			System.err.println("preFetchOtherJoins() start "+ join);
 			Field[] referencedFields = join.fk.REFERENCED_FIELDS();
 			Field[] referencingFields = join.fk.REFERENCING_FIELDS();
@@ -264,50 +259,77 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	@Override
 	public boolean hasNext() {
 		if (next!=null) return true;
+		ttbMap.clear();
+		Object[] prevFieldValues = null;
+		Table[] prevObjects = null;
 		try {
-			Object[] fieldValues = getNextRow();
-			this.lastFieldValues = fieldValues;
-			if (fieldValues == null) return false;
-			List<TableInfo> tableInfos = query.getAllTableInfos();
-			int objectSize = tableInfos.size();
-			Table[] objects = new Table[objectSize];
-			@SuppressWarnings("unchecked")
-			LinkedHashSet<Table>[] inMemoryCacheSets = new LinkedHashSet[objectSize];
-			InMemoryQuery[] inMemoryCaches = new InMemoryQuery[objectSize];
-			TableInfo baseTableInfo = null;
-			for (int i=0; i<objectSize; ++i) {
-				TableInfo ti = tableInfos.get(i);
-				if (i == 0) baseTableInfo = ti;
-				if (ti.path == null) {
-					if (next == null) {
-						next = (T) constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-						next.__NOSCO_SELECT = this;
+			do {
+				Object[] peekRow = peekNextRow();
+				if (peekRow == null) break;
+				if (prevFieldValues != null) {
+					TableInfo ti = allTableInfos.get(0);
+					if (!Util.allTheSame(prevFieldValues, peekRow, ti.start, ti.end)) break;
+				}
+				
+				Object[] fieldValues = getNextRow();
+				this.lastFieldValues = fieldValues;
+				if (fieldValues == null) return false;
+				int objectSize = allTableInfos.size();
+				Table[] objects = new Table[objectSize];
+				boolean[] newObjectThisRow = new boolean[objectSize];
+				@SuppressWarnings("unchecked")
+				LinkedHashSet<Table>[] inMemoryCacheSets = new LinkedHashSet[objectSize];
+				InMemoryQuery[] inMemoryCaches = new InMemoryQuery[objectSize];
+				TableInfo baseTableInfo = null;
+				for (int i=0; i<objectSize; ++i) {
+					TableInfo ti = allTableInfos.get(i);
+					if (i == 0) baseTableInfo = ti;
+					if (ti.path == null) {
+						if (next == null) {
+							next = (T) constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
+							next.__NOSCO_SELECT = this;
+							newObjectThisRow[i] = true;
+						}
+						objects[i] = next;
+					} else {
+						if (Util.allTheSame(prevFieldValues, fieldValues, ti.start, ti.end)) {
+							objects[i] = prevObjects[i];
+							newObjectThisRow[i] = false;
+						} else {
+							if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
+								Table fkv = constructors.get(ti.table.getClass())
+										.newInstance(selectedFields, fieldValues, ti.start, ti.end);
+								fkv.__NOSCO_SELECT = this;
+								objects[i] = fkv;
+							}
+							newObjectThisRow[i] = true;
+						}
 					}
-					objects[i] = next;
-				} else {
-					Table fkv = constructors.get(ti.table.getClass())
-							.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-					fkv.__NOSCO_SELECT = this;
-					objects[i] = fkv;
 				}
-				//System.err.println(i+ "/"+ objectSize+":"+ objects[i]);
-			}
-			for (int i=0; i<objectSize; ++i) {
-				TableInfo ti = tableInfos.get(i);
-				if (ti.join != null) {
-					Object reffedObject = objects[ti.position];
-					Object reffingObject = objects[ti.join.reffingTableInfo.position];
-					Method method = fkSetMethods.get(reffingObject.getClass());
-					//System.err.println(reffingObject +" - "+ ti.join.fk +" - "+ reffedObject);
-					method.invoke(reffingObject, ti.join.fk, reffedObject);
+				for(Join join : query.joinsToOne) {
+					Object reffedObject = objects[join.reffedTableInfo.position];
+					Object reffingObject = objects[join.reffingTableInfo.position];
+					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
+					Method fkSetMethod = fkToOneSetMethods.get(reffingObject.getClass());
+					fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
 				}
-			}
-			for(Join join : query.otherJoins) {
-				Object reffedObject = objects[join.reffedTableInfo.position];
-				Method fkSetSetMethod = fkSetSetMethods.get(join.fk);
-				Query tmpQuery = ttbMap.get(join);
-				fkSetSetMethod.invoke(reffedObject, join.fk, tmpQuery);
-			}
+				for(Join join : query.joinsToMany) {
+					Object reffedObject = objects[join.reffedTableInfo.position];
+					Object reffingObject = objects[join.reffingTableInfo.position];
+					Method fkSetSetMethod = fkToManySetMethods.get(join.fk);
+					InMemoryQuery tmpQuery = ttbMap.get(join);
+					if (tmpQuery == null || newObjectThisRow[join.reffedTableInfo.position]) {
+						tmpQuery = new InMemoryQuery();
+						fkSetSetMethod.invoke(reffedObject, join.fk, tmpQuery);
+						ttbMap.put(join, tmpQuery);
+					}
+					if (reffingObject != null) {
+						tmpQuery.cache.add(reffingObject);
+					}
+				}
+				prevFieldValues = fieldValues;
+				prevObjects = objects;
+			} while (!query.joinsToMany.isEmpty());
 
 //			boolean sameObject = hideDups ;
 //			while (sameObject) {
@@ -432,6 +454,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 
 	@SuppressWarnings("rawtypes")
 	private Map<Class<? extends Table>,Map<Condition,WeakReference<Query<? extends Table>>>> subQueryCache = new HashMap<Class<? extends Table>,Map<Condition,WeakReference<Query<? extends Table>>>>();
+	private List<TableInfo> allTableInfos;
 
 	@SuppressWarnings("unchecked")
 	<S extends Table> Query<S> getSelectCachedQuery(Class<S> cls, Condition c) {

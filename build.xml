@@ -141,7 +141,7 @@
 
   <target name="unit-test-hsql" depends="unit-test-gen-src-hsql">
     <javac srcdir="test" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
@@ -171,7 +171,8 @@
 
   <!-- ========[ BEGIN UNIT TEST MYSQL ]======== -->
   
-  <target name="unit-test-extract-schema-mysql" depends="jar">
+  <available file="bin/unit_test_mysql_schema.json" property="exists.unit_test_mysql_schema"/>
+  <target name="unit-test-extract-schema-mysql" depends="jar" unless="${exists.unit_test_mysql_schema}">
     <taskdef name="noscoextractschema" classname="org.nosco.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_mysql_jar}"/>
     <exec executable="mysql" input="deps/jpetstore/mysql/jpetstore-mysql-schema.sql">
       <arg value="-u"/>
@@ -190,7 +191,7 @@
     	out="bin/unit_test_mysql_schema.json"
     />
   </target>
-
+  
   <target name="unit-test-gen-src-mysql" depends="unit-test-extract-schema-mysql">
     <taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
     <noscogen package="org.nosco.unittest" 
@@ -206,7 +207,7 @@
 
   <target name="unit-test-mysql" depends="unit-test-gen-src-mysql">
     <javac srcdir="test" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>

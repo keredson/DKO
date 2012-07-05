@@ -154,9 +154,10 @@ class Util {
 		if (log == null && truthy(property2))
 			log = System.err;
 		if (log == null) return;
-		log.println("==> "+ sql +"");
+		log.print("==> "+ sql);
 		if (bindings != null && bindings.size() > 0)
-			log.println("^^^ ["+ join("|", bindings) +"]");
+			log.print(" -- ["+ join("|", bindings) +"]");
+		log.println();
 	}
 
 	static boolean truthy(String s) {
@@ -183,6 +184,28 @@ class Util {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	static boolean notAllNull(Object[] fieldValues, int start, int end) {
+		for (int i=start; i<end; ++i) {
+			if (fieldValues[i] != null) return true;
+		}
+		return false;
+	}
+
+	static boolean allNull(Object[] fieldValues, int start, int end) {
+		return !notAllNull(fieldValues, start, end);
+	}
+
+	static boolean allTheSame(Object[] values1, Object[] values2, int start, int end) {
+		if (values1==null && values2!=null || values1!=null && values2==null) {
+			return false;
+		}
+		for (int i=start; i<end; ++i) {
+			boolean sameObject = values1[i]==null ? values2[i]==null : values1[i].equals(values2[i]);
+			if (!sameObject) return false;
+		}
+		return true;
 	}
 
 

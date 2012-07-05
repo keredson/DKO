@@ -53,7 +53,7 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../org/nosco/QueryFactory.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?org/nosco/Query.html" target="_top"><B>FRAMES</B></A>  &nbsp;
@@ -653,6 +653,10 @@ int <B>count</B>()
 <DD>Returns the database-calculated count of the query.
  Does not download the objects into the JVM.
  Much faster than .asList().size() or counting the objects yourself.
+ WARNING: Joins can inflate this number and cause a apparent discrepancy with .asList().size().
+ For example, if table A has a FK to table B and you do a query like <code>B.ALL.with(A.B_FK)</code>
+ the size counted by the database likely will be different from the size counted by you counting
+ objects.  This is because the database does not merge objects into sets for you like nosco does.
 <P>
 <DD><DL>
 </DL>
@@ -1523,7 +1527,7 @@ java.lang.Iterable&lt;java.lang.Object[]&gt; <B>asIterableOfObjectArrays</B>()</
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../org/nosco/QueryFactory.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?org/nosco/Query.html" target="_top"><B>FRAMES</B></A>  &nbsp;

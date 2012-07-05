@@ -55,6 +55,14 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		loaded = true;
 	}
 
+	InMemoryQuery(Iterable<T> items) {
+		cache = new ArrayList<T>();
+		for (T t : items) {
+			cache.add(t);
+		}
+		loaded = true;
+	}
+
 	@Override
 	public Iterator<T> iterator() {
 		if (!loaded) load();

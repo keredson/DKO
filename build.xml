@@ -54,7 +54,10 @@
     <!-- Create the distribution directory -->
     <mkdir dir="lib"/>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${lib_nosco_jar}" basedir="${build}"/>
+    <jar jarfile="${lib_nosco_jar}">
+      <fileset dir="${build}" />
+      <fileset dir="${src}" includes="**/*.java"/>
+    </jar>
   </target>
 
   <target name="dist" depends="compile"

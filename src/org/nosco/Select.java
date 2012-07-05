@@ -270,7 +270,7 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					TableInfo ti = allTableInfos.get(0);
 					if (!Util.allTheSame(prevFieldValues, peekRow, ti.start, ti.end)) break;
 				}
-				
+
 				Object[] fieldValues = getNextRow();
 				this.lastFieldValues = fieldValues;
 				if (fieldValues == null) return false;
@@ -330,59 +330,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 				prevFieldValues = fieldValues;
 				prevObjects = objects;
 			} while (!query.joinsToMany.isEmpty());
-
-//			boolean sameObject = hideDups ;
-//			while (sameObject) {
-//				Object[] peekRow = peekNextRow();
-//				if (peekRow == null) break;
-//				for (int i=baseTableInfo.start; i < baseTableInfo.end; ++i) {
-//					sameObject &= fieldValues[i]==null ?
-//							peekRow[i]==null : fieldValues[i].equals(peekRow[i]);
-//				}
-//				if (sameObject) {
-//
-//					Table[] peekObjects = new Table[objectSize];
-//
-//					for (int i=0; i<objectSize; ++i) {
-//						TableInfo ti = tableInfos.get(i);
-//						if (i == 0) baseTableInfo = ti;
-//						if (ti.path == null) {
-//							peekObjects[i] = next;
-//						} else {
-//							Table fkv = constructors.get(ti.table.getClass())
-//									.newInstance(selectedFields, peekRow, ti.start, ti.end);
-//							peekObjects[i] = fkv;
-//						}
-//						if (objects[i]==null ? peekObjects[i]!=null : !objects[i].equals(peekObjects[i])) {
-//							Set<Table> cache = inMemoryCacheSets[i];
-//							if (cache!=null) cache.add(peekObjects[i]);
-//						}
-//					}
-//
-//					for (int i=0; i<objectSize; ++i) {
-//						TableInfo ti = tableInfos.get(i);
-//						for (int j=i+1; j<objectSize; ++j) {
-//							TableInfo tj = tableInfos.get(j);
-//							if (tj.path == null) continue;
-//							if(Select.startsWith(tj.path, ti.path)) {
-//								FK fk = tj.path[tj.path.length-1];
-//								if (fk.referencing.equals(peekObjects[i].getClass()) &&
-//										fk.referenced.equals(peekObjects[j].getClass())) {
-//									Method method = fkSetMethods.get(peekObjects[i].getClass());
-//									method.invoke(peekObjects[i], fk, peekObjects[j]);
-//								}
-//							}
-//						}
-//					}
-//
-//					peekRow = getNextRow();
-//				}
-//			}
-//
-//			for (int i=0; i<objectSize; ++i) {
-//				if (inMemoryCaches[i]==null || inMemoryCacheSets[i]==null) continue;
-//				inMemoryCaches[i].cache = new ArrayList<Table>(inMemoryCacheSets[i]);
-//			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();

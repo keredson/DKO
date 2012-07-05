@@ -205,7 +205,7 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		sanityCheckToManyJoins();
+		//sanityCheckToManyJoins();
 		return new Select<T>(this).iterator();
 	}
 

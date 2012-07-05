@@ -130,6 +130,14 @@ public class SharedDBTests extends TestCase {
 		System.err.println("testFKReverse done");
 	}
 
+	@SuppressWarnings("unused")
+	public void testFKReverseQueryReplicationBug() throws SQLException {
+		Query<Supplier> q = Supplier.ALL.with(Item.FK_SUPPLIER);
+		q.count();
+		for (Supplier s : q) {
+		}
+	}
+
 	public void testFKTwoLevels() throws SQLException {
 		Undoer u = Context.getVMContext().setDataSource(ccds);
 		for (Item i : Item.ALL.with(Item.FK_PRODUCTID_PRODUCT, Product.FK_CATEGORY)) {

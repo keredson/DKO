@@ -84,11 +84,23 @@ class DBQuery<T extends Table> implements Query<T> {
 		}
 		type = q.type;
 		tables.addAll(q.tables);
-		joinsToOne.addAll(q.joinsToOne);
-		joinsToMany.addAll(q.joinsToMany);
 		usedTableNames.addAll(q.usedTableNames);
-		try { for (TableInfo x : q.tableInfos) tableInfos.add((TableInfo) x.clone()); }
-		catch (CloneNotSupportedException e) { /* ignore */ }
+		try {
+			for (Join x : q.joinsToOne) joinsToOne.add((Join) x.clone());
+			for (Join x : q.joinsToMany) joinsToMany.add((Join) x.clone());
+			for (TableInfo x : q.tableInfos) {
+				TableInfo clone = (TableInfo) x.clone();
+				for (Join y : joinsToOne) {
+					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
+					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
+				}
+				for (Join y : joinsToMany) {
+					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
+					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
+				}
+				tableInfos.add(clone);
+			}
+		} catch (CloneNotSupportedException e) { /* ignore */ }
 		if (q.deferSet!=null) {
 			deferSet = new HashSet<Field<?>>();
 			deferSet.addAll(q.deferSet);
@@ -938,6 +950,16 @@ class DBQuery<T extends Table> implements Query<T> {
 		String type = null;
 		TableInfo reffedTableInfo = null;
 		Condition condition = null;
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			Join j = new Join();
+			j.fk = fk;
+			j.reffingTableInfo = reffingTableInfo;
+			j.type = type;
+			j.reffedTableInfo = reffedTableInfo;
+			j.condition = condition;
+			return j;
+		}
 	}
 
 	@Override

@@ -33,6 +33,46 @@ import java.util.Set;
 public class Diff {
 
 	/**
+	 * @deprecated renamed - use {@link #diff(Iterable<T>,Iterable<T>)} instead
+	 */
+	public static <T extends Table> Iterable<RowChange<T>> streamingDiff(
+			final Iterable<T> from, final Iterable<T> to) {
+		return diff(from, to);
+	}
+
+	/**
+	 * @deprecated renamed - use {@link #diff(Iterable<T>,Iterable<T>,boolean)} instead
+	 */
+	public static <T extends Table> Iterable<RowChange<T>> streamingDiff(
+			final Iterable<T> from, final Iterable<T> to, final boolean emitUnchanged) {
+		return diff(from, to, emitUnchanged);
+	}
+
+	/**
+	 * @deprecated renamed - se {@link #diffActualized(Iterable<T>,Iterable<T>)} instead
+	 */
+	public static <T extends Table> List<RowChange<T>> streamingDiffActualized(
+			final Iterable<T> from, final Iterable<T> to) {
+		return diffActualized(from, to);
+	}
+
+	/**
+	 * This will create a streaming diff of a single input stream. &nbsp; Obviously it
+	 * won't provide you the 'deletes' a normal diff would, but it will show you what
+	 * has changed in your collection of objects.
+	 * @param them
+	 * @return
+	 */
+	public static <T extends Table> Iterable<RowChange<T>> diff(final Iterable<T> them) {
+		return new Iterable<RowChange<T>>() {
+			@Override
+			public Iterator<RowChange<T>> iterator() {
+				return new TableChangeIterator<T>(them);
+			}
+		};
+	}
+
+	/**
 	 * This will create a streaming diff of two input streams.  &nbsp; The diff is
 	 * calculated on the fly as you iterate over the returned object, avoiding having to
 	 * load either source input stream (or the resultant stream) into memory all at once.
@@ -43,7 +83,7 @@ public class Diff {
 	 * @param to a sorted {@code Iterable}
 	 * @return
 	 */
-	public static <T extends Table> Iterable<RowChange<T>> streamingDiff(
+	public static <T extends Table> Iterable<RowChange<T>> diff(
 			final Iterable<T> from, final Iterable<T> to) {
 		return new Iterable<RowChange<T>>() {
 			@Override
@@ -65,7 +105,7 @@ public class Diff {
 	 * @param emitUnchanged controls whether or not unchanged objects are returned (with an {@code UNCHANGED} change type)
 	 * @return
 	 */
-	public static <T extends Table> Iterable<RowChange<T>> streamingDiff(
+	public static <T extends Table> Iterable<RowChange<T>> diff(
 			final Iterable<T> from, final Iterable<T> to, final boolean emitUnchanged) {
 		return new Iterable<RowChange<T>>() {
 			@Override
@@ -73,6 +113,25 @@ public class Diff {
 				return new ChangeIterator<T>(from.iterator(), to.iterator(), emitUnchanged);
 			}
 		};
+	}
+
+	/**
+	 * This is identical to {@code streamingDiff(them)}, but the resultant {@code Iterable}
+	 * actualized into a {@code List} for you. &nbsp; Of note:
+	 * <ul>
+	 * <li>The incoming stream is still processed as a stream, meaning it's never loaded
+	 * into memory in its entirety.
+	 * <li>This will block until the entire diff is created.
+	 * <li>In a worst-case scenario, the resultant {@code List} will be the size of the input.
+	 * </ul>
+	 * @param them a sorted Iterable
+	 * @return
+	 */
+	public static <T extends Table> List<RowChange<T>> diffActualized(
+			final Iterable<T> them) {
+		List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
+		for (RowChange<T> v : diff(them)) ret.add(v);
+		return ret;
 	}
 
 	/**
@@ -89,10 +148,10 @@ public class Diff {
 	 * @param to a sorted Iterable
 	 * @return
 	 */
-	public static <T extends Table> List<RowChange<T>> streamingDiffActualized(
+	public static <T extends Table> List<RowChange<T>> diffActualized(
 			final Iterable<T> from, final Iterable<T> to) {
 		List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
-		for (RowChange<T> v : streamingDiff(from, to)) ret.add(v);
+		for (RowChange<T> v : diff(from, to)) ret.add(v);
 		return ret;
 	}
 
@@ -317,5 +376,55 @@ public class Diff {
 		}
 
 	}
+
+	private static class TableChangeIterator<T extends Table> implements
+	Iterator<RowChange<T>> {
+
+		private Iterator<T> them;
+		private RowChange<T> next = null;
+
+		public TableChangeIterator(final Iterable<T> them) {
+			this.them = them.iterator();
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public boolean hasNext() {
+			while (next==null && them.hasNext()) {
+				T t = them.next();
+				if (t==null) continue;
+				List<FieldChange<T,?>> changes = new ArrayList<FieldChange<T,?>>();
+				CHANGE_TYPE changeType = CHANGE_TYPE.UNCHANGED;
+				for (Field field : t.FIELDS()) {
+					if (t.__NOSCO_UPDATED_VALUES!=null && t.__NOSCO_UPDATED_VALUES.get(field.INDEX)) {
+						changes.add(new FieldChange(field, null, t.get(field)));
+					}
+				}
+				if (t.__NOSCO_ORIGINAL_DATA_SOURCE == null) {
+					changeType = CHANGE_TYPE.ADD;
+				} else if (!changes.isEmpty()) {
+					changeType = CHANGE_TYPE.UPDATE;
+				}
+				if (changeType != CHANGE_TYPE.UNCHANGED) {
+					next = new RowChange<T>(changeType, t, changes);
+				}
+			}
+			return next != null;
+		}
+
+		@Override
+		public RowChange<T> next() {
+			RowChange<T> tmp = next;
+			next = null;
+			return tmp;
+		}
+
+		@Override
+		public void remove() {
+			them.remove();
+		}
+
+	}
+
 
 }

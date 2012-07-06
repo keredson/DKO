@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.BitSet;
@@ -55,8 +56,13 @@ public abstract class Table {
 	 */
 	protected BitSet __NOSCO_UPDATED_VALUES = null;
 
+	/**
+	 * Please do not use.
+	 */
+	protected DataSource __NOSCO_ORIGINAL_DATA_SOURCE = null;
+
 	@SuppressWarnings("rawtypes")
-	protected Select __NOSCO_SELECT = null;
+	protected WeakReference<Select> __NOSCO_SELECT = null;
 
 	/**
 	 * Returns true if the object has been modified

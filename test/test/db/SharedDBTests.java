@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -10,6 +11,8 @@ import junit.framework.TestCase;
 
 import org.nosco.Context;
 import org.nosco.Context.Undoer;
+import org.nosco.Diff;
+import org.nosco.Diff.RowChange;
 import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
 import org.nosco.unittest.nosco_test_jpetstore.Category;
@@ -147,6 +150,25 @@ public class SharedDBTests extends TestCase {
 			System.err.println(i);
 		}
 		assertEquals(1, ccds.getCount());
+	}
+
+	public void testSimpleDiff() throws SQLException {
+		List<Item> items = Item.ALL.asList();
+		assertTrue(items.size() > 0);
+		items.get(0).setAttr4("something");
+		items.add(new Item());
+		items.add(new Item());
+		int updates = 0;
+		int adds = 0;
+		int count = 0;
+		for (RowChange<Item> diff : Diff.diff(items)) {
+			count += 1;
+			if (diff.isAdd()) adds += 1;
+			if (diff.isUpdate()) updates += 1;
+		}
+		assertEquals(3, count);
+		assertEquals(1, updates);
+		assertEquals(2, adds);
 	}
 
 }

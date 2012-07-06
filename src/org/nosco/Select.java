@@ -57,6 +57,9 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 	Object[] lastFieldValues;
 	private boolean shouldCloseConnection = true;
 	private SqlContext context = null;
+	private DataSource ds = null;
+	@SuppressWarnings("rawtypes")
+	private WeakReference<Select> weakReferenceToThis = null;
 
 	@SuppressWarnings("unchecked")
 	Select(DBQuery<T> query) {
@@ -165,10 +168,12 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 //		return query.getSQLBindings();
 //	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterator<T> iterator() {
 		try {
-			DataSource ds = query.getDataSource();
+			ds  = query.getDataSource();
+			weakReferenceToThis = new WeakReference<Select>(this);
 			Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
 			conn = connInfo.a;
 			shouldCloseConnection  = connInfo.b;
@@ -287,7 +292,8 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 					if (ti.path == null) {
 						if (next == null) {
 							next = (T) constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-							next.__NOSCO_SELECT = this;
+							next.__NOSCO_SELECT = weakReferenceToThis;
+							next.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
 							newObjectThisRow[i] = true;
 						}
 						objects[i] = next;
@@ -299,7 +305,8 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 							if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
 								Table fkv = constructors.get(ti.table.getClass())
 										.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-								fkv.__NOSCO_SELECT = this;
+								fkv.__NOSCO_SELECT = weakReferenceToThis;
+								fkv.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
 								objects[i] = fkv;
 							}
 							newObjectThisRow[i] = true;

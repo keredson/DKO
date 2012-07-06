@@ -187,11 +187,102 @@ java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class
 </TR>
 </TABLE>
 </CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#diff(java.lang.Iterable)">diff</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;them)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of a single input stream.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#diff(java.lang.Iterable, java.lang.Iterable)">diff</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+     java.lang.Iterable&lt;T&gt;&nbsp;to)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of two input streams.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#diff(java.lang.Iterable, java.lang.Iterable, boolean)">diff</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+     java.lang.Iterable&lt;T&gt;&nbsp;to,
+     boolean&nbsp;emitUnchanged)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of two input streams.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#diffActualized(java.lang.Iterable)">diffActualized</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;them)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is identical to <code>streamingDiff(them)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Diff.html#diffActualized(java.lang.Iterable, java.lang.Iterable)">diffActualized</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+               java.lang.Iterable&lt;T&gt;&nbsp;to)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable)">streamingDiff</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
               java.lang.Iterable&lt;T&gt;&nbsp;to)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of two input streams.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>renamed - use <CODE>#diff(Iterable<T>,Iterable<T>)</CODE> instead</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -210,7 +301,7 @@ java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class
               boolean&nbsp;emitUnchanged)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will create a streaming diff of two input streams.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>renamed - use <CODE>#diff(Iterable<T>,Iterable<T>,boolean)</CODE> instead</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -228,8 +319,7 @@ java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in 
                         java.lang.Iterable&lt;T&gt;&nbsp;to)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
- actualized into a <code>List</code> for you.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>renamed - se <CODE>#diffActualized(Iterable<T>,Iterable<T>)</CODE> instead</I></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -277,6 +367,65 @@ streamingDiff</H3>
 public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
                                                                                     java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
 <DL>
+<DD><B>Deprecated.</B>&nbsp;<I>renamed - use <CODE>#diff(Iterable<T>,Iterable<T>)</CODE> instead</I>
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="streamingDiff(java.lang.Iterable, java.lang.Iterable, boolean)"><!-- --></A><H3>
+streamingDiff</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                                    java.lang.Iterable&lt;T&gt;&nbsp;to,
+                                                                                    boolean&nbsp;emitUnchanged)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>renamed - use <CODE>#diff(Iterable<T>,Iterable<T>,boolean)</CODE> instead</I>
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)"><!-- --></A><H3>
+streamingDiffActualized</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiffActualized</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                                          java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>renamed - se <CODE>#diffActualized(Iterable<T>,Iterable<T>)</CODE> instead</I>
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="diff(java.lang.Iterable)"><!-- --></A><H3>
+diff</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>diff</B>(java.lang.Iterable&lt;T&gt;&nbsp;them)</PRE>
+<DL>
+<DD>This will create a streaming diff of a single input stream. &nbsp; Obviously it
+ won't provide you the 'deletes' a normal diff would, but it will show you what
+ has changed in your collection of objects.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>them</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="diff(java.lang.Iterable, java.lang.Iterable)"><!-- --></A><H3>
+diff</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>diff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                           java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
+<DL>
 <DD>This will create a streaming diff of two input streams.  &nbsp; The diff is
  calculated on the fly as you iterate over the returned object, avoiding having to
  load either source input stream (or the resultant stream) into memory all at once.
@@ -291,12 +440,12 @@ public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in
 </DL>
 <HR>
 
-<A NAME="streamingDiff(java.lang.Iterable, java.lang.Iterable, boolean)"><!-- --></A><H3>
-streamingDiff</H3>
+<A NAME="diff(java.lang.Iterable, java.lang.Iterable, boolean)"><!-- --></A><H3>
+diff</H3>
 <PRE>
-public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
-                                                                                    java.lang.Iterable&lt;T&gt;&nbsp;to,
-                                                                                    boolean&nbsp;emitUnchanged)</PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>diff</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                           java.lang.Iterable&lt;T&gt;&nbsp;to,
+                                                                           boolean&nbsp;emitUnchanged)</PRE>
 <DL>
 <DD>This will create a streaming diff of two input streams.  &nbsp; The diff is
  calculated on the fly as you iterate over the returned object, avoiding having to
@@ -312,11 +461,32 @@ public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in
 </DL>
 <HR>
 
-<A NAME="streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)"><!-- --></A><H3>
-streamingDiffActualized</H3>
+<A NAME="diffActualized(java.lang.Iterable)"><!-- --></A><H3>
+diffActualized</H3>
 <PRE>
-public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>streamingDiffActualized</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
-                                                                                          java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>diffActualized</B>(java.lang.Iterable&lt;T&gt;&nbsp;them)</PRE>
+<DL>
+<DD>This is identical to <code>streamingDiff(them)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you. &nbsp; Of note:
+ <ul>
+ <li>The incoming stream is still processed as a stream, meaning it's never loaded
+ into memory in its entirety.
+ <li>This will block until the entire diff is created.
+ <li>In a worst-case scenario, the resultant <code>List</code> will be the size of the input.
+ </ul>
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>them</CODE> - a sorted Iterable
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="diffActualized(java.lang.Iterable, java.lang.Iterable)"><!-- --></A><H3>
+diffActualized</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; java.util.List&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt; <B>diffActualized</B>(java.lang.Iterable&lt;T&gt;&nbsp;from,
+                                                                                 java.lang.Iterable&lt;T&gt;&nbsp;to)</PRE>
 <DL>
 <DD>This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
  actualized into a <code>List</code> for you. &nbsp; Of note:

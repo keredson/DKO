@@ -181,7 +181,7 @@ Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/Conne
 <DT><A HREF="./org/nosco/Constants.html" title="class in org.nosco"><B>Constants</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Defines constants for use in this API.<DT><A HREF="./org/nosco/Constants.html#Constants()"><B>Constants()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco"><B>Constants.DB_TYPE</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Used for tweaking generated SQL by database type.<DT><A HREF="./org/nosco/Constants.DIRECTION.html" title="enum in org.nosco"><B>Constants.DIRECTION</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Context.html" title="class in org.nosco"><B>Context</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class is used for tweaking query executions.<DT><A HREF="./org/nosco/Context.html#Context()"><B>Context()</B></A> - 
+<DT><A HREF="./org/nosco/Constants.CALENDAR.html" title="enum in org.nosco"><B>Constants.CALENDAR</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco"><B>Constants.DB_TYPE</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Used for tweaking generated SQL by database type.<DT><A HREF="./org/nosco/Constants.DIRECTION.html" title="enum in org.nosco"><B>Constants.DIRECTION</B></A> - Enum in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/Context.html" title="class in org.nosco"><B>Context</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class is used for tweaking query executions.<DT><A HREF="./org/nosco/Context.html#Context()"><B>Context()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Context.Undoer.html" title="class in org.nosco"><B>Context.Undoer</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Allows you to undo any context change.<DT><A HREF="./org/nosco/Query.html#count()"><B>count()</B></A> - 
@@ -231,6 +231,9 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <A NAME="_D_"><!-- --></A><H2>
 <B>D</B></H2>
 <DL>
+<DT><A HREF="./org/nosco/Function.html#DATEADD(org.nosco.Field, int, org.nosco.Constants.CALENDAR)"><B>DATEADD(Field&lt;? extends T&gt;, int, Constants.CALENDAR)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#deferFields(org.nosco.Field...)"><B>deferFields(Field&lt;?&gt;...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Don't include the following fields in the select statement.
@@ -254,7 +257,24 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Diff.html" title="class in org.nosco"><B>Diff</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>This class offers diff logic.<DT><A HREF="./org/nosco/Diff.html#Diff()"><B>Diff()</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
 <DD>&nbsp;
-<DT><A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>Diff.FieldChange</B></A>&lt;<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">S</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a changed field between two versions of a row.<DT><A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco"><B>Diff.RowChange</B></A>&lt;<A HREF="./org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a change in a row.<DT><A HREF="./org/nosco/Table.html#dirty()"><B>dirty()</B></A> - 
+<DT><A HREF="./org/nosco/Diff.html#diff(java.lang.Iterable)"><B>diff(Iterable&lt;T&gt;)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
+<DD>This will create a streaming diff of a single input stream.
+<DT><A HREF="./org/nosco/Diff.html#diff(java.lang.Iterable, java.lang.Iterable)"><B>diff(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
+<DD>This will create a streaming diff of two input streams.
+<DT><A HREF="./org/nosco/Diff.html#diff(java.lang.Iterable, java.lang.Iterable, boolean)"><B>diff(Iterable&lt;T&gt;, Iterable&lt;T&gt;, boolean)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
+<DD>This will create a streaming diff of two input streams.
+<DT><A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco"><B>Diff.FieldChange</B></A>&lt;<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>,<A HREF="./org/nosco/Diff.FieldChange.html" title="type parameter in Diff.FieldChange">S</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a changed field between two versions of a row.<DT><A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco"><B>Diff.RowChange</B></A>&lt;<A HREF="./org/nosco/Diff.RowChange.html" title="type parameter in Diff.RowChange">T</A> extends <A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Represents a change in a row.<DT><A HREF="./org/nosco/Diff.html#diffActualized(java.lang.Iterable)"><B>diffActualized(Iterable&lt;T&gt;)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
+<DD>This is identical to <code>streamingDiff(them)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you.
+<DT><A HREF="./org/nosco/Diff.html#diffActualized(java.lang.Iterable, java.lang.Iterable)"><B>diffActualized(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
+<DD>This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
+ actualized into a <code>List</code> for you.
+<DT><A HREF="./org/nosco/Table.html#dirty()"><B>dirty()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Returns true if the object has been modified
 <DT><A HREF="./org/nosco/Query.html#distinct()"><B>distinct()</B></A> - 
@@ -1024,14 +1044,13 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DD>Not implemented yet.
 <DT><A HREF="./org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable)"><B>streamingDiff(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
-<DD>This will create a streaming diff of two input streams.
+<DD><B>Deprecated.</B>&nbsp;<I>renamed - use <CODE>#diff(Iterable<T>,Iterable<T>)</CODE> instead</I>
 <DT><A HREF="./org/nosco/Diff.html#streamingDiff(java.lang.Iterable, java.lang.Iterable, boolean)"><B>streamingDiff(Iterable&lt;T&gt;, Iterable&lt;T&gt;, boolean)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
-<DD>This will create a streaming diff of two input streams.
+<DD><B>Deprecated.</B>&nbsp;<I>renamed - use <CODE>#diff(Iterable<T>,Iterable<T>,boolean)</CODE> instead</I>
 <DT><A HREF="./org/nosco/Diff.html#streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)"><B>streamingDiffActualized(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
-<DD>This is identical to <code>streamingDiff(from, to)</code>, but the resultant <code>Iterable</code>
- actualized into a <code>List</code> for you.
+<DD><B>Deprecated.</B>&nbsp;<I>renamed - se <CODE>#diffActualized(Iterable<T>,Iterable<T>)</CODE> instead</I>
 <DT><A HREF="./org/nosco/Query.html#sum(org.nosco.Field)"><B>sum(Field&lt;? extends Number&gt;)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Sums the value of a given field.
@@ -1147,12 +1166,19 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Table.__SimplePrimaryKey.html#value()"><B>value()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco">Table.__SimplePrimaryKey</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/Constants.CALENDAR.html#valueOf(java.lang.String)"><B>valueOf(String)</B></A> - 
+Static method in enum org.nosco.<A HREF="./org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>
+<DD>Returns the enum constant of this type with the specified name.
 <DT><A HREF="./org/nosco/Constants.DB_TYPE.html#valueOf(java.lang.String)"><B>valueOf(String)</B></A> - 
 Static method in enum org.nosco.<A HREF="./org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco">Constants.DB_TYPE</A>
 <DD>Returns the enum constant of this type with the specified name.
 <DT><A HREF="./org/nosco/Constants.DIRECTION.html#valueOf(java.lang.String)"><B>valueOf(String)</B></A> - 
 Static method in enum org.nosco.<A HREF="./org/nosco/Constants.DIRECTION.html" title="enum in org.nosco">Constants.DIRECTION</A>
 <DD>Returns the enum constant of this type with the specified name.
+<DT><A HREF="./org/nosco/Constants.CALENDAR.html#values()"><B>values()</B></A> - 
+Static method in enum org.nosco.<A HREF="./org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>
+<DD>Returns an array containing the constants of this enum type, in
+the order they are declared.
 <DT><A HREF="./org/nosco/Constants.DB_TYPE.html#values()"><B>values()</B></A> - 
 Static method in enum org.nosco.<A HREF="./org/nosco/Constants.DB_TYPE.html" title="enum in org.nosco">Constants.DB_TYPE</A>
 <DD>Returns an array containing the constants of this enum type, in
@@ -1187,6 +1213,9 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <B>_</B></H2>
 <DL>
 <DT><A HREF="./org/nosco/Table.html#__NOSCO_FETCHED_VALUES"><B>__NOSCO_FETCHED_VALUES</B></A> - 
+Variable in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
+<DD>Please do not use.
+<DT><A HREF="./org/nosco/Table.html#__NOSCO_ORIGINAL_DATA_SOURCE"><B>__NOSCO_ORIGINAL_DATA_SOURCE</B></A> - 
 Variable in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.nosco">Table</A>
 <DD>Please do not use.
 <DT><A HREF="./org/nosco/Table.html#__NOSCO_PRIVATE_mapType(java.lang.Object)"><B>__NOSCO_PRIVATE_mapType(Object)</B></A> - 

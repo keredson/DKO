@@ -1,9 +1,12 @@
 package org.nosco;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import org.nosco.Constants.CALENDAR;
 
 /**
  * A collection of SQL functions. &nbsp; Use these to call functions on fields
@@ -105,15 +108,27 @@ public abstract class Function {
 		return new CustomFunction("coalesce", f1, f2, f3, f4, v);
 	}
 
+	/**
+	 * @param f1
+	 * @param count
+	 * @param component
+	 * @return
+	 */
+	public static <T> Function DATEADD(Field<? extends T> f1, int count, CALENDAR component) {
+		return new CustomFunction("date_add", "dateadd", "dateadd", component, count, f1);
+
+	}
+
+
 	abstract String getSQL(SqlContext context);
 
 	abstract Collection<? extends Object> getSQLBindings();
 
 
 	/**
-	 * The list of built-in functions is far from comprehensive.  
+	 * The list of built-in functions is far from comprehensive.
 	 * Use this to implement your own one-off functions.
-	 * Please submit functions you think are useful back to the project! 
+	 * Please submit functions you think are useful back to the project!
 	 */
 	public static class CustomFunction extends Function {
 
@@ -138,7 +153,7 @@ public abstract class Function {
 		 * For functions that take arguments.  The first string is the function name.
 		 * The remaining parameters are passed as arguments.
 		 * If an argument is a field it is referenced to a table in the from clause.
-		 * For all others, the object is passed verbatim to the PreparedStatement with setObject(). 
+		 * For all others, the object is passed verbatim to the PreparedStatement with setObject().
 		 * @param func the name of the function
 		 * @param objects the arguments of the function
 		 */
@@ -178,6 +193,8 @@ public abstract class Function {
 					Object o = objects[i];
 					if (o instanceof Field) {
 						sb.append(Util.derefField((Field<?>) o, context));
+					} else if (o instanceof CALENDAR) {
+						sb.append(o.toString());
 					} else {
 						sb.append("?");
 						if (bindings == null) bindings = new ArrayList<Object>();

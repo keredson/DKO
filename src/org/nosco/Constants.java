@@ -25,6 +25,21 @@ public class Constants {
 		DESCENDING
 	}
 
+	public static enum CALENDAR {
+		NANOSECOND,
+		MICROSECOND,
+		MILLISECOND,
+		SECOND,
+		MINUTE,
+		HOUR,
+		DAY,
+		WEEKDAY,
+		WEEK,
+		MONTH,
+		QUARTER,
+		YEAR,
+	}
+
 	/**
 	 * Used for tweaking generated SQL by database type.
 	 * You can override the detected type by passing one of these constants

@@ -9,14 +9,17 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import org.nosco.Constants.CALENDAR;
 import org.nosco.Context;
 import org.nosco.Context.Undoer;
 import org.nosco.Diff;
 import org.nosco.Diff.RowChange;
+import org.nosco.Function;
 import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
 import org.nosco.unittest.nosco_test_jpetstore.Category;
 import org.nosco.unittest.nosco_test_jpetstore.Item;
+import org.nosco.unittest.nosco_test_jpetstore.Orderstatus;
 import org.nosco.unittest.nosco_test_jpetstore.Product;
 import org.nosco.unittest.nosco_test_jpetstore.Supplier;
 
@@ -169,6 +172,12 @@ public class SharedDBTests extends TestCase {
 		assertEquals(3, count);
 		assertEquals(1, updates);
 		assertEquals(2, adds);
+	}
+
+	public void testDateAdd() throws SQLException {
+		Orderstatus.ALL.where(Orderstatus.TIMESTAMP.lt(
+				Function.DATEADD(Orderstatus.TIMESTAMP, 1, CALENDAR.DAY)))
+				.asList();
 	}
 
 }

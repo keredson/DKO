@@ -24,7 +24,7 @@ public class QueryFactory {
 	 * @param cls
 	 * @return
 	 */
-	public <T extends Table> Query<T> getQuery(Class<T> cls) {
+	public <T extends Table> Query<T> getQuery(final Class<T> cls) {
 		return new DBQuery<T>(cls);
 	}
 
@@ -34,7 +34,7 @@ public class QueryFactory {
 	 * @param ds
 	 * @return
 	 */
-	public <T extends Table> Query<T> getQuery(Class<T> cls, DataSource ds) {
+	public <T extends Table> Query<T> getQuery(final Class<T> cls, final DataSource ds) {
 		return new DBQuery<T>(cls, ds);
 	}
 

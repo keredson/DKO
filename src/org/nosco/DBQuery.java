@@ -63,21 +63,21 @@ class DBQuery<T extends Table> implements Query<T> {
 	String globallyAppliedSelectFunction = null;
 	DB_TYPE dbType = null;
 
-	DBQuery(Table table) {
+	DBQuery(final Table table) {
 		addTable(table);
 	}
 
-	private TableInfo addTable(Table table) {
+	private TableInfo addTable(final Table table) {
 		tables.add(table);
-		String tableName = genTableName(table, usedTableNames);
+		final String tableName = genTableName(table, usedTableNames);
 		usedTableNames.add(tableName);
-		TableInfo info = new TableInfo(table, tableName, null);
+		final TableInfo info = new TableInfo(table, tableName, null);
 		info.nameAutogenned = true;
 		tableInfos.add(info);
 		return info;
 	}
 
-	DBQuery(DBQuery<T> q) {
+	DBQuery(final DBQuery<T> q) {
 		if (q.conditions!=null) {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
@@ -86,21 +86,21 @@ class DBQuery<T extends Table> implements Query<T> {
 		tables.addAll(q.tables);
 		usedTableNames.addAll(q.usedTableNames);
 		try {
-			for (Join x : q.joinsToOne) joinsToOne.add((Join) x.clone());
-			for (Join x : q.joinsToMany) joinsToMany.add((Join) x.clone());
-			for (TableInfo x : q.tableInfos) {
-				TableInfo clone = (TableInfo) x.clone();
-				for (Join y : joinsToOne) {
+			for (final Join x : q.joinsToOne) joinsToOne.add((Join) x.clone());
+			for (final Join x : q.joinsToMany) joinsToMany.add((Join) x.clone());
+			for (final TableInfo x : q.tableInfos) {
+				final TableInfo clone = (TableInfo) x.clone();
+				for (final Join y : joinsToOne) {
 					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
 					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
 				}
-				for (Join y : joinsToMany) {
+				for (final Join y : joinsToMany) {
 					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
 					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
 				}
 				tableInfos.add(clone);
 			}
-		} catch (CloneNotSupportedException e) { /* ignore */ }
+		} catch (final CloneNotSupportedException e) { /* ignore */ }
 		if (q.deferSet!=null) {
 			deferSet = new HashSet<Field<?>>();
 			deferSet.addAll(q.deferSet);
@@ -129,22 +129,22 @@ class DBQuery<T extends Table> implements Query<T> {
 		defaultDS = q.defaultDS;
 	}
 
-	DBQuery(Class<? extends Table> tableClass) {
+	DBQuery(final Class<? extends Table> tableClass) {
 		try {
 			type = tableClass;
-			Table table = tableClass.getConstructor().newInstance();
+			final Table table = tableClass.getConstructor().newInstance();
 			addTable(table);
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (final InstantiationException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 	}
@@ -152,53 +152,53 @@ class DBQuery<T extends Table> implements Query<T> {
 	private DataSource getDefaultDS() {
 		try {
 			if (defaultDS != null) return defaultDS;
-			java.lang.reflect.Field field = type.getDeclaredField("__DEFAULT_DATASOURCE");
+			final java.lang.reflect.Field field = type.getDeclaredField("__DEFAULT_DATASOURCE");
 			field.setAccessible(true);
 			defaultDS = (DataSource) field.get(null);
 			return defaultDS;
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
-		} catch (NoSuchFieldException e) {
-			String msg = "No default datasource defined for "+ type +".  Please either call " +
+		} catch (final NoSuchFieldException e) {
+			final String msg = "No default datasource defined for "+ type +".  Please either call " +
 					"your query with .use(DataSource ds), or define the 'datasource' field " +
 					"in the org.nosco.ant.CodeGenerator ant task.";
 			throw new RuntimeException(msg, e);
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
 			return null;
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	DBQuery(Class<? extends Table> tableClass, DataSource ds) {
+	DBQuery(final Class<? extends Table> tableClass, final DataSource ds) {
 		this(tableClass);
 		this.ds = ds;
 	}
 
-	public DBQuery(__Alias<? extends Table> alias) {
+	public DBQuery(final __Alias<? extends Table> alias) {
 		type = alias.table;
 		try {
-			Table table = alias.table.getConstructor().newInstance();
+			final Table table = alias.table.getConstructor().newInstance();
 			tables.add(table);
 			usedTableNames.add(alias.alias);
-			TableInfo info = new TableInfo(table, alias.alias, null);
+			final TableInfo info = new TableInfo(table, alias.alias, null);
 			info.nameAutogenned = false;
 			tableInfos.add(info);
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (final InstantiationException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 	}
@@ -210,12 +210,12 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	private void sanityCheckToManyJoins() {
-		Field<?>[] selectFields = getSelectFields();
-		for (Join join : this.joinsToMany) {
-			List<Field<?>> missing = new ArrayList<Field<?>>();
-			for (Field<?> f1 : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+		final Field<?>[] selectFields = getSelectFields();
+		for (final Join join : this.joinsToMany) {
+			final List<Field<?>> missing = new ArrayList<Field<?>>();
+			for (final Field<?> f1 : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
 				boolean found = false;
-				for (Field<?> f2 : selectFields) {
+				for (final Field<?> f2 : selectFields) {
 					if (f1.sameField(f2)) {
 						found = true;
 						break;
@@ -226,7 +226,7 @@ class DBQuery<T extends Table> implements Query<T> {
 				}
 			}
 			if (!missing.isEmpty()) {
-				String msg = "The following fields have been excluded from your selected fields list: "
+				final String msg = "The following fields have been excluded from your selected fields list: "
 						+ missing +" but are required by the join you're using: "+ join.fk;
 				throw new RuntimeException(msg);
 			}
@@ -234,11 +234,11 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> where(Condition... conditions) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> where(final Condition... conditions) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.conditions = new ArrayList<Condition>();
 		if (this.conditions!=null) q.conditions.addAll(this.conditions);
-		for (Condition c : conditions) {
+		for (final Condition c : conditions) {
 			q.conditions.add(c);
 		}
 		return q;
@@ -252,8 +252,8 @@ class DBQuery<T extends Table> implements Query<T> {
 		return detectedDbType;
 	}
 
-	Tuple2<Connection,Boolean> getConnR(DataSource ds) throws SQLException {
-		Context context = Context.getThreadContext();
+	Tuple2<Connection,Boolean> getConnR(final DataSource ds) throws SQLException {
+		final Context context = Context.getThreadContext();
 		if (context.inTransaction(ds)) {
 			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
 		}
@@ -261,14 +261,14 @@ class DBQuery<T extends Table> implements Query<T> {
 			if (ds.isWrapperFor(MirroredDataSource.class)) {
 				return new Tuple2<Connection,Boolean>(ds.unwrap(MirroredDataSource.class).getMirroredConnection(), true);
 			}
-		} catch (AbstractMethodError e) {
+		} catch (final AbstractMethodError e) {
 			/* ignore - mysql doesn't implement this method */
 		}
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}
 
-	Tuple2<Connection,Boolean> getConnRW(DataSource ds) throws SQLException {
-		Context context = Context.getThreadContext();
+	Tuple2<Connection,Boolean> getConnRW(final DataSource ds) throws SQLException {
+		final Context context = Context.getThreadContext();
 		if (context.inTransaction(ds)) {
 			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
 		}
@@ -277,18 +277,18 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public int count() throws SQLException {
-		SqlContext context = new SqlContext(this);
-		String sql = "select count(1)"+ getFromClause(context) + getWhereClauseAndSetBindings();
-		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
-		Connection conn = connInfo.a;
-		PreparedStatement ps = conn.prepareStatement(sql);
+		final SqlContext context = new SqlContext(this);
+		final String sql = "select count(1)"+ getFromClause(context) + getWhereClauseAndSetBindings();
+		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		final Connection conn = connInfo.a;
+		final PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(context, conn);
 		Util.log(sql, null);
 		ps.execute();
-		ResultSet rs = ps.getResultSet();
+		final ResultSet rs = ps.getResultSet();
 		rs.next();
-		int count = rs.getInt(1);
+		final int count = rs.getInt(1);
 		rs.close();
 		ps.close();
 		_postExecute(context, conn);
@@ -299,12 +299,12 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T get(Condition... conditions) {
+	public T get(final Condition... conditions) {
 		//Field[] fields = tables.get(0).FIELDS();
-		DBQuery<T> q = new DBQuery<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
 		if (conditions!=null && conditions.length>0) {
 			if (q.conditions == null) q.conditions = new ArrayList<Condition>();
-			for (Condition condition : conditions) {
+			for (final Condition condition : conditions) {
 				q.conditions.add(condition);
 			}
 		}
@@ -312,48 +312,48 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> exclude(Condition... conditions) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> exclude(final Condition... conditions) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.conditions = new ArrayList<Condition>();
 		if (conditions!=null) q.conditions.addAll(this.conditions);
-		for (Condition c : conditions) {
+		for (final Condition c : conditions) {
 			q.conditions.add(c.not());
 		}
 		return q;
 	}
 
 	@Override
-	public Query<T> orderBy(Field<?>... fields) {
+	public Query<T> orderBy(final Field<?>... fields) {
 		return orderBy(ASCENDING, fields);
 	}
 
 	@Override
 	public Query<T> distinct() {
-		DBQuery<T> q = new DBQuery<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.distinct  = true;
 		return q;
 	}
 
 	@Override
-	public Query<T> deferFields(Field<?>... fields) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> deferFields(final Field<?>... fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.deferSet = new HashSet<Field<?>>();
 		if (deferSet!=null) q.deferSet.addAll(deferSet);
-		for (Field<?> field : fields) {
+		for (final Field<?> field : fields) {
 			q.deferSet.add(field);
 		}
 		return q;
 	}
 
 	@Override
-	public Query<T> onlyFields(Field<?>... fields) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> onlyFields(final Field<?>... fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySet = new HashSet<Field<?>>();
 		//if (onlySet!=null) q.onlySet.addAll(onlySet);
 		/*for (Field<?> f : Table.GET_TABLE_PK(q.tables.get(0)).GET_FIELDS()) {
 			q.onlySet.add(f);
 		} //*/
-		for (Field<?> field : fields) {
+		for (final Field<?> field : fields) {
 			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 				throw new RuntimeException("cannot use bound fields " +
 						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
@@ -365,8 +365,8 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T latest(Field<?> field) {
-		for(T t : orderBy(DESCENDING, field).top(1)) {
+	public T latest(final Field<?> field) {
+		for(final T t : orderBy(DESCENDING, field).top(1)) {
 			return t;
 		}
 		return null;
@@ -379,20 +379,20 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public int update() throws SQLException {
-		SqlContext context = new SqlContext(this);
+		final SqlContext context = new SqlContext(this);
 		if (data==null || data.size()==0) return 0;
-		DataSource ds = getDataSource();
-		Table table = tables.get(0);
+		final DataSource ds = getDataSource();
+		final Table table = tables.get(0);
 		this.tableInfos.get(0).tableName = null;
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		StringBuffer sb = new StringBuffer();
+		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME()) +sep+ table.TABLE_NAME());
 		sb.append(" set ");
-		String[] fields = new String[data.size()];
-		List<Object> bindings = new ArrayList<Object>();
+		final String[] fields = new String[data.size()];
+		final List<Object> bindings = new ArrayList<Object>();
 		int i=0;
-		for (Entry<Field<?>, Object> entry : data.entrySet()) {
+		for (final Entry<Field<?>, Object> entry : data.entrySet()) {
 			fields[i++] = entry.getKey().NAME+"=?";
 			bindings.add(entry.getValue());
 		}
@@ -400,16 +400,16 @@ class DBQuery<T extends Table> implements Query<T> {
 		sb.append(" ");
 		sb.append(getWhereClauseAndSetBindings(false));
 		bindings.addAll(this.bindings);
-		String sql = sb.toString();
+		final String sql = sb.toString();
 
 		Util.log(sql, bindings);
-		Tuple2<Connection,Boolean> info = getConnRW(ds);
-		Connection conn = info.a;
-		PreparedStatement ps = conn.prepareStatement(sql);
+		final Tuple2<Connection,Boolean> info = getConnRW(ds);
+		final Connection conn = info.a;
+		final PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps, bindings);
 		_preExecute(context, conn);
 		ps.execute();
-		int count = ps.getUpdateCount();
+		final int count = ps.getUpdateCount();
 		ps.close();
 		_postExecute(context, conn);
 		if (info.b) {
@@ -422,22 +422,22 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public int deleteAll() throws SQLException {
-		DBQuery<T> q = new DBQuery<T>(this);
-		DataSource ds = getDataSource();
-		Tuple2<Connection,Boolean> info = q.getConnRW(ds);
-		Connection conn = info.a;
+		final DBQuery<T> q = new DBQuery<T>(this);
+		final DataSource ds = getDataSource();
+		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);
+		final Connection conn = info.a;
 		if (q.getDBType()==DB_TYPE.MYSQL) {
 			if (q.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
-			Table t = q.tables.get(0);
+			final Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
-			String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
+			final String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ "." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
-			PreparedStatement ps = conn.prepareStatement(sql);
+			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			ps.execute();
-			int count = ps.getUpdateCount();
+			final int count = ps.getUpdateCount();
 			ps.close();
 			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
@@ -448,15 +448,15 @@ class DBQuery<T extends Table> implements Query<T> {
 		} else if (getDBType()==DB_TYPE.SQLSERVER) {
 			if (q.tables.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
 					"is not yet supported");
-			Table t = q.tables.get(0);
+			final Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
-			String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
+			final String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
 					+ ".dbo." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
-			PreparedStatement ps = conn.prepareStatement(sql);
+			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			ps.execute();
-			int count = ps.getUpdateCount();
+			final int count = ps.getUpdateCount();
 			ps.close();
 			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
@@ -465,12 +465,12 @@ class DBQuery<T extends Table> implements Query<T> {
 			return count;
 
 		} else {
-			String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
+			final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
-			PreparedStatement ps = conn.prepareStatement(sql);
+			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			ps.execute();
-			int count = ps.getUpdateCount();
+			final int count = ps.getUpdateCount();
 			ps.close();
 			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
@@ -481,7 +481,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Statistics stats(Field<?>... field) {
+	public Statistics stats(final Field<?>... field) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -507,14 +507,14 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	Tuple2<String,List<Object>> getWhereClauseAndBindings(SqlContext context) {
-		StringBuffer sb = new StringBuffer();
-		List<Object> bindings = new ArrayList<Object>();
+	Tuple2<String,List<Object>> getWhereClauseAndBindings(final SqlContext context) {
+		final StringBuffer sb = new StringBuffer();
+		final List<Object> bindings = new ArrayList<Object>();
 		if (conditions!=null && conditions.size()>0) {
 			sb.append(" where");
-			String[] tmp = new String[conditions.size()];
+			final String[] tmp = new String[conditions.size()];
 			int i=0;
-			for (Condition condition : conditions) {
+			for (final Condition condition : conditions) {
 				tmp[i++] = condition.getSQL(context);
 				bindings.addAll(condition.getSQLBindings());
 			}
@@ -526,26 +526,26 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	String getWhereClauseAndSetBindings(boolean bindTables) {
+	String getWhereClauseAndSetBindings(final boolean bindTables) {
 		if (sql==null) {
 
-			StringBuffer sb = new StringBuffer();
+			final StringBuffer sb = new StringBuffer();
 			bindings = new ArrayList<Object>();
 
 			tableNameMap = new HashMap<String,Set<String>>();
-			for (TableInfo ti : tableInfos) {
-				String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
+			for (final TableInfo ti : tableInfos) {
+				final String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
 				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
 				tableNameMap.get(id).add(bindTables ? ti.tableName : ti.table.TABLE_NAME());
 			}
 
-			SqlContext context = new SqlContext(this);
+			final SqlContext context = new SqlContext(this);
 
 			if (conditions!=null && conditions.size()>0) {
 				sb.append(" where");
-				String[] tmp = new String[conditions.size()];
+				final String[] tmp = new String[conditions.size()];
 				int i=0;
-				for (Condition condition : conditions) {
+				for (final Condition condition : conditions) {
 					tmp[i++] = condition.getSQL(context);
 					bindings.addAll(condition.getSQLBindings());
 				}
@@ -570,24 +570,24 @@ class DBQuery<T extends Table> implements Query<T> {
 	 * @param context
 	 * @return
 	 */
-	String getJoinClause(SqlContext context) {
-		StringBuffer sb = new StringBuffer();
+	String getJoinClause(final SqlContext context) {
+		final StringBuffer sb = new StringBuffer();
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = getDBType();
-		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		ArrayList<Join> joinsToOne = new ArrayList<Join>(this.joinsToOne);
-		ArrayList<Join> joinsToMany = new ArrayList<Join>(this.joinsToMany);
-		Set<Class> seen = new HashSet<Class>();
+		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		final ArrayList<Join> joinsToOne = new ArrayList<Join>(this.joinsToOne);
+		final ArrayList<Join> joinsToMany = new ArrayList<Join>(this.joinsToMany);
+		final Set<Class> seen = new HashSet<Class>();
 		seen.add(getType());
 		while (!joinsToOne.isEmpty() || !joinsToMany.isEmpty()) {
 			System.err.println("woot1");
 			for (int i=0; i<joinsToOne.size(); ++i) {
-				Join join  = joinsToOne.get(i);
+				final Join join  = joinsToOne.get(i);
 				if (!seen.contains(join.reffingTableInfo.tableClass)) continue;
 				seen.add(join.reffedTableInfo.tableClass);
 				joinsToOne.remove(i--);
-				TableInfo tableInfo = join.reffedTableInfo;
-				Table table = tableInfo.table;
+				final TableInfo tableInfo = join.reffedTableInfo;
+				final Table table = tableInfo.table;
 				sb.append(" ");
 				sb.append(join.type);
 				sb.append(" ");
@@ -596,12 +596,12 @@ class DBQuery<T extends Table> implements Query<T> {
 				sb.append(join.condition.getSQL(context));
 			}
 			for (int i=0; i<joinsToMany.size(); ++i) {
-				Join join  = joinsToMany.get(i);
+				final Join join  = joinsToMany.get(i);
 				if (!seen.contains(join.reffedTableInfo.tableClass)) continue;
 				seen.add(join.reffingTableInfo.tableClass);
 				joinsToMany.remove(i--);
-				TableInfo tableInfo = join.reffingTableInfo;
-				Table table = tableInfo.table;
+				final TableInfo tableInfo = join.reffingTableInfo;
+				final Table table = tableInfo.table;
 				sb.append(" ");
 				sb.append(join.type);
 				sb.append(" ");
@@ -614,13 +614,13 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.orderByDirections = new ArrayList<DIRECTION>();
 		if (orderByDirections!=null) q.orderByDirections.addAll(orderByDirections);
 		q.orderByFields = new ArrayList<Field<?>>();
 		if (orderByFields!=null) q.orderByFields.addAll(orderByFields);
-		for (Field<?> field : fields) {
+		for (final Field<?> field : fields) {
 			q.orderByDirections.add(direction);
 			q.orderByFields.add(field);
 		}
@@ -630,21 +630,21 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> top(int i) {
+	public Query<T> top(final int i) {
 		return limit(i);
 	}
 
 	@Override
-	public Query<T> limit(int i) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> limit(final int i) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.top  = i;
 		return q;
 	}
 
-	private String genTableName(Table table, Collection<String> tableNames) {
-		String name = table.TABLE_NAME();
+	private String genTableName(final Table table, final Collection<String> tableNames) {
+		final String name = table.TABLE_NAME();
 		String base = "";
-		for (String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
+		for (final String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
 		String proposed = null;
 		int i = 1;
 		while (tableNames.contains((proposed = base + (i==1 ? "" : String.valueOf(i))))) ++i;
@@ -652,29 +652,29 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	List<TableInfo> getAllTableInfos() {
-		List<TableInfo> all = new ArrayList<TableInfo>(tableInfos);
-		for (Join join : joinsToOne) {
+		final List<TableInfo> all = new ArrayList<TableInfo>(tableInfos);
+		for (final Join join : joinsToOne) {
 			all.add(join.reffedTableInfo);
 		}
-		for (Join join : joinsToMany) {
+		for (final Join join : joinsToMany) {
 			all.add(join.reffingTableInfo);
 		}
 		return all;
 	}
 
-	Field<?>[] getSelectFields(boolean bind) {
+	Field<?>[] getSelectFields(final boolean bind) {
 		if (!bind && fields==null || bind && boundFields==null) {
-			List<Field<?>> fields = new ArrayList<Field<?>>();
+			final List<Field<?>> fields = new ArrayList<Field<?>>();
 			int c = 0;
 			int position = 0;
-			for (TableInfo ti : getAllTableInfos()) {
+			for (final TableInfo ti : getAllTableInfos()) {
 				ti.position = position;
 				position += 1;
 				ti.start = c;
-				String tableName = bind ? ti.tableName : null;
-				for (Field<?> field : ti.table.FIELDS()) {
+				final String tableName = bind ? ti.tableName : null;
+				for (final Field<?> field : ti.table.FIELDS()) {
 					if(onlySet!=null) {
-						for (Field<?> other : onlySet) {
+						for (final Field<?> other : onlySet) {
 							if (field == other && ti.nameAutogenned) {
 								fields.add(bind ? field.from(tableName) : field);
 								++c;
@@ -715,12 +715,12 @@ class DBQuery<T extends Table> implements Query<T> {
 		return orderByFields;
 	}
 
-	public void setBindings(PreparedStatement ps) throws SQLException {
+	public void setBindings(final PreparedStatement ps) throws SQLException {
 		setBindings(ps, bindings);
 	}
 
-	public void setBindings(PreparedStatement ps, List<Object> bindings) throws SQLException {
-		Table main = tables.get(0);
+	public void setBindings(final PreparedStatement ps, final List<Object> bindings) throws SQLException {
+		final Table main = tables.get(0);
 		int i=1;
 		if (bindings!=null) {
 			for (Object o : bindings) {
@@ -736,16 +736,16 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> set(Field<?> field, Object value) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> set(final Field<?> field, final Object value) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		if (q.data==null) q.data = new HashMap<Field<?>, Object>();
 		q.data.put(field, value);
 		return q;
 	}
 
 	@Override
-	public Query<T> set(Map<Field<?>, Object> values) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> set(final Map<Field<?>, Object> values) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		if (q.data==null) q.data = new HashMap<Field<?>, Object>();
 		q.data.putAll(values);
 		return q;
@@ -753,21 +753,21 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Object insert() throws SQLException {
-		DBQuery<T> q = new DBQuery<T>(this);
-		SqlContext context = new SqlContext(q);
-		DataSource ds = getDataSource();
-		Table table = q.tables.get(0);
-		String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		StringBuffer sb = new StringBuffer();
+		final DBQuery<T> q = new DBQuery<T>(this);
+		final SqlContext context = new SqlContext(q);
+		final DataSource ds = getDataSource();
+		final Table table = q.tables.get(0);
+		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME()));
 		sb.append(sep+ table.TABLE_NAME());
 		sb.append(" (");
-		String[] fields = new String[q.data.size()];
-		String[] bindStrings = new String[q.data.size()];
+		final String[] fields = new String[q.data.size()];
+		final String[] bindStrings = new String[q.data.size()];
 		q.bindings = new ArrayList<Object>();
 		int i=0;
-		for (Entry<Field<?>, Object> entry : q.data.entrySet()) {
+		for (final Entry<Field<?>, Object> entry : q.data.entrySet()) {
 			fields[i] = entry.getKey().NAME;
 			bindStrings[i] = "?";
 			q.bindings.add(entry.getValue());
@@ -777,27 +777,27 @@ class DBQuery<T extends Table> implements Query<T> {
 		sb.append(") values (");
 		sb.append(Util.join(", ", bindStrings));
 		sb.append(")");
-		String sql = sb.toString();
+		final String sql = sb.toString();
 
 		Util.log(sql, q.bindings);
-		Tuple2<Connection,Boolean> info = getConnRW(ds);
-		Connection conn = info.a;
-		PreparedStatement ps = conn.prepareStatement(sql);
+		final Tuple2<Connection,Boolean> info = getConnRW(ds);
+		final Connection conn = info.a;
+		final PreparedStatement ps = conn.prepareStatement(sql);
 		q.setBindings(ps);
 		_preExecute(context, conn);
 		ps.execute();
-		int count = ps.getUpdateCount();
+		final int count = ps.getUpdateCount();
 		ps.close();
 		_postExecute(context, conn);
 
 		if (count==1) {
 			if (getDBType()==DB_TYPE.MYSQL) {
-				Statement s = conn.createStatement();
+				final Statement s = conn.createStatement();
 
 				s.execute("SELECT LAST_INSERT_ID()");
-				ResultSet rs = s.getResultSet();
+				final ResultSet rs = s.getResultSet();
 				if (rs.next()) {
-					Integer pk = rs.getInt(1);
+					final Integer pk = rs.getInt(1);
 					return pk;
 				}
 			}
@@ -814,15 +814,15 @@ class DBQuery<T extends Table> implements Query<T> {
 		return getTableNameList(null);
 	}
 
-	List<String> getTableNameList(SqlContext context) {
-		DBQuery<?> rootQuery = context == null ? this : context.getRootQuery();
-		DataSource ds = rootQuery.getDataSource();
+	List<String> getTableNameList(final SqlContext context) {
+		final DBQuery<?> rootQuery = context == null ? this : context.getRootQuery();
+		final DataSource ds = rootQuery.getDataSource();
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = rootQuery.getDBType();
-		List<String> names = new ArrayList<String>();
-		String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		for (TableInfo ti : tableInfos) {
-			Table t = ti.table;
+		final List<String> names = new ArrayList<String>();
+		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		for (final TableInfo ti : tableInfos) {
+			final Table t = ti.table;
 			names.add(context.getFullTableName(t) +" "+ ti.tableName);
 		}
 		return names;
@@ -833,8 +833,8 @@ class DBQuery<T extends Table> implements Query<T> {
 	public Query<T> with(final Field.FK... fkFields) {
 		DBQuery<T> q = new DBQuery<T>(this);
 		if (q.orderByFields == null) {
-			Table t = q.tables.get(0);
-			PK pk = Util.getPK(tables.get(0));
+			final Table t = q.tables.get(0);
+			final PK pk = Util.getPK(tables.get(0));
 			if (pk != null) q = (DBQuery<T>) q.orderBy(pk.GET_FIELDS());
 			else q = (DBQuery<T>) q.orderBy(t.FIELDS());
 		}
@@ -845,19 +845,19 @@ class DBQuery<T extends Table> implements Query<T> {
 			final Table[] baseTables = new Table[fkFields.length+1];
 			baseTables[0] = q.tables.get(0);
 			for (int i=0; i<fkFields.length; ++i) {
-				Field.FK field = fkFields[i];
-				Field[] refingFields = field.REFERENCING_FIELDS();
-				Field[] reffedFields = field.REFERENCED_FIELDS();
-				Table refingTable = (Table) refingFields[0].TABLE.newInstance();
-				Table reffedTable = (Table) reffedFields[0].TABLE.newInstance();
-				FK[] prevPath = new FK[i];
+				final Field.FK field = fkFields[i];
+				final Field[] refingFields = field.REFERENCING_FIELDS();
+				final Field[] reffedFields = field.REFERENCED_FIELDS();
+				final Table refingTable = (Table) refingFields[0].TABLE.newInstance();
+				final Table reffedTable = (Table) reffedFields[0].TABLE.newInstance();
+				final FK[] prevPath = new FK[i];
 				System.arraycopy(fkFields, 0, prevPath, 0, i);
-				FK[] path = new FK[i+1];
+				final FK[] path = new FK[i+1];
 				System.arraycopy(fkFields, 0, path, 0, i+1);
 				boolean alreadyAdded = false;
-				List<TableInfo> allTableInfos = q.getAllTableInfos();
+				final List<TableInfo> allTableInfos = q.getAllTableInfos();
 				TableInfo prevTableInfo = allTableInfos.get(0);
-				for (TableInfo ti : allTableInfos) {
+				for (final TableInfo ti : allTableInfos) {
 					if (Util.deepEqual(prevPath, ti.path)) {
 						prevTableInfo = ti;
 					}
@@ -874,18 +874,18 @@ class DBQuery<T extends Table> implements Query<T> {
 				// create the condition
 				Condition condition = null;
 				for (int j=0; j<refingFields.length; ++j) {
-					Condition condition2 = refingFields[j].eq(reffedFields[j]);
+					final Condition condition2 = refingFields[j].eq(reffedFields[j]);
 					if (condition == null) condition = condition2;
 					else condition = condition.and(condition2);
 				}
 
 				if (Util.sameTable(refingTable, baseTables[i])) {
 					baseTables[i+1] = reffedTable;
-					String tableName = genTableName(reffedTable, q.usedTableNames);
+					final String tableName = genTableName(reffedTable, q.usedTableNames);
 					q.usedTableNames.add(tableName);
-					TableInfo info = new TableInfo(reffedTable, tableName, path);
+					final TableInfo info = new TableInfo(reffedTable, tableName, path);
 					info.nameAutogenned = true;
-					Join join = new Join();
+					final Join join = new Join();
 					join.condition = condition;
 					join.reffingTableInfo  = prevTableInfo;
 					join.reffedTableInfo = info;
@@ -895,11 +895,11 @@ class DBQuery<T extends Table> implements Query<T> {
 					q.joinsToOne.add(join);
 				} else if (Util.sameTable(reffedTable, baseTables[i])) {
 					baseTables[i+1] = refingTable;
-					String tableName = genTableName(refingTable, q.usedTableNames);
+					final String tableName = genTableName(refingTable, q.usedTableNames);
 					q.usedTableNames.add(tableName);
-					TableInfo info = new TableInfo(refingTable, tableName, path);
+					final TableInfo info = new TableInfo(refingTable, tableName, path);
 					info.nameAutogenned = true;
-					Join join = new Join();
+					final Join join = new Join();
 					join.condition = condition;
 					join.reffingTableInfo = info;
 					join.reffedTableInfo = prevTableInfo;
@@ -912,21 +912,21 @@ class DBQuery<T extends Table> implements Query<T> {
 				}
 			}
 
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (final InstantiationException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return q;
 	}
 
 	@SuppressWarnings("rawtypes")
-	static String genTableNameFromFKPathKey(FK[] fkFields, int offset, Table refingTable) {
-		StringBuffer sb = new StringBuffer();
+	static String genTableNameFromFKPathKey(final FK[] fkFields, final int offset, final Table refingTable) {
+		final StringBuffer sb = new StringBuffer();
 		for (int i=0; i<offset; ++i) {
-			FK fkField = fkFields[i];
+			final FK fkField = fkFields[i];
 			sb.append(fkField.toString());
 			sb.append("/");
 		}
@@ -938,7 +938,7 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public T first() {
-		for(T t : this.top(1)) {
+		for(final T t : this.top(1)) {
 			return t;
 		}
 		return null;
@@ -947,7 +947,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public T getTheOnly() {
 		T x = null;
-		for (T t : this.top(2)) {
+		for (final T t : this.top(2)) {
 			if (x==null) x = t;
 			else throw new RuntimeException("more than one result found in Query.getTheOnly()");
 		}
@@ -967,7 +967,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		Condition condition = null;
 		@Override
 		protected Object clone() throws CloneNotSupportedException {
-			Join j = new Join();
+			final Join j = new Join();
 			j.fk = fk;
 			j.reffingTableInfo = reffingTableInfo;
 			j.type = type;
@@ -979,24 +979,24 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public List<T> asList() {
-		List<T> list = new ArrayList<T>();
-		for (T t : this) list.add(t);
+		final List<T> list = new ArrayList<T>();
+		for (final T t : this) list.add(t);
 		return list;
 	}
 
 	@Override
 	public Set<T> asSet() {
-		Set<T> set = new HashSet<T>();
-		for (T t : this) set.add(t);
+		final Set<T> set = new HashSet<T>();
+		for (final T t : this) set.add(t);
 		return set;
 	}
 
-	String getFromClause(SqlContext context) {
-		List<String> tableNames = getTableNameList(context);
-		String firstTableName = tableNames.get(0);
-		StringBuilder sb = new StringBuilder();
+	String getFromClause(final SqlContext context) {
+		final List<String> tableNames = getTableNameList(context);
+		final String firstTableName = tableNames.get(0);
+		final StringBuilder sb = new StringBuilder();
 		sb.append(" from "+ firstTableName +" "+ getJoinClause(context));
-		for (String tableName : tableNames.subList(1, tableNames.size())) {
+		for (final String tableName : tableNames.subList(1, tableNames.size())) {
 			sb.append(", ");
 			sb.append(tableName);
 		}
@@ -1005,27 +1005,27 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
+	public <S> Map<S, Double> sumBy(final Field<? extends Number> sumField, final Field<S> byField)
 			throws SQLException {
-		SqlContext context = new SqlContext(this);
+		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
 		sql = "select "+ Util.derefField(byField, context)
 				+", sum("+ Util.derefField(sumField, context) +") "+ sql
 				+" group by "+ Util.derefField(byField, context);
 		Util.log(sql, null);
-		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
-		Connection conn = connInfo.a;
-		PreparedStatement ps = conn.prepareStatement(sql);
+		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		final Connection conn = connInfo.a;
+		final PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		ps.execute();
-		ResultSet rs = ps.getResultSet();
-		Map<Object, Double> result = new LinkedHashMap<Object, Double>();
+		final ResultSet rs = ps.getResultSet();
+		final Map<Object, Double> result = new LinkedHashMap<Object, Double>();
 		while (rs.next()) {
 			Object key = null;
 			if (byField.TYPE == Long.class) key = rs.getLong(1); else
 			if (byField.TYPE == Double.class) key = rs.getDouble(1); else
 			key = rs.getObject(1);
-			Double value = rs.getDouble(2);
+			final Double value = rs.getDouble(2);
 			result.put(key, value);
 		}
 		rs.close();
@@ -1037,20 +1037,20 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Double sum(Field<? extends Number> sumField) throws SQLException {
-		SqlContext context = new SqlContext(this);
+	public Double sum(final Field<? extends Number> sumField) throws SQLException {
+		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
 		sql = "select sum("+ Util.derefField(sumField, context) +")"+ sql;
 		Util.log(sql, null);
-		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
-		Connection conn = connInfo.a;
-		PreparedStatement ps = conn.prepareStatement(sql);
+		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		final Connection conn = connInfo.a;
+		final PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(context, conn);
 		ps.execute();
-		ResultSet rs = ps.getResultSet();
+		final ResultSet rs = ps.getResultSet();
 		rs.next();
-		Double ret = rs.getDouble(1);
+		final Double ret = rs.getDouble(1);
 		rs.close();
 		ps.close();
 		_postExecute(context, conn);
@@ -1062,28 +1062,28 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
-		SqlContext context = new SqlContext(this);
+	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
+		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context)
 				+ getWhereClauseAndSetBindings();
 		sql = "select "+ Util.derefField(byField, context)
 				+", count("+ Util.derefField(byField, context) +")"+ sql
 				+" group by "+ Util.derefField(byField, context);
 		Util.log(sql, null);
-		Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
-		Connection conn = connInfo.a;
-		PreparedStatement ps = conn.prepareStatement(sql);
+		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
+		final Connection conn = connInfo.a;
+		final PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(context, conn);
 		ps.execute();
-		ResultSet rs = ps.getResultSet();
-		Map<Object, Integer> result = new LinkedHashMap<Object, Integer>();
+		final ResultSet rs = ps.getResultSet();
+		final Map<Object, Integer> result = new LinkedHashMap<Object, Integer>();
 		while (rs.next()) {
 			Object key = null;
 			if (byField.TYPE == Long.class) key = rs.getLong(1); else
 			if (byField.TYPE == Double.class) key = rs.getDouble(1); else
 			key = rs.getObject(1);
-			int value = rs.getInt(2);
+			final int value = rs.getInt(2);
 			result.put(key, value);
 		}
 		rs.close();
@@ -1095,39 +1095,39 @@ class DBQuery<T extends Table> implements Query<T> {
 		return (Map<S, Integer>) result;
 	}
 
-	public Query<T> use(DataSource ds) {
+	public Query<T> use(final DataSource ds) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.ds = ds;
 		return q;
 	}
 
 	@Override
-	public Query<T> cross(Table t) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> cross(final Table t) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.addTable(t);
-		for (Field<?> field : t.FIELDS()) {
+		for (final Field<?> field : t.FIELDS()) {
 			this.deferFields(field.from("i2"));
 		}
 		return q;
 	}
 
 	@Override
-	public Query<T> cross(Class<? extends Table> tableClass) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> cross(final Class<? extends Table> tableClass) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
-			Table table = tableClass.getConstructor().newInstance();
+			final Table table = tableClass.getConstructor().newInstance();
 			q.addTable(table);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		return q;
 	}
 
 	@Override
-	public Query<T> cross(__Alias<? extends Table> tableAlias) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> cross(final __Alias<? extends Table> tableAlias) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
-			Table table = tableAlias.table.getConstructor().newInstance();
+			final Table table = tableAlias.table.getConstructor().newInstance();
 			q.tables.add(table);
 			if (q.usedTableNames.contains(tableAlias.alias)) {
 				throw new RuntimeException("table alias "+ tableAlias.alias
@@ -1135,16 +1135,16 @@ class DBQuery<T extends Table> implements Query<T> {
 			}
 			q.usedTableNames.add(tableAlias.alias);
 			q.tableInfos.add(new TableInfo(table, tableAlias.alias, null));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		return q;
 	}
 
 	@Override
-	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException {
-		Map<S, T> ret = new LinkedHashMap<S, T>();
-		for (T t : this) {
+	public <S> Map<S, T> mapBy(final Field<S> byField) throws SQLException {
+		final Map<S, T> ret = new LinkedHashMap<S, T>();
+		for (final T t : this) {
 			ret.put(t.get(byField), t);
 		}
 		return ret;
@@ -1157,14 +1157,14 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> max() {
-		DBQuery<T> q = new DBQuery<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.globallyAppliedSelectFunction = "max";
 		return q;
 	}
 
 	@Override
 	public Query<T> min() {
-		DBQuery<T> q = new DBQuery<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.globallyAppliedSelectFunction = "min";
 		return q;
 	}
@@ -1177,7 +1177,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public DataSource getDataSource() {
 		if (ds != null) return ds;
-		DataSource ds = Context.getDataSource(type);
+		final DataSource ds = Context.getDataSource(type);
 		if (ds != null) return ds;
 		return getDefaultDS();
 	}
@@ -1188,42 +1188,42 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S> List<S> asList(Field<S> field) {
-		List<S> ret = new ArrayList<S>();
-		for (S s : select(field)) {
+	public <S> List<S> asList(final Field<S> field) {
+		final List<S> ret = new ArrayList<S>();
+		for (final S s : select(field)) {
 			ret.add(s);
 		}
 		return ret;
 	}
 
 	@Override
-	public T get(__PrimaryKey<T> pk) {
+	public T get(final __PrimaryKey<T> pk) {
 		return get(Util.getPK((T)tables.get(0)).eq(pk));
 	}
 
 	@Override
-	public Query<T> use(Connection conn) {
+	public Query<T> use(final Connection conn) {
 		return use(new SingleConnectionDataSource(conn));
 	}
 
-	void _preExecute(SqlContext context, Connection conn) throws SQLException {
-		for (Table table : tables) {
+	void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
+		for (final Table table : tables) {
 			table.__NOSCO_PRIVATE_preExecute(context, conn);
 		}
 		if (conditions != null) {
-			for (Condition c : conditions) {
+			for (final Condition c : conditions) {
 				c._preExecute(conn);
 			}
 		}
 	}
 
-	void _postExecute(SqlContext context, Connection conn) throws SQLException {
+	void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
 		if (conditions != null) {
-			for (Condition c : conditions) {
+			for (final Condition c : conditions) {
 				c._postExecute(conn);
 			}
 		}
-		for (Table table : tables) {
+		for (final Table table : tables) {
 			table.__NOSCO_PRIVATE_postExecute(context, conn);
 		}
 	}
@@ -1239,8 +1239,8 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> use(DB_TYPE type) {
-		DBQuery<T> q = new DBQuery<T>(this);
+	public Query<T> use(final DB_TYPE type) {
+		final DBQuery<T> q = new DBQuery<T>(this);
 		q.dbType = type;
 		return q;
 	}

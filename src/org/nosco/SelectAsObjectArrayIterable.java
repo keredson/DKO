@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 class SelectAsObjectArrayIterable implements Iterable<Object[]>, Iterator<Object[]> {
 
-	private Select<?> select;
+	private final Select<?> select;
 
-	public SelectAsObjectArrayIterable(Select<?> select) {
+	public SelectAsObjectArrayIterable(final Select<?> select) {
 		this.select = select;
 	}
 
@@ -15,7 +15,7 @@ class SelectAsObjectArrayIterable implements Iterable<Object[]>, Iterator<Object
 	public boolean hasNext() {
 		try {
 			return select.peekNextRow() != null;
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -24,7 +24,7 @@ class SelectAsObjectArrayIterable implements Iterable<Object[]>, Iterator<Object
 	public Object[] next() {
 		try {
 			return select.getNextRow();
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}

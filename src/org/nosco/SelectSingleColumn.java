@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 class SelectSingleColumn<S> implements Iterable<S> {
 
-	private Field<S> field;
-	private Query<? extends Table> q;
+	private final Field<S> field;
+	private final Query<? extends Table> q;
 
-	SelectSingleColumn(Query<? extends Table> q, Field<S> field) {
+	SelectSingleColumn(final Query<? extends Table> q, final Field<S> field) {
 		this.q = q;
 		this.field = field;
 	}
@@ -17,8 +17,8 @@ class SelectSingleColumn<S> implements Iterable<S> {
 		return new Iterator<S>() {
 			
 			private S next = null;
-			private Iterable<? extends Table> it1 = q.all();
-			private Iterator<? extends Table> it = it1.iterator();
+			private final Iterable<? extends Table> it1 = q.all();
+			private final Iterator<? extends Table> it = it1.iterator();
 
 			@Override
 			public boolean hasNext() {
@@ -34,7 +34,7 @@ class SelectSingleColumn<S> implements Iterable<S> {
 			@Override
 			public S next() {
 				if (hasNext()) {
-					S tmp = next;
+					final S tmp = next;
 					next = null;
 					return tmp;
 				}

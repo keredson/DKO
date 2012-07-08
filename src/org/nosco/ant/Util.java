@@ -4,9 +4,9 @@ import java.util.Collection;
 
 class Util {
 
-	static String join(String s, Collection<?> c) {
-	    StringBuilder sb = new StringBuilder();
-	    for (Object o : c) {
+	static String join(final String s, final Collection<?> c) {
+	    final StringBuilder sb = new StringBuilder();
+	    for (final Object o : c) {
 	    	sb.append(o);
 	    	sb.append(s);
 	    }
@@ -16,10 +16,10 @@ class Util {
 	    return sb.toString();
 	}
 
-	static <T extends Object> String join(String s, T... c) {
+	static <T extends Object> String join(final String s, final T... c) {
 		if(c==null || c.length==0) return "";
-	    StringBuilder sb = new StringBuilder();
-	    for (Object o : c) {
+	    final StringBuilder sb = new StringBuilder();
+	    for (final Object o : c) {
 	    	sb.append(o==null ? "" : o.toString());
 	    	sb.append(s);
 	    }

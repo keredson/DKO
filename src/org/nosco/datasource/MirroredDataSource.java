@@ -17,7 +17,7 @@ import javax.sql.DataSource;
  */
 public class MirroredDataSource implements DataSource {
 
-	private DataSource primary;
+	private final DataSource primary;
 	private DataSource[] mirrors;
 
 	/**
@@ -27,7 +27,7 @@ public class MirroredDataSource implements DataSource {
 	 * @param primary
 	 * @param mirrors
 	 */
-	public MirroredDataSource(DataSource primary, DataSource... mirrors) {
+	public MirroredDataSource(final DataSource primary, final DataSource... mirrors) {
 		this.primary = primary;
 		if (mirrors == null) this.mirrors = new DataSource[0];
 		else this.mirrors = mirrors;
@@ -44,24 +44,24 @@ public class MirroredDataSource implements DataSource {
 	}
 
 	@Override
-	public void setLogWriter(PrintWriter arg0) throws SQLException {
+	public void setLogWriter(final PrintWriter arg0) throws SQLException {
 		primary.setLogWriter(arg0);
 	}
 
 	@Override
-	public void setLoginTimeout(int arg0) throws SQLException {
+	public void setLoginTimeout(final int arg0) throws SQLException {
 		primary.setLoginTimeout(arg0);
 	}
 
 	@Override
-	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+	public boolean isWrapperFor(final Class<?> arg0) throws SQLException {
 		if (primary.getClass().equals(arg0)) return true;
 		return primary.isWrapperFor(arg0);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T unwrap(Class<T> arg0) throws SQLException {
+	public <T> T unwrap(final Class<T> arg0) throws SQLException {
 		if (primary.getClass().equals(arg0)) return (T) primary;
 		return primary.unwrap(arg0);
 	}
@@ -82,13 +82,13 @@ public class MirroredDataSource implements DataSource {
 		// for now we randomly select the mirror
 		// TODO: implement other strategies
 		if (mirrors.length == 0) return getConnection();
-		Random random = new Random();
-		int i = random.nextInt(mirrors.length);
+		final Random random = new Random();
+		final int i = random.nextInt(mirrors.length);
 		return mirrors[i].getConnection();
 	}
 
 	@Override
-	public Connection getConnection(String arg0, String arg1)
+	public Connection getConnection(final String arg0, final String arg1)
 			throws SQLException {
 		return primary.getConnection(arg0, arg1);
 	}

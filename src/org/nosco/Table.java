@@ -170,23 +170,23 @@ public abstract class Table {
 	public abstract boolean exists(DataSource ds) throws SQLException;
 
 	static Map<Table,java.lang.reflect.Field> _pkCache = new HashMap<Table, java.lang.reflect.Field>();
-	static Field.PK GET_TABLE_PK(Table table) {
+	static Field.PK GET_TABLE_PK(final Table table) {
 		if (!_pkCache.containsKey(table)) {
 			java.lang.reflect.Field field = null;
 			try {
 				field = table.getClass().getDeclaredField("PK");
-			} catch (SecurityException e) {
+			} catch (final SecurityException e) {
 				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
+			} catch (final NoSuchFieldException e) {
 				e.printStackTrace();
 			}
 			_pkCache.put(table, field);
 		}
 		try {
 			return (PK) _pkCache.get(table).get(table);
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -209,23 +209,24 @@ public abstract class Table {
 		final String alias;
 		public final Query<S> ALL;
 
-		public __Alias(Class<S> table, String alias) {
+		public __Alias(final Class<S> table, final String alias) {
 			this.table = table;
 			this.alias = alias;
 			Query<S> all = new DBQuery<S>(this);
 			try {
-				java.lang.reflect.Field f = table.getDeclaredField("ALL");
+				final java.lang.reflect.Field f = table.getDeclaredField("ALL");
 				f.setAccessible(true);
 				@SuppressWarnings("unchecked")
+				final
 				DBQuery<S> q = (DBQuery<S>) f.get(null);
 				all = all.use(q.ds);
-			} catch (SecurityException e) {
+			} catch (final SecurityException e) {
 				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
+			} catch (final NoSuchFieldException e) {
 				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (final IllegalAccessException e) {
 				e.printStackTrace();
 			}
 			this.ALL = all;
@@ -271,25 +272,25 @@ public abstract class Table {
 	public int hashCode() {
 	    final int prime = 31;
 	    int result = 1;
-	    Field.PK<?> pk = Util.getPK(this);
-	    Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
-	    for (Field<?> f : fields) {
-	    	Object o = this.get(f);
+	    final Field.PK<?> pk = Util.getPK(this);
+	    final Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
+	    for (final Field<?> f : fields) {
+	    	final Object o = this.get(f);
 		    result = prime * result + ((o == null) ? 0 : o.hashCode());
 	    }
 	    return result;
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(final Object other) {
 		if (other == this) return true;
 		if (other == null) return false;
 		if (!(other instanceof Table)) return false;
-	    Field.PK<?> pk = Util.getPK(this);
-	    Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
-	    for (Field<?> f : fields) {
-	    	Object o1 = this.get(f);
-	    	Object o2 = ((Table)other).get(f);
+	    final Field.PK<?> pk = Util.getPK(this);
+	    final Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
+	    for (final Field<?> f : fields) {
+	    	final Object o1 = this.get(f);
+	    	final Object o2 = ((Table)other).get(f);
 	    	if (!((o1 == null) ? (o2 == null) : o1.equals(o2))) return false;
 	    }
 	    return true;
@@ -316,12 +317,12 @@ public abstract class Table {
 	 * @param context
 	 * @param conn
 	 */
-	protected void __NOSCO_PRIVATE_preExecute(SqlContext context, Connection conn) throws SQLException {}
+	protected void __NOSCO_PRIVATE_preExecute(final SqlContext context, final Connection conn) throws SQLException {}
 
 	/**
 	 * Internal function - please don't use. &nbsp; Subject to change.
 	 * @param conn
 	 */
-	protected void __NOSCO_PRIVATE_postExecute(SqlContext context, Connection conn) throws SQLException {}
+	protected void __NOSCO_PRIVATE_postExecute(final SqlContext context, final Connection conn) throws SQLException {}
 
 }

@@ -8,9 +8,9 @@ import org.nosco.Constants;
 
 class Util {
 
-	static String join(String s, Collection<?> c) {
-	    StringBuilder sb = new StringBuilder();
-	    for (Object o : c) {
+	static String join(final String s, final Collection<?> c) {
+	    final StringBuilder sb = new StringBuilder();
+	    for (final Object o : c) {
 	    	sb.append(o);
 	    	sb.append(s);
 	    }
@@ -20,20 +20,20 @@ class Util {
 	    return sb.toString();
 	}
 
-	static <T extends Object> String join(String s, T... c) {
+	static <T extends Object> String join(final String s, final T... c) {
 		if(c==null || c.length==0) return "";
-	    StringBuilder sb = new StringBuilder();
-	    for (Object o : c) {
+	    final StringBuilder sb = new StringBuilder();
+	    for (final Object o : c) {
 	    	sb.append(o==null ? "" : o.toString());
 	    	sb.append(s);
 	    }
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
 	}
 
-	static void log(String sql, List<Object> bindings) {
+	static void log(final String sql, final List<Object> bindings) {
 		PrintStream log = null; //System.out;
-		String property = System.getProperty(Constants.PROP_LOG_SQL);
-		String property2 = System.getProperty(Constants.PROP_LOG);
+		final String property = System.getProperty(Constants.PROP_LOG_SQL);
+		final String property2 = System.getProperty(Constants.PROP_LOG);
 		if ("System.err".equalsIgnoreCase(property))
 			log = System.err;
 		if ("System.out".equalsIgnoreCase(property))

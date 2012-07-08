@@ -29,7 +29,7 @@ public abstract class Function {
 	 * @param v
 	 * @return
 	 */
-	public static <T> Function IFNULL(Field<? extends T> f, T v) {
+	public static <T> Function IFNULL(final Field<? extends T> f, final T v) {
 		return new CustomFunction("ifnull", "isnull", "ifnull", f, v);
 	}
 
@@ -52,7 +52,7 @@ public abstract class Function {
 	 * @param fields
 	 * @return
 	 */
-	public static <T> Function COALESCE(Field<? extends T>... fields) {
+	public static <T> Function COALESCE(final Field<? extends T>... fields) {
 		return new CustomFunction("coalesce", (Object[]) fields);
 	}
 
@@ -62,7 +62,7 @@ public abstract class Function {
 	 * @param v
 	 * @return
 	 */
-	public static <T> Function COALESCE(Field<? extends T> field, T v) {
+	public static <T> Function COALESCE(final Field<? extends T> field, final T v) {
 		return new CustomFunction("coalesce", field, v);
 	}
 
@@ -73,7 +73,7 @@ public abstract class Function {
 	 * @param v
 	 * @return
 	 */
-	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2, T v) {
+	public static <T> Function COALESCE(final Field<? extends T> f1, final Field<? extends T> f2, final T v) {
 		return new CustomFunction("coalesce", f1, f2, v);
 	}
 
@@ -85,8 +85,8 @@ public abstract class Function {
 	 * @param v
 	 * @return
 	 */
-	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2,
-			Field<? extends T> f3, T v) {
+	public static <T> Function COALESCE(final Field<? extends T> f1, final Field<? extends T> f2,
+			final Field<? extends T> f3, final T v) {
 		return new CustomFunction("coalesce", f1, f2, f3, v);
 	}
 
@@ -103,8 +103,8 @@ public abstract class Function {
 	 * @param v
 	 * @return
 	 */
-	public static <T> Function COALESCE(Field<? extends T> f1, Field<? extends T> f2,
-			Field<? extends T> f3, Field<? extends T> f4, T v) {
+	public static <T> Function COALESCE(final Field<? extends T> f1, final Field<? extends T> f2,
+			final Field<? extends T> f3, final Field<? extends T> f4, final T v) {
 		return new CustomFunction("coalesce", f1, f2, f3, f4, v);
 	}
 
@@ -114,7 +114,7 @@ public abstract class Function {
 	 * @param component
 	 * @return
 	 */
-	public static <T> Function DATEADD(Field<? extends T> f1, int count, CALENDAR component) {
+	public static <T> Function DATEADD(final Field<? extends T> f1, final int count, final CALENDAR component) {
 		return new CustomFunction("date_add", "dateadd", "dateadd", component, count, f1);
 
 	}
@@ -132,9 +132,9 @@ public abstract class Function {
 	 */
 	public static class CustomFunction extends Function {
 
-		private String mysql;
-		private String sqlserver;
-		private String hsql;
+		private final String mysql;
+		private final String sqlserver;
+		private final String hsql;
 		private Object[] objects = null;
 		private String sql = null;
 		private List<Object> bindings = null;
@@ -143,7 +143,7 @@ public abstract class Function {
 		 * For a simple, no argument SQL function like NOW().
 		 * @param func
 		 */
-		public CustomFunction(String func) {
+		public CustomFunction(final String func) {
 			this.mysql = func;
 			this.sqlserver = func;
 			this.hsql = func;
@@ -157,20 +157,20 @@ public abstract class Function {
 		 * @param func the name of the function
 		 * @param objects the arguments of the function
 		 */
-		public CustomFunction(String func, Object... objects) {
+		public CustomFunction(final String func, final Object... objects) {
 			this.mysql = func;
 			this.sqlserver = func;
 			this.hsql = func;
 			this.objects = objects;
 		}
 
-		CustomFunction(String mysql, String sqlserver, String hsql) {
+		CustomFunction(final String mysql, final String sqlserver, final String hsql) {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
 		}
 
-		CustomFunction(String mysql, String sqlserver, String hsql, Object... objects) {
+		CustomFunction(final String mysql, final String sqlserver, final String hsql, final Object... objects) {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
@@ -178,9 +178,9 @@ public abstract class Function {
 		}
 
 		@Override
-		String getSQL(SqlContext context) {
+		String getSQL(final SqlContext context) {
 			if (sql != null) return sql;
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			switch (context.dbType) {
 			case MYSQL:		sb.append(mysql); break;
 			case SQLSERVER:	sb.append(sqlserver); break;
@@ -190,7 +190,7 @@ public abstract class Function {
 			sb.append("(");
 			if (objects != null) {
 				for (int i=0; i<objects.length; ++i) {
-					Object o = objects[i];
+					final Object o = objects[i];
 					if (o instanceof Field) {
 						sb.append(Util.derefField((Field<?>) o, context));
 					} else if (o instanceof CALENDAR) {

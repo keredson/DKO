@@ -13,17 +13,17 @@ import org.nosco.DBQuery.Join;
 
 class SqlContext {
 
-	private DBQuery<?> q;
+	private final DBQuery<?> q;
 
-	SqlContext(DBQuery<?> q) {
+	SqlContext(final DBQuery<?> q) {
 		this(q, null);
 	}
 
-	public SqlContext(DBQuery<?> q, SqlContext parentContext) {
+	public SqlContext(final DBQuery<?> q, final SqlContext parentContext) {
 		tableNameMap = q.tableNameMap;
 		tableInfos = new ArrayList<TableInfo>(q.tableInfos);
-		for (Join join : q.joinsToOne) tableInfos.add(join.reffedTableInfo);
-		for (Join join : q.joinsToMany) tableInfos.add(join.reffingTableInfo);
+		for (final Join join : q.joinsToOne) tableInfos.add(join.reffedTableInfo);
+		for (final Join join : q.joinsToMany) tableInfos.add(join.reffingTableInfo);
 		this.parentContext = parentContext;
 		dbType = parentContext == null ? q.getDBType() : parentContext.dbType;
 		this.q = q;
@@ -44,8 +44,8 @@ class SqlContext {
 		return q;
 	}
 
-	String getFullTableName(Table table) {
-		StringBuilder sb = new StringBuilder();
+	String getFullTableName(final Table table) {
+		final StringBuilder sb = new StringBuilder();
 		String schema = table.SCHEMA_NAME();
 		if (schema != null) {
 			schema = Context.getSchemaToUse(getRootQuery().getDataSource(), schema);

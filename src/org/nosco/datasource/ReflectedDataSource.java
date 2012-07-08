@@ -18,16 +18,16 @@ import javax.sql.DataSource;
 public class ReflectedDataSource implements DataSource {
 
 	DataSource ds = null;
-	private String cls;
-	private String method;
+	private final String cls;
+	private final String method;
 	private String schema = null;
 
-	public ReflectedDataSource(String cls, String method) {
+	public ReflectedDataSource(final String cls, final String method) {
 		this.cls = cls;
 		this.method = method;
 	}
 
-	public ReflectedDataSource(String cls, String method, String schema) {
+	public ReflectedDataSource(final String cls, final String method, final String schema) {
 		this.cls = cls;
 		this.method = method;
 		this.schema  = schema;
@@ -45,22 +45,22 @@ public class ReflectedDataSource implements DataSource {
 				ds = (DataSource) m.invoke(null, schema);
 			}
 			//System.err.println("ds: "+ ds);
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -79,19 +79,19 @@ public class ReflectedDataSource implements DataSource {
 	}
 
 	@Override
-	public void setLogWriter(PrintWriter arg0) throws SQLException {
+	public void setLogWriter(final PrintWriter arg0) throws SQLException {
 		checkDS();
 		ds.setLogWriter(arg0);
 	}
 
 	@Override
-	public void setLoginTimeout(int arg0) throws SQLException {
+	public void setLoginTimeout(final int arg0) throws SQLException {
 		checkDS();
 		ds.setLoginTimeout(arg0);
 	}
 
 	@Override
-	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+	public boolean isWrapperFor(final Class<?> arg0) throws SQLException {
 		checkDS();
 		if (ds.getClass().equals(arg0)) return true;
 		return ds.isWrapperFor(arg0);
@@ -99,7 +99,7 @@ public class ReflectedDataSource implements DataSource {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T unwrap(Class<T> arg0) throws SQLException {
+	public <T> T unwrap(final Class<T> arg0) throws SQLException {
 		checkDS();
 		if (ds.getClass().equals(arg0)) return (T) ds;
 		return ds.unwrap(arg0);
@@ -112,7 +112,7 @@ public class ReflectedDataSource implements DataSource {
 	}
 
 	@Override
-	public Connection getConnection(String arg0, String arg1)
+	public Connection getConnection(final String arg0, final String arg1)
 			throws SQLException {
 		checkDS();
 		return ds.getConnection(arg0, arg1);

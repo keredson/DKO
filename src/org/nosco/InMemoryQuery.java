@@ -27,11 +27,11 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	private Query<T> query;
 	private boolean loaded = false;
 
-	InMemoryQuery(Query<T> query) {
+	InMemoryQuery(final Query<T> query) {
 		this(query, false);
 	}
 
-	InMemoryQuery(Query<T> query, boolean lazy) {
+	InMemoryQuery(final Query<T> query, final boolean lazy) {
 		this.query = query;
 		if (!lazy) load();
 	}
@@ -39,13 +39,13 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	private synchronized void load() {
 		cache = new ArrayList<T>();
 		this.selectFields = query.getSelectFields();
-		for (T t : query) {
+		for (final T t : query) {
 			cache.add(t);
 		}
 		loaded = true;
 	}
 
-	private InMemoryQuery(InMemoryQuery<T> q) {
+	private InMemoryQuery(final InMemoryQuery<T> q) {
 		cache = new ArrayList<T>();
 		loaded = true;
 	}
@@ -55,9 +55,9 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		loaded = true;
 	}
 
-	InMemoryQuery(Iterable<T> items) {
+	InMemoryQuery(final Iterable<T> items) {
 		cache = new ArrayList<T>();
-		for (T t : items) {
+		for (final T t : items) {
 			cache.add(t);
 		}
 		loaded = true;
@@ -70,12 +70,12 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> where(Condition... conditions) {
+	public Query<T> where(final Condition... conditions) {
 		if (!loaded) load();
-		InMemoryQuery<T> q = new InMemoryQuery<T>(this);
-		for (T t : cache) {
+		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
+		for (final T t : cache) {
 			boolean include = true;
-			for (Condition c : conditions) {
+			for (final Condition c : conditions) {
 				include &= c.matches(t);
 			}
 			if (include) q.cache.add(t);
@@ -84,7 +84,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T get(Condition... conditions) {
+	public T get(final Condition... conditions) {
 		return where(conditions).getTheOnly();
 	}
 
@@ -101,24 +101,24 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> exclude(Condition... conditions) {
+	public Query<T> exclude(final Condition... conditions) {
 		return null;
 	}
 
 	@Override
 	public Query<T> orderBy(final Field<?>... fields) {
 		if (!loaded) load();
-		InMemoryQuery<T> q = new InMemoryQuery<T>(this);
+		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache.addAll(cache);
 		Collections.sort(q.cache, new Comparator<T>() {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public int compare(T o1, T o2) {
-				for (Field<?> f : fields) {
-					Comparable c1 = (Comparable) o1.get(f);
-					Object c2 = o2.get(f);
+			public int compare(final T o1, final T o2) {
+				for (final Field<?> f : fields) {
+					final Comparable c1 = (Comparable) o1.get(f);
+					final Object c2 = o2.get(f);
 					if (c1 == null && c2 != null) return 1;
-					int c = c1.compareTo(c2);
+					final int c = c1.compareTo(c2);
 					if (c != 0) return c;
 				}
 				return 0;
@@ -127,14 +127,14 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> top(int n) {
+	public Query<T> top(final int n) {
 		return limit(n);
 	}
 
 	@Override
-	public Query<T> limit(int n) {
+	public Query<T> limit(final int n) {
 		if (!loaded) load();
-		InMemoryQuery<T> q = new InMemoryQuery<T>(this);
+		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache = new ArrayList<T>();
 		q.cache.addAll(cache.subList(0, n));
 		return q;
@@ -147,24 +147,24 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> with(FK... fields) {
+	public Query<T> with(final FK... fields) {
 		throw new UnsupportedOperationException("can't pre-pull FKs from in-memory queries");
 	}
 
 	@Override
-	public Query<T> deferFields(Field<?>... fields) {
+	public Query<T> deferFields(final Field<?>... fields) {
 		// do nothing
 		return this;
 	}
 
 	@Override
-	public Query<T> onlyFields(Field<?>... fields) {
+	public Query<T> onlyFields(final Field<?>... fields) {
 		// do nothing
 		return this;
 	}
 
 	@Override
-	public T latest(Field<?> field) {
+	public T latest(final Field<?> field) {
 		if (!loaded) load();
 		if (cache == null || cache.size() == 0) return null;
 		return cache.get(cache.size() - 1);
@@ -194,7 +194,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Statistics stats(Field<?>... field) {
+	public Statistics stats(final Field<?>... field) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -211,18 +211,18 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
+	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Query<T> set(Field<?> key, Object value) {
+	public Query<T> set(final Field<?> key, final Object value) {
 		throw new UnsupportedOperationException("can't do this on an in-memory query");
 	}
 
 	@Override
-	public Query<T> set(Map<Field<?>, Object> values) {
+	public Query<T> set(final Map<Field<?>, Object> values) {
 		throw new UnsupportedOperationException("can't do this on an in-memory query");
 	}
 
@@ -252,12 +252,12 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField,
-			Field<S> byField) throws SQLException {
+	public <S> Map<S, Double> sumBy(final Field<? extends Number> sumField,
+			final Field<S> byField) throws SQLException {
 		if (!loaded) load();
-		Map<S, Double> ret = new HashMap<S, Double>();
-		for (T t : cache) {
-			S key = t.get(byField);
+		final Map<S, Double> ret = new HashMap<S, Double>();
+		for (final T t : cache) {
+			final S key = t.get(byField);
 			Double value = ret.get(key);
 			if (value == null) value = 0.0;
 			value += t.get(sumField).doubleValue();
@@ -267,31 +267,31 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Double sum(Field<? extends Number> f) throws SQLException {
+	public Double sum(final Field<? extends Number> f) throws SQLException {
 		if (!loaded) load();
 		double sum = 0;
-		for (T t : cache) {
+		for (final T t : cache) {
 			sum += t.get(f).doubleValue();
 		}
 		return sum;
 	}
 
 	@Override
-	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException {
+	public <S> Map<S, T> mapBy(final Field<S> byField) throws SQLException {
 		if (!loaded) load();
-		Map<S, T> ret = new HashMap<S, T>();
-		for (T t : cache) {
+		final Map<S, T> ret = new HashMap<S, T>();
+		for (final T t : cache) {
 			ret.put(t.get(byField), t);
 		}
 		return ret;
 	}
 
 	@Override
-	public <S> Map<S, Integer> countBy(Field<S> byField) throws SQLException {
+	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
 		if (!loaded) load();
-		Map<S, Integer> ret = new HashMap<S, Integer>();
-		for (T t : cache) {
-			S key = t.get(byField);
+		final Map<S, Integer> ret = new HashMap<S, Integer>();
+		for (final T t : cache) {
+			final S key = t.get(byField);
 			Integer value = ret.get(key);
 			if (value == null) value = 0;
 			value += 1;
@@ -301,23 +301,23 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> use(DataSource ds) {
+	public Query<T> use(final DataSource ds) {
 		throw new UnsupportedOperationException("can't specify a DataSource " +
 				"for an in-memory query");
 	}
 
 	@Override
-	public Query<T> cross(Table t) {
+	public Query<T> cross(final Table t) {
 		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
 
 	@Override
-	public Query<T> cross(__Alias<? extends Table> t) {
+	public Query<T> cross(final __Alias<? extends Table> t) {
 		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
 
 	@Override
-	public Query<T> cross(Class<? extends Table> t) {
+	public Query<T> cross(final Class<? extends Table> t) {
 		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
 
@@ -353,17 +353,17 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S> Iterable<S> select(Field<S> field) {
+	public <S> Iterable<S> select(final Field<S> field) {
 		if (!loaded) load();
-		List<S> ret = new ArrayList<S>();
-		for (T t : cache) ret.add(t.get(field));
+		final List<S> ret = new ArrayList<S>();
+		for (final T t : cache) ret.add(t.get(field));
 		return ret;
 	}
 
 	@Override
-	public <S> List<S> asList(Field<S> field) {
-		List<S> ret = new ArrayList<S>();
-		for (S s : select(field)) {
+	public <S> List<S> asList(final Field<S> field) {
+		final List<S> ret = new ArrayList<S>();
+		for (final S s : select(field)) {
 			ret.add(s);
 		}
 		return ret;
@@ -371,14 +371,14 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T get(__PrimaryKey<T> pk) {
+	public T get(final __PrimaryKey<T> pk) {
 		if (!loaded) load();
 		if (cache==null || cache.size() == 0) return null;
 		return get(Util.getPK(cache.get(0)).eq(pk));
 	}
 
 	@Override
-	public Query<T> use(Connection conn) {
+	public Query<T> use(final Connection conn) {
 		// do nothing
 		return this;
 	}
@@ -386,7 +386,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	@Override
 	public Field<?>[] getSelectFields() {
 		if (!loaded) load();
-		Field<?>[] ret = new Field<?>[selectFields.length];
+		final Field<?>[] ret = new Field<?>[selectFields.length];
 		System.arraycopy(selectFields, 0, ret, 0, selectFields.length);
 		return ret;
 	}
@@ -397,7 +397,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> use(DB_TYPE type) {
+	public Query<T> use(final DB_TYPE type) {
 		// ignore
 		return this;
 	}

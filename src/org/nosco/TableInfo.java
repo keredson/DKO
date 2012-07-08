@@ -16,7 +16,7 @@ class TableInfo implements Cloneable {
 	Join join = null;
 	int position = -1;
 
-	public TableInfo(Table table, String tableName, FK[] path) {
+	public TableInfo(final Table table, final String tableName, final FK[] path) {
 		this.table = table;
 		this.tableClass = table.getClass();
 		this.tableName = tableName;
@@ -25,7 +25,7 @@ class TableInfo implements Cloneable {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		TableInfo x = new TableInfo(table, tableName, path);
+		final TableInfo x = new TableInfo(table, tableName, path);
 		x.tableClass = tableClass;
 		x.start = start;
 		x.end = end;

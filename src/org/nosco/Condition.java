@@ -30,10 +30,10 @@ public abstract class Condition {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		String sql = getSQL(null);
+		final String sql = getSQL(null);
 		result = prime * result
 				+ ((sql == null) ? 0 : sql.hashCode());
-		for (Object x : bindings) {
+		for (final Object x : bindings) {
 			result = prime * result
 					+ ((x == null) ? 0 : x.hashCode());
 		}
@@ -42,26 +42,26 @@ public abstract class Condition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Condition other = (Condition) obj;
-		String sql = getSQL(null);
-		String sqlOther = other.getSQL(null);
+		final Condition other = (Condition) obj;
+		final String sql = getSQL(null);
+		final String sqlOther = other.getSQL(null);
 		if (sql == null) {
 			if (sqlOther != null)
 				return false;
 		} else if (!sql.equals(sqlOther))
 			return false;
-		Iterator<Object> it = bindings.iterator();
-		Iterator<Object> itOther = other.bindings.iterator();
+		final Iterator<Object> it = bindings.iterator();
+		final Iterator<Object> itOther = other.bindings.iterator();
 		while (it.hasNext() && itOther.hasNext()) {
-			Object x = it.next();
-			Object y = itOther.next();;
+			final Object x = it.next();
+			final Object y = itOther.next();;
 			if (x == y) continue;
 			if (x == null || y == null) return false;
 			if (!x.equals(y)) return false;
@@ -72,12 +72,12 @@ public abstract class Condition {
 
 	static class InTmpTable<T> extends Condition {
 
-		private Field<T> field;
-		private Collection<T> set;
-		private String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
+		private final Field<T> field;
+		private final Collection<T> set;
+		private final String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
 		private String type = null;
 
-		public InTmpTable(Field<T> field, Collection<T> set) {
+		public InTmpTable(final Field<T> field, final Collection<T> set) {
 			this.field = field;
 			// we make a set because we create a PK index on the tmp table
 			this.set = new LinkedHashSet<T>(set);
@@ -90,13 +90,13 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			return set.contains(t.get(field));
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings,
-				SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings,
+				final SqlContext context) {
 			sb.append(' ');
 			sb.append(Util.derefField(field, context));
 			sb.append(" in ");
@@ -104,59 +104,59 @@ public abstract class Condition {
 		}
 
 		@Override
-		public void _preExecute(Connection conn) throws SQLException {
+		public void _preExecute(final Connection conn) throws SQLException {
 			Statement stmt = null;
 			PreparedStatement ps = null;
 			try {
 				stmt = conn.createStatement();
-				String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +", PRIMARY KEY (id))";
+				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +", PRIMARY KEY (id))";
 				Util.log(sql, null);
 				stmt.execute(sql);
 				ps = conn.prepareStatement("insert into "+ tmpTableName +" values (?)");
 				int i = 0;
 				int added = 0;
-				for (T t : set) {
+				for (final T t : set) {
 					++i;
 					if (t instanceof Character) ps.setString(1, t.toString());
 					else ps.setObject(1, t);
 					ps.addBatch();
-					if (i%64 == 0) for (int x : ps.executeBatch()) added += x;
+					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;
 				}
 				if (i%64 != 0) {
-					for (int x : ps.executeBatch()) {
+					for (final int x : ps.executeBatch()) {
 						added += x;
 					}
 				}
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				throw e;
 			} finally {
 				try {
 					if (stmt!=null && !stmt.isClosed()) stmt.close();
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 				try {
 					if (ps!=null && !ps.isClosed()) ps.close();
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
 		@Override
-		public void _postExecute(Connection conn) throws SQLException {
+		public void _postExecute(final Connection conn) throws SQLException {
 			Statement stmt = null;
 			try {
 				stmt = conn.createStatement();
-				String sql = "DROP TABLE "+ tmpTableName;
+				final String sql = "DROP TABLE "+ tmpTableName;
 				Util.log(sql, null);
 				stmt.execute(sql);
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				throw e;
 			} finally {
 				try {
 					if (stmt!=null && !stmt.isClosed()) stmt.close();
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			}
@@ -168,11 +168,11 @@ public abstract class Condition {
 	 * always true
 	 */
 	public static final Condition TRUE = new Condition() {
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" 1=1");
 		}
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			return true;
 		}
 	};
@@ -181,11 +181,11 @@ public abstract class Condition {
 	 * always false
 	 */
 	public static final Condition FALSE = new Condition() {
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" 1=0");
 		}
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			return false;
 		}
 	};
@@ -201,19 +201,19 @@ public abstract class Condition {
 	 */
 	public static class Literal extends Condition {
 
-		private String s;
+		private final String s;
 
-		public Literal(String s) {
+		public Literal(final String s) {
 			this.s = s;
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			throw new RuntimeException("literal conditions cannot be applied to in-memory queries");
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" ");
 			sb.append(s);
 		}
@@ -225,8 +225,8 @@ public abstract class Condition {
 	/**
 	 * Internal function.  Do not use.  Subject to change.
 	 */
-	String getSQL(SqlContext context) {
-		StringBuffer sb = new StringBuffer();
+	String getSQL(final SqlContext context) {
+		final StringBuffer sb = new StringBuffer();
 		bindings = new ArrayList<Object>();
 		getSQL(sb, bindings, context);
 		return sb.toString();
@@ -262,8 +262,8 @@ public abstract class Condition {
 	 * @param conditions
 	 * @return A new condition ANDing this with the given conditions
 	 */
-	public Condition and(Condition... conditions) {
-		AndCondition c = new AndCondition(conditions);
+	public Condition and(final Condition... conditions) {
+		final AndCondition c = new AndCondition(conditions);
 		c.conditions.add(this);
 		return c;
 	}
@@ -273,8 +273,8 @@ public abstract class Condition {
 	 * @param conditions
 	 * @return A new condition ORing this with the given conditions
 	 */
-	public Condition or(Condition... conditions) {
-		OrCondition c = new OrCondition(conditions);
+	public Condition or(final Condition... conditions) {
+		final OrCondition c = new OrCondition(conditions);
 		c.conditions.add(this);
 		return c;
 	}
@@ -283,10 +283,10 @@ public abstract class Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
 
-		public AndCondition(Condition[] conditions) {
-			for (Condition condition : conditions) {
+		public AndCondition(final Condition[] conditions) {
+			for (final Condition condition : conditions) {
 				if (condition instanceof AndCondition) {
-					for (Condition c : ((AndCondition)condition).conditions) {
+					for (final Condition c : ((AndCondition)condition).conditions) {
 						this.conditions.add(c);
 					}
 				} else {
@@ -296,10 +296,10 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
-				Condition condition = conditions.get(i);
+				final Condition condition = conditions.get(i);
 				condition.getSQL(sb, bindings, context);
 				if (i<conditions.size()-1) {
 					sb.append(" and ");
@@ -309,8 +309,8 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
-			for (Condition c : conditions) {
+		boolean matches(final Table t) {
+			for (final Condition c : conditions) {
 				if (!c.matches(t)) return false;
 			}
 			return true;
@@ -322,10 +322,10 @@ public abstract class Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
 
-		public OrCondition(Condition[] conditions) {
-			for (Condition condition : conditions) {
+		public OrCondition(final Condition[] conditions) {
+			for (final Condition condition : conditions) {
 				if (condition instanceof OrCondition) {
-					for (Condition c : ((OrCondition)condition).conditions) {
+					for (final Condition c : ((OrCondition)condition).conditions) {
 						this.conditions.add(c);
 					}
 				} else {
@@ -335,10 +335,10 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
-				Condition condition = conditions.get(i);
+				final Condition condition = conditions.get(i);
 				condition.getSQL(sb, bindings, context);
 				if (i<conditions.size()-1) {
 					sb.append(" or ");
@@ -348,8 +348,8 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
-			for (Condition c : conditions) {
+		boolean matches(final Table t) {
+			for (final Condition c : conditions) {
 				if (c.matches(t)) return true;
 			}
 			return false;
@@ -359,20 +359,20 @@ public abstract class Condition {
 
 	static class Not extends Condition {
 
-		private Condition condition;
+		private final Condition condition;
 		private boolean parens = true;
 
-		public Not(Condition condition) {
+		public Not(final Condition condition) {
 			this.condition = condition;
 		}
 
-		public Not(Condition condition, boolean parens) {
+		public Not(final Condition condition, final boolean parens) {
 			this.condition = condition;
 			this.parens = parens;
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" not ");
 			if (parens) sb.append("(");
 			condition.getSQL(sb, bindings, context);
@@ -380,7 +380,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			return !condition.matches(t);
 		}
 
@@ -388,15 +388,15 @@ public abstract class Condition {
 
 	static class Ternary extends Condition {
 
-		private Field<?> field;
-		private String cmp1;
-		private String cmp2;
-		private Object v1;
-		private Object v2;
-		private Function function1;
-		private Function function2;
+		private final Field<?> field;
+		private final String cmp1;
+		private final String cmp2;
+		private final Object v1;
+		private final Object v2;
+		private final Function function1;
+		private final Function function2;
 
-		public Ternary(Field<?> field, String cmp1, Object v1, String cmp2, Object v2) {
+		public Ternary(final Field<?> field, final String cmp1, final Object v1, final String cmp2, final Object v2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -406,7 +406,7 @@ public abstract class Condition {
 			function2 = null;
 		}
 
-		public Ternary(Field<?> field, String cmp1, Function f1, String cmp2, Object v2) {
+		public Ternary(final Field<?> field, final String cmp1, final Function f1, final String cmp2, final Object v2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -416,7 +416,7 @@ public abstract class Condition {
 			function2 = null;
 		}
 
-		public Ternary(Field<?> field, String cmp1, Object v1, String cmp2, Function f2) {
+		public Ternary(final Field<?> field, final String cmp1, final Object v1, final String cmp2, final Function f2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -426,7 +426,7 @@ public abstract class Condition {
 			function2 = f2;
 		}
 
-		public Ternary(Field<?> field, String cmp1, Function f1, String cmp2, Function f2) {
+		public Ternary(final Field<?> field, final String cmp1, final Function f1, final String cmp2, final Function f2) {
 			this.field = field;
 			this.cmp1 = cmp1;
 			this.cmp2 = cmp2;
@@ -437,7 +437,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			sb.append(Util.derefField(field, context));
 			sb.append(cmp1);
@@ -460,7 +460,7 @@ public abstract class Condition {
 
 		@SuppressWarnings("rawtypes")
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			if (!cmp1.trim().equalsIgnoreCase("between")) {
 				throw new IllegalStateException("unknown comparision function '"+ cmp1
 						+"' for in-memory conditional check");
@@ -469,9 +469,9 @@ public abstract class Condition {
 				throw new IllegalStateException("unknown comparision function '"+ cmp2
 						+"' for in-memory conditional check");
 			}
-			Comparable o1 = (Comparable) v1;
-			Comparable o2 = (Comparable) v2;
-			Comparable v = (Comparable) t.get(field);
+			final Comparable o1 = (Comparable) v1;
+			final Comparable o2 = (Comparable) v2;
+			final Comparable v = (Comparable) t.get(field);
 			if (o1 != null && o1.compareTo(v) > 0) return false;
 			if (o2 != null && o2.compareTo(v) <= 0) return false;
 			return true;
@@ -481,24 +481,24 @@ public abstract class Condition {
 
 	static class Unary extends Condition {
 
-		private Field<?> field;
-		private String cmp;
+		private final Field<?> field;
+		private final String cmp;
 
-		public <T> Unary(Field<T> field, String cmp) {
+		public <T> Unary(final Field<T> field, final String cmp) {
 			this.field = field;
 			this.cmp = cmp;
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			sb.append(Util.derefField(field, context));
 			sb.append(cmp);
 		}
 
 		@Override
-		boolean matches(Table t) {
-			Object v = t.get(field);
+		boolean matches(final Table t) {
+			final Object v = t.get(field);
 			if (" is null".equals(this.cmp)) {
 				return v == null;
 			}
@@ -513,14 +513,14 @@ public abstract class Condition {
 
 	static class Binary extends Condition {
 
-		private Field<?> field;
+		private final Field<?> field;
 		private Object v;
 		private Field<?> field2;
-		private String cmp;
+		private final String cmp;
 		private Select<?> s;
 		private Function function = null;
 
-		public <T> Binary(Field<T> field, String cmp, Object v) {
+		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
 			// note "v" should be of type T here - set to object to work around
 			// this bug: http://stackoverflow.com/questions/5361513/reference-is-ambiguous-with-generics
 			this.field = field;
@@ -528,26 +528,26 @@ public abstract class Condition {
 			this.v = v;
 		}
 
-		public <T> Binary(Field<T> field, String cmp, Field<T> field2) {
+		public <T> Binary(final Field<T> field, final String cmp, final Field<T> field2) {
 			this.field = field;
 			this.cmp = cmp;
 			this.field2 = field2;
 		}
 
-		public <T> Binary(Field<T> field, String cmp, Query<?> q) {
+		public <T> Binary(final Field<T> field, final String cmp, final Query<?> q) {
 			this.field = field;
 			this.cmp = cmp;
 			this.s = (Select<?>) q.all();
 		}
 
-		public <T> Binary(Field<T> field, String cmp, Function f) {
+		public <T> Binary(final Field<T> field, final String cmp, final Function f) {
 			this.field = field;
 			this.cmp = cmp;
 			this.function  = f;
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			if (v!=null) {
 				sb.append(Util.derefField(field, context));
@@ -557,9 +557,9 @@ public abstract class Condition {
 			} else if (field2!=null) {
 				if (!field.isBound() && !field2.isBound() && field.sameField(field2)) {
 					try {
-						Table table = field.TABLE.newInstance();
-						String id = context.getFullTableName(table);
-						Set<String> tableNames = context.tableNameMap.get(id);
+						final Table table = field.TABLE.newInstance();
+						final String id = context.getFullTableName(table);
+						final Set<String> tableNames = context.tableNameMap.get(id);
 						if (tableNames.size() > 2) {
 							throw new RuntimeException("field ambigious");
 						} else if (tableNames.size() < 2) {
@@ -567,14 +567,14 @@ public abstract class Condition {
 							sb.append(cmp);
 							sb.append(Util.derefField(field2, context));
 						} else {
-							Iterator<String> i = tableNames.iterator();
+							final Iterator<String> i = tableNames.iterator();
 							sb.append(i.next() + "."+ field);
 							sb.append(cmp);
 							sb.append(i.next() + "."+ field2);
 						}
-					} catch (InstantiationException e) {
+					} catch (final InstantiationException e) {
 						e.printStackTrace();
-					} catch (IllegalAccessException e) {
+					} catch (final IllegalAccessException e) {
 						e.printStackTrace();
 					}
 				} else {
@@ -586,11 +586,11 @@ public abstract class Condition {
 				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
 				sb.append('(');
-				SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
+				final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
 				if (" in ".equals(cmp)) {
 					innerContext.maxFields = 1;
 				}
-				Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
+				final Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 				sb.append(ret.a);
 				bindings.addAll(ret.b);
 				sb.append(')');
@@ -606,12 +606,12 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			if (v!=null) {
 				return v.equals(t.get(field));
 			} else if (field2!=null) {
-				Object a = t.get(field);
-				Object b = t.get(field2);
+				final Object a = t.get(field);
+				final Object b = t.get(field2);
 				return a == b || (a != null && a.equals(b));
 			} else {
 				return t.get(field) == null;
@@ -622,19 +622,19 @@ public abstract class Condition {
 
 	static class In extends Condition {
 
-		private Field<?> field;
-		private String cmp;
-		private Object[] set;
-		private Collection<?> set2;
+		private final Field<?> field;
+		private final String cmp;
+		private final Object[] set;
+		private final Collection<?> set2;
 
-		public In(Field<?> field, String cmp, Object... set) {
+		public In(final Field<?> field, final String cmp, final Object... set) {
 			this.field = field;
 			this.cmp = cmp;
 			this.set = set;
 			this.set2 = null;
 		}
 
-		public In(Field<?> field, String cmp, Collection<?> set) {
+		public In(final Field<?> field, final String cmp, final Collection<?> set) {
 			this.field = field;
 			this.cmp = cmp;
 			this.set = null;
@@ -642,21 +642,21 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			sb.append(Util.derefField(field, context));
 			sb.append(cmp);
 			sb.append('(');
 			if (set != null && set.length > 0) {
 				for (int i=0; i<set.length; ++i) {
-					Object v = set[i];
+					final Object v = set[i];
 					sb.append("?");
 					if (i<set.length-1) sb.append(",");
 					bindings.add(v);
 				}
 			} else if (set2 != null && set2.size() > 0) {
 				int i = 0;
-				for (Object v : set2) {
+				for (final Object v : set2) {
 					sb.append("?");
 					if (i<set2.size()-1) sb.append(",");
 					bindings.add(v);
@@ -669,7 +669,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			boolean rev;
 			if (cmp.trim().equalsIgnoreCase("in")) rev = false;
 			else if (cmp.trim().equalsIgnoreCase("not in")) rev = true;
@@ -681,7 +681,7 @@ public abstract class Condition {
 				}
 				return rev ? true : false;
 			} else if (set2 != null && set2.size() > 0) {
-				boolean v = set2.contains(t.get(field));
+				final boolean v = set2.contains(t.get(field));
 				return rev ? !v : v;
 			} else {
 				return false;
@@ -689,16 +689,16 @@ public abstract class Condition {
 		}
 	}
 
-	private static boolean eq(Object a, Object b) {
+	private static boolean eq(final Object a, final Object b) {
 		return a == b || (a != null && a.equals(b));
 	}
 
 	static class Exists extends Condition {
 
-		private Query<? extends Table> q;
-		private Select<?> s;
+		private final Query<? extends Table> q;
+		private final Select<?> s;
 
-		Exists(Query<? extends Table> q) {
+		Exists(final Query<? extends Table> q) {
 			this.q = q;
 			this.s = (Select<?>) q.all();
 		}
@@ -709,21 +709,21 @@ public abstract class Condition {
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			try {
 				return q.size() > 0;
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" exists (");
-			SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
+			final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
 			innerContext.dbType = context.dbType;
-			Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
+			final Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 			sb.append(ret.a);
 			bindings.addAll(ret.b);
 			sb.append(")");
@@ -731,11 +731,11 @@ public abstract class Condition {
 
 	}
 
-	void _preExecute(Connection conn) throws SQLException {
+	void _preExecute(final Connection conn) throws SQLException {
 		// default to do nothing
 	}
 
-	void _postExecute(Connection conn) throws SQLException {
+	void _postExecute(final Connection conn) throws SQLException {
 		// default to do nothing
 	}
 

@@ -55,7 +55,7 @@ public class Context {
 	 * @return the context for the current thread group
 	 */
 	public static Context getThreadGroupContext() {
-		ThreadGroup tg = Thread.currentThread().getThreadGroup();
+		final ThreadGroup tg = Thread.currentThread().getThreadGroup();
 		Context context = threadGroupContexts.get(tg);
 		if (context == null) {
 			context = new Context();
@@ -72,41 +72,41 @@ public class Context {
 	}
 
 	static DataSource getDataSource(final Class<? extends Table> cls) {
-		Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
+		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
 		//System.err.println("woot");
-		for (Context context : contexts) {
+		for (final Context context : contexts) {
 			//System.err.println("woot "+ context);
 			DataSource ds = null;
 
 			Map<UUID, DataSource> x = context.classDataSources.get(cls);
 			if (x != null) {
-				for (DataSource tmp : x.values()) { ds = tmp; }
+				for (final DataSource tmp : x.values()) { ds = tmp; }
 				if (ds != null) return ds;
 			}
 
 			//System.err.println("woot2 "+ context);
 			x = context.packageDataSources.get(cls.getPackage());
 			if (x != null) {
-				for (DataSource tmp : x.values()) { ds = tmp; }
+				for (final DataSource tmp : x.values()) { ds = tmp; }
 				//System.err.println("woot2.1 "+ ds);
 				if (ds != null) return ds;
 			}
 
 			//System.err.println("woot3 "+ context);
-			for (DataSource tmp : context.defaultDataSource.values()) { ds = tmp; }
+			for (final DataSource tmp : context.defaultDataSource.values()) { ds = tmp; }
 			if (ds != null) return ds;
 		}
 		return null;
 	}
 
 	static String getSchemaToUse(final DataSource ds, final String originalSchema) {
-		Tuple2<DataSource, String> key = new Tuple2<DataSource,String>(ds, originalSchema);
+		final Tuple2<DataSource, String> key = new Tuple2<DataSource,String>(ds, originalSchema);
 		String schema = null;
-		Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
-		for (Context context : contexts) {
-			Map<UUID, String> x = context.schemaOverrides.get(key);
+		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
+		for (final Context context : contexts) {
+			final Map<UUID, String> x = context.schemaOverrides.get(key);
 			if (x == null) continue;
-			for (String tmp : x.values()) { schema = tmp; }
+			for (final String tmp : x.values()) { schema = tmp; }
 			if (schema != null) return schema;
 		}
 		return originalSchema;
@@ -117,7 +117,7 @@ public class Context {
 	 * @param ds
 	 * @return
 	 */
-	public static boolean inTransaction(DataSource ds) {
+	public static boolean inTransaction(final DataSource ds) {
 		boolean isInTransaction = getThreadContext().transactionConnections.containsKey(ds);
 		if (isInTransaction) return true;
 		isInTransaction = getThreadGroupContext().transactionConnections.containsKey(ds);
@@ -130,7 +130,7 @@ public class Context {
 	 * @param ds
 	 * @return null is not currently in a transaction
 	 */
-	public static Connection getConnection(DataSource ds) {
+	public static Connection getConnection(final DataSource ds) {
 		Connection c = getThreadContext().transactionConnections.get(ds);
 		if (c == null) c = getThreadGroupContext().transactionConnections.get(ds);
 		if (c == null) c = getVMContext().transactionConnections.get(ds);
@@ -143,7 +143,7 @@ public class Context {
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean startTransaction(DataSource ds) throws SQLException {
+	public boolean startTransaction(final DataSource ds) throws SQLException {
 		Connection c = transactionConnections.get(ds);
 		if (c != null) return false;
 		c = ds.getConnection();
@@ -158,8 +158,8 @@ public class Context {
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean commitTransaction(DataSource ds) throws SQLException {
-		Connection c = transactionConnections.get(ds);
+	public boolean commitTransaction(final DataSource ds) throws SQLException {
+		final Connection c = transactionConnections.get(ds);
 		if (c == null) return false;
 		c.commit();
 		c.close();
@@ -172,24 +172,24 @@ public class Context {
 	 * @param ds
 	 * @return
 	 */
-	public boolean rollbackTransaction(DataSource ds) {
-		Connection c = transactionConnections.get(ds);
+	public boolean rollbackTransaction(final DataSource ds) {
+		final Connection c = transactionConnections.get(ds);
 		transactionConnections.remove(ds);
 		if (c == null) return false;
 		try {
 			c.rollback();
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			e.printStackTrace();
 			try {
 				c.close();
-			} catch (SQLException e2) {
+			} catch (final SQLException e2) {
 				e2.printStackTrace();
 			}
 			return false;
 		}
 		try {
 			c.close();
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
 		return true;
@@ -201,13 +201,13 @@ public class Context {
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean rollbackTransactionThrowSQLException(DataSource ds) throws SQLException {
-		Connection c = transactionConnections.get(ds);
+	public boolean rollbackTransactionThrowSQLException(final DataSource ds) throws SQLException {
+		final Connection c = transactionConnections.get(ds);
 		transactionConnections.remove(ds);
 		if (c == null) return false;
 		try {
 			c.rollback();
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw e;
 		} finally {
 			c.close();
@@ -225,8 +225,8 @@ public class Context {
 	 * @param newSchema
 	 * @return
 	 */
-	public Undoer overrideSchema(DataSource ds, String originalSchema, String newSchema) {
-		Tuple2<DataSource, String> key = new Tuple2<DataSource,String>(ds, originalSchema);
+	public Undoer overrideSchema(final DataSource ds, final String originalSchema, final String newSchema) {
+		final Tuple2<DataSource, String> key = new Tuple2<DataSource,String>(ds, originalSchema);
 		Map<UUID, String> map = schemaOverrides.get(key);
 		if (map == null) {
 			map = Collections.synchronizedMap(new LinkedHashMap<UUID, String>());
@@ -250,7 +250,7 @@ public class Context {
 	 * @param ds
 	 * @return
 	 */
-	public Undoer setDataSource(DataSource ds) {
+	public Undoer setDataSource(final DataSource ds) {
 		final UUID uuid = UUID.randomUUID();
 		defaultDataSource.put(uuid, ds);
 		return new Undoer() {
@@ -270,7 +270,7 @@ public class Context {
 	 * @param ds
 	 * @return
 	 */
-	public Undoer setDataSource(Package pkg, DataSource ds) {
+	public Undoer setDataSource(final Package pkg, final DataSource ds) {
 		Map<UUID, DataSource> map = packageDataSources.get(pkg);
 		if (map == null) {
 			map = Collections.synchronizedMap(new LinkedHashMap<UUID, DataSource>());
@@ -293,7 +293,7 @@ public class Context {
 	 * @param ds
 	 * @return
 	 */
-	public Undoer setDataSource(Class<? extends Table> cls, DataSource ds) {
+	public Undoer setDataSource(final Class<? extends Table> cls, final DataSource ds) {
 		Map<UUID, DataSource> map = classDataSources.get(cls);
 		if (map == null) {
 			map = Collections.synchronizedMap(new LinkedHashMap<UUID, DataSource>());
@@ -321,7 +321,7 @@ public class Context {
 		public boolean willAutoUndo() {
 			return autoRevoke ;
 		}
-		public Undoer setAutoUndo(boolean v) {
+		public Undoer setAutoUndo(final boolean v) {
 			autoRevoke = v;
 			return this;
 		}
@@ -344,19 +344,19 @@ public class Context {
 		}
 	};
 
-	private Map<Tuple2<DataSource,String>,Map<UUID,String>> schemaOverrides =
+	private final Map<Tuple2<DataSource,String>,Map<UUID,String>> schemaOverrides =
 			Collections.synchronizedMap(new HashMap<Tuple2<DataSource,String>,Map<UUID,String>>());
 
-	private Map<UUID,DataSource> defaultDataSource =
+	private final Map<UUID,DataSource> defaultDataSource =
 			Collections.synchronizedMap(new LinkedHashMap<UUID,DataSource>());
 
-	private Map<Package,Map<UUID,DataSource>> packageDataSources =
+	private final Map<Package,Map<UUID,DataSource>> packageDataSources =
 			Collections.synchronizedMap(new LinkedHashMap<Package,Map<UUID,DataSource>>());
 
-	private Map<Class<?>,Map<UUID,DataSource>> classDataSources =
+	private final Map<Class<?>,Map<UUID,DataSource>> classDataSources =
 			Collections.synchronizedMap(new LinkedHashMap<Class<?>,Map<UUID,DataSource>>());
 
-	private Map<DataSource,Connection> transactionConnections =
+	private final Map<DataSource,Connection> transactionConnections =
 			Collections.synchronizedMap(new HashMap<DataSource,Connection>());
 
 }

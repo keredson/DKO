@@ -14,25 +14,25 @@ import org.nosco.Field.FK;
 
 class TmpTableBuilder {
 
-	private String tmpTableName = "NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
-	private Field<?>[] fields;
-	private List<Object[]> rows = new ArrayList<Object[]>();
+	private final String tmpTableName = "NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
+	private final Field<?>[] fields;
+	private final List<Object[]> rows = new ArrayList<Object[]>();
 
-	private Table table = new Table() {
+	private final Table table = new Table() {
 
 		@Override
-		protected void __NOSCO_PRIVATE_preExecute(SqlContext context, Connection conn) throws SQLException {
-			StringBuilder sbCreate = new StringBuilder();
+		protected void __NOSCO_PRIVATE_preExecute(final SqlContext context, final Connection conn) throws SQLException {
+			final StringBuilder sbCreate = new StringBuilder();
 			if (context.dbType == Constants.DB_TYPE.SQLSERVER) {
 				sbCreate.append("CREATE TABLE #"+ tmpTableName);
 			} else {
 				sbCreate.append("CREATE TABLE "+ tmpTableName);
 			}
 			sbCreate.append(" (");
-			StringBuilder sbPS = new StringBuilder();
+			final StringBuilder sbPS = new StringBuilder();
 			sbPS.append("insert into "+ tmpTableName +" values (");
 			for (int i=0; i<fields.length; ++i) {
-				Field<?> field = fields[i];
+				final Field<?> field = fields[i];
 				sbCreate.append(field.NAME +" "+ field.SQL_TYPE +",");
 				sbPS.append("?,");
 			}
@@ -44,40 +44,40 @@ class TmpTableBuilder {
 			PreparedStatement ps = null;
 			try {
 				stmt = conn.createStatement();
-				String sqlCreate = sbCreate.toString();
-				String sqlPS = sbPS.toString();
+				final String sqlCreate = sbCreate.toString();
+				final String sqlPS = sbPS.toString();
 				Util.log(sqlCreate, null);
 				stmt.execute(sqlCreate);
 				ps = conn.prepareStatement(sqlPS);
 				int i = 0;
 				int added = 0;
-				for (Object[] row : rows) {
+				for (final Object[] row : rows) {
 					++i;
 					for (int j=0; j<row.length; ++j) {
-						Object t = row[j];
+						final Object t = row[j];
 						if (t instanceof Character) ps.setString(1, t.toString());
 						else ps.setObject(j+1, t);
 					}
 					ps.addBatch();
-					if (i%64 == 0) for (int x : ps.executeBatch()) added += x;
+					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;
 				}
 				if (i%64 != 0) {
-					for (int x : ps.executeBatch()) {
+					for (final int x : ps.executeBatch()) {
 						added += x;
 					}
 				}
 				System.err.println("TmpTableBuilder added "+ added);
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				throw e;
 			} finally {
 				try {
 					if (stmt!=null && !stmt.isClosed()) stmt.close();
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 				try {
 					if (ps!=null && !ps.isClosed()) ps.close();
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			}
@@ -87,21 +87,21 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		protected void __NOSCO_PRIVATE_postExecute(SqlContext context, Connection conn) throws SQLException {
+		protected void __NOSCO_PRIVATE_postExecute(final SqlContext context, final Connection conn) throws SQLException {
 			if (context.dbType == Constants.DB_TYPE.HSQL) return;
 			if (conn!=null && !conn.isClosed()) {
 				Statement stmt = null;
 				try {
 					stmt = conn.createStatement();
-					String sql = "DROP TABLE "+ tmpTableName;
+					final String sql = "DROP TABLE "+ tmpTableName;
 					Util.log(sql, null);
 					stmt.execute(sql);
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					throw e;
 				} finally {
 					try {
 						if (stmt!=null && !stmt.isClosed()) stmt.close();
-					} catch (SQLException e) {
+					} catch (final SQLException e) {
 						e.printStackTrace();
 					}
 				}
@@ -129,13 +129,13 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		public <S> S get(Field<S> field) {
+		public <S> S get(final Field<S> field) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public <S> void set(Field<S> field, S value) {
+		public <S> void set(final Field<S> field, final S value) {
 			// TODO Auto-generated method stub
 
 		}
@@ -171,52 +171,52 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		public boolean insert(DataSource ds) throws SQLException {
+		public boolean insert(final DataSource ds) throws SQLException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public boolean update(DataSource ds) throws SQLException {
+		public boolean update(final DataSource ds) throws SQLException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public boolean delete(DataSource ds) throws SQLException {
+		public boolean delete(final DataSource ds) throws SQLException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public boolean save(DataSource ds) throws SQLException {
+		public boolean save(final DataSource ds) throws SQLException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public boolean exists(DataSource ds) throws SQLException {
+		public boolean exists(final DataSource ds) throws SQLException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		protected Object __NOSCO_PRIVATE_mapType(Object o) {
+		protected Object __NOSCO_PRIVATE_mapType(final Object o) {
 			return null;
 		}
 
 	};
 
-	TmpTableBuilder(Field<?>... fields) {
+	TmpTableBuilder(final Field<?>... fields) {
 		this.fields = fields;
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 	}
 
 	Table buildTable() {
 		return table ;
 	}
 
-	void addRow(Object... row) {
+	void addRow(final Object... row) {
 		rows.add(row);
 	}
 

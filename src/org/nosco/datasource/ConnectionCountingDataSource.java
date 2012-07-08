@@ -18,14 +18,14 @@ public class ConnectionCountingDataSource implements DataSource {
 		return count;
 	}
 
-	public void setCount(int count) {
+	public void setCount(final int count) {
 		this.count = count;
 	}
 
 	private int count = 0;
 	private final DataSource ds;
 
-	public ConnectionCountingDataSource(DataSource ds) {
+	public ConnectionCountingDataSource(final DataSource ds) {
 		this.ds = ds;
 	}
 
@@ -40,24 +40,24 @@ public class ConnectionCountingDataSource implements DataSource {
 	}
 
 	@Override
-	public void setLogWriter(PrintWriter arg0) throws SQLException {
+	public void setLogWriter(final PrintWriter arg0) throws SQLException {
 		ds.setLogWriter(arg0);
 	}
 
 	@Override
-	public void setLoginTimeout(int arg0) throws SQLException {
+	public void setLoginTimeout(final int arg0) throws SQLException {
 		ds.setLoginTimeout(arg0);
 	}
 
 	@Override
-	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+	public boolean isWrapperFor(final Class<?> arg0) throws SQLException {
 		if (ds.getClass().equals(arg0)) return true;
 		return ds.isWrapperFor(arg0);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T unwrap(Class<T> arg0) throws SQLException {
+	public <T> T unwrap(final Class<T> arg0) throws SQLException {
 		if (ds.getClass().equals(arg0)) return (T) ds;
 		return ds.unwrap(arg0);
 	}
@@ -69,7 +69,7 @@ public class ConnectionCountingDataSource implements DataSource {
 	}
 
 	@Override
-	public Connection getConnection(String arg0, String arg1)
+	public Connection getConnection(final String arg0, final String arg1)
 			throws SQLException {
 		++count;
 		return ds.getConnection(arg0, arg1);

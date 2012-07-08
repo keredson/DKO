@@ -5,7 +5,7 @@ class Tuple2<S1, S2> {
 	public final S1 a;
 	public final S2 b;
 
-	public Tuple2(S1 a, S2 b) {
+	public Tuple2(final S1 a, final S2 b) {
 		this.a = a;
 		this.b = b;
 	}
@@ -25,7 +25,7 @@ class Tuple2<S1, S2> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -33,6 +33,7 @@ class Tuple2<S1, S2> {
 		if (getClass() != obj.getClass())
 			return false;
 		@SuppressWarnings("rawtypes")
+		final
 		Tuple2 other = (Tuple2) obj;
 		if (a == null) {
 			if (other.a != null)

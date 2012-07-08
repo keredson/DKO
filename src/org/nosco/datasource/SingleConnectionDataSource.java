@@ -16,9 +16,9 @@ import javax.sql.DataSource;
  */
 public class SingleConnectionDataSource implements DataSource {
 
-	private Connection conn;
+	private final Connection conn;
 
-	public SingleConnectionDataSource(Connection conn) {
+	public SingleConnectionDataSource(final Connection conn) {
 		this.conn = new UnClosableConnection(conn);
 	}
 
@@ -29,13 +29,13 @@ public class SingleConnectionDataSource implements DataSource {
 	}
 
 	@Override
-	public void setLogWriter(PrintWriter out) throws SQLException {
+	public void setLogWriter(final PrintWriter out) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setLoginTimeout(int seconds) throws SQLException {
+	public void setLoginTimeout(final int seconds) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
@@ -47,13 +47,13 @@ public class SingleConnectionDataSource implements DataSource {
 	}
 
 	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException {
+	public <T> T unwrap(final Class<T> iface) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+	public boolean isWrapperFor(final Class<?> iface) throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -64,7 +64,7 @@ public class SingleConnectionDataSource implements DataSource {
 	}
 
 	@Override
-	public Connection getConnection(String username, String password)
+	public Connection getConnection(final String username, final String password)
 			throws SQLException {
 		return conn;
 	}

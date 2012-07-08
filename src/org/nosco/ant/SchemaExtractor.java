@@ -47,19 +47,19 @@ public class SchemaExtractor extends Task {
 	private File enumsOut = null;
 	private File out = null;
 
-	public void setOut(String s) {
+	public void setOut(final String s) {
 		this.out  = new File(s);
 	}
 
-	public void setEnums(String s) {
+	public void setEnums(final String s) {
 		if (s != null && s.length() > 0) this.enums = s.split(",");
 	}
 
-	public void setEnumsOut(String s) {
+	public void setEnumsOut(final String s) {
 		this.enumsOut = s==null ? null : new File(s);
 	}
 
-	public void setDBType(String s) {
+	public void setDBType(final String s) {
 		if ("sqlserver".equalsIgnoreCase(s))
 			this.dbType  = Constants.DB_TYPE.SQLSERVER;
 		if ("mysql".equalsIgnoreCase(s))
@@ -68,46 +68,46 @@ public class SchemaExtractor extends Task {
 			this.dbType  = Constants.DB_TYPE.HSQL;
 	}
 
-	public void setURL(String s) throws Exception {
+	public void setURL(final String s) throws Exception {
 		this.url = s;
 		if (url.startsWith("jdbc:sqlserver")) {
-			Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+			final Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
 			dbType = DB_TYPE.SQLSERVER;
 		}
 		if (url.startsWith("jdbc:mysql")) {
-			Driver d = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+			final Driver d = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
 			dbType = DB_TYPE.MYSQL;
 		}
 		if (url.startsWith("jdbc:hsqldb")) {
-			Driver d = (Driver) Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
+			final Driver d = (Driver) Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
 			dbType = DB_TYPE.HSQL;
 		}
 	}
 
-	public void setUsername(String s) {
+	public void setUsername(final String s) {
 		this.username = s;
 	}
 
-	public void setPassword(String s) {
+	public void setPassword(final String s) {
 		this.password = s;
 	}
 
-	public void setPasswordFile(String s) {
+	public void setPasswordFile(final String s) {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(s));
+			final BufferedReader br = new BufferedReader(new FileReader(s));
 			this.password = br.readLine().trim();
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void setSchemas(String s) {
+	public void setSchemas(final String s) {
 		this.includeSchemas = new HashSet<String>();
-		for (String schema : s.split(",")) {
+		for (final String schema : s.split(",")) {
 			this.includeSchemas.add(schema.trim());
 		}
 	}
@@ -119,51 +119,51 @@ public class SchemaExtractor extends Task {
 
 			System.err.println("connecting to "+ url);
 			conn = DriverManager.getConnection (url, username, password);
-			Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
-			Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);
-			Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
+			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
+			final Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);
+			final Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
 
-			JSONObject json = new JSONObject();
+			final JSONObject json = new JSONObject();
 			json.put("version", new JSONArray(version));
 			json.put("schemas", new JSONObject(schemas));
 			json.put("primary_keys", new JSONObject(primaryKeys));
 			json.put("foreign_keys", new JSONObject(foreignKeys));
 
 			System.err.println("writing: "+ out.getAbsolutePath());
-			FileWriter w = new FileWriter(out);
+			final FileWriter w = new FileWriter(out);
 			w.write(json.toString(4));
 			w.close();
 
 			if (enums!=null && enums.length > 0 && enumsOut != null) {
-				JSONObject allEnums = new JSONObject();
+				final JSONObject allEnums = new JSONObject();
 				for (String x : enums) {
 					x = x.trim();
-					String[] xa = x.split("[.]");
+					final String[] xa = x.split("[.]");
 					if (xa.length != 3) {
 						throw new RuntimeException("'"+ x +"' " +
 								"must be of the format 'schema.table.name_column'");
 					}
-					String schema = xa[0];
-					String table = xa[1];
-					String column = xa[2];
+					final String schema = xa[0];
+					final String table = xa[1];
+					final String column = xa[2];
 					allEnums.put(x, getEnums(conn, schema, table, column,
 							primaryKeys.get(schema).get(table)));
 				}
 				System.err.println("writing: "+ enumsOut.getAbsolutePath());
-				FileWriter w2 = new FileWriter(enumsOut);
+				final FileWriter w2 = new FileWriter(enumsOut);
 				w2.write(allEnums.toString(4));
 				w2.close();
 			}
 
 
 
-		} catch (SQLException e1) {
+		} catch (final SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} catch (JSONException e) {
+		} catch (final JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -171,30 +171,30 @@ public class SchemaExtractor extends Task {
 
 	}
 
-	private JSONObject getEnums(Connection conn, String schema, String table, String column,
-			Set<String> pks) throws SQLException {
+	private JSONObject getEnums(final Connection conn, final String schema, final String table, final String column,
+			final Set<String> pks) throws SQLException {
 		if (pks == null) throw new RuntimeException("primary keys not set for enum table: "
 			+ schema +"."+ table +"."+ column);
 		String sep =".";
 		if (conn.getClass().getName().startsWith("com.microsoft")) {
 			sep ="..";
 	    }
-		JSONObject ret = new JSONObject();
-		String sql = "select "+ column +", "+ Util.join(", ", pks) +" "
+		final JSONObject ret = new JSONObject();
+		final String sql = "select "+ column +", "+ Util.join(", ", pks) +" "
 				+ "from "+ schema + sep + table +" order by "+ column +";";
 		System.err.println(sql);
-		Statement s = conn.createStatement();
+		final Statement s = conn.createStatement();
 		s.execute(sql);
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String name = rs.getString(1);
-			JSONArray values = new JSONArray();
-			for (String key : pks) {
+			final String name = rs.getString(1);
+			final JSONArray values = new JSONArray();
+			for (final String key : pks) {
 				values.put(rs.getObject(key));
 			}
 			try {
 				ret.put(name, values);
-			} catch (JSONException e) {
+			} catch (final JSONException e) {
 				e.printStackTrace();
 			}
 		}
@@ -207,25 +207,25 @@ public class SchemaExtractor extends Task {
 	}};
 
 	private Map<String, Map<String, Map<String, String>>> getSchemas(
-			Connection conn) throws SQLException {
+			final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getSchemasMSSQL(conn);
 		return getSchemasMySQL(conn);
 	}
 
 	private Map<String, Map<String, Map<String, String>>> getSchemasMySQL(
-			Connection conn)
+			final Connection conn)
 			throws SQLException {
-		Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		final Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 
-		Statement s = conn.createStatement();
+		final Statement s = conn.createStatement();
 		s.execute("select table_schema, table_name, column_name, data_type "
 				+ "from information_schema.columns order by table_schema, table_name, column_name;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String schema = rs.getString("table_schema").toLowerCase();
-			String table = rs.getString("table_name").toLowerCase();
-			String column = rs.getString("column_name").toLowerCase();
-			String type = rs.getString("data_type").toLowerCase();
+			final String schema = rs.getString("table_schema").toLowerCase();
+			final String table = rs.getString("table_name").toLowerCase();
+			final String column = rs.getString("column_name").toLowerCase();
+			final String type = rs.getString("data_type").toLowerCase();
 
 			if (ignoredSchemas.contains(schema))
 				continue;
@@ -252,16 +252,16 @@ public class SchemaExtractor extends Task {
 		return schemas;
 	}
 
-	private Map<String, Map<String, Map<String, String>>> getSchemasMSSQL(Connection conn)
+	private Map<String, Map<String, Map<String, String>>> getSchemasMSSQL(final Connection conn)
 			throws SQLException {
-		Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		final Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
 
-		List<String> dbs = new ArrayList<String>();
-		Statement s = conn.createStatement();
+		final List<String> dbs = new ArrayList<String>();
+		final Statement s = conn.createStatement();
 		s.execute("SELECT name FROM sys.databases order by name;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String schema = rs.getString("name");
+			final String schema = rs.getString("name");
 			if (ignoredSchemas.contains(schema))
 				continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
@@ -271,7 +271,7 @@ public class SchemaExtractor extends Task {
 		rs.close();
 		// s.close();
 
-		for (String db : dbs) {
+		for (final String db : dbs) {
 			if (ignoredSchemas.contains(db))
 				continue;
 			if (includeSchemas != null && !includeSchemas.contains(db))
@@ -284,22 +284,22 @@ public class SchemaExtractor extends Task {
 				s.execute("select table_schema, table_name, column_name, data_type, " +
 						"character_maximum_length from information_schema.columns order by " +
 						"table_schema, table_name, column_name;");
-				ResultSet rs2 = s.getResultSet();
+				final ResultSet rs2 = s.getResultSet();
 				while (rs2.next()) {
-					String schema = db; // +"."+ rs2.getString("table_schema");
+					final String schema = db; // +"."+ rs2.getString("table_schema");
 					Map<String, Map<String, String>> tables = schemas.get(schema);
 					if (tables == null) {
 						tables = new LinkedHashMap<String, Map<String, String>>();
 						schemas.put(schema, tables);
 					}
 
-					String table = rs2.getString("table_name");
+					final String table = rs2.getString("table_name");
 					if (table.startsWith("syncobj_")) continue;
 					if (table.startsWith("MS") && table.length() > 2
 							&& Character.isLowerCase(table.charAt(2))) continue;
-					String column = rs2.getString("column_name");
+					final String column = rs2.getString("column_name");
 					String type = rs2.getString("data_type");
-					int maxLength = rs2.getInt("character_maximum_length");
+					final int maxLength = rs2.getInt("character_maximum_length");
 					if ("char".equalsIgnoreCase(type) &&  maxLength > 1)
 						type = "varchar";
 
@@ -312,7 +312,7 @@ public class SchemaExtractor extends Task {
 					columns.put(column, type);
 				}
 				rs2.close();
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				if (e.getMessage().contains("security context")) {
 					System.err.println(e.getMessage());
 				} else {
@@ -326,30 +326,30 @@ public class SchemaExtractor extends Task {
 		return schemas;
 	}
 
-	private Map<String,Map<String,Set<String>>> getPrimaryKeys(Connection conn) throws SQLException {
+	private Map<String,Map<String,Set<String>>> getPrimaryKeys(final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getPrimaryKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getPrimaryKeysHSQL(conn);
 		return getPrimaryKeysMySQL(conn);
 	}
 
-	private Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
-		Map<String,Map<String,Set<String>>> primaryKeys =
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(final Connection conn) throws SQLException {
+	    final Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		final Map<String,Map<String,Set<String>>> primaryKeys =
 			new LinkedHashMap<String, Map<String, Set<String>>>();
 
-	    Statement s = conn.createStatement();
+	    final Statement s = conn.createStatement();
 	    s.execute("SELECT name FROM sys.databases order by name;");
-	    ResultSet rs2 = s.getResultSet();
+	    final ResultSet rs2 = s.getResultSet();
 	    while (rs2.next()) {
-		String schema = rs2.getString("name");
-		Map<String, Map<String, String>> tables = new LinkedHashMap<String, Map<String, String>>();
+		final String schema = rs2.getString("name");
+		final Map<String, Map<String, String>> tables = new LinkedHashMap<String, Map<String, String>>();
 		schemas.put(schema,tables);
 	    }
 	    rs2.close();
 
 
 
-	    for(String schema2 : schemas.keySet()) {
+	    for(final String schema2 : schemas.keySet()) {
 			if (ignoredSchemas.contains(schema2)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema2))
 				continue;
@@ -360,11 +360,11 @@ public class SchemaExtractor extends Task {
 				"where constraint_type = 'PRIMARY KEY' " +
 				"and a.constraint_name = b.constraint_name " +
 				"order by a.table_catalog, a.table_name, b.column_name, a.constraint_name;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String schema = rs.getString("table_catalog");
-			String table = rs.getString("table_name");
-			String column = rs.getString("column_name");
+			final String schema = rs.getString("table_catalog");
+			final String table = rs.getString("table_name");
+			final String column = rs.getString("column_name");
 
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
@@ -404,23 +404,23 @@ public class SchemaExtractor extends Task {
 		return primaryKeys;
 	}
 
-	private Map<String, Map<String, Set<String>>> getPrimaryKeysHSQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
-		Map<String,Map<String,Set<String>>> primaryKeys =
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysHSQL(final Connection conn) throws SQLException {
+	    final Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		final Map<String,Map<String,Set<String>>> primaryKeys =
 			new LinkedHashMap<String, Map<String, Set<String>>>();
 
-	    Statement s = conn.createStatement();
+	    final Statement s = conn.createStatement();
 		s.execute("select a.table_catalog, a.table_name, b.column_name, a.constraint_name " +
 				"from information_schema.table_constraints a, " +
 				"information_schema.constraint_column_usage b " +
 				"where constraint_type = 'PRIMARY KEY' " +
 				"and a.constraint_name = b.constraint_name " +
 				"order by a.table_catalog, a.table_name, b.column_name, a.constraint_name;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String schema = rs.getString("table_catalog").toLowerCase();
-			String table = rs.getString("table_name").toLowerCase();
-			String column = rs.getString("column_name").toLowerCase();
+			final String schema = rs.getString("table_catalog").toLowerCase();
+			final String table = rs.getString("table_name").toLowerCase();
+			final String column = rs.getString("column_name").toLowerCase();
 
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
@@ -459,21 +459,21 @@ public class SchemaExtractor extends Task {
 		return primaryKeys;
 	}
 
-	private Map<String,Map<String,Set<String>>> getPrimaryKeysMySQL(Connection conn) throws SQLException {
-	    Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
-		Map<String,Map<String,Set<String>>> primaryKeys =
+	private Map<String,Map<String,Set<String>>> getPrimaryKeysMySQL(final Connection conn) throws SQLException {
+	    final Map<String,Map<String,Map<String,String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		final Map<String,Map<String,Set<String>>> primaryKeys =
 			new LinkedHashMap<String, Map<String, Set<String>>>();
 
-		Statement s = conn.createStatement();
+		final Statement s = conn.createStatement();
 		s.execute("select table_schema, table_name, column_name, column_key " +
 				"from information_schema.columns " +
 				"order by table_schema, table_name, column_name, column_key;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			String schema = rs.getString("table_schema");
-			String table = rs.getString("table_name");
-			String column = rs.getString("column_name");
-			String columnKey = rs.getString("column_key");
+			final String schema = rs.getString("table_schema");
+			final String table = rs.getString("table_name");
+			final String column = rs.getString("column_name");
+			final String columnKey = rs.getString("column_key");
 
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
@@ -514,23 +514,23 @@ public class SchemaExtractor extends Task {
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeys(
-		Connection conn) throws SQLException {
+		final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getForeignKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getForeignKeysHSQL(conn);
 		return getForeignKeysMySQL(conn);
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeysMSSQL(
-		Connection conn) {
+		final Connection conn) {
 	    return null;
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeysMySQL(
-			Connection conn) throws SQLException {
-	    Map<String, Map<String,Object>> foreignKeys =
+			final Connection conn) throws SQLException {
+	    final Map<String, Map<String,Object>> foreignKeys =
 			new LinkedHashMap<String, Map<String,Object>>();
 
-		Statement s = conn.createStatement();
+		final Statement s = conn.createStatement();
 		s.execute("select constraint_name, table_schema, table_name, column_name, " +
 				"  referenced_table_schema, referenced_table_name, " +
 				"  referenced_column_name " +
@@ -542,29 +542,30 @@ public class SchemaExtractor extends Task {
 				"  and referenced_table_name is not null " +
 				"  and referenced_column_name is not null " +
 				"order by constraint_name, table_schema, table_name, column_name;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 
 		while (rs.next()) {
-			String constraint_name = rs.getString("constraint_name");
-			String schema = rs.getString("table_schema").toLowerCase();
-			String table = rs.getString("table_name").toLowerCase();
-			String column = rs.getString("column_name").toLowerCase();
-			String referenced_schema = rs.getString("referenced_table_schema").toLowerCase();
-			String referenced_table = rs.getString("referenced_table_name").toLowerCase();
-			String referenced_column = rs.getString("referenced_column_name").toLowerCase();
+			final String constraint_name = rs.getString("constraint_name");
+			final String schema = rs.getString("table_schema").toLowerCase();
+			final String table = rs.getString("table_name").toLowerCase();
+			final String column = rs.getString("column_name").toLowerCase();
+			final String referenced_schema = rs.getString("referenced_table_schema").toLowerCase();
+			final String referenced_table = rs.getString("referenced_table_name").toLowerCase();
+			final String referenced_column = rs.getString("referenced_column_name").toLowerCase();
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {
 			    fk = new LinkedHashMap<String,Object>();
-			    String[] reffing = {schema, table};
+			    final String[] reffing = {schema, table};
 			    fk.put("reffing", reffing);
-			    String[] reffed = {referenced_schema, referenced_table};
+			    final String[] reffed = {referenced_schema, referenced_table};
 			    fk.put("reffed", reffed);
 				foreignKeys.put(constraint_name,fk);
 				fk.put("columns", new LinkedHashMap<String,String>());
 			}
 
 			@SuppressWarnings("unchecked")
+			final
 			Map<String,String> columns = (Map<String,String>) fk.get("columns");
 			columns.put(column, referenced_column);
 
@@ -574,11 +575,11 @@ public class SchemaExtractor extends Task {
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeysHSQL(
-			Connection conn) throws SQLException {
-	    Map<String, Map<String,Object>> foreignKeys =
+			final Connection conn) throws SQLException {
+	    final Map<String, Map<String,Object>> foreignKeys =
 			new LinkedHashMap<String, Map<String,Object>>();
 
-		Statement s = conn.createStatement();
+		final Statement s = conn.createStatement();
 		s.execute("select fk_name, pktable_schem, pktable_name, pkcolumn_name, " +
 				"  fktable_schem, fktable_name, " +
 				"  fkcolumn_name " +
@@ -590,29 +591,30 @@ public class SchemaExtractor extends Task {
 				"  and fktable_name is not null " +
 				"  and fkcolumn_name is not null " +
 				"order by fk_name, pktable_schem, pktable_name, pkcolumn_name;");
-		ResultSet rs = s.getResultSet();
+		final ResultSet rs = s.getResultSet();
 
 		while (rs.next()) {
-			String constraint_name = rs.getString("fk_name").toLowerCase();
-			String schema = rs.getString("fktable_schem").toLowerCase();
-			String table = rs.getString("fktable_name").toLowerCase();
-			String column = rs.getString("fkcolumn_name").toLowerCase();
-			String referenced_schema = rs.getString("pktable_schem").toLowerCase();
-			String referenced_table = rs.getString("pktable_name").toLowerCase();
-			String referenced_column = rs.getString("pkcolumn_name").toLowerCase();
+			final String constraint_name = rs.getString("fk_name").toLowerCase();
+			final String schema = rs.getString("fktable_schem").toLowerCase();
+			final String table = rs.getString("fktable_name").toLowerCase();
+			final String column = rs.getString("fkcolumn_name").toLowerCase();
+			final String referenced_schema = rs.getString("pktable_schem").toLowerCase();
+			final String referenced_table = rs.getString("pktable_name").toLowerCase();
+			final String referenced_column = rs.getString("pkcolumn_name").toLowerCase();
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {
 			    fk = new LinkedHashMap<String,Object>();
-			    String[] reffing = {schema, table};
+			    final String[] reffing = {schema, table};
 			    fk.put("reffing", reffing);
-			    String[] reffed = {referenced_schema, referenced_table};
+			    final String[] reffed = {referenced_schema, referenced_table};
 			    fk.put("reffed", reffed);
 				foreignKeys.put(constraint_name,fk);
 				fk.put("columns", new LinkedHashMap<String,String>());
 			}
 
 			@SuppressWarnings("unchecked")
+			final
 			Map<String,String> columns = (Map<String,String>) fk.get("columns");
 			columns.put(column, referenced_column);
 

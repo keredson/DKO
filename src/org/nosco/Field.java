@@ -59,7 +59,7 @@ public class Field<T> implements Cloneable {
 	String boundTable = null;
 	Field<T> unBound = null;
 
-	public Field(int index, Class<? extends Table> table, String name, Class<T> type, String sqlType) {
+	public Field(final int index, final Class<? extends Table> table, final String name, final Class<T> type, final String sqlType) {
 		INDEX = index;
 		TABLE = table;
 		NAME = name;
@@ -72,7 +72,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition eq(T v) {
+	public Condition eq(final T v) {
 		return new Binary(this, "=", v);
 	}
 
@@ -81,11 +81,11 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition eq(Field<T> v) {
+	public Condition eq(final Field<T> v) {
 		return new Binary(this, "=", v);
 	}
 
-	public Condition eq(__SimplePrimaryKey<?,T> v) {
+	public Condition eq(final __SimplePrimaryKey<?,T> v) {
 		return eq(v.value());
 	}
 
@@ -94,7 +94,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition eq(Function v) {
+	public Condition eq(final Function v) {
 		return new Binary(this, "=", v);
 	}
 
@@ -103,7 +103,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition neq(T v) {
+	public Condition neq(final T v) {
 		return new Binary(this, "!=", v);
 	}
 
@@ -112,7 +112,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition neq(Field<T> v) {
+	public Condition neq(final Field<T> v) {
 		return new Binary(this, "!=", v);
 	}
 
@@ -121,7 +121,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition neq(Function v) {
+	public Condition neq(final Function v) {
 		return new Binary(this, "!=", v);
 	}
 
@@ -143,7 +143,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition like(T v) {
+	public Condition like(final T v) {
 		return new Binary(this, " like ", v);
 	}
 
@@ -152,7 +152,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lt(T v) {
+	public Condition lt(final T v) {
 		return new Binary(this, "<", v);
 	}
 
@@ -161,7 +161,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lt(Field<T> v) {
+	public Condition lt(final Field<T> v) {
 		return new Binary(this, "<", v);
 	}
 
@@ -170,7 +170,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lt(Function v) {
+	public Condition lt(final Function v) {
 		return new Binary(this, "<", v);
 	}
 
@@ -179,7 +179,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lte(T v) {
+	public Condition lte(final T v) {
 		return new Binary(this, "<=", v);
 	}
 
@@ -188,7 +188,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lte(Field<T> v) {
+	public Condition lte(final Field<T> v) {
 		return new Binary(this, "<=", v);
 	}
 
@@ -197,7 +197,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lte(Function v) {
+	public Condition lte(final Function v) {
 		return new Binary(this, "<=", v);
 	}
 
@@ -206,7 +206,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gt(T v) {
+	public Condition gt(final T v) {
 		return new Binary(this, ">", v);
 	}
 
@@ -215,7 +215,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gt(Field<T> v) {
+	public Condition gt(final Field<T> v) {
 		return new Binary(this, ">", v);
 	}
 
@@ -224,7 +224,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gt(Function v) {
+	public Condition gt(final Function v) {
 		return new Binary(this, ">", v);
 	}
 
@@ -233,7 +233,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gte(T v) {
+	public Condition gte(final T v) {
 		return new Binary(this, ">=", v);
 	}
 
@@ -242,7 +242,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gte(Field<T> v) {
+	public Condition gte(final Field<T> v) {
 		return new Binary(this, ">=", v);
 	}
 
@@ -251,7 +251,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gte(Function v) {
+	public Condition gte(final Function v) {
 		return new Binary(this, ">=", v);
 	}
 
@@ -277,7 +277,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(T v1, T v2) {
+	public Condition between(final T v1, final T v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -287,7 +287,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(T v1, Function v2) {
+	public Condition between(final T v1, final Function v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -297,7 +297,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(Function v1, T v2) {
+	public Condition between(final Function v1, final T v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -307,7 +307,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(Function v1, Function v2) {
+	public Condition between(final Function v1, final Function v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -316,7 +316,7 @@ public class Field<T> implements Cloneable {
 	 * @param set
 	 * @return
 	 */
-	public Condition in(T... set) {
+	public Condition in(final T... set) {
 		return new Condition.In(this, " in ", set);
 	}
 
@@ -325,7 +325,7 @@ public class Field<T> implements Cloneable {
 	 * @param set
 	 * @return
 	 */
-	public Condition in(Collection<T> set) {
+	public Condition in(final Collection<T> set) {
 		if (set.size() < 256) {
 			return new Condition.In(this, " in ", set);
 		} else {
@@ -340,7 +340,7 @@ public class Field<T> implements Cloneable {
 	 * @param set
 	 * @return
 	 */
-	public Condition in(Query q) {
+	public Condition in(final Query q) {
 		return new Binary(this, " in ", q);
 	}
 
@@ -352,7 +352,7 @@ public class Field<T> implements Cloneable {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("FK[");
 			sb.append(referencing.getName());
 			sb.append("(");
@@ -375,12 +375,12 @@ public class Field<T> implements Cloneable {
 		final Class<? extends Table> referencing;
 		final Class<? extends Table> referenced;
 
-		public FK(int index, Class<? extends Table> referencing, Class<? extends Table> referenced, @SuppressWarnings("rawtypes") Field... fields) {
+		public FK(final int index, final Class<? extends Table> referencing, final Class<? extends Table> referenced, @SuppressWarnings("rawtypes") final Field... fields) {
 			INDEX = index;
 			this.referencing = referencing;
 			this.referenced = referenced;
 			assert fields.length%2 == 0;
-			int c = fields.length / 2;
+			final int c = fields.length / 2;
 			REFERENCING_FIELDS = new Field[c];
 			REFERENCED_FIELDS = new Field[c];
 			System.arraycopy(fields, 0, REFERENCING_FIELDS, 0, c);
@@ -389,22 +389,23 @@ public class Field<T> implements Cloneable {
 
 		@SuppressWarnings("rawtypes")
 		public Field[] REFERENCING_FIELDS() {
-			Field[] fields = new Field[REFERENCING_FIELDS.length];
+			final Field[] fields = new Field[REFERENCING_FIELDS.length];
 			System.arraycopy(REFERENCING_FIELDS, 0, fields, 0, REFERENCING_FIELDS.length);
 			return fields;
 		}
 
 		@SuppressWarnings("rawtypes")
 		public Field[] REFERENCED_FIELDS() {
-			Field[] fields = new Field[REFERENCED_FIELDS.length];
+			final Field[] fields = new Field[REFERENCED_FIELDS.length];
 			System.arraycopy(REFERENCED_FIELDS, 0, fields, 0, REFERENCING_FIELDS.length);
 			return fields;
 		}
 
-		public Condition eq(Table.__PrimaryKey<S> pk) {
+		public Condition eq(final Table.__PrimaryKey<S> pk) {
 			Condition ret = null;
 			for (int i=0; i<REFERENCING_FIELDS.length; ++i) {
 				@SuppressWarnings("unchecked")
+				final
 				Condition c = REFERENCING_FIELDS[i].eq(pk.get(REFERENCED_FIELDS[i]));
 				ret = ret == null ? c : ret.and(c);
 			}
@@ -421,7 +422,7 @@ public class Field<T> implements Cloneable {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("PK[");
 			sb.append(Util.join(",", FIELDS));
 			sb.append("]");
@@ -431,22 +432,23 @@ public class Field<T> implements Cloneable {
 		@SuppressWarnings("rawtypes")
 		private final Field[] FIELDS;
 
-		public PK(@SuppressWarnings("rawtypes") Field... fields) {
+		public PK(@SuppressWarnings("rawtypes") final Field... fields) {
 			FIELDS = new Field[fields.length];
 			System.arraycopy(fields, 0, FIELDS, 0, fields.length);
 		}
 
 		@SuppressWarnings("rawtypes")
 		public Field[] GET_FIELDS() {
-			Field[] fields = new Field[FIELDS.length];
+			final Field[] fields = new Field[FIELDS.length];
 			System.arraycopy(FIELDS, 0, fields, 0, FIELDS.length);
 			return fields;
 		}
 
-		public Condition eq(Table.__PrimaryKey<S> pk) {
+		public Condition eq(final Table.__PrimaryKey<S> pk) {
 			Condition ret = null;
-			for (@SuppressWarnings("rawtypes") Field f : GET_FIELDS()) {
+			for (@SuppressWarnings("rawtypes") final Field f : GET_FIELDS()) {
 				@SuppressWarnings("unchecked")
+				final
 				Condition c = f.eq(pk.get(f));
 				ret = ret == null ? c : ret.and(c);
 			}
@@ -455,14 +457,15 @@ public class Field<T> implements Cloneable {
 
 	}
 
-	public Field<T> from(String table) {
+	public Field<T> from(final String table) {
 		try {
 			@SuppressWarnings("unchecked")
+			final
 			Field<T> f = (Field<T>) this.clone();
 			f.boundTable = table;
 			f.unBound  = isBound() ? this.unBound : this;
 			return f;
-		} catch (CloneNotSupportedException e) {
+		} catch (final CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -472,7 +475,7 @@ public class Field<T> implements Cloneable {
 		return this.boundTable != null;
 	}
 
-	public boolean sameField(Field<?> other) {
+	public boolean sameField(final Field<?> other) {
 		if (this == other)
 			return true;
 		if (other == null)

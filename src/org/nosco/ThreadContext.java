@@ -25,7 +25,7 @@ public class ThreadContext {
 	 * @return
 	 * @deprecated please use Context.inTransaction(ds);
 	 */
-	public static boolean inTransaction(DataSource ds) {
+	public static boolean inTransaction(final DataSource ds) {
 		return Context.inTransaction(ds);
 	}
 
@@ -37,7 +37,7 @@ public class ThreadContext {
 	 * @throws SQLException
 	 * @deprecated please use Context.getThreadContext().startTransaction(ds);
 	 */
-	public static boolean startTransaction(DataSource ds) throws SQLException {
+	public static boolean startTransaction(final DataSource ds) throws SQLException {
 		return Context.getThreadContext().startTransaction(ds);
 	}
 
@@ -49,7 +49,7 @@ public class ThreadContext {
 	 * @throws SQLException
 	 * @deprecated please use Context.getThreadContext().commitTransaction(ds);
 	 */
-	public static boolean commitTransaction(DataSource ds) throws SQLException {
+	public static boolean commitTransaction(final DataSource ds) throws SQLException {
 		return Context.getThreadContext().commitTransaction(ds);
 	}
 
@@ -61,7 +61,7 @@ public class ThreadContext {
 	 * @throws SQLException
 	 * @deprecated please use Context.getThreadContext().rollbackTransactionThrowSQLException(ds);
 	 */
-	public static boolean rollbackTransaction(DataSource ds) throws SQLException {
+	public static boolean rollbackTransaction(final DataSource ds) throws SQLException {
 		return Context.getThreadContext().rollbackTransactionThrowSQLException(ds);
 	}
 
@@ -73,7 +73,7 @@ public class ThreadContext {
 	 * @throws SQLException
 	 * @deprecated please use Context.getThreadContext().rollbackTransaction(ds);
 	 */
-	public static boolean rollbackTransactionIgnoreException(DataSource ds) {
+	public static boolean rollbackTransactionIgnoreException(final DataSource ds) {
 		return Context.getThreadContext().rollbackTransaction(ds);
 	}
 
@@ -84,7 +84,7 @@ public class ThreadContext {
 	 * @return null is not currently in a transaction
 	 * @deprecated please use Context.getConnection(ds);
 	 */
-	public static Connection getConnection(DataSource ds) {
+	public static Connection getConnection(final DataSource ds) {
 		return Context.getConnection(ds);
 	}
 
@@ -108,7 +108,7 @@ public class ThreadContext {
 	 * No longer functional.
 	 * @deprecated please use the {@code ConnectionCountingDataSource} wrapper
 	 */
-	public static void setConnectionCount(long count) {}
+	public static void setConnectionCount(final long count) {}
 
 	/**
 	 * A convenience method to the new location for this functionality.
@@ -118,7 +118,7 @@ public class ThreadContext {
 	 * @param newName
 	 * @deprecated please use {@code Context.getThreadContext().overrideSchema(ds, oldName, newName)}
 	 */
-	public static void setDatabaseOverride(DataSource ds, String oldName, String newName) {
+	public static void setDatabaseOverride(final DataSource ds, final String oldName, final String newName) {
 		Context.getThreadContext().overrideSchema(ds, oldName, newName);
 	}
 
@@ -130,7 +130,7 @@ public class ThreadContext {
 	 * @return
 	 * @deprecated please use {@code Context.getSchemaToUse(ds, name)}
 	 */
-	public static String getDatabaseOverride(DataSource ds, String name) {
+	public static String getDatabaseOverride(final DataSource ds, final String name) {
 		return Context.getSchemaToUse(ds, name);
 	}
 

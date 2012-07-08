@@ -62,7 +62,7 @@ public class Constants {
 		static DB_TYPE detect(final DataSource ds) {
 
 			// see if we've already typed this one
-			DB_TYPE cached = cache.get(ds);
+			final DB_TYPE cached = cache.get(ds);
 			if (cached != null) return cached;
 
 			// unwrap known datasource layers
@@ -85,7 +85,7 @@ public class Constants {
 			}
 
 			// is the class recognizable?
-			String className = underlying.getClass().getName();
+			final String className = underlying.getClass().getName();
 			if (className.contains("SQLServer")) {
 				cache.put(ds, SQLSERVER);
 				return SQLSERVER;
@@ -103,19 +103,19 @@ public class Constants {
 			Connection conn = null;
 			try {
 				conn = ds.getConnection();
-				DB_TYPE type = detect(conn);
+				final DB_TYPE type = detect(conn);
 				if (type != null) {
 					cache.put(ds, type);
 					return type;
 				}
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				e.printStackTrace();
 			} finally {
 				try {
 					if (conn != null && !conn.isClosed()) {
 						conn.close();
 					}
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			}
@@ -125,15 +125,15 @@ public class Constants {
 			return null;
 		}
 
-		static DB_TYPE detect(Connection conn) throws SQLException {
+		static DB_TYPE detect(final Connection conn) throws SQLException {
 
 			// try from the class name
-			String className = conn.getClass().getName();
+			final String className = conn.getClass().getName();
 			if (className.contains("SQLServer")) return SQLSERVER;
 			//System.err.println(className);
 
 			// try from the jdbc metadata
-			DatabaseMetaData metaData = conn.getMetaData();
+			final DatabaseMetaData metaData = conn.getMetaData();
 			String driver = null;
 			String url = null;
 			if (metaData != null) {

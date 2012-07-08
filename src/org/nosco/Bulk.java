@@ -35,7 +35,7 @@ import org.nosco.Diff.RowChange;
  */
 public class Bulk {
 
-	private DataSource ds;
+	private final DataSource ds;
 	private static final int BATCH_SIZE = 64;
 	private final static String EOQ = "EOQ";
 
@@ -44,7 +44,7 @@ public class Bulk {
 	 * Note that you can get the default DataSource from any {@code MyObject.ALL.getDataSource()}.
 	 * @param ds
 	 */
-	public Bulk(DataSource ds) {
+	public Bulk(final DataSource ds) {
 		this.ds = ds;
 	}
 
@@ -55,7 +55,7 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int insertAll(Iterable<T> iterable) throws SQLException {
+	public <T extends Table> int insertAll(final Iterable<T> iterable) throws SQLException {
 		return insertAll(iterable, null, -1);
 	}
 	/**
@@ -69,8 +69,8 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int insertAll(Iterable<T> iterable, StatusCallback callback,
-			double frequency) throws SQLException {
+	public <T extends Table> int insertAll(final Iterable<T> iterable, final StatusCallback callback,
+			final double frequency) throws SQLException {
 		int count = 0;
 		int resCount = 0;
 		boolean first = true;
@@ -81,18 +81,18 @@ public class Bulk {
 		PreparedStatement psInsert = null;
 
 		try {
-			for (T table : iterable) {
+			for (final T table : iterable) {
 				count += 1;
 				if (first) {
 					first = false;
-					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
+					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					connInfo = q.getConnRW(ds);
 					conn = connInfo.a;
 					fields = table.FIELDS();
 					psInsert = createInsertPS(conn, q, table, fields);
 				}
 				int i=1;
-				for (Field<?> field : fields) {
+				for (final Field<?> field : fields) {
 					Object o = table.get(field);
 					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
@@ -103,7 +103,7 @@ public class Bulk {
 				}
 				psInsert.addBatch();
 				if (count % BATCH_SIZE == 0) {
-					for (int k : psInsert.executeBatch()) {
+					for (final int k : psInsert.executeBatch()) {
 						resCount += k;
 					}
 					if (Thread.interrupted()) {
@@ -117,7 +117,7 @@ public class Bulk {
 				}
 			}
 			if (count % BATCH_SIZE != 0) {
-				for (int k : psInsert.executeBatch()) resCount += k;
+				for (final int k : psInsert.executeBatch()) resCount += k;
 			}
 			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
 			if (conn!=null && connInfo.b) {
@@ -125,7 +125,7 @@ public class Bulk {
 				conn.close();
 			}
 			return resCount;
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
@@ -134,19 +134,19 @@ public class Bulk {
 		}
 	}
 
-	private static void safeClose(PreparedStatement ps) {
+	private static void safeClose(final PreparedStatement ps) {
 		// c3p0 sometimes throws a NPE on isClosed()
 		try { if (ps != null && !ps.isClosed()) ps.close(); }
-		catch (Throwable e) { /* ignore */ }
+		catch (final Throwable e) { /* ignore */ }
 	}
 
-	private static void safeClose(Tuple2<Connection, Boolean> connInfo, DataSource ds) {
+	private static void safeClose(final Tuple2<Connection, Boolean> connInfo, final DataSource ds) {
 		try {
 			if (connInfo != null && connInfo.a != null && !connInfo.a.isClosed() && connInfo.b) {
 				connInfo.a.close();
 			}
 		}
-		catch (Throwable e) { /* ignore */ }
+		catch (final Throwable e) { /* ignore */ }
 	}
 
 	/**
@@ -158,8 +158,8 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int updateAll(Iterable<T> iterable) throws SQLException {
-		int count = 0;
+	public <T extends Table> int updateAll(final Iterable<T> iterable) throws SQLException {
+		final int count = 0;
 		int resCount = 0;
 		boolean first = true;
 		Tuple2<Connection, Boolean> connInfo = null;
@@ -169,10 +169,10 @@ public class Bulk {
 		Field<?>[] pks = null;
 
 		try {
-			for (T table : iterable) {
+			for (final T table : iterable) {
 				if (first) {
 					first = false;
-					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
+					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					connInfo = q.getConnRW(ds);
 					conn = connInfo.a;
 					fields = table.FIELDS();
@@ -180,7 +180,7 @@ public class Bulk {
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
-				for (Field<?> field : fields) {
+				for (final Field<?> field : fields) {
 					Object o = table.get(field);
 					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
@@ -189,7 +189,7 @@ public class Bulk {
 					if (o instanceof Character) psUpdate.setString(i++, o.toString());
 					else psUpdate.setObject(i++, o);
 				}
-				for (Field<?> field : pks) {
+				for (final Field<?> field : pks) {
 					Object o = table.get(field);
 					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
@@ -200,7 +200,7 @@ public class Bulk {
 				}
 				psUpdate.addBatch();
 				if (count % BATCH_SIZE == 0) {
-					for (int k : psUpdate.executeBatch()) {
+					for (final int k : psUpdate.executeBatch()) {
 						resCount += k;
 					}
 					if (Thread.interrupted()) {
@@ -209,7 +209,7 @@ public class Bulk {
 				}
 			}
 			if (count % BATCH_SIZE != 0) {
-				for (int k : psUpdate.executeBatch()) resCount += k;
+				for (final int k : psUpdate.executeBatch()) resCount += k;
 			}
 			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
 			if (conn!=null && connInfo.b) {
@@ -217,7 +217,7 @@ public class Bulk {
 				safeClose(connInfo, ds);
 			}
 			return resCount;
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
@@ -235,7 +235,7 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int insertOrUpdateAll(Iterable<T> iterable) throws SQLException {
+	public <T extends Table> int insertOrUpdateAll(final Iterable<T> iterable) throws SQLException {
 		int count = 0;
 		boolean first = true;
 		Tuple2<Connection, Boolean> connInfo = null;
@@ -246,10 +246,10 @@ public class Bulk {
 		Field<?>[] pks = null;
 
 		try {
-			for (T table : iterable) {
+			for (final T table : iterable) {
 				if (first) {
 					first = false;
-					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
+					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					connInfo = q.getConnRW(ds);
 					conn = connInfo.a;
 					fields = table.FIELDS();
@@ -258,7 +258,7 @@ public class Bulk {
 					psUpdate = createUpdatePS(conn, q, table, fields, pks);
 				}
 				int i=1;
-				for (Field<?> field : fields) {
+				for (final Field<?> field : fields) {
 					Object o = table.get(field);
 					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
@@ -270,9 +270,9 @@ public class Bulk {
 				try {
 					psInsert.execute();
 					count += psInsert.getUpdateCount();
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					int j=1;
-					for (Field<?> field : fields) {
+					for (final Field<?> field : fields) {
 						Object o = table.get(field);
 						o = table.__NOSCO_PRIVATE_mapType(o);
 						// hack for sql server which otherwise gives:
@@ -281,7 +281,7 @@ public class Bulk {
 						if (o instanceof Character) psUpdate.setString(j++, o.toString());
 						else psUpdate.setObject(j++, o);
 					}
-					for (Field<?> field : pks) {
+					for (final Field<?> field : pks) {
 						Object o = table.get(field);
 						o = table.__NOSCO_PRIVATE_mapType(o);
 						// hack for sql server which otherwise gives:
@@ -302,7 +302,7 @@ public class Bulk {
 				conn.close();
 			}
 			return count;
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
@@ -320,8 +320,8 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int deleteAll(Iterable<T> iterable) throws SQLException {
-		int count = 0;
+	public <T extends Table> int deleteAll(final Iterable<T> iterable) throws SQLException {
+		final int count = 0;
 		int resCount = 0;
 		boolean first = true;
 		Tuple2<Connection, Boolean> connInfo = null;
@@ -330,10 +330,10 @@ public class Bulk {
 		Field<?>[] pks = null;
 
 		try {
-			for (T table : iterable) {
+			for (final T table : iterable) {
 				if (first) {
 					first = false;
-					DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
+					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
 					connInfo = q.getConnRW(ds);
 					conn = connInfo.a;
 					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
@@ -343,7 +343,7 @@ public class Bulk {
 					psDelete = createDeletePS(conn, q, table, pks);
 				}
 				int i=1;
-				for (Field<?> field : pks) {
+				for (final Field<?> field : pks) {
 					Object o = table.get(field);
 					o = table.__NOSCO_PRIVATE_mapType(o);
 					// hack for sql server which otherwise gives:
@@ -354,11 +354,11 @@ public class Bulk {
 				}
 				psDelete.addBatch();
 				if (count % BATCH_SIZE == 0) {
-					for (int k : psDelete.executeBatch()) resCount += k;
+					for (final int k : psDelete.executeBatch()) resCount += k;
 				}
 			}
 			if (count % BATCH_SIZE != 0) {
-				for (int k : psDelete.executeBatch()) {
+				for (final int k : psDelete.executeBatch()) {
 					resCount += k;
 				}
 				if (Thread.interrupted()) {
@@ -371,7 +371,7 @@ public class Bulk {
 				conn.close();
 			}
 			return resCount;
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
 			throw e;
 		} finally {
@@ -380,33 +380,33 @@ public class Bulk {
 		}
 	}
 
-	private <T extends Table> PreparedStatement createInsertPS(Connection conn,
-			DBQuery<T> q, Table table, Field[] fields) throws SQLException {
+	private <T extends Table> PreparedStatement createInsertPS(final Connection conn,
+			final DBQuery<T> q, final Table table, final Field[] fields) throws SQLException {
 		PreparedStatement ps;
-		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		StringBuffer sb = new StringBuffer();
+		final String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" (");
 		sb.append(Util.join(",", fields));
-		String[] bindStrings = new String[fields.length];
+		final String[] bindStrings = new String[fields.length];
 		for (int i=0; i < fields.length; ++i) bindStrings[i] = "?";
 		sb.append(") values (");
 		sb.append(Util.join(", ", bindStrings));
 		sb.append(")");
-		String sql = sb.toString();
+		final String sql = sb.toString();
 		Util.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
 	}
 
-	private <T extends Table> PreparedStatement createUpdatePS(Connection conn,
-			DBQuery<T> q, Table table, Field[] fields, Field[] pks) throws SQLException {
+	private <T extends Table> PreparedStatement createUpdatePS(final Connection conn,
+			final DBQuery<T> q, final Table table, final Field[] fields, final Field[] pks) throws SQLException {
 		if (pks == null || pks.length == 0) throw new RuntimeException("cannot mass update on a table without primary keys");
 		PreparedStatement ps;
-		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		StringBuffer sb = new StringBuffer();
+		final String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
@@ -415,24 +415,24 @@ public class Bulk {
 		sb.append("=?  where ");
 		sb.append(Util.join("=? and ", pks));
 		sb.append("=?;");
-		String sql = sb.toString();
+		final String sql = sb.toString();
 		Util.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
 	}
 
-	private <T extends Table> PreparedStatement createDeletePS(Connection conn,
-			DBQuery<T> q, Table table, Field[] pks) throws SQLException {
+	private <T extends Table> PreparedStatement createDeletePS(final Connection conn,
+			final DBQuery<T> q, final Table table, final Field[] pks) throws SQLException {
 		PreparedStatement ps;
-		String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		StringBuffer sb = new StringBuffer();
+		final String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+		final StringBuffer sb = new StringBuffer();
 		sb.append("delete from ");
 		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 				+sep+ table.TABLE_NAME());
 		sb.append(" where ");
 		sb.append(Util.join("=? and ", pks));
 		sb.append("=?;");
-		String sql = sb.toString();
+		final String sql = sb.toString();
 		Util.log(sql, null);
 		ps = conn.prepareStatement(sql);
 		return ps;
@@ -450,8 +450,8 @@ public class Bulk {
 
 	private static class QueueIterator<T extends Table> implements Iterator<T> {
 		@SuppressWarnings("rawtypes")
-		private BlockingQueue queue;
-		QueueIterator(BlockingQueue queue) {
+		private final BlockingQueue queue;
+		QueueIterator(final BlockingQueue queue) {
 			this.queue = queue;
 		}
 		T next = null;
@@ -469,13 +469,13 @@ public class Bulk {
 				}
 				next = (T) o;
 				return true;
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				return false;
 			}
 		}
 		@Override
 		public T next() {
-			T o = next;
+			final T o = next;
 			next = null;
 			return o;
 		}
@@ -495,38 +495,38 @@ public class Bulk {
 		final BlockingQueue deletes = new ArrayBlockingQueue(10*1024);
 		final Counter count = new Counter();
 
-		Thread prodThread = new Thread() {
+		final Thread prodThread = new Thread() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				for (RowChange<T> rc : diff) {
+				for (final RowChange<T> rc : diff) {
 					count.count++;
 					try {
 						if (rc.isAdd()) adds.put(rc.getObject());
 						if (rc.isUpdate()) updates.put(rc.getObject());
 						if (rc.isDelete()) deletes.put(rc.getObject());
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 				try {
 					adds.put(EOQ);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 				try {
 					updates.put(EOQ);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 				try {
 					deletes.put(EOQ);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		};
-		Thread addThread = new Thread() {
+		final Thread addThread = new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -535,12 +535,12 @@ public class Bulk {
 						public Iterator<T> iterator() {
 							return new QueueIterator<T>(adds);
 						}});
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		};
-		Thread updateThread = new Thread() {
+		final Thread updateThread = new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -549,12 +549,12 @@ public class Bulk {
 						public Iterator<T> iterator() {
 							return new QueueIterator<T>(updates);
 						}});
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		};
-		Thread deleteThread = new Thread() {
+		final Thread deleteThread = new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -563,7 +563,7 @@ public class Bulk {
 						public Iterator<T> iterator() {
 							return new QueueIterator<T>(deletes);
 						}});
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -575,22 +575,22 @@ public class Bulk {
 
 		try {
 			prodThread.join();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 		try {
 			addThread.join();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 		try {
 			updateThread.join();
-		} catch (InterruptedException e1) {
+		} catch (final InterruptedException e1) {
 			e1.printStackTrace();
 		}
 		try {
 			deleteThread.join();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 

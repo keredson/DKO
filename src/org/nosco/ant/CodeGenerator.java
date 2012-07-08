@@ -33,8 +33,8 @@ public class CodeGenerator extends Task {
 	private File fake_fks = null;
 	private String pkg = null;
 	private String classpath = null;
-	private String[] stripPrefixes = {};
-	private String[] stripSuffixes = {};
+	private final String[] stripPrefixes = {};
+	private final String[] stripSuffixes = {};
 	private String dataSource = null;
 	private String javacTarget = null;
 	private String javacSource = null;
@@ -46,15 +46,15 @@ public class CodeGenerator extends Task {
 	private File typeMappings = null;
 	private File enumsFile = null;
 
-	public void setJarfile(String s) {
+	public void setJarfile(final String s) {
 		this.jarfile = new File(s);
 	}
 
-	public void setSrcJarfile(String s) {
+	public void setSrcJarfile(final String s) {
 		this.srcjarfile = new File(s);
 	}
 
-	public void setJavaOutputDir(String s) {
+	public void setJavaOutputDir(final String s) {
 		this.javaOutputDir = new File(s);
 		if (!javaOutputDir.exists()) {
 			javaOutputDir.mkdir();
@@ -64,51 +64,51 @@ public class CodeGenerator extends Task {
 		}
 	}
 
-	public void setDebug(String s) {
+	public void setDebug(final String s) {
 		this.debug  = "true".equalsIgnoreCase(s) || "t".equalsIgnoreCase(s) || "1".equals(s);
 	}
 
-	public void setPackage(String s) {
+	public void setPackage(final String s) {
 		this.pkg = s;
 	}
 
-	public void setClasspath(String s) {
+	public void setClasspath(final String s) {
 		this.classpath = s;
 	}
 
-	public void setDataSource(String s) {
+	public void setDataSource(final String s) {
 		this.dataSource = s;
 	}
 
-	public void setSchemas(String s) {
+	public void setSchemas(final String s) {
 		this.schemas = new File(s);
 	}
 
-	public void setEnums(String s) {
+	public void setEnums(final String s) {
 		this.enumsFile = new File(s);
 	}
 
-	public void setTypeMappings(String s) {
+	public void setTypeMappings(final String s) {
 		this.typeMappings  = new File(s);
 	}
 
-	public void setJavac(String s) {
+	public void setJavac(final String s) {
 		this.javac  = s;
 	}
 
-	public void setJavacTarget(String s) {
+	public void setJavacTarget(final String s) {
 		this.javacTarget = s;
 	}
 
-	public void setJavacSource(String s) {
+	public void setJavacSource(final String s) {
 		this.javacSource  = s;
 	}
 
-	public void setFakeFKs(String s) {
+	public void setFakeFKs(final String s) {
 		this.fake_fks = new File(s);
 	}
 
-	public void setCallbackPackage(String s) {
+	public void setCallbackPackage(final String s) {
 		this.callbackPackage  = s;
 	}
 
@@ -120,17 +120,17 @@ public class CodeGenerator extends Task {
 						.println(jarfile.getAbsolutePath() + " is up to date");
 				return;
 			}
-		} catch (ZipException e1) {
+		} catch (final ZipException e1) {
 			e1.printStackTrace();
 			throw new BuildException(e1);
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 			throw new BuildException(e1);
 		}
 
 		File tempDir = null;
 		if (javaOutputDir == null) {
-			String tempdir = System.getProperty("java.io.tmpdir");
+			final String tempdir = System.getProperty("java.io.tmpdir");
 			tempDir = new File(tempdir + File.separator + "nosco_"
 					+ this.hashCode());
 			tempDir.mkdir();
@@ -140,21 +140,21 @@ public class CodeGenerator extends Task {
 		File classesDir = tempDir;  // new File(tempDir.getAbsolutePath() +
 									// File.separator + "classes");
 		if (!debug) {
-			String tempdir = System.getProperty("java.io.tmpdir");
+			final String tempdir = System.getProperty("java.io.tmpdir");
 			classesDir = new File(tempdir + File.separator + "nosco_classes_"
 					+ this.hashCode());
 			classesDir.mkdir();
 		}
 
 		try {
-			String timestamp = String.valueOf(schemas.lastModified()) + ":"
+			final String timestamp = String.valueOf(schemas.lastModified()) + ":"
 					+ (fake_fks == null ? "null" : String.valueOf(fake_fks.lastModified()));
-			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
+			final BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
 					tempDir.getAbsolutePath() + File.separator + ".timestamp")));
 			bw.write(timestamp);
 			bw.close();
 
-			JSONObject enums = enumsFile!=null && enumsFile.exists() ?
+			final JSONObject enums = enumsFile!=null && enumsFile.exists() ?
 					readJSONObject(enumsFile) : new JSONObject();
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
@@ -169,10 +169,10 @@ public class CodeGenerator extends Task {
 
 			if (this.srcjarfile != null) {
 				System.out.println("writing " + srcjarfile.getAbsolutePath());
-				String[] cmd2 = { "jar", "cf", srcjarfile.getAbsolutePath(), "-C",
+				final String[] cmd2 = { "jar", "cf", srcjarfile.getAbsolutePath(), "-C",
 						tempDir.getAbsolutePath(), "." };
 				// System.out.println(Misc.join(" ", cmd2));
-				Process p2 = Runtime.getRuntime().exec(cmd2);
+				final Process p2 = Runtime.getRuntime().exec(cmd2);
 				p2.waitFor();
 				BufferedReader br;
 				br = new BufferedReader(new InputStreamReader(p2.getInputStream()));
@@ -197,7 +197,7 @@ public class CodeGenerator extends Task {
 						"via the 'javac' property in the noscogen ant task.");
 			}
 
-			List<String> files = new ArrayList<String>();
+			final List<String> files = new ArrayList<String>();
 			files.add(javac);
 			if (debug) files.add("-g");
 			if (this.javacTarget != null) {
@@ -208,13 +208,13 @@ public class CodeGenerator extends Task {
 				files.add("-source");
 				files.add(javacSource);
 			}
-			String[] options = {"-cp", classpath, "-d" + classesDir.getAbsolutePath() };
-			for (String s : options) files.add(s);
+			final String[] options = {"-cp", classpath, "-d" + classesDir.getAbsolutePath() };
+			for (final String s : options) files.add(s);
 			findJava(tempDir, files);
-			String[] cmd = new String[files.size()];
+			final String[] cmd = new String[files.size()];
 			files.toArray(cmd);
 			System.out.println(Util.join(" ", cmd));
-			Process p = Runtime.getRuntime().exec(cmd);
+			final Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			for (String s; (s = br.readLine()) != null; System.out.println(s));
@@ -225,10 +225,10 @@ public class CodeGenerator extends Task {
 			}
 
 			System.out.println("writing " + jarfile.getAbsolutePath());
-			String[] cmd2 = { "jar", "cf", jarfile.getAbsolutePath(), "-C",
+			final String[] cmd2 = { "jar", "cf", jarfile.getAbsolutePath(), "-C",
 					classesDir.getAbsolutePath(), "." };
 			// System.out.println(Misc.join(" ", cmd2));
-			Process p2 = Runtime.getRuntime().exec(cmd2);
+			final Process p2 = Runtime.getRuntime().exec(cmd2);
 			p2.waitFor();
 			br = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 			for (String s; (s = br.readLine()) != null; System.out.println(s));
@@ -239,13 +239,13 @@ public class CodeGenerator extends Task {
 			}
 
 			delete(tempDir);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			throw new BuildException(e);
-		} catch (JSONException e) {
+		} catch (final JSONException e) {
 			e.printStackTrace();
 			throw new BuildException(e);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			throw new BuildException(e);
 		}
 
@@ -255,21 +255,21 @@ public class CodeGenerator extends Task {
 		Process p;
 		try {
 			p = Runtime.getRuntime().exec(javac);
-			int ret = p.waitFor();
+			final int ret = p.waitFor();
 			if (ret == 2) return true;
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	static JSONObject readJSONObject(File enumsFile) throws IOException, JSONException {
-		BufferedReader br = new BufferedReader(new FileReader(enumsFile));
-		StringBuffer sb = new StringBuffer();
+	static JSONObject readJSONObject(final File enumsFile) throws IOException, JSONException {
+		final BufferedReader br = new BufferedReader(new FileReader(enumsFile));
+		final StringBuffer sb = new StringBuffer();
 		String s = null;
 		while ((s=br.readLine())!=null) sb.append(s).append('\n');
 		return new JSONObject(sb.toString());
@@ -282,29 +282,29 @@ public class CodeGenerator extends Task {
 			return false;
 		}
 		if (!jarfile.exists()) return false;
-		String timestamp = String.valueOf(schemas.lastModified()) + ":"
+		final String timestamp = String.valueOf(schemas.lastModified()) + ":"
 				+ String.valueOf(fake_fks.lastModified());
-		ZipFile jar = new ZipFile(jarfile);
-		ZipEntry e = jar.getEntry(".timestamp");
+		final ZipFile jar = new ZipFile(jarfile);
+		final ZipEntry e = jar.getEntry(".timestamp");
 		if (e == null) return false;
-		InputStream is = jar.getInputStream(e);
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		String s = br.readLine();
+		final InputStream is = jar.getInputStream(e);
+		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		final String s = br.readLine();
 		br.close();
 		jar.close();
 		return timestamp.equals(s);
 	}
 
-	private static void delete(File f) throws IOException {
+	private static void delete(final File f) throws IOException {
 		if (f.isDirectory()) {
-			for (File c : f.listFiles()) delete(c);
+			for (final File c : f.listFiles()) delete(c);
 		}
 		f.delete();
 	}
 
-	private static void findJava(File f, List<String> list) {
+	private static void findJava(final File f, final List<String> list) {
 		if (f.isDirectory())
-			for (File c : f.listFiles())
+			for (final File c : f.listFiles())
 				findJava(c, list);
 		if (f.getAbsolutePath().endsWith(".java"))
 			list.add(f.getAbsolutePath());

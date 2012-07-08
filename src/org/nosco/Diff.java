@@ -129,8 +129,8 @@ public class Diff {
 	 */
 	public static <T extends Table> List<RowChange<T>> diffActualized(
 			final Iterable<T> them) {
-		List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
-		for (RowChange<T> v : diff(them)) ret.add(v);
+		final List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
+		for (final RowChange<T> v : diff(them)) ret.add(v);
 		return ret;
 	}
 
@@ -150,8 +150,8 @@ public class Diff {
 	 */
 	public static <T extends Table> List<RowChange<T>> diffActualized(
 			final Iterable<T> from, final Iterable<T> to) {
-		List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
-		for (RowChange<T> v : diff(from, to)) ret.add(v);
+		final List<RowChange<T>> ret = new ArrayList<RowChange<T>>();
+		for (final RowChange<T> v : diff(from, to)) ret.add(v);
 		return ret;
 	}
 
@@ -168,9 +168,9 @@ public class Diff {
 		private T b = null;
 		RowChange<T> next = null;
 		Map<Class<?>, Set<Field<?>>> fieldsForClass = new HashMap<Class<?>, Set<Field<?>>>();
-		private boolean emitUnchanged;
+		private final boolean emitUnchanged;
 
-		private ChangeIterator(Iterator<T> a, Iterator<T> b, boolean emitUnchanged) {
+		private ChangeIterator(final Iterator<T> a, final Iterator<T> b, final boolean emitUnchanged) {
 			this.A = a;
 			this.B = b;
 			this.emitUnchanged = emitUnchanged;
@@ -199,6 +199,7 @@ public class Diff {
 					return true;
 				}
 				@SuppressWarnings("unchecked")
+				final
 				int c = ((Comparable<T>)a).compareTo(b);
 				if (c < 0) {
 					next = new RowChange<T>(CHANGE_TYPE.DELETE, a, null);
@@ -214,7 +215,7 @@ public class Diff {
 						fields = fieldsForClass.get(a.getClass());
 						if (fields == null) {
 							fields = new LinkedHashSet<Field<?>>();
-							for (Field<?> field : a.FIELDS()) {
+							for (final Field<?> field : a.FIELDS()) {
 								fields.add(field);
 							}
 							fieldsForClass.put(a.getClass(), fields);
@@ -222,17 +223,17 @@ public class Diff {
 
 					} else {
 						fields = new LinkedHashSet<Field<?>>();
-						for (Field<?> field : a.FIELDS()) {
+						for (final Field<?> field : a.FIELDS()) {
 							fields.add(field);
 						}
-						for (Field<?> field : b.FIELDS()) {
+						for (final Field<?> field : b.FIELDS()) {
 							fields.add(field);
 						}
 					}
-					Collection<FieldChange<T, ?>> diffs = new ArrayList<FieldChange<T, ?>>();
-					for (Field<?> field : fields) {
-						Object av = a.get(field);
-						Object bv = b.get(field);
+					final Collection<FieldChange<T, ?>> diffs = new ArrayList<FieldChange<T, ?>>();
+					for (final Field<?> field : fields) {
+						final Object av = a.get(field);
+						final Object bv = b.get(field);
 						if (av == null ? bv != null : !av.equals(bv)) {
 							diffs.add(new FieldChange<T, Object>(
 									(Field<Object>) field, av, bv));
@@ -261,7 +262,7 @@ public class Diff {
 		public RowChange<T> next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			RowChange<T> tmp = next;
+			final RowChange<T> tmp = next;
 			next = null;
 			return tmp;
 		}
@@ -295,7 +296,7 @@ public class Diff {
 		 */
 		public final S version2;
 
-		private FieldChange(Field<S> field, S v1, S v2) {
+		private FieldChange(final Field<S> field, final S v1, final S v2) {
 			this.field = field;
 			this.version1 = v1;
 			this.version2 = v2;
@@ -315,8 +316,8 @@ public class Diff {
 		private final T o;
 		private final Collection<FieldChange<T, ?>> updates;
 
-		private RowChange(CHANGE_TYPE type, T o,
-				Collection<FieldChange<T, ?>> updates) {
+		private RowChange(final CHANGE_TYPE type, final T o,
+				final Collection<FieldChange<T, ?>> updates) {
 			this.type = type;
 			this.o = o;
 			this.updates = updates;
@@ -380,7 +381,7 @@ public class Diff {
 	private static class TableChangeIterator<T extends Table> implements
 	Iterator<RowChange<T>> {
 
-		private Iterator<T> them;
+		private final Iterator<T> them;
 		private RowChange<T> next = null;
 
 		public TableChangeIterator(final Iterable<T> them) {
@@ -391,11 +392,11 @@ public class Diff {
 		@Override
 		public boolean hasNext() {
 			while (next==null && them.hasNext()) {
-				T t = them.next();
+				final T t = them.next();
 				if (t==null) continue;
-				List<FieldChange<T,?>> changes = new ArrayList<FieldChange<T,?>>();
+				final List<FieldChange<T,?>> changes = new ArrayList<FieldChange<T,?>>();
 				CHANGE_TYPE changeType = CHANGE_TYPE.UNCHANGED;
-				for (Field field : t.FIELDS()) {
+				for (final Field field : t.FIELDS()) {
 					if (t.__NOSCO_UPDATED_VALUES!=null && t.__NOSCO_UPDATED_VALUES.get(field.INDEX)) {
 						changes.add(new FieldChange(field, null, t.get(field)));
 					}
@@ -414,7 +415,7 @@ public class Diff {
 
 		@Override
 		public RowChange<T> next() {
-			RowChange<T> tmp = next;
+			final RowChange<T> tmp = next;
 			next = null;
 			return tmp;
 		}

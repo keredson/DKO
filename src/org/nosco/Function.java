@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nosco.Constants.CALENDAR;
+import org.nosco.Constants.DB_TYPE;
 
 /**
  * A collection of SQL functions. &nbsp; Use these to call functions on fields
@@ -115,7 +116,23 @@ public abstract class Function {
 	 * @return
 	 */
 	public static <T> Function DATEADD(final Field<? extends T> f1, final int count, final CALENDAR component) {
-		return new CustomFunction("date_add", "dateadd", "dateadd", component, count, f1);
+		//return new CustomFunction("date_add", "dateadd", "dateadd", component, count, f1);
+		return new Function() {
+			@Override
+			String getSQL(final SqlContext context) {
+				if (context.dbType == DB_TYPE.MYSQL) {
+					return "date_add(" + Util.derefField(f1, context) +", interval ? "+ component +")";
+				} else {
+					return "dateadd(" + component +", ?, "+ Util.derefField(f1, context) +")";
+				}
+			}
+			@Override
+			Collection<? extends Object> getSQLBindings() {
+				final List<Object> it = new ArrayList<Object>(1);
+				it.add(count);
+				return it;
+			}
+		};
 
 	}
 

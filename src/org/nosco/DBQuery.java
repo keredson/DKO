@@ -206,7 +206,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public Iterator<T> iterator() {
 		//sanityCheckToManyJoins();
-		return new Select<T>(this).iterator();
+		return new Select<T>(this);
 	}
 
 	private void sanityCheckToManyJoins() {
@@ -488,7 +488,13 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Iterable<T> all() {
-		return new Select<T>(this);
+		final DBQuery<T> q = this;
+		return new Iterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new Select<T>(q);
+			}
+		};
 	}
 
 	@Override
@@ -1235,7 +1241,7 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Iterable<Object[]> asIterableOfObjectArrays() {
-		return new SelectAsObjectArrayIterable(new Select<T>(this));
+		return new SelectAsObjectArrayIterable<T>(this);
 	}
 
 	@Override

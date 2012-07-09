@@ -26,7 +26,7 @@ import org.nosco.DBQuery.Join;
 import org.nosco.Field.FK;
 
 
-class Select<T extends Table> implements Iterable<T>, Iterator<T> {
+class Select<T extends Table> implements Iterator<T> {
 
 	private static final int BATCH_SIZE = 2048;
 
@@ -100,9 +100,37 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 			}
 		} catch (final SecurityException e) {
 			e.printStackTrace();
+			throw e;
 		} catch (final NoSuchMethodException e) {
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
+
+		// old iterator method before merging
+		try {
+			ds  = query.getDataSource();
+			weakReferenceToThis = new WeakReference<Select>(this);
+			final Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
+			conn = connInfo.a;
+			shouldCloseConnection  = connInfo.b;
+			context  = new SqlContext(query);
+			final Tuple2<String, List<Object>> ret = getSQL(context);
+			Util.log(sql, ret.b);
+			query._preExecute(context, conn);
+			ps = conn.prepareStatement(ret.a);
+			query.setBindings(ps, ret.b);
+			ps.execute();
+			rs = ps.getResultSet();
+			done = false;
+			//m = query.getType().getMethod("INSTANTIATE", Map.class);
+		} catch (final SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		} catch (final SecurityException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	
 	}
 
 	protected String getSQL() {
@@ -167,33 +195,6 @@ class Select<T extends Table> implements Iterable<T>, Iterator<T> {
 //	protected List<Object> getSQLBindings() {
 //		return query.getSQLBindings();
 //	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Iterator<T> iterator() {
-		try {
-			ds  = query.getDataSource();
-			weakReferenceToThis = new WeakReference<Select>(this);
-			final Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
-			conn = connInfo.a;
-			shouldCloseConnection  = connInfo.b;
-			context  = new SqlContext(query);
-			final Tuple2<String, List<Object>> ret = getSQL(context);
-			Util.log(sql, ret.b);
-			query._preExecute(context, conn);
-			ps = conn.prepareStatement(ret.a);
-			query.setBindings(ps, ret.b);
-			ps.execute();
-			rs = ps.getResultSet();
-			done = false;
-			//m = query.getType().getMethod("INSTANTIATE", Map.class);
-		} catch (final SQLException e) {
-			e.printStackTrace();
-		} catch (final SecurityException e) {
-			e.printStackTrace();
-		}
-		return this;
-	}
 
 	Object[] getNextRow() throws SQLException {
 		final Object[] tmp = peekNextRow();

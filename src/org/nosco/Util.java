@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.nosco.Field.PK;
 import org.nosco.json.JSONException;
@@ -137,27 +138,27 @@ class Util {
 		return o;
 	}
 
+	private static final Logger logSql = Logger.getLogger("org.nosco.sql");
+
 	static void log(final String sql, final List<Object> bindings) {
+		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ join("|", bindings) +"]" : "");
+		logSql.fine(msg);
+		
+		// legacy prop values
 		PrintStream log = null; // System.err || null;
 		final String property = System.getProperty(Constants.PROP_LOG_SQL);
 		final String property2 = System.getProperty(Constants.PROP_LOG);
-		if ("System.err".equalsIgnoreCase(property))
-			log = System.err;
-		if ("System.out".equalsIgnoreCase(property))
-			log = System.out;
-		if (log == null && truthy(property))
-			log = System.err;
-		if ("System.err".equalsIgnoreCase(property2))
-			log = System.err;
-		if ("System.out".equalsIgnoreCase(property2))
-			log = System.out;
-		if (log == null && truthy(property2))
-			log = System.err;
-		if (log == null) return;
-		log.print("==> "+ sql);
-		if (bindings != null && bindings.size() > 0)
-			log.print(" -- ["+ join("|", bindings) +"]");
-		log.println();
+		if (log == null && property != null) {
+			if ("System.err".equalsIgnoreCase(property)) log = System.err;
+			if ("System.out".equalsIgnoreCase(property)) log = System.out;
+			if (log == null && truthy(property)) log = System.err;
+		}
+		if (log == null && property2 != null) {
+			if ("System.err".equalsIgnoreCase(property2)) log = System.err;
+			if ("System.out".equalsIgnoreCase(property2)) log = System.out;
+			if (truthy(property2)) log = System.err;
+		}
+		if (log != null) log.println("==> "+ msg);
 	}
 
 	static boolean truthy(String s) {

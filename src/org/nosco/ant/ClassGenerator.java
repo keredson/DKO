@@ -331,8 +331,8 @@ class ClassGenerator {
 				referencedTableClassName = pkg +"."+ sanitizeJavaKeywords(fk.reffed[0]) +"."+ referencedTableClassName;
 			}
 			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
-			br.write("\tpublic static final Field.FK<"+ referencedTableClassName +"> FK_"+ fkName);
-			br.write(" = new Field.FK<"+ referencedTableClassName +">("+ index +", "+ className +".class, ");
+			br.write("\tpublic static final Field.FK<"+ referencedTableClassName +"> "+ fkName);
+			br.write(" = new Field.FK<"+ referencedTableClassName +">(\""+ fkName +"\", "+ index +", "+ className +".class, ");
 			br.write(referencedTableClassName +".class");
 			for (final Entry<String, String> e : fk.columns.entrySet()) {
 				br.write(", "+ e.getKey().toUpperCase());
@@ -437,7 +437,7 @@ class ClassGenerator {
 //			if (!schema.equals(fk.reffed[0])) {
 //				referencedTable = fk.reffed[0] +"_"+ referencedTable;
 //			}
-			br.write("FK_" + genFKName(fk.columns.keySet(), referencedTable) + ",");
+			br.write(genFKName(fk.columns.keySet(), referencedTable) + ",");
 		}
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
 
@@ -560,11 +560,13 @@ class ClassGenerator {
 			br.write("\tprivate "+ referencedTableClassName +" "+ cachedObjectName +" = null;\n\n");
 
 			br.write("\tpublic "+ referencedTableClassName +" get"+ methodName +"() {\n");
-			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX)) {\n");
+			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
+			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ fkName +".INDEX)) {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = "+ referencedTableClassName +".ALL");
 			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq("+ underscoreToCamelCase(fk.columns.keySet(), false) +"))");
 			br.write(".getTheOnly();\n");
-			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ fkName +".INDEX);\n");
+			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkToOneCallback(this, "+ fkName +");\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ cachedObjectName +";\n\t}\n\n");
 
@@ -575,7 +577,7 @@ class ClassGenerator {
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(fk.columns.keySet()) +".INDEX);\n");
 			br.write("\t\t"+ cachedObjectName +" = v;\n");
-			br.write("\t\t__NOSCO_UPDATED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ fkName +".INDEX);\n");
 			br.write("\t\treturn this;\n");
 
 			br.write("\n\t}\n\n");
@@ -594,9 +596,9 @@ class ClassGenerator {
 				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(referencedSchema);
 				relatedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ relatedTableClassName;
 		}
-			br.write("\t\telse if (field == FK_"+ genFKName(fk.columns.keySet(), referencedTable) +") {\n");
+			br.write("\t\telse if (field == "+ genFKName(fk.columns.keySet(), referencedTable) +") {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = ("+ relatedTableClassName +") v;\n");
-			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
+			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
 			br.write("\t\t}\n");
 
 		}
@@ -616,7 +618,7 @@ class ClassGenerator {
 				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(relatedSchema);
 				relatedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ relatedTableClassName;
 			}
-			final String fkName = "FK_"+ genFKName(fk.columns.keySet(), fk.reffed[1]);
+			final String fkName = genFKName(fk.columns.keySet(), fk.reffed[1]);
 		    final String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
 		    		+ Util.join("__", fk.columns.keySet());
 		    br.write("\t\telse if ("+ relatedTableClassName +"."+ fkName +".equals(fk)) {\n");
@@ -1020,9 +1022,9 @@ class ClassGenerator {
 		referencedTable = referencedTable.toUpperCase();
 		if (column.endsWith("_ID")) column = column.substring(0,column.length()-3);
 		if (referencedTable.startsWith(column)) {
-			return dePlural(referencedTable).toUpperCase();
+			return "FK_"+ dePlural(referencedTable).toUpperCase();
 		} else {
-			return dePlural(column +"_"+ referencedTable).toUpperCase();
+			return "FK_"+ dePlural(column +"_"+ referencedTable).toUpperCase();
 		}
 	    }
 	    return null;

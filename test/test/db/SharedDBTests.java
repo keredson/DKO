@@ -30,11 +30,11 @@ public class SharedDBTests extends TestCase {
 	ConnectionCountingDataSource ccds = null;
 
 	public void test01() throws SQLException {
-		Connection conn = ds.getConnection();
-		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("select count(1) from inventory");
+		final Connection conn = ds.getConnection();
+		final Statement stmt = conn.createStatement();
+		final ResultSet rs = stmt.executeQuery("select count(1) from inventory");
 		rs.next();
-		int count = rs.getInt(1);
+		final int count = rs.getInt(1);
 		//System.err.println("count: "+ count);
 		rs.close();
 		stmt.close();
@@ -48,16 +48,16 @@ public class SharedDBTests extends TestCase {
 
 	public void test04() throws SQLException {
 		int count = 0;
-		for (Item i : Item.ALL.use(ds).top(10)) ++count;
+		for (final Item i : Item.ALL.use(ds).top(10)) ++count;
 		assertEquals(10, count);
 	}
 
 	public void testWithAndCross() throws SQLException {
 		int count = 0;
-		int countp = Product.ALL.use(ds).count();
-		int countc = Category.ALL.use(ds).count();
-		Query<Product> q = Product.ALL.use(ds).cross(Category.class);
-		for (Product p : q) {
+		final int countp = Product.ALL.use(ds).count();
+		final int countc = Category.ALL.use(ds).count();
+		final Query<Product> q = Product.ALL.use(ds).cross(Category.class);
+		for (final Product p : q) {
 			//assertNotNull(p);
 			//assertNotNull(p.getProductidFK());
 			++count;
@@ -70,13 +70,13 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testFK1() throws SQLException {
-		int itemCount = Item.ALL.use(ds).count();
-		int itemCount2 = Item.ALL.use(ds).with(Item.FK_SUPPLIER).count();
+		final int itemCount = Item.ALL.use(ds).count();
+		final int itemCount2 = Item.ALL.use(ds).with(Item.FK_SUPPLIER).count();
 		// counts should be the same w/ and w/o the FK reference
 		assertTrue(itemCount == itemCount2);
 		int count = 0;
 		boolean sawEST29 = false;
-		for (Item item : Item.ALL.use(ccds).with(Item.FK_SUPPLIER)) {
+		for (final Item item : Item.ALL.use(ccds).with(Item.FK_SUPPLIER)) {
 			count++;
 			if (!"EST-29".equals(item.getItemid())) {
 				assertNotNull(item.getSupplierFK());
@@ -91,8 +91,8 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testFKNoWith() throws SQLException {
-		Undoer x = Context.getVMContext().setDataSource(ccds);
-		for (Item item : Item.ALL) { //.with(Item.FK_SUPPLIER)
+		final Undoer x = Context.getVMContext().setDataSource(ccds);
+		for (final Item item : Item.ALL) { //.with(Item.FK_SUPPLIER)
 			// this should create O(n) queries because we didn't specify with() above
 			item.getSupplierFK();
 		}
@@ -102,14 +102,14 @@ public class SharedDBTests extends TestCase {
 	@SuppressWarnings("unused")
 	public void testFKReverseCounts() throws SQLException {
 		System.err.println("testFKReverseCounts start");
-		Undoer x = Context.getVMContext().setDataSource(ds);
-		int count1 = Supplier.ALL.count();
-		int count2 = Supplier.ALL.with(Item.FK_SUPPLIER).count();
+		final Undoer x = Context.getVMContext().setDataSource(ds);
+		final int count1 = Supplier.ALL.count();
+		final int count2 = Supplier.ALL.with(Item.FK_SUPPLIER).count();
 		int count3 = 0;
 		int supplierCount = 0;
-		for (Supplier s : Supplier.ALL) {
+		for (final Supplier s : Supplier.ALL) {
 			supplierCount += 1;
-			int itemCount = s.getItemSet().count();
+			final int itemCount = s.getItemSet().count();
 			count3 += Math.max(1, itemCount);
 		}
 		assertEquals(count2, count3);
@@ -119,13 +119,13 @@ public class SharedDBTests extends TestCase {
 	@SuppressWarnings("unused")
 	public void testFKReverse() throws SQLException {
 		System.err.println("testFKReverse start");
-		int count1 = Supplier.ALL.count();
+		final int count1 = Supplier.ALL.count();
 		int count2 = 0;
-		Undoer y = Context.getVMContext().setDataSource(ccds);
-		for (Supplier s : Supplier.ALL.with(Item.FK_SUPPLIER)) {
+		final Undoer y = Context.getVMContext().setDataSource(ccds);
+		for (final Supplier s : Supplier.ALL.with(Item.FK_SUPPLIER)) {
 			count2++;
 			System.err.println(s);
-			for (Item i : s.getItemSet()) {
+			for (final Item i : s.getItemSet()) {
 				System.err.println("\t"+i);
 			}
 			if (s.getSuppid() == 1) assertTrue(s.getItemSet().count() > 0);
@@ -138,15 +138,15 @@ public class SharedDBTests extends TestCase {
 
 	@SuppressWarnings("unused")
 	public void testFKReverseQueryReplicationBug() throws SQLException {
-		Query<Supplier> q = Supplier.ALL.with(Item.FK_SUPPLIER);
+		final Query<Supplier> q = Supplier.ALL.with(Item.FK_SUPPLIER);
 		q.count();
-		for (Supplier s : q) {
+		for (final Supplier s : q) {
 		}
 	}
 
 	public void testFKTwoLevels() throws SQLException {
-		Undoer u = Context.getVMContext().setDataSource(ccds);
-		for (Item i : Item.ALL.with(Item.FK_PRODUCTID_PRODUCT, Product.FK_CATEGORY)) {
+		final Undoer u = Context.getVMContext().setDataSource(ccds);
+		for (final Item i : Item.ALL.with(Item.FK_PRODUCTID_PRODUCT, Product.FK_CATEGORY)) {
 			assertNotNull(i);
 			assertNotNull(i.getProductidFK());
 			assertNotNull(i.getProductidFK().getCategoryFK());
@@ -156,7 +156,7 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testSimpleDiff() throws SQLException {
-		List<Item> items = Item.ALL.asList();
+		final List<Item> items = Item.ALL.asList();
 		assertTrue(items.size() > 0);
 		items.get(0).setAttr4("something");
 		items.add(new Item());
@@ -164,7 +164,7 @@ public class SharedDBTests extends TestCase {
 		int updates = 0;
 		int adds = 0;
 		int count = 0;
-		for (RowChange<Item> diff : Diff.diff(items)) {
+		for (final RowChange<Item> diff : Diff.diff(items)) {
 			count += 1;
 			if (diff.isAdd()) adds += 1;
 			if (diff.isUpdate()) updates += 1;
@@ -178,6 +178,16 @@ public class SharedDBTests extends TestCase {
 		Orderstatus.ALL.where(Orderstatus.TIMESTAMP.lt(
 				Function.DATEADD(Orderstatus.TIMESTAMP, 1, CALENDAR.DAY)))
 				.asList();
+	}
+	
+	public void testRecommendation() throws InterruptedException {
+		for (final Item i : Item.ALL) {
+			i.getProductidFK();
+		}
+		// note: this should raise a logging WARNING!
+		System.gc();
+		Thread.sleep(1000);
+		// this doesn't work for now since it's the last test
 	}
 
 }

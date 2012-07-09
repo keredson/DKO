@@ -374,8 +374,10 @@ public class Field<T> implements Cloneable {
 		private final Field[] REFERENCED_FIELDS;
 		final Class<? extends Table> referencing;
 		final Class<? extends Table> referenced;
+		final String name;
 
-		public FK(final int index, final Class<? extends Table> referencing, final Class<? extends Table> referenced, @SuppressWarnings("rawtypes") final Field... fields) {
+		public FK(final String name, final int index, final Class<? extends Table> referencing, final Class<? extends Table> referenced, @SuppressWarnings("rawtypes") final Field... fields) {
+			this.name = name;
 			INDEX = index;
 			this.referencing = referencing;
 			this.referenced = referenced;

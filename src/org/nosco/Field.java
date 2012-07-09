@@ -1,10 +1,10 @@
 package org.nosco;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.nosco.Condition.Binary;
 import org.nosco.Condition.Ternary;
-import org.nosco.Table.__PrimaryKey;
 import org.nosco.Table.__SimplePrimaryKey;
 
 

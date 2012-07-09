@@ -22,7 +22,17 @@ import org.nosco.Constants.DB_TYPE;
  *
  * @author Derek Anderson
  */
-public abstract class Function {
+public abstract class Function<T> {
+	
+	/**
+	 * Create a SQL function for IFNULL() (ISNULL() on SQL Server).
+	 * @param f
+	 * @param v
+	 * @return
+	 */
+	public static <T> Function<Boolean> IFNULL(final Field<? extends T> f, final T v) {
+		return new Custom<Boolean>("ifnull", "isnull", "ifnull", f, v);
+	}
 
 	/**
 	 * Create a SQL function for IFNULL() (ISNULL() on SQL Server).
@@ -30,83 +40,33 @@ public abstract class Function {
 	 * @param v
 	 * @return
 	 */
-	public static <T> Function IFNULL(final Field<? extends T> f, final T v) {
-		return new CustomFunction("ifnull", "isnull", "ifnull", f, v);
+	public static <T> Function<Boolean> IFNULL(final Function<? extends T> f, final T v) {
+		return new Custom<Boolean>("ifnull", "isnull", "ifnull", f, v);
 	}
 
 	/**
 	 * @return the sql NOW() function (or GETDATE() on sql server)
 	 */
-	public static Function NOW() {
-		return new CustomFunction("now", "getdate", "now");
+	public static Function<java.sql.Date> NOW() {
+		return new Custom<java.sql.Date>("now", "getdate", "now");
 	}
 
 	/**
 	 * @return same as NOW()
 	 */
-	public static Function GETDATE() {
+	public static Function<java.sql.Date> GETDATE() {
 		return NOW();
 	}
 
 	/**
 	 * COALESCE is a sql function that will return the first non-null parameter value.
+	 * All objects other than functions or fields are passed verbatim to the 
+	 * PreparedStatement with setObject().
 	 * @param fields
 	 * @return
 	 */
-	public static <T> Function COALESCE(final Field<? extends T>... fields) {
-		return new CustomFunction("coalesce", (Object[]) fields);
-	}
-
-	/**
-	 * COALESCE is a sql function that will return the first non-null parameter value.
-	 * @param field
-	 * @param v
-	 * @return
-	 */
-	public static <T> Function COALESCE(final Field<? extends T> field, final T v) {
-		return new CustomFunction("coalesce", field, v);
-	}
-
-	/**
-	 * COALESCE is a sql function that will return the first non-null parameter value.
-	 * @param f1
-	 * @param f2
-	 * @param v
-	 * @return
-	 */
-	public static <T> Function COALESCE(final Field<? extends T> f1, final Field<? extends T> f2, final T v) {
-		return new CustomFunction("coalesce", f1, f2, v);
-	}
-
-	/**
-	 * COALESCE is a sql function that will return the first non-null parameter value.
-	 * @param f1
-	 * @param f2
-	 * @param f3
-	 * @param v
-	 * @return
-	 */
-	public static <T> Function COALESCE(final Field<? extends T> f1, final Field<? extends T> f2,
-			final Field<? extends T> f3, final T v) {
-		return new CustomFunction("coalesce", f1, f2, f3, v);
-	}
-
-	/**
-	 * COALESCE is a sql function that will return the first non-null parameter value.
-	 * &nbsp;
-	 * If you need more than 4, roll your own Function instance. &nbsp;
-	 * Sadly Java won't let you use varargs without it being the final
-	 * parameter in the method call.
-	 * @param f1
-	 * @param f2
-	 * @param f3
-	 * @param f4
-	 * @param v
-	 * @return
-	 */
-	public static <T> Function COALESCE(final Field<? extends T> f1, final Field<? extends T> f2,
-			final Field<? extends T> f3, final Field<? extends T> f4, final T v) {
-		return new CustomFunction("coalesce", f1, f2, f3, f4, v);
+	public static <T> Function<T> COALESCE(final Object... fields) {
+		return new Custom<T>("coalesce", fields);
 	}
 
 	/**
@@ -115,21 +75,54 @@ public abstract class Function {
 	 * @param component
 	 * @return
 	 */
-	public static <T> Function DATEADD(final Field<? extends T> f1, final int count, final CALENDAR component) {
-		//return new CustomFunction("date_add", "dateadd", "dateadd", component, count, f1);
-		return new Function() {
+	public static <T> Function<java.sql.Date> DATEADD(final Function<? extends T> f1, final int count, final CALENDAR component) {
+		return new Function<java.sql.Date>() {
+			List<Object> it = null;
 			@Override
 			String getSQL(final SqlContext context) {
+				final String sql = f1.getSQL(context);
+				it = new ArrayList<Object>();
 				if (context.dbType == DB_TYPE.MYSQL) {
-					return "date_add(" + Util.derefField(f1, context) +", interval ? "+ component +")";
+					it.addAll(f1.getSQLBindings());
+					it.add(count);
+					return "date_add(" + sql +", interval ? "+ component +")";
 				} else {
-					return "dateadd(" + component +", ?, "+ Util.derefField(f1, context) +")";
+					it.add(count);
+					it.addAll(f1.getSQLBindings());
+					return "dateadd(" + component +", ?, "+ sql +")";
 				}
 			}
 			@Override
 			Collection<? extends Object> getSQLBindings() {
-				final List<Object> it = new ArrayList<Object>(1);
-				it.add(count);
+				return it;
+			}
+		};
+
+	}
+
+	/**
+	 * @param f1
+	 * @param count
+	 * @param component
+	 * @return
+	 */
+	public static <T> Function<java.sql.Date> DATEADD(final Field<? extends T> field, final int count, final CALENDAR component) {
+		return new Function<java.sql.Date>() {
+			List<Object> it = null;
+			@Override
+			String getSQL(final SqlContext context) {
+				it = new ArrayList<Object>();
+				final String sql = Util.derefField(field, context);
+				if (context.dbType == DB_TYPE.MYSQL) {
+					it.add(count);
+					return "date_add(" + sql +", interval ? "+ component +")";
+				} else {
+					it.add(count);
+					return "dateadd(" + component +", ?, "+ sql +")";
+				}
+			}
+			@Override
+			Collection<? extends Object> getSQLBindings() {
 				return it;
 			}
 		};
@@ -147,20 +140,20 @@ public abstract class Function {
 	 * Use this to implement your own one-off functions.
 	 * Please submit functions you think are useful back to the project!
 	 */
-	public static class CustomFunction extends Function {
+	public static class Custom<T> extends Function<T> {
 
 		private final String mysql;
 		private final String sqlserver;
 		private final String hsql;
 		private Object[] objects = null;
 		private String sql = null;
-		private List<Object> bindings = null;
+		private final List<Object> bindings = new ArrayList<Object>();
 
 		/**
 		 * For a simple, no argument SQL function like NOW().
 		 * @param func
 		 */
-		public CustomFunction(final String func) {
+		public Custom(final String func) {
 			this.mysql = func;
 			this.sqlserver = func;
 			this.hsql = func;
@@ -174,20 +167,20 @@ public abstract class Function {
 		 * @param func the name of the function
 		 * @param objects the arguments of the function
 		 */
-		public CustomFunction(final String func, final Object... objects) {
+		public Custom(final String func, final Object... objects) {
 			this.mysql = func;
 			this.sqlserver = func;
 			this.hsql = func;
 			this.objects = objects;
 		}
 
-		CustomFunction(final String mysql, final String sqlserver, final String hsql) {
+		Custom(final String mysql, final String sqlserver, final String hsql) {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
 		}
 
-		CustomFunction(final String mysql, final String sqlserver, final String hsql, final Object... objects) {
+		Custom(final String mysql, final String sqlserver, final String hsql, final Object... objects) {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
@@ -208,13 +201,16 @@ public abstract class Function {
 			if (objects != null) {
 				for (int i=0; i<objects.length; ++i) {
 					final Object o = objects[i];
-					if (o instanceof Field) {
+					if (o instanceof Field<?>) {
 						sb.append(Util.derefField((Field<?>) o, context));
+					} else if (o instanceof Function<?>) {
+						final Function<?> f = (Function<?>) o;
+						sb.append(f.getSQL(context));
+						bindings.addAll(f.getSQLBindings());
 					} else if (o instanceof CALENDAR) {
 						sb.append(o.toString());
 					} else {
 						sb.append("?");
-						if (bindings == null) bindings = new ArrayList<Object>();
 						bindings.add(o);
 					}
 					if (i < objects.length-1) sb.append(", ");

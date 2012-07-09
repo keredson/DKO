@@ -54,7 +54,7 @@ function windowTitle()
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../org/nosco/Field.PK.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Function.Custom.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?org/nosco/Function.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="Function.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -88,17 +88,17 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.nosco</FONT>
 <BR>
-Class Function</H2>
+Class Function&lt;T&gt;</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Function</B>
+  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>org.nosco.Function&lt;T&gt;</B>
 </PRE>
 <DL>
-<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco">Function.CustomFunction</A></DD>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../org/nosco/Function.Custom.html" title="class in org.nosco">Function.Custom</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public abstract class <B>Function</B><DT>extends java.lang.Object</DL>
+<DT><PRE>public abstract class <B>Function&lt;T&gt;</B><DT>extends java.lang.Object</DL>
 </PRE>
 
 <P>
@@ -132,7 +132,7 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;class</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco">Function.CustomFunction</A></B></CODE>
+<TD><CODE><B><A HREF="../../org/nosco/Function.Custom.html" title="class in org.nosco">Function.Custom</A>&lt;<A HREF="../../org/nosco/Function.Custom.html" title="type parameter in Function.Custom">T</A>&gt;</B></CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The list of built-in functions is far from comprehensive.</TD>
@@ -169,11 +169,11 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
 <TR ALIGN="right" VALIGN="">
 <TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
+<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;T&gt;</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#COALESCE(org.nosco.Field...)">COALESCE</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;...&nbsp;fields)</CODE>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#COALESCE(java.lang.Object...)">COALESCE</A></B>(java.lang.Object...&nbsp;fields)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
@@ -184,81 +184,11 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
 <TR ALIGN="right" VALIGN="">
 <TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
+<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#COALESCE(org.nosco.Field, org.nosco.Field, org.nosco.Field, org.nosco.Field, T)">COALESCE</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f2,
-         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f3,
-         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f4,
-         T&nbsp;v)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
-<TR ALIGN="right" VALIGN="">
-<TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
-</TR>
-</TABLE>
-</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#COALESCE(org.nosco.Field, org.nosco.Field, org.nosco.Field, T)">COALESCE</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f2,
-         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f3,
-         T&nbsp;v)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
-<TR ALIGN="right" VALIGN="">
-<TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
-</TR>
-</TABLE>
-</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#COALESCE(org.nosco.Field, org.nosco.Field, T)">COALESCE</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f2,
-         T&nbsp;v)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
-<TR ALIGN="right" VALIGN="">
-<TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
-</TR>
-</TABLE>
-</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#COALESCE(org.nosco.Field, T)">COALESCE</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;field,
-         T&nbsp;v)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
-<TR ALIGN="right" VALIGN="">
-<TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
-</TR>
-</TABLE>
-</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEADD(org.nosco.Field, int, org.nosco.Constants.CALENDAR)">DATEADD</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEADD(org.nosco.Field, int, org.nosco.Constants.CALENDAR)">DATEADD</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;field,
         int&nbsp;count,
         <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</CODE>
 
@@ -267,7 +197,24 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEADD(org.nosco.Function, int, org.nosco.Constants.CALENDAR)">DATEADD</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;? extends T&gt;&nbsp;f1,
+        int&nbsp;count,
+        <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Function.html#GETDATE()">GETDATE</A></B>()</CODE>
 
 <BR>
@@ -279,7 +226,7 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
 <TR ALIGN="right" VALIGN="">
 <TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
+<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Boolean&gt;</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -291,7 +238,23 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A></CODE></FONT></TD>
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Boolean&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#IFNULL(org.nosco.Function, T)">IFNULL</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;? extends T&gt;&nbsp;f,
+       T&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create a SQL function for IFNULL() (ISNULL() on SQL Server).</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Function.html#NOW()">NOW</A></B>()</CODE>
 
 <BR>
@@ -340,8 +303,23 @@ public <B>Function</B>()</PRE>
 <A NAME="IFNULL(org.nosco.Field,java.lang.Object)"><!-- --></A><A NAME="IFNULL(org.nosco.Field, T)"><!-- --></A><H3>
 IFNULL</H3>
 <PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>IFNULL</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f,
-                                  T&nbsp;v)</PRE>
+public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Boolean&gt; <B>IFNULL</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f,
+                                                     T&nbsp;v)</PRE>
+<DL>
+<DD>Create a SQL function for IFNULL() (ISNULL() on SQL Server).
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - <DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="IFNULL(org.nosco.Function,java.lang.Object)"><!-- --></A><A NAME="IFNULL(org.nosco.Function, T)"><!-- --></A><H3>
+IFNULL</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Boolean&gt; <B>IFNULL</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;? extends T&gt;&nbsp;f,
+                                                     T&nbsp;v)</PRE>
 <DL>
 <DD>Create a SQL function for IFNULL() (ISNULL() on SQL Server).
 <P>
@@ -355,7 +333,7 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
 <A NAME="NOW()"><!-- --></A><H3>
 NOW</H3>
 <PRE>
-public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>NOW</B>()</PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt; <B>NOW</B>()</PRE>
 <DL>
 <DD><DL>
 
@@ -367,7 +345,7 @@ public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco"
 <A NAME="GETDATE()"><!-- --></A><H3>
 GETDATE</H3>
 <PRE>
-public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>GETDATE</B>()</PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt; <B>GETDATE</B>()</PRE>
 <DL>
 <DD><DL>
 
@@ -376,12 +354,14 @@ public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco"
 </DL>
 <HR>
 
-<A NAME="COALESCE(org.nosco.Field...)"><!-- --></A><H3>
+<A NAME="COALESCE(java.lang.Object...)"><!-- --></A><H3>
 COALESCE</H3>
 <PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>COALESCE</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;...&nbsp;fields)</PRE>
+public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;T&gt; <B>COALESCE</B>(java.lang.Object...&nbsp;fields)</PRE>
 <DL>
 <DD>COALESCE is a sql function that will return the first non-null parameter value.
+ All objects other than functions or fields are passed verbatim to the 
+ PreparedStatement with setObject().
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>fields</CODE> - 
@@ -390,71 +370,15 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
 </DL>
 <HR>
 
-<A NAME="COALESCE(org.nosco.Field,java.lang.Object)"><!-- --></A><A NAME="COALESCE(org.nosco.Field, T)"><!-- --></A><H3>
-COALESCE</H3>
+<A NAME="DATEADD(org.nosco.Function, int, org.nosco.Constants.CALENDAR)"><!-- --></A><H3>
+DATEADD</H3>
 <PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>COALESCE</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;field,
-                                    T&nbsp;v)</PRE>
+public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt; <B>DATEADD</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;? extends T&gt;&nbsp;f1,
+                                                  int&nbsp;count,
+                                                  <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</PRE>
 <DL>
-<DD>COALESCE is a sql function that will return the first non-null parameter value.
-<P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>field</CODE> - <DD><CODE>v</CODE> - 
-<DT><B>Returns:</B><DD></DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="COALESCE(org.nosco.Field,org.nosco.Field,java.lang.Object)"><!-- --></A><A NAME="COALESCE(org.nosco.Field, org.nosco.Field, T)"><!-- --></A><H3>
-COALESCE</H3>
-<PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>COALESCE</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-                                    <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f2,
-                                    T&nbsp;v)</PRE>
-<DL>
-<DD>COALESCE is a sql function that will return the first non-null parameter value.
-<P>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - <DD><CODE>v</CODE> - 
-<DT><B>Returns:</B><DD></DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="COALESCE(org.nosco.Field,org.nosco.Field,org.nosco.Field,java.lang.Object)"><!-- --></A><A NAME="COALESCE(org.nosco.Field, org.nosco.Field, org.nosco.Field, T)"><!-- --></A><H3>
-COALESCE</H3>
-<PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>COALESCE</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-                                    <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f2,
-                                    <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f3,
-                                    T&nbsp;v)</PRE>
-<DL>
-<DD>COALESCE is a sql function that will return the first non-null parameter value.
-<P>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - <DD><CODE>f3</CODE> - <DD><CODE>v</CODE> - 
-<DT><B>Returns:</B><DD></DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="COALESCE(org.nosco.Field,org.nosco.Field,org.nosco.Field,org.nosco.Field,java.lang.Object)"><!-- --></A><A NAME="COALESCE(org.nosco.Field, org.nosco.Field, org.nosco.Field, org.nosco.Field, T)"><!-- --></A><H3>
-COALESCE</H3>
-<PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>COALESCE</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-                                    <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f2,
-                                    <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f3,
-                                    <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f4,
-                                    T&nbsp;v)</PRE>
-<DL>
-<DD>COALESCE is a sql function that will return the first non-null parameter value.
- &nbsp;
- If you need more than 4, roll your own Function instance. &nbsp;
- Sadly Java won't let you use varargs without it being the final
- parameter in the method call.
-<P>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - <DD><CODE>f3</CODE> - <DD><CODE>f4</CODE> - <DD><CODE>v</CODE> - 
+<DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>count</CODE> - <DD><CODE>component</CODE> - 
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
@@ -463,9 +387,9 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
 <A NAME="DATEADD(org.nosco.Field, int, org.nosco.Constants.CALENDAR)"><!-- --></A><H3>
 DATEADD</H3>
 <PRE>
-public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A> <B>DATEADD</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;f1,
-                                   int&nbsp;count,
-                                   <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</PRE>
+public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt; <B>DATEADD</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;? extends T&gt;&nbsp;field,
+                                                  int&nbsp;count,
+                                                  <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</PRE>
 <DL>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>count</CODE> - <DD><CODE>component</CODE> - 
@@ -504,7 +428,7 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../org/nosco/Field.PK.html" title="class in org.nosco"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../org/nosco/Function.CustomFunction.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../org/nosco/Function.Custom.html" title="class in org.nosco"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?org/nosco/Function.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="Function.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

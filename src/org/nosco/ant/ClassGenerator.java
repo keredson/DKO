@@ -123,7 +123,7 @@ class ClassGenerator {
 
 		for (final String schema : schemas.keySet()) {
 			final JSONObject tables = schemas.getJSONObject(schema);
-			
+
 			String pkgName = sanitizeJavaKeywords(schema);
 			if (schemaAliases.containsKey(schema)) {
 				pkgName = sanitizeJavaKeywords(schemaAliases.get(schema));
@@ -553,7 +553,7 @@ class ClassGenerator {
 				String relatedSchemaAlias = schemaAliases.get(referencedSchema);
 				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(referencedSchema);
 				referencedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ referencedTableClassName;
-		}
+			}
 			final String methodName = genFKMethodName(fk.columns.keySet(), referencedTable);
 			final String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
 
@@ -639,6 +639,7 @@ class ClassGenerator {
 		for (final FK fk : fksIn) {
 		    final String relatedSchema = fk.reffing[0];
 		    final String relatedTable = fk.reffing[1];
+		    final String reffedTable = fk.reffed[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
 			if (!schema.equals(relatedSchema)) {
 				String relatedSchemaAlias = schemaAliases.get(relatedSchema);
@@ -656,6 +657,8 @@ class ClassGenerator {
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() {\n");
 		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
 		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
+			final String fkName = genFKName(fk.columns.keySet(), reffedTable);
+			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkToOneCallback(this, "+ relatedTableClassName +"."+ fkName +");\n");
 		    br.write("\t\tCondition condition = Condition.TRUE");
 		    for (final Entry<String, String> e : fk.columns.entrySet()) {
 				final String relatedColumn = e.getKey();
@@ -1017,17 +1020,17 @@ class ClassGenerator {
 	}
 
 	private String genFKName(final Set<String> columns, String referencedTable) {
-	    for(String column : columns) {
-		column = column.toUpperCase();
-		referencedTable = referencedTable.toUpperCase();
-		if (column.endsWith("_ID")) column = column.substring(0,column.length()-3);
-		if (referencedTable.startsWith(column)) {
-			return "FK_"+ dePlural(referencedTable).toUpperCase();
-		} else {
-			return "FK_"+ dePlural(column +"_"+ referencedTable).toUpperCase();
+		for(String column : columns) {
+			column = column.toUpperCase();
+			referencedTable = referencedTable.toUpperCase();
+			if (column.endsWith("_ID")) column = column.substring(0,column.length()-3);
+			if (referencedTable.startsWith(column)) {
+				return "FK_"+ dePlural(referencedTable).toUpperCase();
+			} else {
+				return "FK_"+ dePlural(column +"_"+ referencedTable).toUpperCase();
+			}
 		}
-	    }
-	    return null;
+		return null;
 	}
 
 

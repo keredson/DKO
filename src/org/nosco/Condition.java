@@ -700,7 +700,7 @@ public abstract class Condition {
 
 		Exists(final Query<? extends Table> q) {
 			this.q = q;
-			this.s = (Select<?>) q.all();
+			this.s = (Select<?>) q.all().iterator();
 		}
 
 		@Override

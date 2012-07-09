@@ -179,7 +179,7 @@ public class SharedDBTests extends TestCase {
 				Function.DATEADD(Orderstatus.TIMESTAMP, 1, CALENDAR.DAY)))
 				.asList();
 	}
-	
+
 	public void testRecommendation() throws InterruptedException {
 		for (final Item i : Item.ALL) {
 			i.getProductidFK();
@@ -188,6 +188,10 @@ public class SharedDBTests extends TestCase {
 		System.gc();
 		Thread.sleep(1000);
 		// this doesn't work for now since it's the last test
+	}
+
+	public void testExists() throws InterruptedException {
+		for (final Item i : Item.ALL.where(Item.ALL.exists())) {}
 	}
 
 }

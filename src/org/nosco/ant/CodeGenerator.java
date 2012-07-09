@@ -86,6 +86,12 @@ public class CodeGenerator extends Task {
 		this.schemas = new File(s);
 	}
 
+	/**
+	 * By default, nosco uses the schema name as the package name.  If you want to specify
+	 * your own package name, do so here.  Format is comma separated with "as"... like so:
+	 * "schema1 as pkg1, schema2 as pkg2, schema3 as pkg3"
+	 * @param s
+	 */
 	public void setAliases(final String s) {
 		for (String x : s.split(",")) {
 			x = x.toLowerCase().trim();

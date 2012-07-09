@@ -179,6 +179,14 @@ Using the <code>schemas.json</code> file produced by the <code>SchemaExtractor</
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/nosco/ant/CodeGenerator.html#setAliases(java.lang.String)">setAliases</A></B>(java.lang.String&nbsp;s)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;By default, nosco uses the schema name as the package name.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/nosco/ant/CodeGenerator.html#setCallbackPackage(java.lang.String)">setCallbackPackage</A></B>(java.lang.String&nbsp;s)</CODE>
 
 <BR>
@@ -438,6 +446,21 @@ public void <B>setSchemas</B>(java.lang.String&nbsp;s)</PRE>
 <DL>
 <DD><DL>
 </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setAliases(java.lang.String)"><!-- --></A><H3>
+setAliases</H3>
+<PRE>
+public void <B>setAliases</B>(java.lang.String&nbsp;s)</PRE>
+<DL>
+<DD>By default, nosco uses the schema name as the package name.  If you want to specify
+ your own package name, do so here.  Format is comma separated with "as"... like so:
+ "schema1 as pkg1, schema2 as pkg2, schema3 as pkg3"
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>s</CODE> - </DL>
 </DD>
 </DL>
 <HR>

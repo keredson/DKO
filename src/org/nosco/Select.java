@@ -34,26 +34,32 @@ class Select<T extends Table> implements Iterator<T> {
 	private static final int BATCH_SIZE = 2048;
 
 	private static final Logger log = Logger.getLogger("org.nosco.recommendations");
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
 		if (rs != null && !rs.isClosed()) rs.close();
 		if (ps != null && !ps.isClosed()) ps.close();
+	}
+
+	private void warnBadUsage() {
+		if (!Context.usageWarningsEnabled()) return;
 		if (count > 4) {
 			for (final Entry<StackTraceKey, MLong> e : counter.entrySet()) {
 				final MLong v = e.getValue();
 				final long percent = v.i*100/count;
 				if (percent > 50) {
 					final StackTraceKey k = e.getKey();
-					log.warning("This code has lazily accessed a foreign key relationship "+ percent 
+					String msg = "This code has lazily accessed a foreign key relationship "+ percent
 							+"% of the time.  This caused "+ v.i +" more queries to the "
-							+"database than necessary.  You should consider adding .with(" 
+							+"database than necessary.  You should consider adding .with("
 							+ k.fk.referencing.getSimpleName() +"."+ k.fk.name
 							+") to your join.  This happened at:\n\t"
-							+ Util.join("\n\t", (Object[]) k.a) 
+							+ Util.join("\n\t", (Object[]) k.a)
 							+"\nwhile iterating over a query created here:\n\t"
-							+ Util.join("\n\t", (Object[]) st) );
+							+ Util.join("\n\t", (Object[]) st) +"\nTo turn these warnings off, "
+							+ "call: Context.getThreadContext().enableUsageWarnings(false);";
+					log.warning(msg);
 				}
 			}
 		}
@@ -84,6 +90,7 @@ class Select<T extends Table> implements Iterator<T> {
 	@SuppressWarnings("rawtypes")
 	private WeakReference<Select> weakReferenceToThis = null;
 	private final StackTraceElement[] st;
+	private boolean initted = false;
 
 	@SuppressWarnings("unchecked")
 	Select(final DBQuery<T> query) {
@@ -134,7 +141,9 @@ class Select<T extends Table> implements Iterator<T> {
 		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
 		st = new StackTraceElement[tmp.length-3];
 		System.arraycopy(tmp, 3, st, 0, st.length);
-		
+	}
+
+	private void init() {
 		// old iterator method before merging
 		try {
 			ds  = query.getDataSource();
@@ -159,7 +168,7 @@ class Select<T extends Table> implements Iterator<T> {
 			e.printStackTrace();
 			throw e;
 		}
-	
+		initted  = true;
 	}
 
 	protected String getSQL() {
@@ -261,6 +270,7 @@ class Select<T extends Table> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
+		if (!this.initted) init();
 		if (next!=null) return true;
 		ttbMap.clear();
 		Object[] prevFieldValues = null;
@@ -354,7 +364,7 @@ class Select<T extends Table> implements Iterator<T> {
 			throw new RuntimeException(e);
 		}
 		final boolean hasNext = next != null;
-		//if (!hasNext) cleanUp();
+		if (!hasNext) warnBadUsage();
 		return hasNext;
 	}
 
@@ -424,7 +434,7 @@ class Select<T extends Table> implements Iterator<T> {
 		}
 		return (Query<S>) q;
 	}
-	
+
 	Map<StackTraceKey,MLong> counter = new HashMap<StackTraceKey,MLong>();
 
 	void accessedFkToOneCallback(final Table table, final FK<? extends Table> fk) {
@@ -436,11 +446,11 @@ class Select<T extends Table> implements Iterator<T> {
 		if (x == null) counter.put(key, x = new MLong());
 		x.i++;
 	}
-	
+
 	static class MLong {
 		long i = 0;
 	}
-	
+
 	static class StackTraceKey {
 		private final StackTraceElement[] a;
 		private final FK<? extends Table> fk;

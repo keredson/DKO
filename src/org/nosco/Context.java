@@ -73,9 +73,7 @@ public class Context {
 
 	static DataSource getDataSource(final Class<? extends Table> cls) {
 		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
-		//System.err.println("woot");
 		for (final Context context : contexts) {
-			//System.err.println("woot "+ context);
 			DataSource ds = null;
 
 			Map<UUID, DataSource> x = context.classDataSources.get(cls);
@@ -110,6 +108,18 @@ public class Context {
 			if (schema != null) return schema;
 		}
 		return originalSchema;
+	}
+
+	static boolean usageWarningsEnabled() {
+		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
+		for (final Context context : contexts) {
+			Boolean x = null;
+			for (Boolean v : context.enableUsageWarnings.values()) {
+				x = v;
+			}
+			if (x != null) return x;
+		}
+		return true;
 	}
 
 	/**
@@ -215,25 +225,31 @@ public class Context {
 		return true;
 	}
 
+	/**
+	 * @deprecated Use {@link #overrideDatabaseName(DataSource,String,String)} instead
+	 */
+	public Undoer overrideSchema(final DataSource ds, final String originalSchema, final String newSchema) {
+		return overrideDatabaseName(ds, originalSchema, newSchema);
+	}
 
 	/**
-	 * All generated classes have their schema embedded in them, and always specify their
+	 * All generated classes have their database name embedded in them, and always specify their
 	 * schema when performing a query. &nbsp; You can change what schema they reference by
 	 * overriding it here.  (per {@code DataSource})
 	 * @param ds
-	 * @param originalSchema
-	 * @param newSchema
+	 * @param originalDatabaseName
+	 * @param newDatabaseName
 	 * @return
 	 */
-	public Undoer overrideSchema(final DataSource ds, final String originalSchema, final String newSchema) {
-		final Tuple2<DataSource, String> key = new Tuple2<DataSource,String>(ds, originalSchema);
+	public Undoer overrideDatabaseName(final DataSource ds, final String originalDatabaseName, final String newDatabaseName) {
+		final Tuple2<DataSource, String> key = new Tuple2<DataSource,String>(ds, originalDatabaseName);
 		Map<UUID, String> map = schemaOverrides.get(key);
 		if (map == null) {
 			map = Collections.synchronizedMap(new LinkedHashMap<UUID, String>());
 			schemaOverrides.put(key, map);
 		}
 		final UUID uuid = UUID.randomUUID();
-		map.put(uuid, newSchema);
+		map.put(uuid, newDatabaseName);
 		final Map<UUID, String> map2 = map;
 		return new Undoer() {
 			@Override
@@ -311,6 +327,24 @@ public class Context {
 	}
 
 	/**
+	 * Turns on and off warnings for "bad" usage patterns.
+	 * (like lazy loading fk relationships in a tight loop)
+	 * @param enable
+	 * @return
+	 */
+	public Undoer enableUsageWarnings(boolean enable) {
+		final UUID uuid = UUID.randomUUID();
+		enableUsageWarnings.put(uuid, enable);
+		return new Undoer() {
+			@Override
+			public void undo() {
+				enableUsageWarnings.remove(uuid);
+			}
+		};
+	}
+
+
+	/**
 	 * Allows you to undo any context change. &nbsp; By default will automatically undo
 	 * once this object is GCed, but this can be turned off by calling {@code setAutoUndo(false)}.
 	 * @author Derek Anderson
@@ -346,6 +380,9 @@ public class Context {
 
 	private final Map<Tuple2<DataSource,String>,Map<UUID,String>> schemaOverrides =
 			Collections.synchronizedMap(new HashMap<Tuple2<DataSource,String>,Map<UUID,String>>());
+
+	private final Map<UUID,Boolean> enableUsageWarnings =
+			Collections.synchronizedMap(new LinkedHashMap<UUID,Boolean>());
 
 	private final Map<UUID,DataSource> defaultDataSource =
 			Collections.synchronizedMap(new LinkedHashMap<UUID,DataSource>());

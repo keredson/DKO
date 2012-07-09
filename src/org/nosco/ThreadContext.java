@@ -119,7 +119,7 @@ public class ThreadContext {
 	 * @deprecated please use {@code Context.getThreadContext().overrideSchema(ds, oldName, newName)}
 	 */
 	public static void setDatabaseOverride(final DataSource ds, final String oldName, final String newName) {
-		Context.getThreadContext().overrideSchema(ds, oldName, newName);
+		Context.getThreadContext().overrideDatabaseName(ds, oldName, newName);
 	}
 
 	/**

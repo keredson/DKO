@@ -136,6 +136,7 @@
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"
       schemas="bin/unit_test_schema.json"
+      aliases="public as nosco_test_jpetstore"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"
@@ -159,7 +160,7 @@
       <!--jvmarg value="-Xdebug"/>
       <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/>
       <jvmarg value="-Dorg.nosco.log_sql=true"/-->
-      <!--formatter type="plain"/-->
+      <formatter type="plain"/>
       <batchtest fork="yes" todir="${reports}">
         <fileset dir="test">
           <include name="**/*TestHSQL*.java"/>

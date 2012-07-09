@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -45,6 +46,7 @@ public class CodeGenerator extends Task {
 	private File javaOutputDir = null;
 	private File typeMappings = null;
 	private File enumsFile = null;
+	private final Map<String,String> schemaAliases = new HashMap<String,String>();
 
 	public void setJarfile(final String s) {
 		this.jarfile = new File(s);
@@ -82,6 +84,18 @@ public class CodeGenerator extends Task {
 
 	public void setSchemas(final String s) {
 		this.schemas = new File(s);
+	}
+
+	public void setAliases(final String s) {
+		for (String x : s.split(",")) {
+			x = x.toLowerCase().trim();
+			final int y = x.indexOf(" as ");
+			if (y==-1) {
+				schemaAliases.put(x, x);
+			} else {
+				schemaAliases.put(x.substring(0, y).trim(), x.substring(y+4).trim());
+			}
+		}
 	}
 
 	public void setEnums(final String s) {
@@ -158,13 +172,13 @@ public class CodeGenerator extends Task {
 					readJSONObject(enumsFile) : new JSONObject();
 
 			org.nosco.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
-					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(),
+					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(), schemaAliases,
 					fake_fks, typeMappings==null ? null : typeMappings.getAbsolutePath(),
 					dataSource, callbackPackage, enums);
 
 			if (dataSource != null) {
 				org.nosco.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,
-						schemas.getAbsolutePath());
+						schemas.getAbsolutePath(), schemaAliases);
 			}
 
 			if (this.srcjarfile != null) {

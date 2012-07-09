@@ -40,6 +40,7 @@ class ClassGenerator {
 	private JSONObject classTypeMappings = new JSONObject();
 	private JSONObject typeMappingFunctions = new JSONObject();
 	private Map<Pattern, String> schemaTypeMappings;
+	private final Map<String, String> schemaAliases;
 
 	@SuppressWarnings("serial")
 	final static Set<String> KEYWORDS = Collections.unmodifiableSet(new HashSet<String>() {{
@@ -55,9 +56,10 @@ class ClassGenerator {
 	}});
 
 
-	public ClassGenerator(final String dir, final String pkg, final String[] stripPrefixes, final String[] stripSuffixes) {
+	public ClassGenerator(final String dir, final String pkg, final String[] stripPrefixes, final String[] stripSuffixes, final Map<String, String> schemaAliases) {
 		this.dir = dir;
 		this.pkg = pkg;
+		this.schemaAliases = schemaAliases;
 		pkgDir = Util.join("/", pkg.split("[.]"));
 		this.stripPrefixes = stripPrefixes.clone();
 		this.stripSuffixes = stripSuffixes.clone();
@@ -71,7 +73,7 @@ class ClassGenerator {
 	}
 
 	public static void go(final String dir, final String pkg, final String[] stripPrefixes,
-		final String[] stripSuffixes, final String metadataFile, final File fakeFKsFile,
+		final String[] stripSuffixes, final String metadataFile, final Map<String, String> schemaAliases, final File fakeFKsFile,
 		final String typeMappingsFile, final String dataSource, final String callbackPackage, final JSONObject enums)
 				throws IOException, JSONException {
 
@@ -105,7 +107,7 @@ class ClassGenerator {
 			typeMappingFunctions = allMappings.getJSONObject("functions");
 		}
 
-		final ClassGenerator generator = new ClassGenerator(dir, pkg, stripPrefixes, stripSuffixes);
+		final ClassGenerator generator = new ClassGenerator(dir, pkg, stripPrefixes, stripSuffixes, schemaAliases);
 		generator.classTypeMappings = classTypeMappings;
 		generator.typeMappingFunctions = typeMappingFunctions;
 		generator.schemaTypeMappings = new LinkedHashMap<Pattern,String>();
@@ -121,6 +123,11 @@ class ClassGenerator {
 
 		for (final String schema : schemas.keySet()) {
 			final JSONObject tables = schemas.getJSONObject(schema);
+			
+			String pkgName = sanitizeJavaKeywords(schema);
+			if (schemaAliases.containsKey(schema)) {
+				pkgName = sanitizeJavaKeywords(schemaAliases.get(schema));
+			}
 
 			generator.tableToClassName = new LinkedHashMap<String,String>();
 
@@ -129,7 +136,7 @@ class ClassGenerator {
 				// both plural and singular tables of the same root word
 				generator.genTableClassName(table);
 			}
-			generator.genTableToClassMap(schema);
+			generator.genTableToClassMap(pkgName);
 
 			for (final String table : tables.keySet()) {
 			    // skip these junk mssql tables
@@ -149,7 +156,7 @@ class ClassGenerator {
 				    splitFK(schema, table, fks, fksIn, constraint_name, fkmd);
 				}
 
-				generator.generate(schema, table, columns, pks, fks, fksIn, dataSourceName,
+				generator.generate(schema, pkgName, table, columns, pks, fks, fksIn, dataSourceName,
 						callbackPackage, enums);
 			}
 
@@ -164,8 +171,7 @@ class ClassGenerator {
 
 	}
 
-	private void genTableToClassMap(String schema) throws IOException {
-		schema = sanitizeJavaKeywords(schema);
+	private void genTableToClassMap(final String schema) throws IOException {
 		final File targetDir = new File(Util.join("/", dir, pkgDir, schema));
 		if (!targetDir.isDirectory()) targetDir.mkdirs();
 		final File file = new File(Util.join("/", dir, pkgDir, schema, "_TableToClassMap.java"));
@@ -260,7 +266,7 @@ class ClassGenerator {
 		return sb.toString();
 	}
 
-	private void generate(final String schema, final String table, final JSONObject columns, JSONArray pks,
+	private void generate(final String schema, final String pkgName, final String table, final JSONObject columns, JSONArray pks,
 			final List<FK> fks, final List<FK> fksIn, final String dataSourceName, final String callbackPackage,
 			final JSONObject enums)
 	throws IOException, JSONException {
@@ -271,8 +277,6 @@ class ClassGenerator {
 			pkSet.add(pks.getString(i));
 		}
 		final int fieldCount = columns.keySet().size();
-
-		final String pkgName = sanitizeJavaKeywords(schema);
 
 		new File(Util.join("/", dir, pkgDir, pkgName)).mkdirs();
 		final File file = new File(Util.join("/", dir, pkgDir, pkgName, className+".java"));
@@ -318,9 +322,12 @@ class ClassGenerator {
 
 		// write foreign keys
 		for (final FK fk : fks) {
+			final String referencedSchema = fk.reffed[0];
 			final String referencedTable = fk.reffed[1];
 			String referencedTableClassName = genTableClassName(referencedTable);
-			if (!pkgName.equals(sanitizeJavaKeywords(fk.reffed[0]))) {
+			if (!schema.equals(referencedSchema)) {
+				String relatedSchemaAlias = schemaAliases.get(referencedSchema);
+				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(referencedSchema);
 				referencedTableClassName = pkg +"."+ sanitizeJavaKeywords(fk.reffed[0]) +"."+ referencedTableClassName;
 			}
 			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
@@ -512,7 +519,7 @@ class ClassGenerator {
 			}
 			br.write(".getTheOnly();\n");
 			br.write("\t\t\t"+ getInstanceFieldName(column) +" = _tmp == null ? null : _tmp.get"
-					+ getInstanceMethodName(column) +"();");
+					+ getInstanceMethodName(column) +"();\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
@@ -538,12 +545,14 @@ class ClassGenerator {
 
 		// write getters and setters for FKs
 		for (final FK fk : fks) {
-			final String referencedSchema = sanitizeJavaKeywords(fk.reffed[0]);
+			final String referencedSchema = fk.reffed[0];
 			final String referencedTable = fk.reffed[1];
 			//String referencedColumn = referenced.getString(2);
 			String referencedTableClassName = genTableClassName(referencedTable);
-			if (!pkgName.equals(referencedSchema)) {
-				referencedTableClassName = pkg +"."+ referencedSchema +"."+ referencedTableClassName;
+			if (!schema.equals(referencedSchema)) {
+				String relatedSchemaAlias = schemaAliases.get(referencedSchema);
+				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(referencedSchema);
+				referencedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ referencedTableClassName;
 		}
 			final String methodName = genFKMethodName(fk.columns.keySet(), referencedTable);
 			final String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
@@ -578,13 +587,15 @@ class ClassGenerator {
 		for (final FK fk : fks) {
 			final String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
 			final String referencedTable = fk.reffed[1];
-			String referencedTableClassName = genTableClassName(referencedTable);
-			final String referencedSchema = sanitizeJavaKeywords(fk.reffed[0]);
-			if (!pkgName.equals(referencedSchema)) {
-				referencedTableClassName = pkg +"."+ referencedSchema +"."+ referencedTableClassName;
+			String relatedTableClassName = genTableClassName(referencedTable);
+			final String referencedSchema = fk.reffed[0];
+			if (!schema.equals(referencedSchema)) {
+				String relatedSchemaAlias = schemaAliases.get(referencedSchema);
+				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(referencedSchema);
+				relatedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ relatedTableClassName;
 		}
 			br.write("\t\telse if (field == FK_"+ genFKName(fk.columns.keySet(), referencedTable) +") {\n");
-			br.write("\t\t\t"+ cachedObjectName +" = ("+ referencedTableClassName +") v;\n");
+			br.write("\t\t\t"+ cachedObjectName +" = ("+ relatedTableClassName +") v;\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set(FK_"+ genFKName(fk.columns.keySet(), referencedTable) +".INDEX);\n");
 			br.write("\t\t}\n");
 
@@ -597,11 +608,13 @@ class ClassGenerator {
 		br.write("\tprotected void SET_FK_SET(final Field.FK<?> fk, final Query<?> v) {\n");
 		br.write("\t\tif (false);\n");
 		for (final FK fk : fksIn) {
-		    final String relatedSchema = sanitizeJavaKeywords(fk.reffing[0]);
+		    final String relatedSchema = fk.reffing[0];
 		    final String relatedTable = fk.reffing[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
-			if (!pkgName.equals(relatedSchema)) {
-				relatedTableClassName = pkg +"."+ relatedSchema +"."+ relatedTableClassName;
+			if (!schema.equals(relatedSchema)) {
+				String relatedSchemaAlias = schemaAliases.get(relatedSchema);
+				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(relatedSchema);
+				relatedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ relatedTableClassName;
 			}
 			final String fkName = "FK_"+ genFKName(fk.columns.keySet(), fk.reffed[1]);
 		    final String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
@@ -622,12 +635,13 @@ class ClassGenerator {
 		    reffingCounts.put(relatedTable, c+1);
 		}
 		for (final FK fk : fksIn) {
-		    final String relatedSchema = sanitizeJavaKeywords(fk.reffing[0]);
+		    final String relatedSchema = fk.reffing[0];
 		    final String relatedTable = fk.reffing[1];
 		    String relatedTableClassName = this.genTableClassName(relatedTable);
-		    //String method = genFKMethodName(fk.columns.keySet(), relatedTableClassName);
-			if (!pkgName.equals(relatedSchema)) {
-				relatedTableClassName = pkg +"."+ relatedSchema +"."+ relatedTableClassName;
+			if (!schema.equals(relatedSchema)) {
+				String relatedSchemaAlias = schemaAliases.get(relatedSchema);
+				if (relatedSchemaAlias == null) relatedSchemaAlias = sanitizeJavaKeywords(relatedSchema);
+				relatedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ relatedTableClassName;
 			}
 		    String method = getInstanceMethodName(relatedTable);
 		    if (reffingCounts.get(relatedTable) > 1) {
@@ -824,47 +838,49 @@ class ClassGenerator {
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_POST_OLD = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_PRE_OLD = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_POST_OLD = null;\n");
-		br.write("\tstatic {\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
-				+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
-				+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
-				+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
-				+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_PRE = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preDelete\", "
-				+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_POST = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postDelete\", "
-				+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE_OLD = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
-				+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST_OLD = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
-				+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE_OLD = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
-				+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST_OLD = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
-				+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_HASH_CODE = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"hashCode\", "
-				+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_EQUALS = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"equals\", "
-				+ className +".class, Object.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_COMPARE_TO = Class.forName(\""+ callbackPackage
-				+"."+ pkgName +"."+ className +"CB\").getMethod(\"compareTo\", "
-				+ className +".class, " + className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-		br.write("\t}\n");
+		if (callbackPackage != null) {
+			br.write("\tstatic {\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
+					+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
+					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
+					+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
+					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_PRE = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preDelete\", "
+					+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_POST = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postDelete\", "
+					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE_OLD = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
+					+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST_OLD = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
+					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE_OLD = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
+					+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST_OLD = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
+					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_HASH_CODE = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"hashCode\", "
+					+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_EQUALS = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"equals\", "
+					+ className +".class, Object.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_COMPARE_TO = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"compareTo\", "
+					+ className +".class, " + className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t}\n");
+		}
 
 		// write the alias function
 		br.write("\t/**\n");

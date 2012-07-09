@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -55,7 +56,8 @@ class DataSourceGenerator {
 		return null;
 	}
 
-	public static void go(final String dir, final String pkg, final String dataSource, final String metadataFile) throws IOException {
+	public static void go(final String dir, final String pkg, final String dataSource, 
+			final String metadataFile, final Map<String, String> schemaAliases) throws IOException {
 		final String pkgDir = Util.join("/", pkg.split("[.]"));
 		new File(Util.join("/", dir, pkgDir)).mkdirs();
 
@@ -64,7 +66,11 @@ class DataSourceGenerator {
 		final String method = getMethodName(dataSource);
 		final List<String> schemaList = getSchemaList(metadataFile);
 
-		for (final String schema : schemaList) {
+		for (String schema : schemaList) {
+			
+			if (schemaAliases.containsKey(schema)) {
+				schema = schemaAliases.get(schema);
+			}
 
 			final String pkgName = ClassGenerator.sanitizeJavaKeywords(schema);
 

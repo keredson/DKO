@@ -7,21 +7,22 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 import org.hsqldb.jdbc.JDBCDataSource;
+import org.nosco.datasource.ConnectionCountingDataSource;
 
 public class TestHSQLDB extends SharedDBTests {
 
-	static String readFileToString(File file) {
+	static String readFileToString(final File file) {
 		try {
-			FileReader reader = new FileReader(file);
-			StringBuffer sb = new StringBuffer();
+			final FileReader reader = new FileReader(file);
+			final StringBuffer sb = new StringBuffer();
 			int chars;
-			char[] buf = new char[1024];
+			final char[] buf = new char[1024];
 			while ((chars = reader.read(buf)) > 0) {
 				sb.append(buf, 0, chars);
 			}
 			reader.close();
 			return sb.toString();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -33,11 +34,11 @@ public class TestHSQLDB extends SharedDBTests {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		JDBCDataSource ds = new JDBCDataSource();
+		final JDBCDataSource ds = new JDBCDataSource();
 		ds.setDatabase("jdbc:hsqldb:mem:tmp");
 		ds.setUser("sa");
-		Connection conn = ds.getConnection();
-		Statement stmt = conn.createStatement();
+		final Connection conn = ds.getConnection();
+		final Statement stmt = conn.createStatement();
 		for (String sql : schema.split(";")) {
 			sql = sql.trim();
 			if (sql.length() == 0) continue;
@@ -55,6 +56,7 @@ public class TestHSQLDB extends SharedDBTests {
 		conn.commit();
 		conn.close();
 		this.ds = ds;
+		ccds = new ConnectionCountingDataSource(ds);
 	}
 
 	@Override

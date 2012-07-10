@@ -334,6 +334,141 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> add(final T v) {
+		return new Function.Custom<T>(this, "+", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> add(final Field<T> v) {
+		return new Function.Custom<T>(this, "+", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> add(final Function v) {
+		return new Function.Custom<T>(this, "+", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> subtract(final T v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> subtract(final Field<T> v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> subtract(final Function v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> multiply(final T v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> multiply(final Field<T> v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> multiply(final Function v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> divide(final T v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> divide(final Field<T> v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> divide(final Function v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> modulus(final T v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> modulus(final Field<T> v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> modulus(final Function v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
 	 * Creates a condition representing this field being a member of the given sub-query. &nbsp;
 	 * Note that the given query MUST return only one field (using the {@code Query.onlyFields()})
 	 * method), otherwise this will throw a {@code SQLException} at runtime.

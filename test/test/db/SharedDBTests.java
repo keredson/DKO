@@ -18,6 +18,7 @@ import static org.nosco.Function.*;
 import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
 import org.nosco.unittest.nosco_test_jpetstore.Category;
+import org.nosco.unittest.nosco_test_jpetstore.Inventory;
 import org.nosco.unittest.nosco_test_jpetstore.Item;
 import org.nosco.unittest.nosco_test_jpetstore.Orderstatus;
 import org.nosco.unittest.nosco_test_jpetstore.Product;
@@ -194,11 +195,13 @@ public class SharedDBTests extends TestCase {
 		for (final Item i : Item.ALL.where(Item.ALL.exists())) {}
 	}
 
-	public void testConcat() throws InterruptedException, SQLException {
-		for (final Item i : Item.ALL) {
-
-		}
+	public void testConcat() throws SQLException {
 		assertEquals(1, Item.ALL.where(CONCAT(Item.ITEMID, "!").eq("EST-20!")).count());
+	}
+
+	public void testAdd() throws SQLException {
+		assertEquals(1, Inventory.ALL.where(Inventory.ITEMID.eq("EST-14"))
+				.where(Inventory.QTY.add(0).eq(Inventory.QTY)).count());
 	}
 
 }

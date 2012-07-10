@@ -185,6 +185,14 @@ This class is used for tweaking query executions. &nbsp;
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Context.html#enableUsageWarnings(boolean)">enableUsageWarnings</A></B>(boolean&nbsp;enable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Turns on and off warnings for "bad" usage patterns.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;java.sql.Connection</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Context.html#getConnection(javax.sql.DataSource)">getConnection</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
 
@@ -226,13 +234,23 @@ This class is used for tweaking query executions. &nbsp;
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)">overrideDatabaseName</A></B>(javax.sql.DataSource&nbsp;ds,
+                     java.lang.String&nbsp;originalDatabaseName,
+                     java.lang.String&nbsp;newDatabaseName)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All generated classes have their database name embedded in them, and always specify their
+ schema when performing a query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Context.html#overrideSchema(javax.sql.DataSource, java.lang.String, java.lang.String)">overrideSchema</A></B>(javax.sql.DataSource&nbsp;ds,
                java.lang.String&nbsp;originalSchema,
                java.lang.String&nbsp;newSchema)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All generated classes have their schema embedded in them, and always specify their
- schema when performing a query.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>Use <A HREF="../../org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)"><CODE>overrideDatabaseName(DataSource,String,String)</CODE></A> instead</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -464,12 +482,27 @@ public <A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">
                                      java.lang.String&nbsp;originalSchema,
                                      java.lang.String&nbsp;newSchema)</PRE>
 <DL>
-<DD>All generated classes have their schema embedded in them, and always specify their
+<DD><B>Deprecated.</B>&nbsp;<I>Use <A HREF="../../org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)"><CODE>overrideDatabaseName(DataSource,String,String)</CODE></A> instead</I>
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)"><!-- --></A><H3>
+overrideDatabaseName</H3>
+<PRE>
+public <A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A> <B>overrideDatabaseName</B>(javax.sql.DataSource&nbsp;ds,
+                                           java.lang.String&nbsp;originalDatabaseName,
+                                           java.lang.String&nbsp;newDatabaseName)</PRE>
+<DL>
+<DD>All generated classes have their database name embedded in them, and always specify their
  schema when performing a query. &nbsp; You can change what schema they reference by
  overriding it here.  (per <code>DataSource</code>)
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>ds</CODE> - <DD><CODE>originalSchema</CODE> - <DD><CODE>newSchema</CODE> - 
+<DT><B>Parameters:</B><DD><CODE>ds</CODE> - <DD><CODE>originalDatabaseName</CODE> - <DD><CODE>newDatabaseName</CODE> - 
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
@@ -519,6 +552,21 @@ public <A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>cls</CODE> - <DD><CODE>ds</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="enableUsageWarnings(boolean)"><!-- --></A><H3>
+enableUsageWarnings</H3>
+<PRE>
+public <A HREF="../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A> <B>enableUsageWarnings</B>(boolean&nbsp;enable)</PRE>
+<DL>
+<DD>Turns on and off warnings for "bad" usage patterns.
+ (like lazy loading fk relationships in a tight loop)
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>enable</CODE> - 
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>

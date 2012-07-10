@@ -32,7 +32,8 @@ public abstract class Function<T> {
 	 * @return
 	 */
 	public static <T> Function<Boolean> IFNULL(final Field<? extends T> f, final T v) {
-		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", f, v);
+		Object[] oa = new Object[] {f, v};
+		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
 	}
 
 	/**
@@ -42,14 +43,16 @@ public abstract class Function<T> {
 	 * @return
 	 */
 	public static <T> Function<Boolean> IFNULL(final Function<? extends T> f, final T v) {
-		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", f, v);
+		Object[] oa = new Object[] {f, v};
+		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
 	}
 
 	/**
 	 * @return the sql NOW() function (or GETDATE() on sql server)
 	 */
 	public static Function<java.sql.Date> NOW() {
-		return new Custom<java.sql.Date>(", ", "now", "getdate", "now");
+		Object[] oa = new Object[] {};
+		return new Custom<java.sql.Date>(", ", "now", "getdate", "now", oa);
 	}
 
 	/**
@@ -343,12 +346,20 @@ public abstract class Function<T> {
 			this.hsql = hsql;
 		}
 
-		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final Object... objects) {
+		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final Object[] objects) {
 			this.sep = sep;
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
 			this.objects  = objects;
+		}
+
+		Custom(Object o1, String sep, Object o2) {
+			this.sqlserver = null;
+			this.hsql = null;
+			this.mysql = null;
+			this.sep = sep;
+			this.objects = new Object[] {o1, o2};
 		}
 
 		@Override
@@ -562,6 +573,141 @@ public abstract class Function<T> {
 	 */
 	public Condition gte(final Function<?> v) {
 		return new Binary2(this, ">=", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> add(final T v) {
+		return new Function.Custom<T>(this, "+", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> add(final Field<T> v) {
+		return new Function.Custom<T>(this, "+", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> add(final Function v) {
+		return new Function.Custom<T>(this, "+", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> subtract(final T v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> subtract(final Field<T> v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> subtract(final Function v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> multiply(final T v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> multiply(final Field<T> v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> multiply(final Function v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> divide(final T v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> divide(final Field<T> v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> divide(final Function v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> modulus(final T v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> modulus(final Field<T> v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> modulus(final Function v) {
+		return new Function.Custom<T>(this, "%", v);
 	}
 
 }

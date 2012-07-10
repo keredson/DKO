@@ -449,4 +449,11 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Iterable<Object[]> asIterableOfObjectArrays();
 
+	/**
+	 * Runs the query (with distinct), populating a set of the values only in the given field.
+	 * @param field
+	 * @return
+	 */
+	public <S> Set<S> asSet(Field<S> field);
+
 }

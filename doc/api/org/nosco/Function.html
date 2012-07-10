@@ -165,6 +165,30 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#add(org.nosco.Field)">add</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#add(org.nosco.Function)">add</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#add(T)">add</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
 <TR ALIGN="right" VALIGN="">
@@ -177,6 +201,15 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.String&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#CONCAT(java.lang.Object...)">CONCAT</A></B>(java.lang.Object...&nbsp;fields)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The CONCAT() function is used to concatenate the values of any number of
+ string arguments passed to it.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -193,7 +226,8 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
         <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -210,6 +244,133 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
         <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</CODE>
 
 <BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Field, org.nosco.Field)">DATEDIFF</A></B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Field, org.nosco.Function)">DATEDIFF</A></B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Function, org.nosco.Field)">DATEDIFF</A></B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Function, org.nosco.Function)">DATEDIFF</A></B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEPART(org.nosco.Constants.CALENDAR, org.nosco.Field)">DATEPART</A></B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The DATEPART function allows retrieving any part of the date and time variable provided.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DATEPART(org.nosco.Constants.CALENDAR, org.nosco.Function)">DATEPART</A></B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The DATEPART function allows retrieving any part of the date and time variable provided.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#DAY(org.nosco.Field)">DAY</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DAY, MONTH and YEAR functions are deterministic.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#divide(org.nosco.Field)">divide</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#divide(org.nosco.Function)">divide</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#divide(T)">divide</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#eq(org.nosco.Field)">eq</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#eq(org.nosco.Function)">eq</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#eq(T)">eq</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#eq(org.nosco.Table.__SimplePrimaryKey)">eq</A></B>(<A HREF="../../org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco">Table.__SimplePrimaryKey</A>&lt;?,<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
@@ -218,7 +379,63 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 <TD><CODE><B><A HREF="../../org/nosco/Function.html#GETDATE()">GETDATE</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GETDATE and GETUTCDATE functions both return the current date and time.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#GETUTCDATE()">GETUTCDATE</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GETDATE and GETUTCDATE functions both return the current date and time.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#gt(org.nosco.Field)">gt</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#gt(org.nosco.Function)">gt</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#gt(T)">gt</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#gte(org.nosco.Field)">gte</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than or equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#gte(org.nosco.Function)">gte</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than or equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#gte(T)">gte</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than or equal to the literal value of the parameter.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -254,11 +471,171 @@ A collection of SQL functions. &nbsp; Use these to call functions on fields
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#lt(org.nosco.Field)">lt</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#lt(org.nosco.Function)">lt</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#lt(T)">lt</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#lte(org.nosco.Field)">lte</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than or equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#lte(org.nosco.Function)">lte</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than or equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#lte(T)">lte</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than or equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#modulus(org.nosco.Field)">modulus</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#modulus(org.nosco.Function)">modulus</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#modulus(T)">modulus</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#MONTH(org.nosco.Field)">MONTH</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DAY, MONTH and YEAR functions are deterministic.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#multiply(org.nosco.Field)">multiply</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#multiply(org.nosco.Function)">multiply</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#multiply(T)">multiply</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#neq(org.nosco.Field)">neq</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function not equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#neq(org.nosco.Function)">neq</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function not equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#neq(T)">neq</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function not equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Function.html#NOW()">NOW</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#subtract(org.nosco.Field)">subtract</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#subtract(org.nosco.Function)">subtract</A></B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#subtract(T)">subtract</A></B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Function.html#YEAR(org.nosco.Field)">YEAR</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DAY, MONTH and YEAR functions are deterministic.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -347,9 +724,29 @@ GETDATE</H3>
 <PRE>
 public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt; <B>GETDATE</B>()</PRE>
 <DL>
+<DD>GETDATE and GETUTCDATE functions both return the current date and time. However,
+ GETUTCDATE returns the current Universal Time Coordinate (UTC) time, whereas
+ GETDATE returns the date and time on the computer where SQL Server is running.
+<P>
 <DD><DL>
 
 <DT><B>Returns:</B><DD>same as NOW()</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="GETUTCDATE()"><!-- --></A><H3>
+GETUTCDATE</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.sql.Date&gt; <B>GETUTCDATE</B>()</PRE>
+<DL>
+<DD>GETDATE and GETUTCDATE functions both return the current date and time. However,
+ GETUTCDATE returns the current Universal Time Coordinate (UTC) time, whereas
+ GETDATE returns the date and time on the computer where SQL Server is running.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>the sql GETUTCDATE() function</DL>
 </DD>
 </DL>
 <HR>
@@ -360,7 +757,7 @@ COALESCE</H3>
 public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;T&gt; <B>COALESCE</B>(java.lang.Object...&nbsp;fields)</PRE>
 <DL>
 <DD>COALESCE is a sql function that will return the first non-null parameter value.
- All objects other than functions or fields are passed verbatim to the 
+ All objects other than functions or fields are passed verbatim to the
  PreparedStatement with setObject().
 <P>
 <DD><DL>
@@ -377,6 +774,9 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
                                                   int&nbsp;count,
                                                   <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</PRE>
 <DL>
+<DD>DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.
+<P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>count</CODE> - <DD><CODE>component</CODE> - 
 <DT><B>Returns:</B><DD></DL>
@@ -391,8 +791,658 @@ public static &lt;T&gt; <A HREF="../../org/nosco/Function.html" title="class in 
                                                   int&nbsp;count,
                                                   <A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component)</PRE>
 <DL>
+<DD>DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.
+<P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>count</CODE> - <DD><CODE>component</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEPART(org.nosco.Constants.CALENDAR, org.nosco.Function)"><!-- --></A><H3>
+DATEPART</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DATEPART</B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>The DATEPART function allows retrieving any part of the date and time variable provided.
+ This function is deterministic except when used with days of the week.
+ <p>
+ The DATEPART function takes two parameters: the part of the date that you want to
+ retrieve and the date itself. The DATEPART function returns an integer representing any
+ of the following parts of the supplied date: year, quarter, month, day of the year, day,
+ week number, weekday number, hour, minute, second, or millisecond.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEPART(org.nosco.Constants.CALENDAR, org.nosco.Field)"><!-- --></A><H3>
+DATEPART</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DATEPART</B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>The DATEPART function allows retrieving any part of the date and time variable provided.
+ This function is deterministic except when used with days of the week.
+ <p>
+ The DATEPART function takes two parameters: the part of the date that you want to
+ retrieve and the date itself. The DATEPART function returns an integer representing any
+ of the following parts of the supplied date: year, quarter, month, day of the year, day,
+ week number, weekday number, hour, minute, second, or millisecond.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DAY(org.nosco.Field)"><!-- --></A><H3>
+DAY</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DAY</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>DAY, MONTH and YEAR functions are deterministic. Each of these accepts a single date
+ value as a parameter and returns respective portions of the date as an integer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="MONTH(org.nosco.Field)"><!-- --></A><H3>
+MONTH</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>MONTH</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>DAY, MONTH and YEAR functions are deterministic. Each of these accepts a single date
+ value as a parameter and returns respective portions of the date as an integer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="YEAR(org.nosco.Field)"><!-- --></A><H3>
+YEAR</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>YEAR</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>DAY, MONTH and YEAR functions are deterministic. Each of these accepts a single date
+ value as a parameter and returns respective portions of the date as an integer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Field, org.nosco.Field)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Field, org.nosco.Function)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Function, org.nosco.Field)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.nosco.Constants.CALENDAR, org.nosco.Function, org.nosco.Function)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../org/nosco/Constants.CALENDAR.html" title="enum in org.nosco">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="CONCAT(java.lang.Object...)"><!-- --></A><H3>
+CONCAT</H3>
+<PRE>
+public static <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;java.lang.String&gt; <B>CONCAT</B>(java.lang.Object...&nbsp;fields)</PRE>
+<DL>
+<DD>The CONCAT() function is used to concatenate the values of any number of
+ string arguments passed to it.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>fields</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(java.lang.Object)"><!-- --></A><A NAME="eq(T)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>eq</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(org.nosco.Field)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>eq</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(org.nosco.Table.__SimplePrimaryKey)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>eq</B>(<A HREF="../../org/nosco/Table.__SimplePrimaryKey.html" title="interface in org.nosco">Table.__SimplePrimaryKey</A>&lt;?,<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(org.nosco.Function)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>eq</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="neq(java.lang.Object)"><!-- --></A><A NAME="neq(T)"><!-- --></A><H3>
+neq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>neq</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function not equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="neq(org.nosco.Field)"><!-- --></A><H3>
+neq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>neq</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function not equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="neq(org.nosco.Function)"><!-- --></A><H3>
+neq</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>neq</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function not equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lt(java.lang.Object)"><!-- --></A><A NAME="lt(T)"><!-- --></A><H3>
+lt</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>lt</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lt(org.nosco.Field)"><!-- --></A><H3>
+lt</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>lt</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lt(org.nosco.Function)"><!-- --></A><H3>
+lt</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>lt</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lte(java.lang.Object)"><!-- --></A><A NAME="lte(T)"><!-- --></A><H3>
+lte</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>lte</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than or equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lte(org.nosco.Field)"><!-- --></A><H3>
+lte</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>lte</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than or equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lte(org.nosco.Function)"><!-- --></A><H3>
+lte</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>lte</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than or equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gt(java.lang.Object)"><!-- --></A><A NAME="gt(T)"><!-- --></A><H3>
+gt</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>gt</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gt(org.nosco.Field)"><!-- --></A><H3>
+gt</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>gt</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gt(org.nosco.Function)"><!-- --></A><H3>
+gt</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>gt</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gte(java.lang.Object)"><!-- --></A><A NAME="gte(T)"><!-- --></A><H3>
+gte</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>gte</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than or equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gte(org.nosco.Field)"><!-- --></A><H3>
+gte</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>gte</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than or equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gte(org.nosco.Function)"><!-- --></A><H3>
+gte</H3>
+<PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>gte</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than or equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="add(java.lang.Object)"><!-- --></A><A NAME="add(T)"><!-- --></A><H3>
+add</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>add</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="add(org.nosco.Field)"><!-- --></A><H3>
+add</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>add</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="add(org.nosco.Function)"><!-- --></A><H3>
+add</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>add</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="subtract(java.lang.Object)"><!-- --></A><A NAME="subtract(T)"><!-- --></A><H3>
+subtract</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>subtract</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="subtract(org.nosco.Field)"><!-- --></A><H3>
+subtract</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>subtract</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="subtract(org.nosco.Function)"><!-- --></A><H3>
+subtract</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>subtract</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiply(java.lang.Object)"><!-- --></A><A NAME="multiply(T)"><!-- --></A><H3>
+multiply</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>multiply</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiply(org.nosco.Field)"><!-- --></A><H3>
+multiply</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>multiply</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiply(org.nosco.Function)"><!-- --></A><H3>
+multiply</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>multiply</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="divide(java.lang.Object)"><!-- --></A><A NAME="divide(T)"><!-- --></A><H3>
+divide</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>divide</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="divide(org.nosco.Field)"><!-- --></A><H3>
+divide</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>divide</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="divide(org.nosco.Function)"><!-- --></A><H3>
+divide</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>divide</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="modulus(java.lang.Object)"><!-- --></A><A NAME="modulus(T)"><!-- --></A><H3>
+modulus</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>modulus</B>(<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="modulus(org.nosco.Field)"><!-- --></A><H3>
+modulus</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>modulus</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="modulus(org.nosco.Function)"><!-- --></A><H3>
+modulus</H3>
+<PRE>
+public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&lt;<A HREF="../../org/nosco/Function.html" title="type parameter in Function">T</A>&gt; <B>modulus</B>(<A HREF="../../org/nosco/Function.html" title="class in org.nosco">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>

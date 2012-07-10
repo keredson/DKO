@@ -197,6 +197,21 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.util.Set&lt;S&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Query.html#asSet(org.nosco.Field)">asSet</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;S&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Runs the query (with distinct), populating a set of the values only in the given field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;int</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Query.html#count()">count</A></B>()</CODE>
 
@@ -1493,6 +1508,23 @@ java.lang.Iterable&lt;java.lang.Object[]&gt; <B>asIterableOfObjectArrays</B>()</
 </DD>
 <DD><DL>
 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asSet(org.nosco.Field)"><!-- --></A><H3>
+asSet</H3>
+<PRE>
+&lt;S&gt; java.util.Set&lt;S&gt; <B>asSet</B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;S&gt;&nbsp;field)</PRE>
+<DL>
+<DD>Runs the query (with distinct), populating a set of the values only in the given field.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>field</CODE> - 
 <DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>

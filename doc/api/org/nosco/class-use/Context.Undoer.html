@@ -111,13 +111,31 @@ Uses of <A HREF="../../../org/nosco/Context.Undoer.html" title="class in org.nos
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A></CODE></FONT></TD>
+<TD><CODE><B>Context.</B><B><A HREF="../../../org/nosco/Context.html#enableUsageWarnings(boolean)">enableUsageWarnings</A></B>(boolean&nbsp;enable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Turns on and off warnings for "bad" usage patterns.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A></CODE></FONT></TD>
+<TD><CODE><B>Context.</B><B><A HREF="../../../org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)">overrideDatabaseName</A></B>(javax.sql.DataSource&nbsp;ds,
+                     java.lang.String&nbsp;originalDatabaseName,
+                     java.lang.String&nbsp;newDatabaseName)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All generated classes have their database name embedded in them, and always specify their
+ schema when performing a query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/nosco/Context.Undoer.html" title="class in org.nosco">Context.Undoer</A></CODE></FONT></TD>
 <TD><CODE><B>Context.</B><B><A HREF="../../../org/nosco/Context.html#overrideSchema(javax.sql.DataSource, java.lang.String, java.lang.String)">overrideSchema</A></B>(javax.sql.DataSource&nbsp;ds,
                java.lang.String&nbsp;originalSchema,
                java.lang.String&nbsp;newSchema)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All generated classes have their schema embedded in them, and always specify their
- schema when performing a query.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>Use <A HREF="../../../org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)"><CODE>Context.overrideDatabaseName(DataSource,String,String)</CODE></A> instead</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">

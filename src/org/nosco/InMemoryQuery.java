@@ -402,4 +402,13 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		return this;
 	}
 
+	@Override
+	public <S> Set<S> asSet(Field<S> field) {
+		final Set<S> ret = new HashSet<S>();
+		for (final S s : this.distinct().select(field)) {
+			ret.add(s);
+		}
+		return ret;
+	}
+
 }

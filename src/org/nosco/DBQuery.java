@@ -586,7 +586,6 @@ class DBQuery<T extends Table> implements Query<T> {
 		final Set<Class> seen = new HashSet<Class>();
 		seen.add(getType());
 		while (!joinsToOne.isEmpty() || !joinsToMany.isEmpty()) {
-			System.err.println("woot1");
 			for (int i=0; i<joinsToOne.size(); ++i) {
 				final Join join  = joinsToOne.get(i);
 				if (!seen.contains(join.reffingTableInfo.tableClass)) continue;
@@ -995,6 +994,15 @@ class DBQuery<T extends Table> implements Query<T> {
 		final Set<T> set = new HashSet<T>();
 		for (final T t : this) set.add(t);
 		return set;
+	}
+
+	@Override
+	public <S> Set<S> asSet(final Field<S> field) {
+		final Set<S> ret = new HashSet<S>();
+		for (final S s : this.distinct().select(field)) {
+			ret.add(s);
+		}
+		return ret;
 	}
 
 	String getFromClause(final SqlContext context) {

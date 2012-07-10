@@ -281,10 +281,10 @@ class DBQuery<T extends Table> implements Query<T> {
 		final String sql = "select count(1)"+ getFromClause(context) + getWhereClauseAndSetBindings();
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
+		Util.log(sql, bindings);
 		final PreparedStatement ps = conn.prepareStatement(sql);
 		setBindings(ps);
 		_preExecute(context, conn);
-		Util.log(sql, null);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
 		rs.next();

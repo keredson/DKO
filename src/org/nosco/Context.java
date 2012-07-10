@@ -78,20 +78,26 @@ public class Context {
 
 			Map<UUID, DataSource> x = context.classDataSources.get(cls);
 			if (x != null) {
-				for (final DataSource tmp : x.values()) { ds = tmp; }
+				synchronized(x) {
+					for (final DataSource tmp : x.values()) { ds = tmp; }
+				}
 				if (ds != null) return ds;
 			}
 
 			//System.err.println("woot2 "+ context);
 			x = context.packageDataSources.get(cls.getPackage());
 			if (x != null) {
-				for (final DataSource tmp : x.values()) { ds = tmp; }
+				synchronized(x) {
+					for (final DataSource tmp : x.values()) { ds = tmp; }
+				}
 				//System.err.println("woot2.1 "+ ds);
 				if (ds != null) return ds;
 			}
 
 			//System.err.println("woot3 "+ context);
-			for (final DataSource tmp : context.defaultDataSource.values()) { ds = tmp; }
+			synchronized(context.defaultDataSource) {
+				for (final DataSource tmp : context.defaultDataSource.values()) { ds = tmp; }
+			}
 			if (ds != null) return ds;
 		}
 		return null;
@@ -104,7 +110,9 @@ public class Context {
 		for (final Context context : contexts) {
 			final Map<UUID, String> x = context.schemaOverrides.get(key);
 			if (x == null) continue;
-			for (final String tmp : x.values()) { schema = tmp; }
+			synchronized(x) {
+				for (final String tmp : x.values()) { schema = tmp; }
+			}
 			if (schema != null) return schema;
 		}
 		return originalSchema;
@@ -114,8 +122,10 @@ public class Context {
 		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
 		for (final Context context : contexts) {
 			Boolean x = null;
-			for (Boolean v : context.enableUsageWarnings.values()) {
-				x = v;
+			synchronized(context.enableUsageWarnings) {
+				for (Boolean v : context.enableUsageWarnings.values()) {
+					x = v;
+				}
 			}
 			if (x != null) return x;
 		}

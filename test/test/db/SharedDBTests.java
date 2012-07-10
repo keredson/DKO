@@ -14,7 +14,7 @@ import org.nosco.Context;
 import org.nosco.Context.Undoer;
 import org.nosco.Diff;
 import org.nosco.Diff.RowChange;
-import org.nosco.Function;
+import static org.nosco.Function.*;
 import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
 import org.nosco.unittest.nosco_test_jpetstore.Category;
@@ -176,7 +176,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testDateAdd() throws SQLException {
 		Orderstatus.ALL.where(Orderstatus.TIMESTAMP.lt(
-				Function.DATEADD(Orderstatus.TIMESTAMP, 1, CALENDAR.DAY)))
+				DATEADD(Orderstatus.TIMESTAMP, 1, CALENDAR.DAY)))
 				.asList();
 	}
 
@@ -192,6 +192,13 @@ public class SharedDBTests extends TestCase {
 
 	public void testExists() throws InterruptedException {
 		for (final Item i : Item.ALL.where(Item.ALL.exists())) {}
+	}
+
+	public void testConcat() throws InterruptedException, SQLException {
+		for (final Item i : Item.ALL) {
+
+		}
+		assertEquals(1, Item.ALL.where(CONCAT(Item.ITEMID, "!").eq("EST-20!")).count());
 	}
 
 }

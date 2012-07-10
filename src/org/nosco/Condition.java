@@ -518,7 +518,7 @@ public abstract class Condition {
 		private Field<?> field2;
 		private final String cmp;
 		private Select<?> s;
-		private Function function = null;
+		private Function function;
 
 		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
 			// note "v" should be of type T here - set to object to work around
@@ -619,6 +619,55 @@ public abstract class Condition {
 		}
 
 	}
+
+	static class Binary2 extends Condition {
+
+		private String cmp;
+		private Object o2;
+		private Object o1;
+
+		Binary2(Object o1, String cmp, Object o2) {
+			this.o1 = o1;
+			this.cmp = cmp;
+			this.o2 = o2;
+		}
+
+		@Override
+		boolean matches(Table t) {
+			if ((o1 instanceof Function) || (o2 instanceof Function)) {
+				throw new RuntimeException("Condition checking of functions cached queries not yet supported.");
+			}
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+			sb.append(' ');
+			if (o1 instanceof Function) {
+				Function<?> f = (Function<?>) o1;
+				sb.append(f.getSQL(context));
+				bindings.addAll(f.getSQLBindings());
+			} else if (o1 instanceof Field) {
+				Field<?> f = (Field<?>) o1;
+				sb.append(Util.derefField(f, context));
+			} else {
+				sb.append("?");
+				bindings.add(o1);
+			}
+			sb.append(cmp);
+			if (o2 instanceof Function) {
+				Function<?> f = (Function<?>) o2;
+				sb.append(f.getSQL(context));
+				bindings.addAll(f.getSQLBindings());
+			} else if (o2 instanceof Field) {
+				Field<?> f = (Field<?>) o2;
+				sb.append(Util.derefField(f, context));
+			} else {
+				sb.append("?");
+				bindings.add(o2);
+			}
+		}}
 
 	static class In extends Condition {
 

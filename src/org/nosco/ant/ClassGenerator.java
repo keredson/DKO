@@ -658,7 +658,7 @@ class ClassGenerator {
 		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
 		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
 			final String fkName = genFKName(fk.columns.keySet(), reffedTable);
-			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkToOneCallback(this, "+ relatedTableClassName +"."+ fkName +");\n");
+			//br.write("\t\t\t__NOSCO_PRIVATE_accessedFkToOneCallback(this, "+ relatedTableClassName +"."+ fkName +");\n");
 		    br.write("\t\tCondition condition = Condition.TRUE");
 		    for (final Entry<String, String> e : fk.columns.entrySet()) {
 				final String relatedColumn = e.getKey();

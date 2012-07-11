@@ -316,6 +316,22 @@ public abstract class Condition {
 			return true;
 		}
 
+		@Override
+		void _preExecute(Connection conn) throws SQLException {
+			super._preExecute(conn);
+			for (Condition condition : conditions) {
+				condition._preExecute(conn);
+			}
+		}
+
+		@Override
+		void _postExecute(Connection conn) throws SQLException {
+			super._postExecute(conn);
+			for (Condition condition : conditions) {
+				condition._postExecute(conn);
+			}
+		}
+
 	}
 
 	private static class OrCondition extends Condition {
@@ -355,6 +371,22 @@ public abstract class Condition {
 			return false;
 		}
 
+		@Override
+		void _preExecute(Connection conn) throws SQLException {
+			super._preExecute(conn);
+			for (Condition condition : conditions) {
+				condition._preExecute(conn);
+			}
+		}
+
+		@Override
+		void _postExecute(Connection conn) throws SQLException {
+			super._postExecute(conn);
+			for (Condition condition : conditions) {
+				condition._postExecute(conn);
+			}
+		}
+
 	}
 
 	static class Not extends Condition {
@@ -382,6 +414,18 @@ public abstract class Condition {
 		@Override
 		boolean matches(final Table t) {
 			return !condition.matches(t);
+		}
+
+		@Override
+		void _preExecute(Connection conn) throws SQLException {
+			super._preExecute(conn);
+			condition._preExecute(conn);
+		}
+
+		@Override
+		void _postExecute(Connection conn) throws SQLException {
+			super._postExecute(conn);
+			condition._postExecute(conn);
 		}
 
 	}

@@ -60,13 +60,15 @@
     </jar>
   </target>
 
-  <target name="dist" depends="compile"
-        description="generate the distribution" >
+  <target name="dist" depends="compile" description="generate the distribution" >
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/lib"/>
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/lib/nosco-${DSTAMP}-${hg_branch}-${hg_tag}-${hg_id}.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/lib/nosco-${DSTAMP}-${hg_branch}-${hg_tag}-${hg_id}.jar">
+      <fileset dir="${build}" />
+      <fileset dir="${src}" includes="**/*.java"/>
+    </jar>
   </target>
 
   <target name="clean" description="clean up" >

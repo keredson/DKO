@@ -295,11 +295,18 @@ class ClassGenerator {
 		br.write("import org.nosco.Condition;\n");
 		br.write("import org.nosco.Table;\n");
 		br.write("\n");
+		br.write("/**\n");
+		br.write(" * This class represents the database table: "+ schema +"."+ table +"\n");
+		br.write(" * Static elements represent the table as a whole.  Instances represent rows in the database.\n");
+		br.write(" */\n");
 		br.write("public class "+ className +" extends Table implements Comparable<"+ className +"> {\n\n");
 
 		// write field constants
 		int index = 0;
 		for (final String column : columns.keySet()) {
+			br.write("\t/**\n");
+			br.write("\t * Represents the database field: "+ table +"."+ column +"\n");
+			br.write("\t */\n");
 			br.write("\tpublic static final Field<");
 			final String sqlType = columns.getString(column);
 			br.write(getFieldType(pkgName, table, column, sqlType));
@@ -313,6 +320,9 @@ class ClassGenerator {
 		br.write("\n");
 
 		// write primary keys
+		br.write("\t/**\n");
+		br.write("\t * A special object defining what fields make up the primary key of this table\n");
+		br.write("\t */\n");
 		br.write("\tpublic static Field.PK<"+ className +"> PK = new Field.PK<"+ className +">(");
 		for (int i=0; i<pks.length(); ++i) {
 			br.write(pks.getString(i).toUpperCase());
@@ -331,6 +341,10 @@ class ClassGenerator {
 				referencedTableClassName = pkg +"."+ sanitizeJavaKeywords(fk.reffed[0]) +"."+ referencedTableClassName;
 			}
 			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
+			br.write("\t/**\n");
+			br.write("\t * A special object defining the foreign key relationship between this table and:\n");
+			br.write("\t * "+ referencedSchema +"."+ referencedTable +"\n");
+			br.write("\t */\n");
 			br.write("\tpublic static final Field.FK<"+ referencedTableClassName +"> "+ fkName);
 			br.write(" = new Field.FK<"+ referencedTableClassName +">(\""+ fkName +"\", "+ index +", "+ className +".class, ");
 			br.write(referencedTableClassName +".class");
@@ -397,6 +411,9 @@ class ClassGenerator {
 		br.write("\n");
 
 		// write constructors
+		br.write("\t/**\n");
+		br.write("\t * Creates a new (empty) instance of "+ className +".  Call .insert() to insert it into the database.\n");
+		br.write("\t */\n");
 		br.write("\tpublic "+ className +"() {}\n\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tprotected "+ className +"(final Field[] _fields, final Object[] _objects, final int _start, final int _end) {\n");
@@ -466,6 +483,14 @@ class ClassGenerator {
 		//}
 		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
+		br.write("\t/**\n");
+		br.write("\t * Represents all rows in the database.  This is the object you will likely\n");
+		br.write("\t * use the most.  Iterating over this object will stream to you all rows in\n");
+		br.write("\t * this table.  Filtering it with .where() calls constrains your query.\n");
+		br.write("\t * Please see the nosco documentation <a href='http://nosco.googlecode.com/hg/doc/api/org/nosco/Query.html'>here</a>\n");
+		br.write("\t * for more usage information.  (Or the 'introduction to nosco' document \n");
+		br.write("\t * <a href='http://nosco.googlecode.com/hg/doc/introduction.html'>here</a>)\n");
+		br.write("\t */\n");
 		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("
 		+ className +".class)");
 		//if (dataSourceName != null) {
@@ -510,6 +535,9 @@ class ClassGenerator {
 		// write getters and setters
 		for (final String column : columns.keySet()) {
 			final String cls = getFieldType(pkgName, table, column, columns.getString(column));
+			br.write("\t/**\n");
+			br.write("\t * Gets the value of column "+ column +".\n");
+			br.write("\t */\n");
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\tfinal "+ className +" _tmp = ALL.onlyFields(");
@@ -524,6 +552,9 @@ class ClassGenerator {
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");
 
+			br.write("\t/**\n");
+			br.write("\t * Sets the value of column "+ column +".\n");
+			br.write("\t */\n");
 			br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
 			br.write("(final "+ cls +" v) {\n");
 			br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
@@ -559,6 +590,10 @@ class ClassGenerator {
 
 			br.write("\tprivate "+ referencedTableClassName +" "+ cachedObjectName +" = null;\n\n");
 
+			br.write("\t/**\n");
+			br.write("\t * Gets the object representing the row this FK is referencing.\n");
+			br.write("\t * If it was not pre-loaded with the .with(FK), object is lazy-loaded.\n");
+			br.write("\t */\n");
 			br.write("\tpublic "+ referencedTableClassName +" get"+ methodName +"() {\n");
 			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ fkName +".INDEX)) {\n");
@@ -570,6 +605,9 @@ class ClassGenerator {
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ cachedObjectName +";\n\t}\n\n");
 
+			br.write("\t/**\n");
+			br.write("\t * Sets the row this FK is referencing.\n");
+			br.write("\t */\n");
 			br.write("\tpublic "+ className +" set"+ methodName +"(final "+ referencedTableClassName +" v) {\n");
 			//br.write(" v) {\n\t\tPUT_VALUE(");
 
@@ -654,6 +692,11 @@ class ClassGenerator {
 		    final String localVar = "__NOSCO_CACHED_FK_SET___"+ relatedTable + "___"
 		    		+ Util.join("__", fk.columns.keySet());
 		    br.write("\tprivate Query<"+ relatedTableClassName +"> "+ localVar +" = null;\n");
+			br.write("\t/**\n");
+			br.write("\t * Returns a query representing the collection of rows this FK is referencing.\n");
+			br.write("\t * If it pre-loaded with the .with(FK), collection is in memory.\n");
+			br.write("\t * Else, iterations over this query will query the database.\n");
+			br.write("\t */\n");
 		    br.write("\tpublic Query<"+ relatedTableClassName +"> get"+ method +"Set() {\n");
 		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
 		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
@@ -671,9 +714,15 @@ class ClassGenerator {
 		}
 
 		// write save function
+		br.write("\t/**\n");
+		br.write("\t * Saves the object by either an insert or an update operation to the default DataSource.\n");
+		br.write("\t */\n");
 		br.write("\tpublic boolean save() throws SQLException {\n");
 		br.write("\t\t return save(ALL.getDataSource());\n");
 		br.write("\t}\n");
+		br.write("\t/**\n");
+		br.write("\t * Saves the object by either an insert or an update operation to the specified DataSource.\n");
+		br.write("\t */\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean save(final DataSource _ds) throws SQLException {\n");
 		br.write("\t\tif (!dirty()) return false;\n");
@@ -695,9 +744,15 @@ class ClassGenerator {
 		br.write("\t}\n");
 
 		// write update function
+		br.write("\t/**\n");
+		br.write("\t * Updates this row in the database using the default DataSource.\n");
+		br.write("\t */\n");
 		br.write("\tpublic boolean update() throws SQLException {\n");
 		br.write("\t\t return update(ALL.getDataSource());\n");
 		br.write("\t}\n");
+		br.write("\t/**\n");
+		br.write("\t * Updates this row in the database using the specified DataSource.\n");
+		br.write("\t */\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean update(final DataSource _ds) throws SQLException {\n");
 		br.write("\t\tif (!dirty()) return false;\n");
@@ -742,9 +797,15 @@ class ClassGenerator {
 		br.write("\t}\n");
 
 		// write delete function
+		br.write("\t/**\n");
+		br.write("\t * Deletes this row in the database using the default DataSource.\n");
+		br.write("\t */\n");
 		br.write("\tpublic boolean delete() throws SQLException {\n");
 		br.write("\t\t return delete(ALL.getDataSource());\n");
 		br.write("\t}\n");
+		br.write("\t/**\n");
+		br.write("\t * Deletes this row in the database using the specified DataSource.\n");
+		br.write("\t */\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean delete(final DataSource _ds) throws SQLException {\n");
 		br.write("\t\tfinal Query<"+ className +"> query = ALL.use(_ds)");
@@ -772,9 +833,15 @@ class ClassGenerator {
 		br.write("\t}\n");
 
 		// write insert function
+		br.write("\t/**\n");
+		br.write("\t * Inserts this row in the database using the default DataSource.\n");
+		br.write("\t */\n");
 		br.write("\tpublic boolean insert() throws SQLException {\n");
 		br.write("\t\t return insert(ALL.getDataSource());\n");
 		br.write("\t}\n");
+		br.write("\t/**\n");
+		br.write("\t * Inserts this row in the database using the specified DataSource.\n");
+		br.write("\t */\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean insert(final DataSource _ds) throws SQLException {\n");
 		//br.write("\t\tif (!dirty()) return false;\n");
@@ -814,9 +881,15 @@ class ClassGenerator {
 		br.write("\t}\n");
 
 		// write exists function
+		br.write("\t/**\n");
+		br.write("\t * Tests if this row exists in the database using the default DataSource.\n");
+		br.write("\t */\n");
 		br.write("\tpublic boolean exists() throws SQLException {\n");
 		br.write("\t\t return exists(ALL.getDataSource());\n");
 		br.write("\t}\n");
+		br.write("\t/**\n");
+		br.write("\t * Tests if this row exists in the database using the specified DataSource.\n");
+		br.write("\t */\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean exists(final DataSource _ds) throws SQLException {\n");
 		br.write("\t\tfinal Query<"+ className +"> query = ALL.use(_ds)");
@@ -954,6 +1027,9 @@ class ClassGenerator {
 
 		// write the map type function
 		br.write("\t@Override\n");
+		br.write("\t/**\n");
+		br.write("\t * Internal method - please do not use.\n");
+		br.write("\t */\n");
 		br.write("\tpublic java.lang.Object __NOSCO_PRIVATE_mapType(final java.lang.Object o) {\n");
 		final Set<String> coveredTypes = new HashSet<String>();
 		for (final String origType : classTypeMappings.keySet()) {

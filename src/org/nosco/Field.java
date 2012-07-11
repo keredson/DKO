@@ -365,6 +365,115 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
+	public Function<T> sub(final T v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> sub(final Field<T> v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> sub(final Function v) {
+		return new Function.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> mul(final T v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> mul(final Field<T> v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> mul(final Function v) {
+		return new Function.Custom<T>(this, "*", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> div(final T v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> div(final Field<T> v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> div(final Function v) {
+		return new Function.Custom<T>(this, "/", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> mod(final T v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> mod(final Field<T> v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 */
+	public Function<T> mod(final Function v) {
+		return new Function.Custom<T>(this, "%", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 * @deprecated use sub()
+	 */
 	public Function<T> subtract(final T v) {
 		return new Function.Custom<T>(this, "-", v);
 	}
@@ -373,6 +482,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use sub()
 	 */
 	public Function<T> subtract(final Field<T> v) {
 		return new Function.Custom<T>(this, "-", v);
@@ -382,6 +492,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use sub()
 	 */
 	public Function<T> subtract(final Function v) {
 		return new Function.Custom<T>(this, "-", v);
@@ -391,6 +502,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use mul()
 	 */
 	public Function<T> multiply(final T v) {
 		return new Function.Custom<T>(this, "*", v);
@@ -400,6 +512,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use mul()
 	 */
 	public Function<T> multiply(final Field<T> v) {
 		return new Function.Custom<T>(this, "*", v);
@@ -409,6 +522,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use mul()
 	 */
 	public Function<T> multiply(final Function v) {
 		return new Function.Custom<T>(this, "*", v);
@@ -418,6 +532,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use div()
 	 */
 	public Function<T> divide(final T v) {
 		return new Function.Custom<T>(this, "/", v);
@@ -427,6 +542,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use div()
 	 */
 	public Function<T> divide(final Field<T> v) {
 		return new Function.Custom<T>(this, "/", v);
@@ -436,6 +552,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use div()
 	 */
 	public Function<T> divide(final Function v) {
 		return new Function.Custom<T>(this, "/", v);
@@ -445,6 +562,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use mod()
 	 */
 	public Function<T> modulus(final T v) {
 		return new Function.Custom<T>(this, "%", v);
@@ -454,6 +572,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use mod()
 	 */
 	public Function<T> modulus(final Field<T> v) {
 		return new Function.Custom<T>(this, "%", v);
@@ -463,6 +582,7 @@ public class Field<T> implements Cloneable {
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
+	 * @deprecated use mod()
 	 */
 	public Function<T> modulus(final Function v) {
 		return new Function.Custom<T>(this, "%", v);

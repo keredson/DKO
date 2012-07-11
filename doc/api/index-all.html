@@ -91,13 +91,13 @@ Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.n
 <DD>Performs a mathematical function on this field.
 <DT><A HREF="./org/nosco/Function.html#add(T)"><B>add(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Function.html#add(org.nosco.Field)"><B>add(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Function.html#add(org.nosco.Function)"><B>add(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Query.html#all()"><B>all()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Returns an Iterable for this query.
@@ -323,24 +323,42 @@ Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.n
 <DT><A HREF="./org/nosco/Query.html#distinct()"><B>distinct()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Sets the distinct keyword in the select statement.
+<DT><A HREF="./org/nosco/Field.html#div(T)"><B>div(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#div(org.nosco.Field)"><B>div(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#div(org.nosco.Function)"><B>div(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Function.html#div(T)"><B>div(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#div(org.nosco.Field)"><B>div(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#div(org.nosco.Function)"><B>div(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Field.html#divide(T)"><B>divide(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <DT><A HREF="./org/nosco/Field.html#divide(org.nosco.Field)"><B>divide(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <DT><A HREF="./org/nosco/Field.html#divide(org.nosco.Function)"><B>divide(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <DT><A HREF="./org/nosco/Function.html#divide(T)"><B>divide(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <DT><A HREF="./org/nosco/Function.html#divide(org.nosco.Field)"><B>divide(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <DT><A HREF="./org/nosco/Function.html#divide(org.nosco.Function)"><B>divide(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 </DL>
 <HR>
 <A NAME="_E_"><!-- --></A><H2>
@@ -828,45 +846,81 @@ Constructor for class org.nosco.datasource.<A HREF="./org/nosco/datasource/Mirro
 <DD>This class usually passes
  through calls to the primary, but if <code>getMirroredConnection()</code>
  is called a random mirror is used instead.
+<DT><A HREF="./org/nosco/Field.html#mod(T)"><B>mod(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#mod(org.nosco.Field)"><B>mod(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#mod(org.nosco.Function)"><B>mod(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Function.html#mod(T)"><B>mod(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#mod(org.nosco.Field)"><B>mod(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#mod(org.nosco.Function)"><B>mod(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Field.html#modulus(T)"><B>modulus(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <DT><A HREF="./org/nosco/Field.html#modulus(org.nosco.Field)"><B>modulus(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <DT><A HREF="./org/nosco/Field.html#modulus(org.nosco.Function)"><B>modulus(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <DT><A HREF="./org/nosco/Function.html#modulus(T)"><B>modulus(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <DT><A HREF="./org/nosco/Function.html#modulus(org.nosco.Field)"><B>modulus(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <DT><A HREF="./org/nosco/Function.html#modulus(org.nosco.Function)"><B>modulus(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <DT><A HREF="./org/nosco/Function.html#MONTH(org.nosco.Field)"><B>MONTH(Field&lt;?&gt;)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
 <DD>DAY, MONTH and YEAR functions are deterministic.
+<DT><A HREF="./org/nosco/Field.html#mul(T)"><B>mul(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#mul(org.nosco.Field)"><B>mul(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#mul(org.nosco.Function)"><B>mul(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Function.html#mul(T)"><B>mul(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#mul(org.nosco.Field)"><B>mul(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#mul(org.nosco.Function)"><B>mul(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Field.html#multiply(T)"><B>multiply(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <DT><A HREF="./org/nosco/Field.html#multiply(org.nosco.Field)"><B>multiply(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <DT><A HREF="./org/nosco/Field.html#multiply(org.nosco.Function)"><B>multiply(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <DT><A HREF="./org/nosco/Function.html#multiply(T)"><B>multiply(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <DT><A HREF="./org/nosco/Function.html#multiply(org.nosco.Field)"><B>multiply(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <DT><A HREF="./org/nosco/Function.html#multiply(org.nosco.Function)"><B>multiply(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 </DL>
 <HR>
 <A NAME="_N_"><!-- --></A><H2>
@@ -922,7 +976,7 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Query.html#orderBy(org.nosco.Constants.DIRECTION, org.nosco.Field...)"><B>orderBy(Constants.DIRECTION, Field&lt;?&gt;...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Same as .orderBy(fields), but allows you to specify the direction.
-<DT><A HREF="./org/nosco/package-summary.html"><B>org.nosco</B></A> - package org.nosco<DD>&nbsp;<DT><A HREF="./org/nosco/annotations/package-summary.html"><B>org.nosco.annotations</B></A> - package org.nosco.annotations<DD>&nbsp;<DT><A HREF="./org/nosco/ant/package-summary.html"><B>org.nosco.ant</B></A> - package org.nosco.ant<DD>&nbsp;<DT><A HREF="./org/nosco/datasource/package-summary.html"><B>org.nosco.datasource</B></A> - package org.nosco.datasource<DD>&nbsp;<DT><A HREF="./org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)"><B>overrideDatabaseName(DataSource, String, String)</B></A> - 
+<DT><A HREF="./org/nosco/package-summary.html"><B>org.nosco</B></A> - package org.nosco<DD>&nbsp;<DT><A HREF="./org/nosco/ant/package-summary.html"><B>org.nosco.ant</B></A> - package org.nosco.ant<DD>&nbsp;<DT><A HREF="./org/nosco/datasource/package-summary.html"><B>org.nosco.datasource</B></A> - package org.nosco.datasource<DD>&nbsp;<DT><A HREF="./org/nosco/Context.html#overrideDatabaseName(javax.sql.DataSource, java.lang.String, java.lang.String)"><B>overrideDatabaseName(DataSource, String, String)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Context.html" title="class in org.nosco">Context</A>
 <DD>All generated classes have their database name embedded in them, and always specify their
  schema when performing a query.
@@ -1223,31 +1277,49 @@ Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in
 <DT><A HREF="./org/nosco/Diff.html#streamingDiffActualized(java.lang.Iterable, java.lang.Iterable)"><B>streamingDiffActualized(Iterable&lt;T&gt;, Iterable&lt;T&gt;)</B></A> - 
 Static method in class org.nosco.<A HREF="./org/nosco/Diff.html" title="class in org.nosco">Diff</A>
 <DD><B>Deprecated.</B>&nbsp;<I>renamed - se <CODE>#diffActualized(Iterable<T>,Iterable<T>)</CODE> instead</I>
+<DT><A HREF="./org/nosco/Field.html#sub(T)"><B>sub(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#sub(org.nosco.Field)"><B>sub(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Field.html#sub(org.nosco.Function)"><B>sub(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Performs a mathematical function on this field.
+<DT><A HREF="./org/nosco/Function.html#sub(T)"><B>sub(T)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#sub(org.nosco.Field)"><B>sub(Field&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
+<DT><A HREF="./org/nosco/Function.html#sub(org.nosco.Function)"><B>sub(Function)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
+<DD>Performs a mathematical function on this function.
 <DT><A HREF="./org/nosco/Field.html#subtract(T)"><B>subtract(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <DT><A HREF="./org/nosco/Field.html#subtract(org.nosco.Field)"><B>subtract(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <DT><A HREF="./org/nosco/Field.html#subtract(org.nosco.Function)"><B>subtract(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <DT><A HREF="./org/nosco/Function.html#subtract(T)"><B>subtract(T)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <DT><A HREF="./org/nosco/Function.html#subtract(org.nosco.Field)"><B>subtract(Field&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <DT><A HREF="./org/nosco/Function.html#subtract(org.nosco.Function)"><B>subtract(Function)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in org.nosco">Function</A>
-<DD>Performs a mathematical function on this field.
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <DT><A HREF="./org/nosco/Query.html#sum(org.nosco.Field)"><B>sum(Field&lt;? extends Number&gt;)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Sums the value of a given field.
 <DT><A HREF="./org/nosco/Query.html#sumBy(org.nosco.Field, org.nosco.Field)"><B>sumBy(Field&lt;? extends Number&gt;, Field&lt;S&gt;)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Sums the value of a field grouped by another field.
-<DT><A HREF="./org/nosco/annotations/SuppressFKWarnings.html" title="annotation in org.nosco.annotations"><B>SuppressFKWarnings</B></A> - Annotation Type in <A HREF="./org/nosco/annotations/package-summary.html">org.nosco.annotations</A><DD>Prevents nosco from calculating and logging warning messages about "bad" fk call patterns.</DL>
+</DL>
 <HR>
 <A NAME="_T_"><!-- --></A><H2>
 <B>T</B></H2>

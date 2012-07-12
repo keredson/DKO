@@ -143,7 +143,7 @@ class Select<T extends Table> implements Iterator<T> {
 		System.arraycopy(tmp, 3, st, 0, st.length);
 	}
 
-	private void init() {
+	void init() {
 		// old iterator method before merging
 		try {
 			ds  = query.getDataSource();

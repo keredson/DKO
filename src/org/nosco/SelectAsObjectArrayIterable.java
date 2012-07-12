@@ -14,6 +14,7 @@ class SelectAsObjectArrayIterable<T extends Table> implements Iterable<Object[]>
 	@Override
 	public Iterator<Object[]> iterator() {
 		final Select<T> select = new Select<T>(query);
+		select.init();
 		return new Iterator<Object[]>() {
 			@Override
 			public boolean hasNext() {

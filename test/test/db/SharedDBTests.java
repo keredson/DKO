@@ -204,4 +204,14 @@ public class SharedDBTests extends TestCase {
 				.where(Inventory.QTY.add(0).eq(Inventory.QTY)).count());
 	}
 
+	public void testObjectArray() throws SQLException {
+		int count = Item.ALL.count();
+		int count2 = 0;
+		for (Object[] oa : Item.ALL.asIterableOfObjectArrays()) {
+			count2 += 1;
+		}
+		assertEquals(count, count2);
+	}
+
+
 }

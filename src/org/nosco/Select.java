@@ -10,16 +10,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -62,8 +59,7 @@ class Select<T extends Table> implements Iterator<T> {
 	private SqlContext context = null;
 	private DataSource ds = null;
 	@SuppressWarnings("rawtypes")
-	private WeakReference<Select> weakReferenceToThis = null;
-	private final UsageMonitor usageMonitor = new UsageMonitor();
+	private final UsageMonitor usageMonitor;
 	private boolean initted = false;
 
 	@SuppressWarnings("unchecked")
@@ -110,13 +106,14 @@ class Select<T extends Table> implements Iterator<T> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		if (Context.usageWarningsEnabled()) usageMonitor = new UsageMonitor();
+		else usageMonitor = null;
 	}
 
 	private void init() {
 		// old iterator method before merging
 		try {
 			ds  = query.getDataSource();
-			weakReferenceToThis = new WeakReference<Select>(this);
 			final Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
 			conn = connInfo.a;
 			shouldCloseConnection  = connInfo.b;
@@ -150,6 +147,7 @@ class Select<T extends Table> implements Iterator<T> {
 
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
 		selectedFields = query.getSelectFields(false);
+		this.usageMonitor.setSelectedFields(selectedFields);
 		selectedBoundFields = query.getSelectFields(true);
 		final StringBuffer sb = new StringBuffer();
 		sb.append("select ");

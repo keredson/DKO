@@ -334,5 +334,12 @@ public abstract class Table {
 		if (__NOSCO_USAGE_MONITOR!=null) __NOSCO_USAGE_MONITOR.accessedFkCallback(table, fk);
 	}
 
+	/**
+	 * Internal function - please don't use. &nbsp; Subject to change.
+	 * @param conn
+	 */
+	protected void __NOSCO_PRIVATE_accessedColumnCallback(final Table table, final Field<?> field) {
+		if (__NOSCO_USAGE_MONITOR!=null) __NOSCO_USAGE_MONITOR.__NOSCO_PRIVATE_accessedColumnCallback(table, field);
+	}
 
 }

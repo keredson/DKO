@@ -201,7 +201,7 @@ public class SharedDBTests extends TestCase {
 		}
 		// note: this should raise a logging WARNING!
 		System.gc();
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		// this doesn't work for now since it's the last test
 	}
 
@@ -216,6 +216,24 @@ public class SharedDBTests extends TestCase {
 	public void testAdd() throws SQLException {
 		assertEquals(1, Inventory.ALL.where(Inventory.ITEMID.eq("EST-14"))
 				.where(Inventory.QTY.add(0).eq(Inventory.QTY)).count());
+	}
+
+	public void testStackTraceSpeed() throws SQLException {
+		System.out.println("testStackTraceSpeed begin");
+		final int c = 100000;
+		long start = System.currentTimeMillis();
+		for (int i=0; i<c; ++i) {
+			final String x = new String("y") + new String("z");
+		}
+		long end = System.currentTimeMillis();
+		System.out.println("adding "+ c +" strings took: "+ (end-start) +"ms @ "+ (c/(end-start)*1000.0) +" per s");
+		start = System.currentTimeMillis();
+		for (int i=0; i<c; ++i) {
+			final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
+		}
+		end = System.currentTimeMillis();
+		System.out.println("getting stack trace "+ c +"x took: "+ (end-start) +"ms @ "+ (c/(end-start)*1000.0) +" per s");
+		System.out.println("testStackTraceSpeed end");
 	}
 
 }

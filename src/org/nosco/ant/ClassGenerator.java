@@ -310,9 +310,10 @@ class ClassGenerator {
 			br.write("\tpublic static final Field<");
 			final String sqlType = columns.getString(column);
 			br.write(getFieldType(pkgName, table, column, sqlType));
-			br.write("> "+ getFieldName(column));
+			final String fieldName = getFieldName(column);
+			br.write("> "+ fieldName);
 			br.write(" = new Field<"+ getFieldType(pkgName, table, column, sqlType));
-			br.write(">("+ index +", "+ className +".class, \""+ column);
+			br.write(">("+ index +", "+ className +".class, \""+ column +"\", \""+ fieldName);
 			br.write("\", "+ getFieldType(pkgName, table, column, sqlType) +".class");
 			br.write(", \""+ sqlType +"\");\n");
 			++index;
@@ -539,6 +540,7 @@ class ClassGenerator {
 			br.write("\t * Gets the value of column "+ column +".\n");
 			br.write("\t */\n");
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
+			br.write("\t\t\t__NOSCO_PRIVATE_accessedColumnCallback(this, "+ getFieldName(column) +");\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
 			br.write("\t\t\tfinal "+ className +" _tmp = ALL.onlyFields(");
 			br.write(getFieldName(column)+")");

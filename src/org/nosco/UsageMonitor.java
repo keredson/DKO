@@ -1,7 +1,10 @@
 package org.nosco;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -10,16 +13,40 @@ import org.nosco.Field.FK;
 
 class UsageMonitor {
 
+	private static final String WARN_OFF = "To turn these warnings off, "
+			+ "call: Context.getThreadContext().enableUsageWarnings(false);";
+
 	Map<StackTraceKey,MLong> counter = new HashMap<StackTraceKey,MLong>();
 	
 	private static final Logger log = Logger.getLogger("org.nosco.recommendations");
 	long count = 0;
 	private final StackTraceElement[] st;
+	private final BitSet accessedField = new BitSet();
+	private Field<?>[] selectedFields;
 	
 	@Override
 	protected void finalize() throws Throwable {
-		warnBadUsage();
+		warnBadFKUsage();
+		warnUnusedColumns();
 		super.finalize();
+	}
+
+	private void warnUnusedColumns() {
+		final List<String> unused = new ArrayList<String>();
+		for (int i=0; i<selectedFields.length; ++i) {
+			if (!accessedField.get(i)) {
+				unused.add(selectedFields[i].TABLE.getSimpleName() +"."+ selectedFields[i].JAVA_NAME);
+			}
+		}
+		if (!unused.isEmpty()) {
+			final String msg = "The following columns were never accessed:\n\t" 
+					+ Util.join(", ", unused) + "\nin the query created here:\n\t" 
+					+ Util.join("\n\t", (Object[]) st) + "\n" 
+					+ "You might consider not querying these fields by using the " 
+					+ "deferFields(Field<?>...) method on your query.\n" 
+					+ WARN_OFF;
+			log.info(msg);
+		}
 	}
 
 	UsageMonitor() {
@@ -29,8 +56,7 @@ class UsageMonitor {
 		System.arraycopy(tmp, 4, st, 0, st.length);
 	}
 
-	private void warnBadUsage() {
-		if (!Context.usageWarningsEnabled()) return;
+	private void warnBadFKUsage() {
 		if (count > 4) {
 			for (final Entry<StackTraceKey, MLong> e : counter.entrySet()) {
 				final MLong v = e.getValue();
@@ -44,8 +70,8 @@ class UsageMonitor {
 							+") to your join.  This happened at:\n\t"
 							+ Util.join("\n\t", (Object[]) k.a)
 							+"\nwhile iterating over a query created here:\n\t"
-							+ Util.join("\n\t", (Object[]) st) +"\nTo turn these warnings off, "
-							+ "call: Context.getThreadContext().enableUsageWarnings(false);";
+							+ Util.join("\n\t", (Object[]) st) +"\n"
+							+ WARN_OFF;
 					log.warning(msg);
 				}
 			}
@@ -99,6 +125,19 @@ class UsageMonitor {
 				return false;
 			return true;
 		}
+	}
+
+	void __NOSCO_PRIVATE_accessedColumnCallback(final Table table, final Field<?> field) {
+		for (int i=0; i<selectedFields.length; ++i) {
+			if (selectedFields[i].equals(field)) {
+				accessedField.set(i);
+				break;
+			}
+		}
+	}
+
+	public void setSelectedFields(final Field<?>[] selectedFields) {
+		this.selectedFields = selectedFields;
 	}
 
 }

@@ -96,27 +96,24 @@ public abstract class Function<T> {
 	 */
 	public static <T> Function<java.sql.Date> DATEADD(final Function<? extends T> f1, final int count, final CALENDAR component) {
 		return new Function<java.sql.Date>() {
-			List<Object> it = null;
 			@Override
-			String getSQL(final SqlContext context) {
-				final String sql = f1.getSQL(context);
-				it = new ArrayList<Object>();
+			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				if (context.dbType == DB_TYPE.MYSQL) {
-					it.addAll(f1.getSQLBindings());
-					it.add(count);
-					return "date_add(" + sql +", interval ? "+ component +")";
+					sb.append("date_add(");
+					f1.getSQL(sb, bindings, context);
+					sb.append(", interval ? "+ component +")");
+					bindings.add(count);
 				} else if ((context.dbType == DB_TYPE.HSQL)) {
-					it.add(count);
-					return "TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")";
+					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, ");
+					bindings.add(count);
+					f1.getSQL(sb, bindings, context);
+					sb.append(")");
 				} else {
-					it.add(count);
-					it.addAll(f1.getSQLBindings());
-					return "dateadd(" + component +", ?, "+ sql +")";
+					sb.append("dateadd(" + component +", ?, ");
+					bindings.add(count);
+					f1.getSQL(sb, bindings, context);
+					sb.append(")");
 				}
-			}
-			@Override
-			Collection<? extends Object> getSQLBindings() {
-				return it;
 			}
 		};
 
@@ -132,25 +129,19 @@ public abstract class Function<T> {
 	 */
 	public static <T> Function<java.sql.Date> DATEADD(final Field<? extends T> field, final int count, final CALENDAR component) {
 		return new Function<java.sql.Date>() {
-			List<Object> it = null;
 			@Override
-			String getSQL(final SqlContext context) {
-				it = new ArrayList<Object>();
+			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				final String sql = Util.derefField(field, context);
 				if (context.dbType == DB_TYPE.MYSQL) {
-					it.add(count);
-					return "date_add(" + sql +", interval ? "+ component +")";
+					sb.append("date_add(" + sql +", interval ? "+ component +")");
+					bindings.add(count);
 				} else if ((context.dbType == DB_TYPE.HSQL)) {
-					it.add(count);
-					return "TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")";
+					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")");
+					bindings.add(count);
 				} else {
-					it.add(count);
-					return "dateadd(" + component +", ?, "+ sql +")";
+					sb.append("dateadd(" + component +", ?, "+ sql +")");
+					bindings.add(count);
 				}
-			}
-			@Override
-			Collection<? extends Object> getSQLBindings() {
-				return it;
 			}
 		};
 
@@ -278,19 +269,13 @@ public abstract class Function<T> {
 	 */
 	public static Function<String> CONCAT(final Object... fields) {
 		return new Function<String>() {
-			Function<String> f = null;
 			@Override
-			String getSQL(final SqlContext context) {
+			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				if (context.dbType == DB_TYPE.SQLSERVER) {
-					f = new Custom<String>(" + ", null, null, null, fields);
+					new Custom<String>(" + ", null, null, null, fields).getSQL(sb, bindings, context);
 				} else {
-					f = new Custom<String>("CONCAT", fields);
+					new Custom<String>("CONCAT", fields).getSQL(sb, bindings, context);
 				}
-				return f.getSQL(context);
-			}
-			@Override
-			Collection<? extends Object> getSQLBindings() {
-				return f.getSQLBindings();
 			}
 		};
 	}
@@ -301,9 +286,7 @@ public abstract class Function<T> {
 
 
 
-	abstract String getSQL(SqlContext context);
-
-	abstract Collection<? extends Object> getSQLBindings();
+	abstract void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context);
 
 
 	/**
@@ -317,7 +300,7 @@ public abstract class Function<T> {
 		private final String sqlserver;
 		private final String hsql;
 		private Object[] objects = null;
-		private String sql = null;
+		private final String sql = null;
 		private final List<Object> bindings = new ArrayList<Object>();
 		private String sep = ", ";
 
@@ -369,9 +352,7 @@ public abstract class Function<T> {
 		}
 
 		@Override
-		String getSQL(final SqlContext context) {
-			if (sql != null) return sql;
-			final StringBuilder sb = new StringBuilder();
+		void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			switch (context.dbType) {
 			case MYSQL:		sb.append(mysql==null ? "" : mysql); break;
 			case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
@@ -386,8 +367,7 @@ public abstract class Function<T> {
 						sb.append(Util.derefField((Field<?>) o, context));
 					} else if (o instanceof Function<?>) {
 						final Function<?> f = (Function<?>) o;
-						sb.append(f.getSQL(context));
-						bindings.addAll(f.getSQLBindings());
+						f.getSQL(sb, bindings, context);
 					} else if (o instanceof CALENDAR) {
 						sb.append(o.toString());
 					} else {
@@ -398,13 +378,6 @@ public abstract class Function<T> {
 				}
 			}
 			sb.append(")");
-			sql = sb.toString();
-			return sql;
-		}
-
-		@Override
-		Collection<? extends Object> getSQLBindings() {
-			return bindings == null ? Collections.emptyList() : bindings;
 		}
 
 	}

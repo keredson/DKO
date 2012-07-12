@@ -356,11 +356,15 @@ public abstract class Function<T> {
 		@Override
 		void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			final DB_TYPE dbType = context==null ? null : context.dbType;
-			switch (dbType) {
-			case MYSQL:		sb.append(mysql==null ? "" : mysql); break;
-			case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
-			case HSQL:		sb.append(hsql==null ? "" : hsql); break;
-			default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
+			if (dbType != null) {
+				switch (dbType) {
+				case MYSQL:		sb.append(mysql==null ? "" : mysql); break;
+				case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
+				case HSQL:		sb.append(hsql==null ? "" : hsql); break;
+				default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
+				}
+			} else {
+				sb.append(hsql!=null ? hsql : mysql!=null ? mysql : sqlserver!=null ? sqlserver : "<UNK DB_TYPE>");
 			}
 			sb.append("(");
 			if (objects != null) {

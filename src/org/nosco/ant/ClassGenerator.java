@@ -601,7 +601,7 @@ class ClassGenerator {
 			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq("+ underscoreToCamelCase(fk.columns.keySet(), false) +"))");
 			br.write(".getTheOnly();\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ fkName +".INDEX);\n");
-			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkToOneCallback(this, "+ fkName +");\n");
+			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkCallback(this, "+ fkName +");\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ cachedObjectName +";\n\t}\n\n");
 
@@ -701,7 +701,7 @@ class ClassGenerator {
 		    br.write("\t\tif ("+ localVar +" != null) return "+ localVar + ";\n");
 		    //br.write("\t\tif (__NOSCO_SELECT != null) return __NOSCO_PRIVATE_getSelectCachedQuery("+ relatedTableClassName + ".class, condition);\n");
 			final String fkName = genFKName(fk.columns.keySet(), reffedTable);
-			//br.write("\t\t\t__NOSCO_PRIVATE_accessedFkToOneCallback(this, "+ relatedTableClassName +"."+ fkName +");\n");
+			//br.write("\t\t\t__NOSCO_PRIVATE_accessedFkCallback(this, "+ relatedTableClassName +"."+ fkName +");\n");
 		    br.write("\t\tCondition condition = Condition.TRUE");
 		    for (final Entry<String, String> e : fk.columns.entrySet()) {
 				final String relatedColumn = e.getKey();

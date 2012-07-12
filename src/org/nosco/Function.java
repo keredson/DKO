@@ -32,7 +32,7 @@ public abstract class Function<T> {
 	 * @return
 	 */
 	public static <T> Function<Boolean> IFNULL(final Field<? extends T> f, final T v) {
-		Object[] oa = new Object[] {f, v};
+		final Object[] oa = new Object[] {f, v};
 		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
 	}
 
@@ -43,7 +43,7 @@ public abstract class Function<T> {
 	 * @return
 	 */
 	public static <T> Function<Boolean> IFNULL(final Function<? extends T> f, final T v) {
-		Object[] oa = new Object[] {f, v};
+		final Object[] oa = new Object[] {f, v};
 		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
 	}
 
@@ -51,7 +51,7 @@ public abstract class Function<T> {
 	 * @return the sql NOW() function (or GETDATE() on sql server)
 	 */
 	public static Function<java.sql.Date> NOW() {
-		Object[] oa = new Object[] {};
+		final Object[] oa = new Object[] {};
 		return new Custom<java.sql.Date>(", ", "now", "getdate", "now", oa);
 	}
 
@@ -105,6 +105,9 @@ public abstract class Function<T> {
 					it.addAll(f1.getSQLBindings());
 					it.add(count);
 					return "date_add(" + sql +", interval ? "+ component +")";
+				} else if ((context.dbType == DB_TYPE.HSQL)) {
+					it.add(count);
+					return "TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")";
 				} else {
 					it.add(count);
 					it.addAll(f1.getSQLBindings());
@@ -137,6 +140,9 @@ public abstract class Function<T> {
 				if (context.dbType == DB_TYPE.MYSQL) {
 					it.add(count);
 					return "date_add(" + sql +", interval ? "+ component +")";
+				} else if ((context.dbType == DB_TYPE.HSQL)) {
+					it.add(count);
+					return "TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")";
 				} else {
 					it.add(count);
 					return "dateadd(" + component +", ?, "+ sql +")";
@@ -274,11 +280,11 @@ public abstract class Function<T> {
 		return new Function<String>() {
 			Function<String> f = null;
 			@Override
-			String getSQL(SqlContext context) {
+			String getSQL(final SqlContext context) {
 				if (context.dbType == DB_TYPE.SQLSERVER) {
-					f = new Custom<String>(" + ", null, null, null, (Object[]) fields);
+					f = new Custom<String>(" + ", null, null, null, fields);
 				} else {
-					f = new Custom<String>("CONCAT", (Object[]) fields);
+					f = new Custom<String>("CONCAT", fields);
 				}
 				return f.getSQL(context);
 			}
@@ -354,7 +360,7 @@ public abstract class Function<T> {
 			this.objects  = objects;
 		}
 
-		Custom(Object o1, String sep, Object o2) {
+		Custom(final Object o1, final String sep, final Object o2) {
 			this.sqlserver = null;
 			this.hsql = null;
 			this.mysql = null;

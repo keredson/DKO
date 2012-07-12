@@ -4,6 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -29,6 +33,16 @@ public class SharedDBTests extends TestCase {
 
 	DataSource ds = null;
 	ConnectionCountingDataSource ccds = null;
+	
+	protected void setUp() throws Exception {
+		final Logger LOGGER = Logger.getLogger("");
+		for(final Handler h : LOGGER.getHandlers()){
+		    if(h instanceof ConsoleHandler){
+		        h.setLevel(Level.ALL);
+		    }
+		} 
+
+	}
 
 	public void test01() throws SQLException {
 		final Connection conn = ds.getConnection();

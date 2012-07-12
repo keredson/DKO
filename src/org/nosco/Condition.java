@@ -581,7 +581,7 @@ public abstract class Condition {
 		public <T> Binary(final Field<T> field, final String cmp, final Query<?> q) {
 			this.field = field;
 			this.cmp = cmp;
-			this.s = (Select<?>) q.all();
+			this.s = (Select<?>) q.all().iterator();
 		}
 
 		public <T> Binary(final Field<T> field, final String cmp, final Function f) {

@@ -179,7 +179,7 @@ public class Context {
 	 * @throws SQLException
 	 */
 	public boolean commitTransaction(final DataSource ds) throws SQLException {
-		final Connection c = transactionConnections.get(ds);
+		final Connection c = transactionConnections.remove(ds);
 		if (c == null) return false;
 		c.commit();
 		c.close();

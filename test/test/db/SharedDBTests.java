@@ -213,5 +213,11 @@ public class SharedDBTests extends TestCase {
 		assertEquals(count, count2);
 	}
 
+    public void testTransaction() throws SQLException {
+    	Context.getThreadContext().startTransaction(ds);
+    	Item.ALL.get(Item.ITEMID.eq("EST-20"));
+    	Context.getThreadContext().commitTransaction(ds);
+    	Item.ALL.get(Item.ITEMID.eq("EST-20"));
+    }
 
 }

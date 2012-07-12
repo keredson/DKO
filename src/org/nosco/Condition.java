@@ -317,17 +317,17 @@ public abstract class Condition {
 		}
 
 		@Override
-		void _preExecute(Connection conn) throws SQLException {
+		void _preExecute(final Connection conn) throws SQLException {
 			super._preExecute(conn);
-			for (Condition condition : conditions) {
+			for (final Condition condition : conditions) {
 				condition._preExecute(conn);
 			}
 		}
 
 		@Override
-		void _postExecute(Connection conn) throws SQLException {
+		void _postExecute(final Connection conn) throws SQLException {
 			super._postExecute(conn);
-			for (Condition condition : conditions) {
+			for (final Condition condition : conditions) {
 				condition._postExecute(conn);
 			}
 		}
@@ -372,17 +372,17 @@ public abstract class Condition {
 		}
 
 		@Override
-		void _preExecute(Connection conn) throws SQLException {
+		void _preExecute(final Connection conn) throws SQLException {
 			super._preExecute(conn);
-			for (Condition condition : conditions) {
+			for (final Condition condition : conditions) {
 				condition._preExecute(conn);
 			}
 		}
 
 		@Override
-		void _postExecute(Connection conn) throws SQLException {
+		void _postExecute(final Connection conn) throws SQLException {
 			super._postExecute(conn);
-			for (Condition condition : conditions) {
+			for (final Condition condition : conditions) {
 				condition._postExecute(conn);
 			}
 		}
@@ -417,13 +417,13 @@ public abstract class Condition {
 		}
 
 		@Override
-		void _preExecute(Connection conn) throws SQLException {
+		void _preExecute(final Connection conn) throws SQLException {
 			super._preExecute(conn);
 			condition._preExecute(conn);
 		}
 
 		@Override
-		void _postExecute(Connection conn) throws SQLException {
+		void _postExecute(final Connection conn) throws SQLException {
 			super._postExecute(conn);
 			condition._postExecute(conn);
 		}
@@ -489,16 +489,14 @@ public abstract class Condition {
 				sb.append("?");
 				bindings.add(v1);
 			} else {
-				sb.append(function1.getSQL(context));
-				bindings.addAll(function1.getSQLBindings());
+				function1.getSQL(sb, bindings, context);
 			}
 			sb.append(cmp2);
 			if (function2 == null) {
 				sb.append("?");
 				bindings.add(v2);
 			} else {
-				sb.append(function2.getSQL(context));
-				bindings.addAll(function2.getSQLBindings());
+				function2.getSQL(sb, bindings, context);
 			}
 		}
 
@@ -641,8 +639,7 @@ public abstract class Condition {
 			} else if (function!=null) {
 				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
-				sb.append(function.getSQL(context));
-				bindings.addAll(function.getSQLBindings());
+				function.getSQL(sb, bindings, context);
 			} else {
 				sb.append(Util.derefField(field, context));
 				sb.append(" is null");
@@ -666,18 +663,18 @@ public abstract class Condition {
 
 	static class Binary2 extends Condition {
 
-		private String cmp;
-		private Object o2;
-		private Object o1;
+		private final String cmp;
+		private final Object o2;
+		private final Object o1;
 
-		Binary2(Object o1, String cmp, Object o2) {
+		Binary2(final Object o1, final String cmp, final Object o2) {
 			this.o1 = o1;
 			this.cmp = cmp;
 			this.o2 = o2;
 		}
 
 		@Override
-		boolean matches(Table t) {
+		boolean matches(final Table t) {
 			if ((o1 instanceof Function) || (o2 instanceof Function)) {
 				throw new RuntimeException("Condition checking of functions cached queries not yet supported.");
 			}
@@ -686,14 +683,13 @@ public abstract class Condition {
 		}
 
 		@Override
-		protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			if (o1 instanceof Function) {
-				Function<?> f = (Function<?>) o1;
-				sb.append(f.getSQL(context));
-				bindings.addAll(f.getSQLBindings());
+				final Function<?> f = (Function<?>) o1;
+				f.getSQL(sb, bindings, context);
 			} else if (o1 instanceof Field) {
-				Field<?> f = (Field<?>) o1;
+				final Field<?> f = (Field<?>) o1;
 				sb.append(Util.derefField(f, context));
 			} else {
 				sb.append("?");
@@ -701,11 +697,10 @@ public abstract class Condition {
 			}
 			sb.append(cmp);
 			if (o2 instanceof Function) {
-				Function<?> f = (Function<?>) o2;
-				sb.append(f.getSQL(context));
-				bindings.addAll(f.getSQLBindings());
+				final Function<?> f = (Function<?>) o2;
+				f.getSQL(sb, bindings, context);
 			} else if (o2 instanceof Field) {
-				Field<?> f = (Field<?>) o2;
+				final Field<?> f = (Field<?>) o2;
 				sb.append(Util.derefField(f, context));
 			} else {
 				sb.append("?");
@@ -815,7 +810,7 @@ public abstract class Condition {
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" exists (");
 			final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
-			innerContext.dbType = context.dbType;
+			innerContext.dbType = context==null ? null : context.dbType;
 			final Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 			sb.append(ret.a);
 			bindings.addAll(ret.b);

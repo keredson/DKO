@@ -160,8 +160,8 @@
         <pathelement location="${dep_hsqldb_jar}"/>
       </classpath>
       <!--jvmarg value="-Xdebug"/>
-      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/>
-      <jvmarg value="-Dorg.nosco.log_sql=true"/-->
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/-->
+      <jvmarg value="-Djava.util.logging.config.file=test/logging.properties"/>
       <formatter type="plain"/>
       <batchtest fork="yes" todir="${reports}">
         <fileset dir="test">

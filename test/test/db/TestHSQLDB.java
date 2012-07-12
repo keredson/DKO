@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 import org.hsqldb.jdbc.JDBCDataSource;
+import org.nosco.Context;
 import org.nosco.datasource.ConnectionCountingDataSource;
 
 public class TestHSQLDB extends SharedDBTests {
@@ -56,6 +57,7 @@ public class TestHSQLDB extends SharedDBTests {
 		conn.commit();
 		conn.close();
 		this.ds = ds;
+		Context.getVMContext().setDataSource(ds).setAutoUndo(false);
 		ccds = new ConnectionCountingDataSource(ds);
 	}
 

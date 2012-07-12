@@ -55,16 +55,18 @@ public class Field<T> implements Cloneable {
 	public final String NAME;
 	public final Class<T> TYPE;
 	final String SQL_TYPE;
+	final String JAVA_NAME;
 
 	String boundTable = null;
 	Field<T> unBound = null;
 
-	public Field(final int index, final Class<? extends Table> table, final String name, final Class<T> type, final String sqlType) {
+	public Field(final int index, final Class<? extends Table> table, final String name, final String javaName, final Class<T> type, final String sqlType) {
 		INDEX = index;
 		TABLE = table;
 		NAME = name;
 		TYPE = type;
 		SQL_TYPE = sqlType;
+		JAVA_NAME = javaName;
 	}
 
 	/**

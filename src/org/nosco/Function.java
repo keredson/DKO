@@ -32,7 +32,7 @@ public abstract class Function<T> {
 	 * @return
 	 */
 	public static <T> Function<Boolean> IFNULL(final Field<? extends T> f, final T v) {
-		Object[] oa = new Object[] {f, v};
+		final Object[] oa = new Object[] {f, v};
 		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
 	}
 
@@ -43,7 +43,7 @@ public abstract class Function<T> {
 	 * @return
 	 */
 	public static <T> Function<Boolean> IFNULL(final Function<? extends T> f, final T v) {
-		Object[] oa = new Object[] {f, v};
+		final Object[] oa = new Object[] {f, v};
 		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
 	}
 
@@ -51,7 +51,7 @@ public abstract class Function<T> {
 	 * @return the sql NOW() function (or GETDATE() on sql server)
 	 */
 	public static Function<java.sql.Date> NOW() {
-		Object[] oa = new Object[] {};
+		final Object[] oa = new Object[] {};
 		return new Custom<java.sql.Date>(", ", "now", "getdate", "now", oa);
 	}
 
@@ -96,24 +96,24 @@ public abstract class Function<T> {
 	 */
 	public static <T> Function<java.sql.Date> DATEADD(final Function<? extends T> f1, final int count, final CALENDAR component) {
 		return new Function<java.sql.Date>() {
-			List<Object> it = null;
 			@Override
-			String getSQL(final SqlContext context) {
-				final String sql = f1.getSQL(context);
-				it = new ArrayList<Object>();
+			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				if (context.dbType == DB_TYPE.MYSQL) {
-					it.addAll(f1.getSQLBindings());
-					it.add(count);
-					return "date_add(" + sql +", interval ? "+ component +")";
+					sb.append("date_add(");
+					f1.getSQL(sb, bindings, context);
+					sb.append(", interval ? "+ component +")");
+					bindings.add(count);
+				} else if ((context.dbType == DB_TYPE.HSQL)) {
+					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, ");
+					bindings.add(count);
+					f1.getSQL(sb, bindings, context);
+					sb.append(")");
 				} else {
-					it.add(count);
-					it.addAll(f1.getSQLBindings());
-					return "dateadd(" + component +", ?, "+ sql +")";
+					sb.append("dateadd(" + component +", ?, ");
+					bindings.add(count);
+					f1.getSQL(sb, bindings, context);
+					sb.append(")");
 				}
-			}
-			@Override
-			Collection<? extends Object> getSQLBindings() {
-				return it;
 			}
 		};
 
@@ -129,22 +129,20 @@ public abstract class Function<T> {
 	 */
 	public static <T> Function<java.sql.Date> DATEADD(final Field<? extends T> field, final int count, final CALENDAR component) {
 		return new Function<java.sql.Date>() {
-			List<Object> it = null;
 			@Override
-			String getSQL(final SqlContext context) {
-				it = new ArrayList<Object>();
+			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				final String sql = Util.derefField(field, context);
-				if (context.dbType == DB_TYPE.MYSQL) {
-					it.add(count);
-					return "date_add(" + sql +", interval ? "+ component +")";
+				final DB_TYPE dbType = context==null ? null : context.dbType;
+				if (dbType == DB_TYPE.MYSQL) {
+					sb.append("date_add(" + sql +", interval ? "+ component +")");
+					bindings.add(count);
+				} else if ((dbType == DB_TYPE.HSQL)) {
+					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")");
+					bindings.add(count);
 				} else {
-					it.add(count);
-					return "dateadd(" + component +", ?, "+ sql +")";
+					sb.append("dateadd(" + component +", ?, "+ sql +")");
+					bindings.add(count);
 				}
-			}
-			@Override
-			Collection<? extends Object> getSQLBindings() {
-				return it;
 			}
 		};
 
@@ -272,19 +270,14 @@ public abstract class Function<T> {
 	 */
 	public static Function<String> CONCAT(final Object... fields) {
 		return new Function<String>() {
-			Function<String> f = null;
 			@Override
-			String getSQL(SqlContext context) {
-				if (context.dbType == DB_TYPE.SQLSERVER) {
-					f = new Custom<String>(" + ", null, null, null, (Object[]) fields);
+			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+				final DB_TYPE dbType = context==null ? null : context.dbType;
+				if (dbType == DB_TYPE.SQLSERVER) {
+					new Custom<String>(" + ", null, null, null, fields).getSQL(sb, bindings, context);
 				} else {
-					f = new Custom<String>("CONCAT", (Object[]) fields);
+					new Custom<String>("CONCAT", fields).getSQL(sb, bindings, context);
 				}
-				return f.getSQL(context);
-			}
-			@Override
-			Collection<? extends Object> getSQLBindings() {
-				return f.getSQLBindings();
 			}
 		};
 	}
@@ -295,9 +288,7 @@ public abstract class Function<T> {
 
 
 
-	abstract String getSQL(SqlContext context);
-
-	abstract Collection<? extends Object> getSQLBindings();
+	abstract void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context);
 
 
 	/**
@@ -311,7 +302,7 @@ public abstract class Function<T> {
 		private final String sqlserver;
 		private final String hsql;
 		private Object[] objects = null;
-		private String sql = null;
+		private final String sql = null;
 		private final List<Object> bindings = new ArrayList<Object>();
 		private String sep = ", ";
 
@@ -354,7 +345,7 @@ public abstract class Function<T> {
 			this.objects  = objects;
 		}
 
-		Custom(Object o1, String sep, Object o2) {
+		Custom(final Object o1, final String sep, final Object o2) {
 			this.sqlserver = null;
 			this.hsql = null;
 			this.mysql = null;
@@ -363,14 +354,13 @@ public abstract class Function<T> {
 		}
 
 		@Override
-		String getSQL(final SqlContext context) {
-			if (sql != null) return sql;
-			final StringBuilder sb = new StringBuilder();
-			switch (context.dbType) {
+		void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+			final DB_TYPE dbType = context==null ? null : context.dbType;
+			switch (dbType) {
 			case MYSQL:		sb.append(mysql==null ? "" : mysql); break;
 			case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
 			case HSQL:		sb.append(hsql==null ? "" : hsql); break;
-			default: throw new RuntimeException("unknown DB_TYPE "+ context.dbType);
+			default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
 			}
 			sb.append("(");
 			if (objects != null) {
@@ -380,8 +370,7 @@ public abstract class Function<T> {
 						sb.append(Util.derefField((Field<?>) o, context));
 					} else if (o instanceof Function<?>) {
 						final Function<?> f = (Function<?>) o;
-						sb.append(f.getSQL(context));
-						bindings.addAll(f.getSQLBindings());
+						f.getSQL(sb, bindings, context);
 					} else if (o instanceof CALENDAR) {
 						sb.append(o.toString());
 					} else {
@@ -392,13 +381,6 @@ public abstract class Function<T> {
 				}
 			}
 			sb.append(")");
-			sql = sb.toString();
-			return sql;
-		}
-
-		@Override
-		Collection<? extends Object> getSQLBindings() {
-			return bindings == null ? Collections.emptyList() : bindings;
 		}
 
 	}

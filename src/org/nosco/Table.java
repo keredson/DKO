@@ -61,7 +61,7 @@ public abstract class Table {
 	DataSource __NOSCO_ORIGINAL_DATA_SOURCE = null;
 
 	@SuppressWarnings("rawtypes")
-	WeakReference<Select> __NOSCO_SELECT = null;
+	UsageMonitor __NOSCO_USAGE_MONITOR = null;
 
 	/**
 	 * Returns true if the object has been modified
@@ -330,10 +330,16 @@ public abstract class Table {
 	 * Internal function - please don't use. &nbsp; Subject to change.
 	 * @param conn
 	 */
-	protected void __NOSCO_PRIVATE_accessedFkToOneCallback(final Table table, final Field.FK<? extends Table> fk) {
-		final Select __nosco_select = __NOSCO_SELECT.get();
-		if (__nosco_select!=null) __nosco_select.accessedFkToOneCallback(table, fk);
+	protected void __NOSCO_PRIVATE_accessedFkCallback(final Table table, final Field.FK<? extends Table> fk) {
+		if (__NOSCO_USAGE_MONITOR!=null) __NOSCO_USAGE_MONITOR.accessedFkCallback(table, fk);
 	}
 
+	/**
+	 * Internal function - please don't use. &nbsp; Subject to change.
+	 * @param conn
+	 */
+	protected void __NOSCO_PRIVATE_accessedColumnCallback(final Table table, final Field<?> field) {
+		if (__NOSCO_USAGE_MONITOR!=null) __NOSCO_USAGE_MONITOR.__NOSCO_PRIVATE_accessedColumnCallback(table, field);
+	}
 
 }

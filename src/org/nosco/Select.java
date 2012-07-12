@@ -10,16 +10,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -33,8 +30,6 @@ class Select<T extends Table> implements Iterator<T> {
 
 	private static final int BATCH_SIZE = 2048;
 
-	private static final Logger log = Logger.getLogger("org.nosco.recommendations");
-
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
@@ -42,35 +37,11 @@ class Select<T extends Table> implements Iterator<T> {
 		if (ps != null && !ps.isClosed()) ps.close();
 	}
 
-	private void warnBadUsage() {
-		if (!Context.usageWarningsEnabled()) return;
-		if (count > 4) {
-			for (final Entry<StackTraceKey, MLong> e : counter.entrySet()) {
-				final MLong v = e.getValue();
-				final long percent = v.i*100/count;
-				if (percent > 50) {
-					final StackTraceKey k = e.getKey();
-					String msg = "This code has lazily accessed a foreign key relationship "+ percent
-							+"% of the time.  This caused "+ v.i +" more queries to the "
-							+"database than necessary.  You should consider adding .with("
-							+ k.fk.referencing.getSimpleName() +"."+ k.fk.name
-							+") to your join.  This happened at:\n\t"
-							+ Util.join("\n\t", (Object[]) k.a)
-							+"\nwhile iterating over a query created here:\n\t"
-							+ Util.join("\n\t", (Object[]) st) +"\nTo turn these warnings off, "
-							+ "call: Context.getThreadContext().enableUsageWarnings(false);";
-					log.warning(msg);
-				}
-			}
-		}
-	}
-
 	private String sql;
 	private final DBQuery<T> query;
 	private PreparedStatement ps;
 	private ResultSet rs;
 	private T next;
-	private long count = 0;
 	private Field<?>[] selectedFields;
 	private Field<?>[] selectedBoundFields;
 	private Constructor<T> constructor;
@@ -88,13 +59,18 @@ class Select<T extends Table> implements Iterator<T> {
 	private SqlContext context = null;
 	private DataSource ds = null;
 	@SuppressWarnings("rawtypes")
-	private WeakReference<Select> weakReferenceToThis = null;
-	private final StackTraceElement[] st;
+	private final UsageMonitor<T> usageMonitor;
 	private boolean initted = false;
 
 	@SuppressWarnings("unchecked")
-	Select(final DBQuery<T> query) {
-		this.query = query;
+	Select(final DBQuery<T> dbQuery) {
+		if (Context.usageWarningsEnabled()) {
+			usageMonitor = new UsageMonitor<T>(dbQuery);
+			this.query = usageMonitor.getOptimizedQuery();
+		} else {
+			usageMonitor = null;
+			this.query = dbQuery;
+		}
 		allTableInfos = query.getAllTableInfos();
 		try {
 			constructor = (Constructor<T>) query.getType().getDeclaredConstructor(
@@ -136,18 +112,12 @@ class Select<T extends Table> implements Iterator<T> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
-		// grab the current stack trace
-		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
-		st = new StackTraceElement[tmp.length-3];
-		System.arraycopy(tmp, 3, st, 0, st.length);
 	}
 
 	void init() {
 		// old iterator method before merging
 		try {
 			ds  = query.getDataSource();
-			weakReferenceToThis = new WeakReference<Select>(this);
 			final Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
 			conn = connInfo.a;
 			shouldCloseConnection  = connInfo.b;
@@ -181,6 +151,7 @@ class Select<T extends Table> implements Iterator<T> {
 
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
 		selectedFields = query.getSelectFields(false);
+		this.usageMonitor.setSelectedFields(selectedFields);
 		selectedBoundFields = query.getSelectFields(true);
 		final StringBuffer sb = new StringBuffer();
 		sb.append("select ");
@@ -301,7 +272,7 @@ class Select<T extends Table> implements Iterator<T> {
 					if (ti.path == null) {
 						if (next == null) {
 							next = constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-							next.__NOSCO_SELECT = weakReferenceToThis;
+							next.__NOSCO_USAGE_MONITOR = usageMonitor;
 							next.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
 							newObjectThisRow[i] = true;
 						}
@@ -314,7 +285,7 @@ class Select<T extends Table> implements Iterator<T> {
 							if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
 								final Table fkv = constructors.get(ti.table.getClass())
 										.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-								fkv.__NOSCO_SELECT = weakReferenceToThis;
+								fkv.__NOSCO_USAGE_MONITOR = usageMonitor;
 								fkv.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
 								objects[i] = fkv;
 							}
@@ -364,7 +335,6 @@ class Select<T extends Table> implements Iterator<T> {
 			throw new RuntimeException(e);
 		}
 		final boolean hasNext = next != null;
-		if (!hasNext) warnBadUsage();
 		return hasNext;
 	}
 
@@ -398,7 +368,7 @@ class Select<T extends Table> implements Iterator<T> {
 	public T next() {
 		final T t = next;
 		next = null;
-		++count;
+		++usageMonitor.count;
 		return t;
 	}
 
@@ -433,57 +403,6 @@ class Select<T extends Table> implements Iterator<T> {
 			x.put(c, new WeakReference<Query<? extends Table>>(q));
 		}
 		return (Query<S>) q;
-	}
-
-	Map<StackTraceKey,MLong> counter = new HashMap<StackTraceKey,MLong>();
-
-	void accessedFkToOneCallback(final Table table, final FK<? extends Table> fk) {
-		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
-		final StackTraceElement[] st = new StackTraceElement[tmp.length-3];
-		System.arraycopy(tmp, 3, st, 0, st.length);
-		final StackTraceKey key = new StackTraceKey(fk, st);
-		MLong x = counter.get(key);
-		if (x == null) counter.put(key, x = new MLong());
-		x.i++;
-	}
-
-	static class MLong {
-		long i = 0;
-	}
-
-	static class StackTraceKey {
-		private final StackTraceElement[] a;
-		private final FK<? extends Table> fk;
-		StackTraceKey(final FK<? extends Table> fk, final StackTraceElement[] a) {
-			this.a = a;
-			this.fk = fk;
-		}
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + Arrays.hashCode(a);
-			result = prime * result + ((fk == null) ? 0 : fk.hashCode());
-			return result;
-		}
-		@Override
-		public boolean equals(final Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final StackTraceKey other = (StackTraceKey) obj;
-			if (!Arrays.equals(a, other.a))
-				return false;
-			if (fk == null) {
-				if (other.fk != null)
-					return false;
-			} else if (!fk.equals(other.fk))
-				return false;
-			return true;
-		}
 	}
 
 }

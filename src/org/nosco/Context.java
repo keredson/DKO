@@ -123,7 +123,21 @@ public class Context {
 		for (final Context context : contexts) {
 			Boolean x = null;
 			synchronized(context.enableUsageWarnings) {
-				for (Boolean v : context.enableUsageWarnings.values()) {
+				for (final Boolean v : context.enableUsageWarnings.values()) {
+					x = v;
+				}
+			}
+			if (x != null) return x;
+		}
+		return true;
+	}
+
+	static boolean selectOptimizationsEnabled() {
+		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
+		for (final Context context : contexts) {
+			Boolean x = null;
+			synchronized(context.enableSelectOptimizations) {
+				for (final Boolean v : context.enableSelectOptimizations.values()) {
 					x = v;
 				}
 			}
@@ -342,13 +356,29 @@ public class Context {
 	 * @param enable
 	 * @return
 	 */
-	public Undoer enableUsageWarnings(boolean enable) {
+	public Undoer enableUsageWarnings(final boolean enable) {
 		final UUID uuid = UUID.randomUUID();
 		enableUsageWarnings.put(uuid, enable);
 		return new Undoer() {
 			@Override
 			public void undo() {
 				enableUsageWarnings.remove(uuid);
+			}
+		};
+	}
+
+	/**
+	 * Turns on and off select optimizations that par down selected fields that are never used.
+	 * @param enable
+	 * @return
+	 */
+	public Undoer enableSelectOptimizations(final boolean enable) {
+		final UUID uuid = UUID.randomUUID();
+		enableSelectOptimizations.put(uuid, enable);
+		return new Undoer() {
+			@Override
+			public void undo() {
+				enableSelectOptimizations.remove(uuid);
 			}
 		};
 	}
@@ -392,6 +422,9 @@ public class Context {
 			Collections.synchronizedMap(new HashMap<Tuple2<DataSource,String>,Map<UUID,String>>());
 
 	private final Map<UUID,Boolean> enableUsageWarnings =
+			Collections.synchronizedMap(new LinkedHashMap<UUID,Boolean>());
+
+	private final Map<UUID,Boolean> enableSelectOptimizations =
 			Collections.synchronizedMap(new LinkedHashMap<UUID,Boolean>());
 
 	private final Map<UUID,DataSource> defaultDataSource =

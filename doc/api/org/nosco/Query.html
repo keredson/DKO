@@ -260,6 +260,14 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Query.html#deferFields(java.util.Collection)">deferFields</A></B>(java.util.Collection&lt;<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&gt;&nbsp;fields)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Don't include the following fields in the select statement.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Query.html#deferFields(org.nosco.Field...)">deferFields</A></B>(<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;...&nbsp;fields)</CODE>
 
 <BR>
@@ -417,6 +425,14 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns an always-empty Iterable.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Query.html#onlyFields(java.util.Collection)">onlyFields</A></B>(java.util.Collection&lt;<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&gt;&nbsp;fields)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Only include the following fields in the select statement.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -854,6 +870,44 @@ deferFields</H3>
 <DD>Don't include the following fields in the select statement.
  Note: The returned object will still contain a .getField() method.  If it is called another
  SQL call will be made to fetch this value.  (assuming the PK was not also excluded with this call)
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>fields</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deferFields(java.util.Collection)"><!-- --></A><H3>
+deferFields</H3>
+<PRE>
+<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt; <B>deferFields</B>(java.util.Collection&lt;<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&gt;&nbsp;fields)</PRE>
+<DL>
+<DD>Don't include the following fields in the select statement.
+ Note: The returned object will still contain a .getField() method.  If it is called another
+ SQL call will be made to fetch this value.  (assuming the PK was not also excluded with this call)
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>fields</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="onlyFields(java.util.Collection)"><!-- --></A><H3>
+onlyFields</H3>
+<PRE>
+<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;<A HREF="../../org/nosco/Query.html" title="type parameter in Query">T</A>&gt; <B>onlyFields</B>(java.util.Collection&lt;<A HREF="../../org/nosco/Field.html" title="class in org.nosco">Field</A>&lt;?&gt;&gt;&nbsp;fields)</PRE>
+<DL>
+<DD>Only include the following fields in the select statement.
+ Note: The returned object will still contain all .getField() methods.  If any are called that were not in this list, another
+ SQL call will be made to fetch each value.  (assuming the PK was included with this call)
 <P>
 <DD><DL>
 </DL>

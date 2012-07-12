@@ -236,4 +236,15 @@ public class SharedDBTests extends TestCase {
 		System.out.println("testStackTraceSpeed end");
 	}
 
+	public void testSelectOptimizations() throws SQLException, InterruptedException {
+		System.err.println("testSelectOptimizations 0");
+		for (int x=0; x<2; ++x) {
+			System.gc();
+			Thread.sleep(500);
+			System.err.println("testSelectOptimizations "+ (x+1));
+			for (final Item i : Item.ALL) {i.getAttr1();}
+		}
+	}
+
+
 }

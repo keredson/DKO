@@ -1,17 +1,25 @@
 package org.nosco;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.nosco.Field.FK;
 
-class UsageMonitor {
+class UsageMonitor<T extends Table> {
 
 	private static final String WARN_OFF = "To turn these warnings off, "
 			+ "call: Context.getThreadContext().enableUsageWarnings(false);";
@@ -23,6 +31,11 @@ class UsageMonitor {
 	private final StackTraceElement[] st;
 	private final BitSet accessedField = new BitSet();
 	private Field<?>[] selectedFields;
+	private final String queryHash;
+
+	private Field<?>[] originalSelectedFields;
+
+	private DBQuery<T> query;
 	
 	@Override
 	protected void finalize() throws Throwable {
@@ -30,17 +43,24 @@ class UsageMonitor {
 		warnUnusedColumns();
 		super.finalize();
 	}
+	
+	static ConcurrentHashMap<String,Set<Field<?>>> qc = new ConcurrentHashMap<String,Set<Field<?>>>();
 
 	private void warnUnusedColumns() {
-		final List<String> unused = new ArrayList<String>();
+		qc.putIfAbsent(queryHash, Collections.synchronizedSet(new HashSet<Field<?>>()));
+		final Set<Field<?>> used = qc.get(queryHash);
+		final List<String> unusedColumnDescs = new ArrayList<String>();
 		for (int i=0; i<selectedFields.length; ++i) {
 			if (!accessedField.get(i)) {
-				unused.add(selectedFields[i].TABLE.getSimpleName() +"."+ selectedFields[i].JAVA_NAME);
+				unusedColumnDescs.add(selectedFields[i].TABLE.getSimpleName() +"."+ selectedFields[i].JAVA_NAME);
+			} else {
+				used.add(selectedFields[i]);
+				//System.err.println("\t used "+ selectedFields[i]);
 			}
 		}
-		if (!unused.isEmpty()) {
+		if (!unusedColumnDescs.isEmpty()) {
 			final String msg = "The following columns were never accessed:\n\t" 
-					+ Util.join(", ", unused) + "\nin the query created here:\n\t" 
+					+ Util.join(", ", unusedColumnDescs) + "\nin the query created here:\n\t" 
 					+ Util.join("\n\t", (Object[]) st) + "\n" 
 					+ "You might consider not querying these fields by using the " 
 					+ "deferFields(Field<?>...) method on your query.\n" 
@@ -49,11 +69,31 @@ class UsageMonitor {
 		}
 	}
 
-	UsageMonitor() {
+	public UsageMonitor(final DBQuery<T> query) {
+		this.query = query;
 		// grab the current stack trace
 		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
 		st = new StackTraceElement[tmp.length-4];
 		System.arraycopy(tmp, 4, st, 0, st.length);
+
+		String hash = null;
+        try {
+        	final MessageDigest cript = MessageDigest.getInstance("SHA-1");
+        	cript.reset();
+        	for (final StackTraceElement ste : st) {
+        		cript.update(ste.toString().getBytes("UTF-8"));
+        	}
+        	cript.update(Integer.toString(query.hashCode()).getBytes("UTF-8"));
+        	hash = new BigInteger(1, cript.digest()).toString(16);
+        } catch (final UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (final NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        queryHash = hash;
+        //System.err.println("queryHash "+ queryHash +" "+ query.hashCode());
 	}
 
 	private void warnBadFKUsage() {
@@ -138,6 +178,34 @@ class UsageMonitor {
 
 	public void setSelectedFields(final Field<?>[] selectedFields) {
 		this.selectedFields = selectedFields;
+	}
+
+	public DBQuery<T> getOptimizedQuery() {
+		if (!Context.selectOptimizationsEnabled()) {
+			return query;
+		}
+		if (query.distinct) return query;
+		try {
+			final Set<Field<?>> used = qc.get(queryHash);
+			if (used == null) return query;
+			//System.err.println("used "+ used);
+			final Set<Field<?>> deffer = new HashSet<Field<?>>();
+			final Field<?>[] originalSelectedFields = query.getSelectFields(false);
+			for (final Field<?> f : originalSelectedFields) {
+				if (!used.contains(f)) deffer.add(f);
+			}
+			if (deffer.isEmpty()) return query;
+			for (final Field<?> f : Util.getPK(query.tables.get(0)).GET_FIELDS()) {
+				deffer.remove(f);
+			}
+			if (deffer.size() == originalSelectedFields.length) {
+				// make sure we don't remove every field!
+				deffer.remove(originalSelectedFields[0]);
+			}
+			return (DBQuery<T>) query.deferFields(deffer);
+		} finally {
+			query = null;
+		}
 	}
 
 }

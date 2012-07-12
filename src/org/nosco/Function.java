@@ -132,10 +132,11 @@ public abstract class Function<T> {
 			@Override
 			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				final String sql = Util.derefField(field, context);
-				if (context.dbType == DB_TYPE.MYSQL) {
+				final DB_TYPE dbType = context==null ? null : context.dbType;
+				if (dbType == DB_TYPE.MYSQL) {
 					sb.append("date_add(" + sql +", interval ? "+ component +")");
 					bindings.add(count);
-				} else if ((context.dbType == DB_TYPE.HSQL)) {
+				} else if ((dbType == DB_TYPE.HSQL)) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")");
 					bindings.add(count);
 				} else {
@@ -271,7 +272,8 @@ public abstract class Function<T> {
 		return new Function<String>() {
 			@Override
 			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
-				if (context.dbType == DB_TYPE.SQLSERVER) {
+				final DB_TYPE dbType = context==null ? null : context.dbType;
+				if (dbType == DB_TYPE.SQLSERVER) {
 					new Custom<String>(" + ", null, null, null, fields).getSQL(sb, bindings, context);
 				} else {
 					new Custom<String>("CONCAT", fields).getSQL(sb, bindings, context);
@@ -353,11 +355,12 @@ public abstract class Function<T> {
 
 		@Override
 		void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
-			switch (context.dbType) {
+			final DB_TYPE dbType = context==null ? null : context.dbType;
+			switch (dbType) {
 			case MYSQL:		sb.append(mysql==null ? "" : mysql); break;
 			case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
 			case HSQL:		sb.append(hsql==null ? "" : hsql); break;
-			default: throw new RuntimeException("unknown DB_TYPE "+ context.dbType);
+			default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
 			}
 			sb.append("(");
 			if (objects != null) {

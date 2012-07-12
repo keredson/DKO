@@ -810,7 +810,7 @@ public abstract class Condition {
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" exists (");
 			final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
-			innerContext.dbType = context.dbType;
+			innerContext.dbType = context==null ? null : context.dbType;
 			final Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
 			sb.append(ret.a);
 			bindings.addAll(ret.b);

@@ -59,12 +59,18 @@ class Select<T extends Table> implements Iterator<T> {
 	private SqlContext context = null;
 	private DataSource ds = null;
 	@SuppressWarnings("rawtypes")
-	private final UsageMonitor usageMonitor;
+	private final UsageMonitor<T> usageMonitor;
 	private boolean initted = false;
 
 	@SuppressWarnings("unchecked")
-	Select(final DBQuery<T> query) {
-		this.query = query;
+	Select(final DBQuery<T> dbQuery) {
+		if (Context.usageWarningsEnabled()) {
+			usageMonitor = new UsageMonitor<T>(dbQuery);
+			this.query = usageMonitor.getOptimizedQuery();
+		} else {
+			usageMonitor = null;
+			this.query = dbQuery;
+		}
 		allTableInfos = query.getAllTableInfos();
 		try {
 			constructor = (Constructor<T>) query.getType().getDeclaredConstructor(
@@ -106,8 +112,6 @@ class Select<T extends Table> implements Iterator<T> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		if (Context.usageWarningsEnabled()) usageMonitor = new UsageMonitor();
-		else usageMonitor = null;
 	}
 
 	private void init() {

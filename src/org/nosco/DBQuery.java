@@ -346,13 +346,33 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
+	public Query<T> deferFields(final Collection<Field<?>> fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.deferSet = new HashSet<Field<?>>();
+		if (deferSet!=null) q.deferSet.addAll(deferSet);
+		q.deferSet.addAll(fields);
+		return q;
+	}
+
+	@Override
 	public Query<T> onlyFields(final Field<?>... fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySet = new HashSet<Field<?>>();
-		//if (onlySet!=null) q.onlySet.addAll(onlySet);
-		/*for (Field<?> f : Table.GET_TABLE_PK(q.tables.get(0)).GET_FIELDS()) {
-			q.onlySet.add(f);
-		} //*/
+		for (final Field<?> field : fields) {
+			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+				throw new RuntimeException("cannot use bound fields " +
+						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+						"primary/first table");
+			}
+			q.onlySet.add(field);
+		}
+		return q;
+	}
+
+	@Override
+	public Query<T> onlyFields(final Collection<Field<?>> fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.onlySet = new HashSet<Field<?>>();
 		for (final Field<?> field : fields) {
 			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 				throw new RuntimeException("cannot use bound fields " +
@@ -1257,6 +1277,127 @@ class DBQuery<T extends Table> implements Query<T> {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.dbType = type;
 		return q;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((conditions == null) ? 0 : conditions.hashCode());
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + ((dbType == null) ? 0 : dbType.hashCode());
+		result = prime * result
+				+ ((defaultDS == null) ? 0 : defaultDS.hashCode());
+		result = prime * result
+				+ ((deferSet == null) ? 0 : deferSet.hashCode());
+		result = prime * result + (distinct ? 1231 : 1237);
+		result = prime
+				* result
+				+ ((globallyAppliedSelectFunction == null) ? 0
+						: globallyAppliedSelectFunction.hashCode());
+		result = prime * result
+				+ ((joinsToMany == null) ? 0 : joinsToMany.hashCode());
+		result = prime * result
+				+ ((joinsToOne == null) ? 0 : joinsToOne.hashCode());
+		result = prime * result + ((onlySet == null) ? 0 : onlySet.hashCode());
+		result = prime
+				* result
+				+ ((orderByDirections == null) ? 0 : orderByDirections
+						.hashCode());
+		result = prime * result
+				+ ((orderByFields == null) ? 0 : orderByFields.hashCode());
+		result = prime * result
+				+ ((tableInfos == null) ? 0 : tableInfos.hashCode());
+		result = prime * result + ((tables == null) ? 0 : tables.hashCode());
+		result = prime * result + top;
+		result = prime * result
+				+ ((usedTableNames == null) ? 0 : usedTableNames.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final DBQuery other = (DBQuery) obj;
+		if (conditions == null) {
+			if (other.conditions != null)
+				return false;
+		} else if (!conditions.equals(other.conditions))
+			return false;
+		if (data == null) {
+			if (other.data != null)
+				return false;
+		} else if (!data.equals(other.data))
+			return false;
+		if (dbType != other.dbType)
+			return false;
+		if (defaultDS == null) {
+			if (other.defaultDS != null)
+				return false;
+		} else if (!defaultDS.equals(other.defaultDS))
+			return false;
+		if (deferSet == null) {
+			if (other.deferSet != null)
+				return false;
+		} else if (!deferSet.equals(other.deferSet))
+			return false;
+		if (distinct != other.distinct)
+			return false;
+		if (globallyAppliedSelectFunction == null) {
+			if (other.globallyAppliedSelectFunction != null)
+				return false;
+		} else if (!globallyAppliedSelectFunction
+				.equals(other.globallyAppliedSelectFunction))
+			return false;
+		if (joinsToMany == null) {
+			if (other.joinsToMany != null)
+				return false;
+		} else if (!joinsToMany.equals(other.joinsToMany))
+			return false;
+		if (joinsToOne == null) {
+			if (other.joinsToOne != null)
+				return false;
+		} else if (!joinsToOne.equals(other.joinsToOne))
+			return false;
+		if (onlySet == null) {
+			if (other.onlySet != null)
+				return false;
+		} else if (!onlySet.equals(other.onlySet))
+			return false;
+		if (orderByDirections == null) {
+			if (other.orderByDirections != null)
+				return false;
+		} else if (!orderByDirections.equals(other.orderByDirections))
+			return false;
+		if (orderByFields == null) {
+			if (other.orderByFields != null)
+				return false;
+		} else if (!orderByFields.equals(other.orderByFields))
+			return false;
+		if (tableInfos == null) {
+			if (other.tableInfos != null)
+				return false;
+		} else if (!tableInfos.equals(other.tableInfos))
+			return false;
+		if (tables == null) {
+			if (other.tables != null)
+				return false;
+		} else if (!tables.equals(other.tables))
+			return false;
+		if (top != other.top)
+			return false;
+		if (usedTableNames == null) {
+			if (other.usedTableNames != null)
+				return false;
+		} else if (!usedTableNames.equals(other.usedTableNames))
+			return false;
+		return true;
 	}
 
 }

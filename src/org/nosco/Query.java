@@ -2,6 +2,7 @@ package org.nosco;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -162,6 +163,24 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> deferFields(Field<?>... fields);
+
+	/**
+	 * Don't include the following fields in the select statement.
+	 * Note: The returned object will still contain a .getField() method.  If it is called another
+	 * SQL call will be made to fetch this value.  (assuming the PK was not also excluded with this call)
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> deferFields(Collection<Field<?>> fields);
+
+	/**
+	 * Only include the following fields in the select statement.
+	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not in this list, another
+	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> onlyFields(Collection<Field<?>> fields);
 
 	/**
 	 * Only include the following fields in the select statement.

@@ -3,6 +3,7 @@ package org.nosco;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -159,6 +160,18 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> onlyFields(final Field<?>... fields) {
+		// do nothing
+		return this;
+	}
+
+	@Override
+	public Query<T> deferFields(final Collection<Field<?>> fields) {
+		// do nothing
+		return this;
+	}
+
+	@Override
+	public Query<T> onlyFields(final Collection<Field<?>> fields) {
 		// do nothing
 		return this;
 	}
@@ -403,7 +416,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S> Set<S> asSet(Field<S> field) {
+	public <S> Set<S> asSet(final Field<S> field) {
 		final Set<S> ret = new HashSet<S>();
 		for (final S s : this.distinct().select(field)) {
 			ret.add(s);

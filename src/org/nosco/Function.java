@@ -105,6 +105,9 @@ public abstract class Function<T> {
 					it.addAll(f1.getSQLBindings());
 					it.add(count);
 					return "date_add(" + sql +", interval ? "+ component +")";
+				} else if ((context.dbType == DB_TYPE.HSQL)) {
+					it.add(count);
+					return "TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")";
 				} else {
 					it.add(count);
 					it.addAll(f1.getSQLBindings());
@@ -137,6 +140,9 @@ public abstract class Function<T> {
 				if (context.dbType == DB_TYPE.MYSQL) {
 					it.add(count);
 					return "date_add(" + sql +", interval ? "+ component +")";
+				} else if ((context.dbType == DB_TYPE.HSQL)) {
+					it.add(count);
+					return "TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")";
 				} else {
 					it.add(count);
 					return "dateadd(" + component +", ?, "+ sql +")";

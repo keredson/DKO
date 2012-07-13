@@ -220,4 +220,12 @@ public class SharedDBTests extends TestCase {
     	Item.ALL.get(Item.ITEMID.eq("EST-20"));
     }
 
+    public void testTopWithToManyRelationship() throws SQLException {
+    	Product p = Product.ALL.with(Item.FK_PRODUCTID_PRODUCT)
+    			.where(Product.PRODUCTID.eq("FL-DSH-01"))
+    			.first();
+    	assertEquals(2, p.getItemSet().count());
+    	assertEquals(1, Product.ALL.with(Item.FK_PRODUCTID_PRODUCT).top(1).asList().size());
+    }
+
 }

@@ -156,7 +156,7 @@ class Select<T extends Table> implements Iterator<T> {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("select ");
 		if (query.distinct) sb.append("distinct ");
-		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0) {
+		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
 			sb.append(" top ").append(query.top).append(" ");
 		}
 		if (query.globallyAppliedSelectFunction == null) {
@@ -185,7 +185,7 @@ class Select<T extends Table> implements Iterator<T> {
 			sb.append(Util.join(", ", tmp));
 		}
 
-		if (context.dbType!=DB_TYPE.SQLSERVER && query.top>0) {
+		if (context.dbType!=DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
 			sb.append(" limit ").append(query.top);
 		}
 
@@ -242,6 +242,11 @@ class Select<T extends Table> implements Iterator<T> {
 	@Override
 	public boolean hasNext() {
 		if (!this.initted) init();
+		if (query.top>0 && usageMonitor.count >= query.top) {
+			this.next = null;
+			cleanUp();
+			return false;
+		}
 		if (next!=null) return true;
 		ttbMap.clear();
 		Object[] prevFieldValues = null;

@@ -116,6 +116,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 	/**
 	 * Returns the first n rows of the query.
 	 * Same as .limit(n)
+	 * Note: If any to-many joins are in this query, this is computed on the java side.
+	 * (with the result set terminated mid-stream)
 	 * @param n
 	 * @return
 	 */
@@ -124,6 +126,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 	/**
 	 * Returns the first n rows of the query.
 	 * Same as .top(n)
+	 * Note: If any to-many joins are in this query, this is computed on the java side.
+	 * (with the result set terminated mid-stream)
 	 * @param n
 	 * @return
 	 */
@@ -202,6 +206,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 	/**
 	 * Gets the first item in the query.
 	 * Same as: .top(1).getTheOnly()
+	 * Note: If any to-many joins are in this query, this is computed on the java side.
+	 * (with the result set terminated mid-stream)
 	 * @return
 	 */
 	public T first();

@@ -1,6 +1,7 @@
 package org.nosco;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -33,6 +34,10 @@ import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 
 class UsageMonitor<T extends Table> {
+
+	private static final String TIME_STAMP = "ts";
+	private static final String STACK_TRACE = "st";
+	protected static final String USED_FIELDS = "uf";
 
 	private static final int MILLIS_ONE_WEEK = 1000*60*60*24*7;
 
@@ -101,9 +106,9 @@ class UsageMonitor<T extends Table> {
 	}
 
 	public UsageMonitor(final DBQuery<T> query) {
-		if (t.getState()!=Thread.State.TERMINATED) {
+		if (loadPerformanceInfo.getState()!=Thread.State.TERMINATED) {
 			try {
-				t.join();
+				loadPerformanceInfo.join();
 			} catch (final InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -308,8 +313,49 @@ class UsageMonitor<T extends Table> {
 			"time or two they start up.  Thanks for visiting!\n\nhttp://code.google.com/p/nosco/\n";
 	private final static long START = System.currentTimeMillis();
 	private final static long cutoff = START - 1000*60*60*24*100;
-	
-	private final static Thread t = new Thread() {
+
+	private final static Thread cleanPerformanceInfo = new Thread() {
+		@Override
+		public void run() {
+			try {
+				sleep((long) (Math.random() * 1000*60*60*4));
+			} catch (final InterruptedException e) {
+				//e.printStackTrace();
+			}
+			
+			try {
+				final File tmp = File.createTempFile("nosco_performance_", "");
+				final Writer w = new BufferedWriter(new FileWriter(tmp));
+				final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
+				for (String line = null; (line=br.readLine())!=null;) {
+					try {
+						final JSONObject o = new JSONObject(line);
+						final long ts = o.getLong(TIME_STAMP);
+						if (ts < cutoff) continue;
+					} catch (final JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					w.write(line);
+					w.write('\n');
+				}
+				br.close();
+				w.close();
+				final Writer w2 = new BufferedWriter(new FileWriter(PERF_CACHE));
+				final BufferedReader br2 = new BufferedReader(new FileReader(tmp));
+				for (String line = null; (line=br2.readLine())!=null;) {
+					w2.write(line);
+					w2.write('\n');
+				}
+				br2.close();
+				w2.close();
+			} catch (final IOException e) {
+				//e.printStackTrace();
+			}
+		}
+	};
+
+	private final static Thread loadPerformanceInfo = new Thread() {
 		@Override
 		public void run() {
 			if (!CACHE_DIR.isDirectory()) {
@@ -324,42 +370,40 @@ class UsageMonitor<T extends Table> {
 				}
 			}
 			
+			long oldest = Long.MAX_VALUE;
+			
 			try {
 				final ClassLoader cl = this.getClass().getClassLoader();
 				final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
 				for (String line = null; (line=br.readLine())!=null;) {
 					try {
 						final JSONObject o = new JSONObject(line);
-						String st = null;
-						Long lastSeen = null;
+						final String st = o.getString(STACK_TRACE);
+						final Long lastSeen = o.getLong(TIME_STAMP);
+						if (lastSeen < oldest) oldest = lastSeen;
+						final JSONObject o2 = o.getJSONObject(USED_FIELDS);
 						final Map<Field<?>, Long> map = Collections.synchronizedMap(new HashMap<Field<?>,Long>());
-						for (final String x : o.keySet()) {
-							if ("__st__".equals(x)) {
-								st = o.getString(x);
-							} else  if ("__ts__".equals(x)) {
-								lastSeen = o.getLong(x);
-							} else {
-								try {
-									final long datetime = o.getLong(x);
-									if (datetime < cutoff) continue;
-									final int split = x.lastIndexOf('.');
-									final String className = x.substring(0, split);
-									final String fieldName = x.substring(split+1);
-									final Class<?> clz = cl.loadClass(className);
-									final java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
-									final Field<?> field = (Field<?>) f.get(null);
-									map.put(field, datetime);
-								} catch (final ClassNotFoundException e) {
-									e.printStackTrace();
-								} catch (final SecurityException e) {
-									e.printStackTrace();
-								} catch (final NoSuchFieldException e) {
-									e.printStackTrace();
-								} catch (final IllegalArgumentException e) {
-									e.printStackTrace();
-								} catch (final IllegalAccessException e) {
-									e.printStackTrace();
-								}
+						for (final String x : o2.keySet()) {
+							try {
+								final long datetime = o2.getLong(x);
+								if (datetime < cutoff) continue;
+								final int split = x.lastIndexOf('.');
+								final String className = x.substring(0, split);
+								final String fieldName = x.substring(split+1);
+								final Class<?> clz = cl.loadClass(className);
+								final java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
+								final Field<?> field = (Field<?>) f.get(null);
+								map.put(field, datetime);
+							} catch (final ClassNotFoundException e) {
+								e.printStackTrace();
+							} catch (final SecurityException e) {
+								e.printStackTrace();
+							} catch (final NoSuchFieldException e) {
+								e.printStackTrace();
+							} catch (final IllegalArgumentException e) {
+								e.printStackTrace();
+							} catch (final IllegalAccessException e) {
+								e.printStackTrace();
 							}
 						}
 						if (st!=null && lastSeen!=null) stLastSeen.put(st, lastSeen);
@@ -381,42 +425,43 @@ class UsageMonitor<T extends Table> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			if (oldest < cutoff - 2*MILLIS_ONE_WEEK) {
+				cleanPerformanceInfo.start();
+			}
 		}
 	};
+
 	
 	static {
-		t.start();
+		cleanPerformanceInfo.setDaemon(true);
+		loadPerformanceInfo.start();
 	}
 	
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {
-		    	System.gc();
-		    	try {
-					sleep(500);
-				} catch (final InterruptedException e3) {
-					// TODO Auto-generated catch block
-					e3.printStackTrace();
-				}
 		    	try {
 					final Writer w = new FileWriter(PERF_CACHE, true);
 					for (final Entry<String, Map<Field<?>, Long>> e : qc.entrySet()) {
 						final String stHash = e.getKey();
 						if (!stSeenThisRun.contains(stHash)) continue;
 						final JSONObject o = new JSONObject();
+						final JSONObject o2 = new JSONObject();
 						try {
 							int count = 0;
 							for (final Entry<Field<?>, Long> e2 : e.getValue().entrySet()) {
 								final long datetime = e2.getValue();
 								if (datetime < START) continue;
 								final Field<?> field = e2.getKey();
-								o.put(field.TABLE.getName() +"."+ field.JAVA_NAME, datetime);
+								o2.put(field.TABLE.getName() +"."+ field.JAVA_NAME, datetime);
 								++count;
 							}
 							final Long lastSeen = stLastSeen.get(stHash);
 							if (count > 0 || lastSeen==null || (lastSeen+MILLIS_ONE_WEEK)<START) {
-								o.put("__st__", stHash);
-								o.put("__ts__", System.currentTimeMillis());
+								o.put(STACK_TRACE, stHash);
+								o.put(TIME_STAMP, System.currentTimeMillis());
+								o.put(USED_FIELDS, o2);
 								o.write(w).write('\n');
 							}
 						} catch (final JSONException e1) {
@@ -426,7 +471,7 @@ class UsageMonitor<T extends Table> {
 					w.close();
 					//System.err.println("wrote: "+ PERF_CACHE);
 				} catch (final IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 		    }
 		});

@@ -211,12 +211,15 @@
    	/>
   </target>
 
-  <target name="unit-test-mysql" depends="unit-test-gen-src-mysql">
+  <target name="unit-test-build-mysql" depends="unit-test-gen-src-mysql">
     <javac srcdir="test" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
+  </target>
+
+  <target name="unit-test-mysql" depends="unit-test-build-mysql">
     <mkdir dir="${reports}"/>
     <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>

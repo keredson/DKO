@@ -1,15 +1,25 @@
 package org.nosco;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,9 +27,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import org.nosco.DBQuery.Join;
 import org.nosco.Field.FK;
+import org.nosco.json.JSONException;
+import org.nosco.json.JSONObject;
 
 class UsageMonitor<T extends Table> {
+
+	private static final int MILLIS_ONE_WEEK = 1000*60*60*24*7;
 
 	private static final String WARN_OFF = "To turn these warnings off, "
 			+ "call: Context.getThreadContext().enableUsageWarnings(false);";
@@ -31,9 +46,8 @@ class UsageMonitor<T extends Table> {
 	private final StackTraceElement[] st;
 	private final BitSet accessedField = new BitSet();
 	private Field<?>[] selectedFields;
+	private Collection<Field<?>> surpriseFields = null;
 	private final String queryHash;
-
-	private Field<?>[] originalSelectedFields;
 
 	private DBQuery<T> query;
 	
@@ -44,19 +58,36 @@ class UsageMonitor<T extends Table> {
 		super.finalize();
 	}
 	
-	static ConcurrentHashMap<String,Set<Field<?>>> qc = new ConcurrentHashMap<String,Set<Field<?>>>();
+	static ConcurrentHashMap<String,Map<Field<?>,Long>> qc = new ConcurrentHashMap<String,Map<Field<?>,Long>>();
+	static Map<String,Long> stLastSeen = Collections.synchronizedMap(new HashMap<String,Long>());
+	static Set<String> stSeenThisRun = Collections.synchronizedSet(new HashSet<String>());
 
 	private void warnUnusedColumns() {
-		qc.putIfAbsent(queryHash, Collections.synchronizedSet(new HashSet<Field<?>>()));
-		final Set<Field<?>> used = qc.get(queryHash);
-		final List<String> unusedColumnDescs = new ArrayList<String>();
+		qc.putIfAbsent(queryHash, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
+		final Map<Field<?>,Long> used = qc.get(queryHash);
+		final Set<Field<?>> unusedColumns = new LinkedHashSet<Field<?>>();
 		for (int i=0; i<selectedFields.length; ++i) {
 			if (!accessedField.get(i)) {
-				unusedColumnDescs.add(selectedFields[i].TABLE.getSimpleName() +"."+ selectedFields[i].JAVA_NAME);
+				unusedColumns.add(selectedFields[i]);
 			} else {
-				used.add(selectedFields[i]);
-				//System.err.println("\t used "+ selectedFields[i]);
+				final Long date = used.get(selectedFields[i]);
+				if (date==null || (date+MILLIS_ONE_WEEK)<START) {
+					used.put(selectedFields[i], System.currentTimeMillis());
+				}
 			}
+		}
+		if (surpriseFields!=null) {
+			for (final Field<?> f : surpriseFields) {
+				final Long date = used.get(f);
+				if (date==null || (date+MILLIS_ONE_WEEK)<START) {
+					used.put(f, System.currentTimeMillis());
+				}
+			}
+		}
+		removePKFieldsFromSet(unusedColumns);
+		final List<String> unusedColumnDescs = new ArrayList<String>();
+		for (final Field<?> field : unusedColumns) {
+			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
 		}
 		if (!unusedColumnDescs.isEmpty()) {
 			final String msg = "The following columns were never accessed:\n\t" 
@@ -70,6 +101,14 @@ class UsageMonitor<T extends Table> {
 	}
 
 	public UsageMonitor(final DBQuery<T> query) {
+		if (t.getState()!=Thread.State.TERMINATED) {
+			try {
+				t.join();
+			} catch (final InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		this.query = query;
 		// grab the current stack trace
 		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
@@ -77,23 +116,38 @@ class UsageMonitor<T extends Table> {
 		System.arraycopy(tmp, 4, st, 0, st.length);
 
 		String hash = null;
-        try {
-        	final MessageDigest cript = MessageDigest.getInstance("SHA-1");
-        	cript.reset();
-        	for (final StackTraceElement ste : st) {
-        		cript.update(ste.toString().getBytes("UTF-8"));
-        	}
-        	cript.update(Integer.toString(query.hashCode()).getBytes("UTF-8"));
-        	hash = new BigInteger(1, cript.digest()).toString(16);
-        } catch (final UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		hash = Integer.toHexString(Util.join(",", st).hashCode());
+//        try {
+//        	final MessageDigest cript = MessageDigest.getInstance("SHA-1");
+//        	cript.reset();
+//        	for (final StackTraceElement ste : st) {
+//        		cript.update(ste.toString().getBytes("UTF-8"));
+//        	}
+//        	cript.update(Integer.toString(query.hashCode()).getBytes("UTF-8"));
+//        	hash = digestToString(cript.digest());
+//        	final String s = Util.join(",", st);
+//        	System.err.println(hash +"\t"+ Arrays.toString(cript.digest()) +"\t"+ s.hashCode());
+//        } catch (final UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (final NoSuchAlgorithmException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
         queryHash = hash;
+        stSeenThisRun.add(hash);
         //System.err.println("queryHash "+ queryHash +" "+ query.hashCode());
+	}
+
+	private String digestToString(final byte[] buf) {
+		final char[] ret = new char[buf.length*2];
+		for (int i=0; i<buf.length; ++i) {
+			final int low = buf[i] & 0xF;  
+	        final int high = (buf[i] >> 8) & 0xF;
+	        ret[i*2] = Character.forDigit(high, 16);
+	        ret[i*2+1] = Character.forDigit(low, 16);
+		}
+		return new String(ret);
 	}
 
 	private void warnBadFKUsage() {
@@ -171,9 +225,11 @@ class UsageMonitor<T extends Table> {
 		for (int i=0; i<selectedFields.length; ++i) {
 			if (selectedFields[i].equals(field)) {
 				accessedField.set(i);
-				break;
+				return;
 			}
 		}
+		if (surpriseFields==null) surpriseFields = new ArrayList<Field<?>>();
+		surpriseFields.add(field);
 	}
 
 	public void setSelectedFields(final Field<?>[] selectedFields) {
@@ -181,31 +237,199 @@ class UsageMonitor<T extends Table> {
 	}
 
 	public DBQuery<T> getOptimizedQuery() {
+		if (!query.optimizeSelectFields()) return query;
 		if (!Context.selectOptimizationsEnabled()) {
+			//System.err.println("getOptimizedQuery !selectOptimizationsEnabled");
 			return query;
 		}
-		if (query.distinct) return query;
 		try {
-			final Set<Field<?>> used = qc.get(queryHash);
-			if (used == null) return query;
+			final Map<Field<?>,Long> used = qc.get(queryHash);
+			if (used == null) {
+				//System.err.println("getOptimizedQuery no runtime info for "+ this.queryHash);
+				return query;
+			}
 			//System.err.println("used "+ used);
 			final Set<Field<?>> deffer = new HashSet<Field<?>>();
 			final Field<?>[] originalSelectedFields = query.getSelectFields(false);
 			for (final Field<?> f : originalSelectedFields) {
-				if (!used.contains(f)) deffer.add(f);
+				if (!used.containsKey(f)) deffer.add(f);
 			}
 			if (deffer.isEmpty()) return query;
-			for (final Field<?> f : Util.getPK(query.tables.get(0)).GET_FIELDS()) {
-				deffer.remove(f);
-			}
-			if (deffer.size() == originalSelectedFields.length) {
+			removePKFieldsFromSet(deffer);
+			if (deffer.size()==originalSelectedFields.length && originalSelectedFields.length>0) {
 				// make sure we don't remove every field!
 				deffer.remove(originalSelectedFields[0]);
 			}
+			//System.err.println("getOptimizedQuery optimized!");
 			return (DBQuery<T>) query.deferFields(deffer);
 		} finally {
 			query = null;
 		}
+	}
+
+	private void removePKFieldsFromSet(final Set<Field<?>> deffer) {
+		for (final Table table : query.tables) {
+			for (final Field<?> f : Util.getPK(table).GET_FIELDS()) {
+				deffer.remove(f);
+			}
+		}
+		for (final Join join : query.joinsToOne) {
+			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+				deffer.remove(f);
+			}
+			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
+				deffer.remove(f);
+			}
+		}
+		for (final Join join : query.joinsToMany) {
+			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+				deffer.remove(f);
+			}
+			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
+				deffer.remove(f);
+			}
+		}
+	}
+
+
+	/* ====================== serialization stuff ====================== */
+
+	public static void doNothing() {
+		// do nothing; just make sure the class loads
+		return;
+	}
+	
+	private final static File HOME_DIR = new File(System.getProperty("user.home"));
+	private final static File CACHE_DIR = new File(HOME_DIR, ".nosco_optimizations");
+	private final static File PERF_CACHE = new File(CACHE_DIR, "performance");
+	private final static String README_TEXT = "Welcome to Nosco!\n\n" +
+			"This directory contains runtime profiles for programs that use the nosco library.\n" +
+			"It is always safe to delete.  Your programs will just run a little slower the next\n" +
+			"time or two they start up.  Thanks for visiting!\n\nhttp://code.google.com/p/nosco/\n";
+	private final static long START = System.currentTimeMillis();
+	private final static long cutoff = START - 1000*60*60*24*100;
+	
+	private final static Thread t = new Thread() {
+		@Override
+		public void run() {
+			if (!CACHE_DIR.isDirectory()) {
+				CACHE_DIR.mkdirs();
+				try {
+					final Writer w = new FileWriter(new File(CACHE_DIR, "README.TXT"));
+					w.write(README_TEXT);
+					w.close();
+				} catch (final IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			try {
+				final ClassLoader cl = this.getClass().getClassLoader();
+				final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
+				for (String line = null; (line=br.readLine())!=null;) {
+					try {
+						final JSONObject o = new JSONObject(line);
+						String st = null;
+						Long lastSeen = null;
+						final Map<Field<?>, Long> map = Collections.synchronizedMap(new HashMap<Field<?>,Long>());
+						for (final String x : o.keySet()) {
+							if ("__st__".equals(x)) {
+								st = o.getString(x);
+							} else  if ("__ts__".equals(x)) {
+								lastSeen = o.getLong(x);
+							} else {
+								try {
+									final long datetime = o.getLong(x);
+									if (datetime < cutoff) continue;
+									final int split = x.lastIndexOf('.');
+									final String className = x.substring(0, split);
+									final String fieldName = x.substring(split+1);
+									final Class<?> clz = cl.loadClass(className);
+									final java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
+									final Field<?> field = (Field<?>) f.get(null);
+									map.put(field, datetime);
+								} catch (final ClassNotFoundException e) {
+									e.printStackTrace();
+								} catch (final SecurityException e) {
+									e.printStackTrace();
+								} catch (final NoSuchFieldException e) {
+									e.printStackTrace();
+								} catch (final IllegalArgumentException e) {
+									e.printStackTrace();
+								} catch (final IllegalAccessException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+						if (st!=null && lastSeen!=null) stLastSeen.put(st, lastSeen);
+						if (true || !map.isEmpty()) {
+							qc.putIfAbsent(st, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
+							final Map<Field<?>,Long> used = qc.get(st);
+							used.putAll(map);
+						}
+					} catch (final JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				//System.err.println("loaded: "+ PERF_CACHE.getPath());
+			} catch (final FileNotFoundException e) {
+				// no worries
+				//System.err.println("does not exist: "+ PERF_CACHE.getPath());
+			} catch (final IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	};
+	
+	static {
+		t.start();
+	}
+	
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		    	System.gc();
+		    	try {
+					sleep(500);
+				} catch (final InterruptedException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				}
+		    	try {
+					final Writer w = new FileWriter(PERF_CACHE, true);
+					for (final Entry<String, Map<Field<?>, Long>> e : qc.entrySet()) {
+						final String stHash = e.getKey();
+						if (!stSeenThisRun.contains(stHash)) continue;
+						final JSONObject o = new JSONObject();
+						try {
+							int count = 0;
+							for (final Entry<Field<?>, Long> e2 : e.getValue().entrySet()) {
+								final long datetime = e2.getValue();
+								if (datetime < START) continue;
+								final Field<?> field = e2.getKey();
+								o.put(field.TABLE.getName() +"."+ field.JAVA_NAME, datetime);
+								++count;
+							}
+							final Long lastSeen = stLastSeen.get(stHash);
+							if (count > 0 || lastSeen==null || (lastSeen+MILLIS_ONE_WEEK)<START) {
+								o.put("__st__", stHash);
+								o.put("__ts__", System.currentTimeMillis());
+								o.write(w).write('\n');
+							}
+						} catch (final JSONException e1) {
+							e1.printStackTrace();
+						}
+					}
+					w.close();
+					//System.err.println("wrote: "+ PERF_CACHE);
+				} catch (final IOException e) {
+					e.printStackTrace();
+				}
+		    }
+		});
 	}
 
 }

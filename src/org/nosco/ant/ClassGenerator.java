@@ -464,7 +464,7 @@ class ClassGenerator {
 		br.write("\tpublic <S> S get(final Field<S> _field) {\n");
 		for (final String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
-			br.write("return (S) "+ getInstanceFieldName(column) +";\n");
+			br.write("return (S) get"+ getInstanceMethodName(column) +"();\n");
 		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
@@ -542,14 +542,14 @@ class ClassGenerator {
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\t\t__NOSCO_PRIVATE_accessedColumnCallback(this, "+ getFieldName(column) +");\n");
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\tfinal "+ className +" _tmp = ALL.onlyFields(");
+			br.write("\t\t\tfinal "+ className +" _tmp = ALL.use(__NOSCO_ORIGINAL_DATA_SOURCE).onlyFields(");
 			br.write(getFieldName(column)+")");
 			for (final String pk : pkSet) {
 				br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
 			}
 			br.write(".getTheOnly();\n");
-			br.write("\t\t\t"+ getInstanceFieldName(column) +" = _tmp == null ? null : _tmp.get"
-					+ getInstanceMethodName(column) +"();\n");
+			br.write("\t\t\t"+ getInstanceFieldName(column) +" = _tmp == null ? null : _tmp."
+					+ getInstanceFieldName(column) +";\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t}\n");
 			br.write("\t\treturn "+ getInstanceFieldName(column) +";\n\t}\n\n");

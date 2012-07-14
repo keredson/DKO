@@ -58,7 +58,7 @@ public abstract class Table {
 	/**
 	 * Please do not use.
 	 */
-	DataSource __NOSCO_ORIGINAL_DATA_SOURCE = null;
+	protected DataSource __NOSCO_ORIGINAL_DATA_SOURCE = null;
 
 	@SuppressWarnings("rawtypes")
 	UsageMonitor __NOSCO_USAGE_MONITOR = null;

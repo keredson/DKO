@@ -34,6 +34,9 @@ import org.nosco.datasource.SingleConnectionDataSource;
 
 
 class DBQuery<T extends Table> implements Query<T> {
+	
+	// make sure the UsageMonitor is class-loaded
+	static { UsageMonitor.doNothing(); }
 
 	// genned once and cached
 	private String sql;
@@ -1397,6 +1400,13 @@ class DBQuery<T extends Table> implements Query<T> {
 				return false;
 		} else if (!usedTableNames.equals(other.usedTableNames))
 			return false;
+		return true;
+	}
+
+	boolean optimizeSelectFields() {
+		if (distinct) return false;
+		if (onlySet!=null) return false;
+		if (deferSet!=null) return false;
 		return true;
 	}
 

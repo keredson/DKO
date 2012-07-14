@@ -66,7 +66,7 @@ class Select<T extends Table> implements Iterator<T> {
 	Select(final DBQuery<T> dbQuery) {
 		if (Context.usageWarningsEnabled()) {
 			usageMonitor = new UsageMonitor<T>(dbQuery);
-			this.query = usageMonitor.getOptimizedQuery();
+			this.query = usageMonitor.getSelectOptimizedQuery();
 		} else {
 			usageMonitor = null;
 			this.query = dbQuery;

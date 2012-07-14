@@ -55,6 +55,7 @@ class UsageMonitor<T extends Table> {
 	private final String queryHash;
 
 	private DBQuery<T> query;
+	private boolean selectOptimized = false;
 	
 	@Override
 	protected void finalize() throws Throwable {
@@ -94,7 +95,7 @@ class UsageMonitor<T extends Table> {
 		for (final Field<?> field : unusedColumns) {
 			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
 		}
-		if (!unusedColumnDescs.isEmpty()) {
+		if (!selectOptimized && !unusedColumnDescs.isEmpty()) {
 			final String msg = "The following columns were never accessed:\n\t" 
 					+ Util.join(", ", unusedColumnDescs) + "\nin the query created here:\n\t" 
 					+ Util.join("\n\t", (Object[]) st) + "\n" 
@@ -105,7 +106,7 @@ class UsageMonitor<T extends Table> {
 		}
 	}
 
-	public UsageMonitor(final DBQuery<T> query) {
+	UsageMonitor(final DBQuery<T> query) {
 		if (loadPerformanceInfo.getState()!=Thread.State.TERMINATED) {
 			try {
 				loadPerformanceInfo.join();
@@ -237,11 +238,11 @@ class UsageMonitor<T extends Table> {
 		surpriseFields.add(field);
 	}
 
-	public void setSelectedFields(final Field<?>[] selectedFields) {
+	void setSelectedFields(final Field<?>[] selectedFields) {
 		this.selectedFields = selectedFields;
 	}
 
-	public DBQuery<T> getOptimizedQuery() {
+	DBQuery<T> getSelectOptimizedQuery() {
 		if (!query.optimizeSelectFields()) return query;
 		if (!Context.selectOptimizationsEnabled()) {
 			//System.err.println("getOptimizedQuery !selectOptimizationsEnabled");
@@ -266,6 +267,7 @@ class UsageMonitor<T extends Table> {
 				deffer.remove(originalSelectedFields[0]);
 			}
 			//System.err.println("getOptimizedQuery optimized!");
+			this.selectOptimized  = true;
 			return (DBQuery<T>) query.deferFields(deffer);
 		} finally {
 			query = null;
@@ -299,7 +301,7 @@ class UsageMonitor<T extends Table> {
 
 	/* ====================== serialization stuff ====================== */
 
-	public static void doNothing() {
+	static void doNothing() {
 		// do nothing; just make sure the class loads
 		return;
 	}
@@ -442,7 +444,7 @@ class UsageMonitor<T extends Table> {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {
 		    	try {
-					final Writer w = new FileWriter(PERF_CACHE, true);
+					Writer w = null;
 					for (final Entry<String, Map<Field<?>, Long>> e : qc.entrySet()) {
 						final String stHash = e.getKey();
 						if (!stSeenThisRun.contains(stHash)) continue;
@@ -462,13 +464,14 @@ class UsageMonitor<T extends Table> {
 								o.put(STACK_TRACE, stHash);
 								o.put(TIME_STAMP, System.currentTimeMillis());
 								o.put(USED_FIELDS, o2);
+								if (w==null) w = new BufferedWriter(new FileWriter(PERF_CACHE, true));
 								o.write(w).write('\n');
 							}
 						} catch (final JSONException e1) {
 							e1.printStackTrace();
 						}
 					}
-					w.close();
+					if (w!=null) w.close();
 					//System.err.println("wrote: "+ PERF_CACHE);
 				} catch (final IOException e) {
 					//e.printStackTrace();

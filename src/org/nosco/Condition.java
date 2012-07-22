@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.nosco.Tuple.Tuple2;
+
 
 /**
  * This class represents a SQL conditional statement.  (ie: the contents of the {@code where} clause)
@@ -576,10 +578,10 @@ public abstract class Condition {
 			this.field2 = field2;
 		}
 
-		public <T> Binary(final Field<T> field, final String cmp, final Query<?> q) {
+		public <T,S extends Table> Binary(final Field<T> field, final String cmp, final DBQuery<S> q) {
 			this.field = field;
 			this.cmp = cmp;
-			this.s = (Select<?>) q.all().iterator();
+			this.s = new Select<S>(q);
 		}
 
 		public <T> Binary(final Field<T> field, final String cmp, final Function f) {
@@ -786,9 +788,9 @@ public abstract class Condition {
 		private final Query<? extends Table> q;
 		private final Select<?> s;
 
-		Exists(final Query<? extends Table> q) {
+		<T extends Table> Exists(final DBQuery<T> q) {
 			this.q = q;
-			this.s = (Select<?>) q.all().iterator();
+			this.s = new Select<T>(q);
 		}
 
 		@Override

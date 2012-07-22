@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.nosco.Tuple.Tuple2;
+
 
 /**
  * This class is used for tweaking query executions. &nbsp;

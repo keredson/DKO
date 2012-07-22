@@ -24,6 +24,7 @@ import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
 import org.nosco.DBQuery.Join;
 import org.nosco.Field.FK;
+import org.nosco.Tuple.Tuple2;
 
 
 class Select<T extends Table> implements Iterator<T> {

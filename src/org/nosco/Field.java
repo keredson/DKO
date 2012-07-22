@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -597,8 +598,19 @@ public class Field<T> implements Cloneable {
 	 * @param set
 	 * @return
 	 */
-	public Condition in(final Query q) {
-		return new Binary(this, " in ", q);
+	@SuppressWarnings("unchecked")
+	public Condition in(final Query<?> q) {
+		if (q instanceof DBQuery) {
+			return new Binary(this, " in ", (DBQuery<?>) q);
+		} else {
+			final Field[] fields = q.getSelectFields();
+			if (fields.length != 1) throw new RuntimeException("cannot select more than one field in an inner query.");
+			final Collection values = new ArrayList();
+			for (final Table t : q) {
+				values.add(t.get(fields[0]));
+			}
+			return in(values);
+		}
 	}
 
 	/**

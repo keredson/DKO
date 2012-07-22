@@ -3,12 +3,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import org.nosco.Bulk;
 import org.nosco.Constants.CALENDAR;
 import org.nosco.Context;
 import org.nosco.Context.Undoer;
@@ -79,7 +82,7 @@ public class SharedDBTests extends TestCase {
 		boolean sawEST29 = false;
 		for (final Item item : Item.ALL.use(ccds).with(Item.FK_SUPPLIER)) {
 			count++;
-			if (!"EST-29".equals(item.getItemid())) {
+			if (!"EST-29".equals(item.getItemid()) && !item.getItemid().startsWith("test-")) {
 				assertNotNull(item.getSupplierFK());
 			} else {
 				sawEST29 = true;
@@ -205,9 +208,9 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testObjectArray() throws SQLException {
-		int count = Item.ALL.count();
+		final int count = Item.ALL.count();
 		int count2 = 0;
-		for (Object[] oa : Item.ALL.asIterableOfObjectArrays()) {
+		for (final Object[] oa : Item.ALL.asIterableOfObjectArrays()) {
 			count2 += 1;
 		}
 		assertEquals(count, count2);
@@ -221,11 +224,92 @@ public class SharedDBTests extends TestCase {
     }
 
     public void testTopWithToManyRelationship() throws SQLException {
-    	Product p = Product.ALL.with(Item.FK_PRODUCTID_PRODUCT)
+    	final Product p = Product.ALL.with(Item.FK_PRODUCTID_PRODUCT)
     			.where(Product.PRODUCTID.eq("FL-DSH-01"))
     			.first();
     	assertEquals(2, p.getItemSet().count());
     	assertEquals(1, Product.ALL.with(Item.FK_PRODUCTID_PRODUCT).top(1).asList().size());
+    }
+
+    public void testBulkInsert() throws SQLException {
+    	final Query<Category> them = Category.ALL.where(Category.CATID.like("test-%"));
+		them.deleteAll();
+    	final List<Category> categories = new ArrayList<Category>();
+    	categories.add(new Category().setCatid("test-1"));
+    	categories.add(new Category().setCatid("test-2").setName("woot"));
+    	categories.add(new Category().setCatid("test-3").setName("woot2"));
+    	final Bulk bulk = new Bulk(ds);
+    	bulk.insertAll(categories);
+    	assertEquals(3, them.count());
+    }
+
+    public void testBulkUpdate() throws SQLException {
+    	final int count = Item.ALL.count();
+    	final List<Item> items = Item.ALL.asList();
+		for (final Item item : items) {
+    		item.setAttr2("woot2");
+    		if (Math.random() > .5) {
+    			item.setAttr3("woot3");
+    		}
+    		if (Math.random() > .5) {
+    			item.setAttr4("woot4");
+    		}
+    	}
+    	final Bulk bulk = new Bulk(ds);
+    	final long ret = bulk.updateAll(items);
+    	assertEquals(count, ret);
+    }
+
+    public void testBulkInsertOrUpdate() throws SQLException {
+    	System.err.println("testBulkInsertOrUpdate");
+    	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
+    	final List<Item> updates = Item.ALL.asList();
+    	String pid = null;
+    	Integer sid = -1;
+		for (final Item item : updates) {
+			pid = item.getProductid();
+			sid = item.getSupplier();
+    		item.setAttr2("woot2");
+    		if (Math.random() > .5) {
+    			item.setAttr3("woot3");
+    		}
+    		if (Math.random() > .5) {
+    			item.setAttr4("woot4");
+    		}
+    	}
+		final List<Item> adds = new ArrayList<Item>();
+		adds.add(new Item().setItemid("test-10").setProductid(pid).setSupplier(sid));
+		adds.add(new Item().setItemid("test-20").setProductid(pid).setSupplier(sid).setAttr5("woot5"));
+		final List<Item> all = new ArrayList<Item>();
+		all.addAll(adds);
+		all.addAll(updates);
+    	final Bulk bulk = new Bulk(ds);
+    	final long ret = bulk.insertOrUpdateAll(all);
+    	assertEquals(all.size(), ret);
+    	assertEquals(2, adds.size());
+    	System.err.println(Item.ALL.get(Item.ITEMID.eq("test-10")));
+    	System.err.println(Item.ALL.get(Item.ITEMID.eq("test-20")));
+    	assertEquals(adds.size(), bulk.deleteAll(adds));
+    }
+
+    public void testBulkCommitDiff() throws SQLException {
+    	System.err.println("testBulkCommitDiff");
+    	final Product p = Product.ALL.first();
+    	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
+    	new Item().setItemid("test-1").setProductid(p.getProductid()).insert();
+    	new Item().setItemid("test-2").setProductid(p.getProductid()).insert();
+    	new Item().setItemid("test-3").setProductid(p.getProductid()).insert();
+    	final List<Item> pre = Item.ALL.where(Item.ITEMID.like("test-%")).orderBy(Item.ITEMID).asList();
+    	final List<Item> post = Item.ALL.where(Item.ITEMID.like("test-%")).orderBy(Item.ITEMID).asList();
+    	post.get(0).setAttr2("woot2");
+    	post.remove(1);
+    	post.add(new Item().setItemid("test-4").setProductid(p.getProductid()));
+    	final List<RowChange<Item>> diff = Diff.diffActualized(pre, post);
+    	assertEquals(3, diff.size());
+    	final Bulk bulk = new Bulk(ds);
+    	final long ret = bulk.commitDiff(diff);
+    	assertEquals(3, ret);
+    	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
     }
 
 }

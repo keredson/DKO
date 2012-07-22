@@ -146,7 +146,7 @@
   </target>
 
   <target name="unit-test-hsql" depends="unit-test-gen-src-hsql">
-    <javac srcdir="test" destdir="bin_test" debug="on" 
+    <javac srcdir="test/utest" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
    	/>
     <mkdir dir="lib"/>
@@ -164,7 +164,7 @@
       <jvmarg value="-Djava.util.logging.config.file=test/logging.properties"/>
       <formatter type="plain"/>
       <batchtest fork="yes" todir="${reports}">
-        <fileset dir="test">
+        <fileset dir="test/utest">
           <include name="**/*TestHSQL*.java"/>
         </fileset>
       </batchtest>
@@ -212,7 +212,7 @@
   </target>
 
   <target name="unit-test-build-mysql" depends="unit-test-gen-src-mysql">
-    <javac srcdir="test" destdir="bin_test" debug="on" 
+    <javac srcdir="test/utest" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
    	/>
     <mkdir dir="lib"/>
@@ -234,7 +234,7 @@
       <jvmarg value="-Dorg.nosco.log_sql=true"/>
       <formatter type="plain"/>
       <batchtest fork="yes" todir="${reports}">
-        <fileset dir="test">
+        <fileset dir="test/utest">
           <include name="**/*TestMySQL*.java"/>
         </fileset>
       </batchtest>
@@ -242,5 +242,20 @@
   </target>
 
   <!-- ========[ END UNIT TEST MYSQL ]======== -->
+
+  <target name="performance-test-mysql" depends="unit-test-build-mysql">
+    <javac srcdir="test/performance" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
+   	/>
+    <java fork="yes" classname="performance.PetStoreMysql">
+      <classpath>
+        <pathelement location="bin_test"/>
+        <pathelement location="${lib_nosco_jar}"/>
+        <pathelement location="${dep_junit_jar}"/>
+        <pathelement location="${dep_hsqldb_jar}"/>
+        <pathelement location="${dep_mysql_jar}"/>
+      </classpath>
+    </java>
+  </target>
 
 </project>

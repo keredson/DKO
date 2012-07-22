@@ -1,17 +1,23 @@
 package org.nosco;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Diff.RowChange;
+import org.nosco.Tuple.Tuple2;
 
 /**
  * Provides optimized methods for CRUD operations on collections. &nbsp;
@@ -36,8 +42,8 @@ import org.nosco.Diff.RowChange;
 public class Bulk {
 
 	private final DataSource ds;
+	private final DB_TYPE dbType;
 	private static final int BATCH_SIZE = 64;
-	private final static String EOQ = "EOQ";
 
 	/**
 	 * Specify the target DataSource.
@@ -46,6 +52,7 @@ public class Bulk {
 	 */
 	public Bulk(final DataSource ds) {
 		this.ds = ds;
+		dbType = DB_TYPE.detect(ds);
 	}
 
 	/**
@@ -55,9 +62,10 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int insertAll(final Iterable<T> iterable) throws SQLException {
+	public <T extends Table> long insertAll(final Iterable<T> iterable) throws SQLException {
 		return insertAll(iterable, null, -1);
 	}
+	
 	/**
 	 * Inserts all objects from the source iterable into the target DataSource. &nbsp;
 	 * On error aborts. &nbsp; Callback called every {@code frequency} seconds with the
@@ -69,69 +77,32 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int insertAll(final Iterable<T> iterable, final StatusCallback callback,
+	public <T extends Table> long insertAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
-		int count = 0;
-		int resCount = 0;
-		boolean first = true;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
-		Tuple2<Connection, Boolean> connInfo = null;
-		Connection conn = null;
-		Field<?>[] fields = null;
-		PreparedStatement psInsert = null;
-
-		try {
-			for (final T table : iterable) {
-				count += 1;
-				if (first) {
-					first = false;
-					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					connInfo = q.getConnRW(ds);
-					conn = connInfo.a;
-					fields = table.FIELDS();
-					psInsert = createInsertPS(conn, q, table, fields);
-				}
-				int i=1;
-				for (final Field<?> field : fields) {
-					Object o = table.get(field);
-					o = table.__NOSCO_PRIVATE_mapType(o);
-					// hack for sql server which otherwise gives:
-					// com.microsoft.sqlserver.jdbc.SQLServerException:
-					// The conversion from UNKNOWN to UNKNOWN is unsupported.
-					if (o instanceof Character) psInsert.setString(i++, o.toString());
-					else psInsert.setObject(i++, o);
-				}
-				psInsert.addBatch();
-				if (count % BATCH_SIZE == 0) {
-					for (final int k : psInsert.executeBatch()) {
-						resCount += k;
-					}
-					if (Thread.interrupted()) {
-						return resCount;
-					}
-				}
-				if (callback!=null && ((System.currentTimeMillis()/1000.0)
-						- lastCallback > frequency)) {
-					callback.call(count);
-					lastCallback = System.currentTimeMillis() / 1000.0;
-				}
+		final Map<BitSet, Inserter<T>> inserters = new HashMap<BitSet,Inserter<T>>();
+		for (final T t : iterable) {
+			Inserter<T> inserter = inserters.get(t.__NOSCO_FETCHED_VALUES);
+			if (inserter == null) {
+				inserter = new Inserter<T>();
+				inserters.put(t.__NOSCO_FETCHED_VALUES, inserter);
 			}
-			if (count % BATCH_SIZE != 0) {
-				for (final int k : psInsert.executeBatch()) resCount += k;
+			final boolean batchWentOut = inserter.push(t);
+			if (callback!=null && batchWentOut && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
+				long count = 0;
+				for (final Inserter<T> i : inserters.values()) {
+					count += i.count;
+				}
+				callback.call(count);
+				lastCallback = System.currentTimeMillis() / 1000.0;
 			}
-			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
-			if (conn!=null && connInfo.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
-			}
-			return resCount;
-		} catch (final SQLException e) {
-			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
-			throw e;
-		} finally {
-			safeClose(psInsert);
-			safeClose(connInfo, ds);
 		}
+		long count = 0;
+		for (final Inserter<T> inserter : inserters.values()) {
+			inserter.finish();
+			count += inserter.count;
+		}
+		return count;
 	}
 
 	private static void safeClose(final PreparedStatement ps) {
@@ -140,15 +111,25 @@ public class Bulk {
 		catch (final Throwable e) { /* ignore */ }
 	}
 
-	private static void safeClose(final Tuple2<Connection, Boolean> connInfo, final DataSource ds) {
+	private static void safeClose(final Connection conn) {
 		try {
-			if (connInfo != null && connInfo.a != null && !connInfo.a.isClosed() && connInfo.b) {
-				connInfo.a.close();
+			if (conn != null && !conn.isClosed()) {
+				conn.close();
 			}
 		}
 		catch (final Throwable e) { /* ignore */ }
 	}
 
+	/**
+	 * Updates all objects (based on their primary keys) from the source iterable into the
+	 * target DataSource. &nbsp; On error aborts. &nbsp;
+	 * @param iterable
+	 * @return
+	 * @throws SQLException
+	 */
+	public <T extends Table> long updateAll(final Iterable<T> iterable) throws SQLException {
+		return updateAll(iterable, null, -1);
+	}
 	/**
 	 * Updates all objects (based on their primary keys) from the source iterable into the
 	 * target DataSource. &nbsp; On error aborts. &nbsp;
@@ -158,72 +139,277 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int updateAll(final Iterable<T> iterable) throws SQLException {
-		final int count = 0;
-		int resCount = 0;
-		boolean first = true;
-		Tuple2<Connection, Boolean> connInfo = null;
-		Connection conn = null;
-		Field<?>[] fields = null;
-		PreparedStatement psUpdate = null;
-		Field<?>[] pks = null;
-
-		try {
-			for (final T table : iterable) {
-				if (first) {
-					first = false;
-					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					connInfo = q.getConnRW(ds);
-					conn = connInfo.a;
-					fields = table.FIELDS();
-					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
-					psUpdate = createUpdatePS(conn, q, table, fields, pks);
-				}
-				int i=1;
-				for (final Field<?> field : fields) {
-					Object o = table.get(field);
-					o = table.__NOSCO_PRIVATE_mapType(o);
-					// hack for sql server which otherwise gives:
-					// com.microsoft.sqlserver.jdbc.SQLServerException:
-					// The conversion from UNKNOWN to UNKNOWN is unsupported.
-					if (o instanceof Character) psUpdate.setString(i++, o.toString());
-					else psUpdate.setObject(i++, o);
-				}
-				for (final Field<?> field : pks) {
-					Object o = table.get(field);
-					o = table.__NOSCO_PRIVATE_mapType(o);
-					// hack for sql server which otherwise gives:
-					// com.microsoft.sqlserver.jdbc.SQLServerException:
-					// The conversion from UNKNOWN to UNKNOWN is unsupported.
-					if (o instanceof Character) psUpdate.setString(i++, o.toString());
-					else psUpdate.setObject(i++, o);
-				}
-				psUpdate.addBatch();
-				if (count % BATCH_SIZE == 0) {
-					for (final int k : psUpdate.executeBatch()) {
-						resCount += k;
-					}
-					if (Thread.interrupted()) {
-						return resCount;
-					}
-				}
+	public <T extends Table> long updateAll(final Iterable<T> iterable, final StatusCallback callback,
+			final double frequency) throws SQLException {
+		double lastCallback = System.currentTimeMillis() / 1000.0;
+		final Map<BitSet, Updater<T>> updaters = new HashMap<BitSet,Updater<T>>();
+		for (final T t : iterable) {
+			Updater<T> updater = updaters.get(t.__NOSCO_UPDATED_VALUES);
+			if (updater == null) {
+				updater = new Updater<T>();
+				updaters.put(t.__NOSCO_UPDATED_VALUES, updater);
 			}
-			if (count % BATCH_SIZE != 0) {
-				for (final int k : psUpdate.executeBatch()) resCount += k;
+			final boolean batchWentOut = updater.push(t);
+			if (callback!=null && batchWentOut && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
+				long count = 0;
+				for (final Updater<T> u : updaters.values()) {
+					count += u.count;
+				}
+				callback.call(count);
+				lastCallback = System.currentTimeMillis() / 1000.0;
 			}
-			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (conn!=null && connInfo.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				safeClose(connInfo, ds);
-			}
-			return resCount;
-		} catch (final SQLException e) {
-			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
-			throw e;
-		} finally {
-			safeClose(psUpdate);
-			safeClose(connInfo, ds);
 		}
+		long count = 0;
+		for (final Updater<T> updater : updaters.values()) {
+			updater.finish();
+			count += updater.count;
+		}
+		return count;
+	}
+	
+	private class Inserter<T extends Table> {
+
+		@SuppressWarnings("unchecked")
+		private final T[] buffer = (T[]) new Table[BATCH_SIZE];
+		private int pos = 0;
+		protected boolean init = false;
+		protected Field<?>[] fields;
+		protected Connection conn;
+		protected Method pre;
+		protected Method post;
+		protected PreparedStatement ps;
+		protected Boolean shouldCloseConn = true;
+		private boolean finished = false;
+		long count = 0;
+		private RejectCallback<T> rc = null;
+
+		Inserter() {}
+		Inserter(final RejectCallback<T> rc) {
+			this.rc  = rc;
+		}
+
+		boolean push(final T t) throws SQLException {
+			buffer[pos++] = t;
+			if (pos == buffer.length) {
+				pushBatch();
+				return true;
+			}
+			return false;
+		}
+		
+		@SuppressWarnings("unchecked")
+		private void pushBatch() throws SQLException {
+			if (!init) init(buffer[0]);
+			T[] tables;
+			if (buffer.length == pos) {
+				tables = buffer;
+			} else {
+				tables = (T[]) new Table[pos];
+				System.arraycopy(buffer, 0, tables, 0, pos);
+			}
+			if (pre != null) {
+				try {
+					pre.invoke(null, (Object[]) tables);
+				} catch (final IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				} catch (final IllegalAccessException e) {
+					throw new RuntimeException(e);
+				} catch (final InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			for (int i=0; i<tables.length; ++i) {
+				final Table table = tables[i];
+				int k=1;
+				for (int j=0; j<fields.length; ++j) {
+					final Field<?> field = fields[j];
+					Object o = table.get(field);
+					o = table.__NOSCO_PRIVATE_mapType(o);
+					// hack for sql server which otherwise gives:
+					// com.microsoft.sqlserver.jdbc.SQLServerException:
+					// The conversion from UNKNOWN to UNKNOWN is unsupported.
+					if (o instanceof Character) ps.setString(k++, o.toString());
+					else ps.setObject(k++, o);
+				}
+				ps.addBatch();
+			}
+			try {
+				final int[] batchResults = ps.executeBatch();
+				for (final int k : batchResults) {
+					count += k;
+				}
+			} catch (final BatchUpdateException e) {
+				if (rc == null) throw e;
+				final int[] batchResults = e.getUpdateCounts();
+				System.err.println(e);
+				System.err.print("batchResults ");
+				final List<T> rejects = new ArrayList<T>();
+				for (int i=0; i<batchResults.length; ++i) {
+					System.err.print(" " + batchResults[i] +":"+ tables[i]);
+					if (batchResults[i]<=0) rejects.add(tables[i]);
+					else count += batchResults[i];
+				}
+				System.err.println();
+				rc.reject(rejects);
+			}
+			if (post != null) {
+				try {
+					post.invoke(null, (Object[]) tables);
+				} catch (final IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				} catch (final IllegalAccessException e) {
+					throw new RuntimeException(e);
+				} catch (final InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			pos = 0;
+		}
+		
+		protected void init(final Table table) throws SQLException {
+			init = true;
+			final Tuple2<Connection, Boolean> connInfo = DBQuery.getConnRW(ds);
+			conn = connInfo.a;
+			shouldCloseConn  = connInfo.b;
+			final Field<?>[] allFields = table.FIELDS();
+			fields = new Field[table.__NOSCO_FETCHED_VALUES.cardinality()];
+			for (int i=0, j=0; i<allFields.length; ++i) {
+				if (table.__NOSCO_FETCHED_VALUES.get(i)) {
+					fields[j++] = allFields[i];
+				}
+			}
+			try {
+				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_INSERT_PRE").get(table);
+				post = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_INSERT_POST").get(table);
+			}
+			catch (final ClassCastException e) { /* ignore */ }
+			catch (final SecurityException e) { /* ignore */ }
+			catch (final NoSuchFieldException e) { /* ignore */ }
+			catch (final IllegalArgumentException e) { /* ignore */ }
+			catch (final IllegalAccessException e) { /* ignore */ }
+
+			// create the statement
+			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+			final StringBuffer sb = new StringBuffer();
+			sb.append("insert into ");
+			sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
+					+sep+ table.TABLE_NAME());
+			sb.append(" (");
+			sb.append(Util.join(", ", fields));
+			sb.append(") values (");
+			for (int i=0; i<fields.length; ++i) {
+				sb.append("?,");
+			}
+			sb.deleteCharAt(sb.length()-1);
+			sb.append(")");
+			final String sql = sb.toString();
+			Util.log(sql, null);
+			ps = conn.prepareStatement(sql);
+		}
+		
+		void finish() throws SQLException {
+			if (pos > 0) pushBatch();
+			safeClose(ps);
+			if (shouldCloseConn) safeClose(conn);
+			finished  = true;
+			System.err.println(this +" finished "+ count);
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			if (!finished) finish();
+		}
+
+	}
+
+	private class Updater<T extends Table> extends Inserter<T> {
+
+		Updater() {}
+
+		@Override
+		protected void init(final Table table) throws SQLException {
+			init = true;
+			final Tuple2<Connection, Boolean> connInfo = DBQuery.getConnRW(ds);
+			conn = connInfo.a;
+			shouldCloseConn  = connInfo.b;
+			final Field<?>[] allFields = table.FIELDS();
+			final Field<?>[] pks = Util.getPK(table).GET_FIELDS();
+			fields = new Field[table.__NOSCO_UPDATED_VALUES.cardinality() + pks.length];
+			for (int i=0, j=0; i<allFields.length; ++i) {
+				if (table.__NOSCO_UPDATED_VALUES.get(i)) {
+					fields[j++] = allFields[i];
+				}
+			}
+			for (int i=0; i<pks.length; ++i) {
+				fields[fields.length - pks.length + i] = pks[i];
+			}
+			try {
+				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_UPDATE_PRE").get(table);
+				post = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_UPDATE_POST").get(table);
+			}
+			catch (final ClassCastException e) { /* ignore */ }
+			catch (final SecurityException e) { /* ignore */ }
+			catch (final NoSuchFieldException e) { /* ignore */ }
+			catch (final IllegalArgumentException e) { /* ignore */ }
+			catch (final IllegalAccessException e) { /* ignore */ }
+
+			// create the statement
+			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+			final StringBuffer sb = new StringBuffer();
+			sb.append("update ");
+			sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
+					+sep+ table.TABLE_NAME());
+			sb.append(" set ");
+			for (int i=0; i<fields.length-pks.length; ++i) {
+				sb.append(fields[i].toString());
+				sb.append("=?, ");
+			}
+			sb.delete(sb.length()-2, sb.length());
+			sb.append(" where ");
+			sb.append(Util.join("=? and ", pks));
+			sb.append("=?;");
+			final String sql = sb.toString();
+			Util.log(sql, null);
+			ps = conn.prepareStatement(sql);
+		}
+		
+	}
+
+	private class Deleter<T extends Table> extends Inserter<T> {
+
+		Deleter() {}
+
+		@Override
+		protected void init(final Table table) throws SQLException {
+			init = true;
+			final Tuple2<Connection, Boolean> connInfo = DBQuery.getConnRW(ds);
+			conn = connInfo.a;
+			shouldCloseConn  = connInfo.b;
+			fields = Util.getPK(table).GET_FIELDS();
+			try {
+				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_DELETE_PRE").get(table);
+				post = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_DELETE_POST").get(table);
+			}
+			catch (final ClassCastException e) { /* ignore */ }
+			catch (final SecurityException e) { /* ignore */ }
+			catch (final NoSuchFieldException e) { /* ignore */ }
+			catch (final IllegalArgumentException e) { /* ignore */ }
+			catch (final IllegalAccessException e) { /* ignore */ }
+
+			// create the statement
+			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
+			final StringBuffer sb = new StringBuffer();
+			sb.append("delete from ");
+			sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
+					+sep+ table.TABLE_NAME());
+			sb.append(" where ");
+			sb.append(Util.join("=? and ", fields));
+			sb.append("=?;");
+			final String sql = sb.toString();
+			Util.log(sql, null);
+			ps = conn.prepareStatement(sql);
+		}
+		
 	}
 
 	/**
@@ -235,207 +421,115 @@ public class Bulk {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int insertOrUpdateAll(final Iterable<T> iterable) throws SQLException {
-		int count = 0;
-		boolean first = true;
-		Tuple2<Connection, Boolean> connInfo = null;
-		Connection conn = null;
-		Field<?>[] fields = null;
-		PreparedStatement psInsert = null;
-		PreparedStatement psUpdate = null;
-		Field<?>[] pks = null;
-
-		try {
-			for (final T table : iterable) {
-				if (first) {
-					first = false;
-					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					connInfo = q.getConnRW(ds);
-					conn = connInfo.a;
-					fields = table.FIELDS();
-					psInsert = createInsertPS(conn, q, table, fields);
-					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
-					psUpdate = createUpdatePS(conn, q, table, fields, pks);
-				}
-				int i=1;
-				for (final Field<?> field : fields) {
-					Object o = table.get(field);
-					o = table.__NOSCO_PRIVATE_mapType(o);
-					// hack for sql server which otherwise gives:
-					// com.microsoft.sqlserver.jdbc.SQLServerException:
-					// The conversion from UNKNOWN to UNKNOWN is unsupported.
-					if (o instanceof Character) psInsert.setString(i++, o.toString());
-					else psInsert.setObject(i++, o);
-				}
-				try {
-					psInsert.execute();
-					count += psInsert.getUpdateCount();
-				} catch (final SQLException e) {
-					int j=1;
-					for (final Field<?> field : fields) {
-						Object o = table.get(field);
-						o = table.__NOSCO_PRIVATE_mapType(o);
-						// hack for sql server which otherwise gives:
-						// com.microsoft.sqlserver.jdbc.SQLServerException:
-						// The conversion from UNKNOWN to UNKNOWN is unsupported.
-						if (o instanceof Character) psUpdate.setString(j++, o.toString());
-						else psUpdate.setObject(j++, o);
-					}
-					for (final Field<?> field : pks) {
-						Object o = table.get(field);
-						o = table.__NOSCO_PRIVATE_mapType(o);
-						// hack for sql server which otherwise gives:
-						// com.microsoft.sqlserver.jdbc.SQLServerException:
-						// The conversion from UNKNOWN to UNKNOWN is unsupported.
-						if (o instanceof Character) psUpdate.setString(j++, o.toString());
-						else psUpdate.setObject(j++, o);
-					}
-					psUpdate.execute();
-					count += psUpdate.getUpdateCount();
-				}
-
-			}
-			if (psInsert != null && !psInsert.isClosed()) psInsert.close();
-			if (psUpdate != null && !psUpdate.isClosed()) psUpdate.close();
-			if (conn!=null && connInfo.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
-			}
-			return count;
-		} catch (final SQLException e) {
-			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
-			throw e;
-		} finally {
-			safeClose(psInsert);
-			safeClose(psUpdate);
-			safeClose(connInfo, ds);
-		}
+	public <T extends Table> long insertOrUpdateAll(final Iterable<T> iterable) throws SQLException {
+		return insertOrUpdateAll(iterable, null, -1);
 	}
-
 	/**
-	 * Updates all objects (based on their primary keys) from the source iterable into the
-	 * target DataSource. &nbsp; On error aborts. &nbsp;
+	 * Inserts all objects from the source iterable into the
+	 * target DataSource. &nbsp; On error attempts to update (based on their primary keys). &nbsp;
+	 * On update error aborts.
 	 * <p>Note that classes without primary keys are not supported at this time.
 	 * @param iterable
+	 * @param callback
+	 * @param frequency
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T extends Table> int deleteAll(final Iterable<T> iterable) throws SQLException {
-		final int count = 0;
-		int resCount = 0;
-		boolean first = true;
-		Tuple2<Connection, Boolean> connInfo = null;
-		Connection conn = null;
-		PreparedStatement psDelete = null;
-		Field<?>[] pks = null;
-
-		try {
-			for (final T table : iterable) {
-				if (first) {
-					first = false;
-					final DBQuery<T> q = (DBQuery<T>) new DBQuery<T>(table.getClass()).use(ds);
-					connInfo = q.getConnRW(ds);
-					conn = connInfo.a;
-					pks = Util.getPK(table) == null ? null : Util.getPK(table).GET_FIELDS();
-					if (pks == null || pks.length == 0) {
-						throw new RuntimeException("cannot bulk delete from tha PK-less table");
+	public <T extends Table> long insertOrUpdateAll(final Iterable<T> iterable, final StatusCallback callback,
+			final double frequency) throws SQLException {
+		double lastCallback = System.currentTimeMillis() / 1000.0;
+		final Map<BitSet, Inserter<T>> inserters = new HashMap<BitSet,Inserter<T>>();
+		final Map<BitSet, Updater<T>> updaters = new HashMap<BitSet,Updater<T>>();
+		final List<T> rejects = new ArrayList<T>();
+		for (final T t : iterable) {
+			Inserter<T> inserter = inserters.get(t.__NOSCO_FETCHED_VALUES);
+			if (inserter == null) {
+				inserter = new Inserter<T>(new RejectCallback<T>() {
+					@Override
+					void reject(final Collection<T> rs) {
+						rejects.addAll(rs);
+						//System.err.println("found rejects "+ rs.size());
 					}
-					psDelete = createDeletePS(conn, q, table, pks);
-				}
-				int i=1;
-				for (final Field<?> field : pks) {
-					Object o = table.get(field);
-					o = table.__NOSCO_PRIVATE_mapType(o);
-					// hack for sql server which otherwise gives:
-					// com.microsoft.sqlserver.jdbc.SQLServerException:
-					// The conversion from UNKNOWN to UNKNOWN is unsupported.
-					if (o instanceof Character) psDelete.setString(i++, o.toString());
-					else psDelete.setObject(i++, o);
-				}
-				psDelete.addBatch();
-				if (count % BATCH_SIZE == 0) {
-					for (final int k : psDelete.executeBatch()) resCount += k;
-				}
+				});
+				inserters.put(t.__NOSCO_FETCHED_VALUES, inserter);
 			}
-			if (count % BATCH_SIZE != 0) {
-				for (final int k : psDelete.executeBatch()) {
-					resCount += k;
+			inserter.push(t);
+			if (!rejects.isEmpty()) {
+				for (final T r : rejects) {
+					//System.err.println("reject: "+ r);
+					Updater<T> updater = updaters.get(r.__NOSCO_UPDATED_VALUES);
+					if (updater == null) {
+						updater = new Updater<T>();
+						updaters.put(r.__NOSCO_UPDATED_VALUES, updater);
+					}
+					updater.push(r);
 				}
-				if (Thread.interrupted()) {
-					return resCount;
+				rejects.clear();
+			}
+			if (callback!=null && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
+				long count = 0;
+				for (final Inserter<T> i : inserters.values()) {
+					count += i.count;
 				}
+				for (final Updater<T> u : updaters.values()) {
+					count += u.count;
+				}
+				callback.call(count);
+				lastCallback = System.currentTimeMillis() / 1000.0;
 			}
-			if (psDelete != null && !psDelete.isClosed()) psDelete.close();
-			if (conn!=null && connInfo.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
-			}
-			return resCount;
-		} catch (final SQLException e) {
-			if (connInfo.b && !conn.getAutoCommit()) conn.rollback();
-			throw e;
-		} finally {
-			safeClose(psDelete);
-			safeClose(connInfo, ds);
 		}
+		long count = 0;
+		for (final Inserter<T> inserter : inserters.values()) {
+			inserter.finish();
+			count += inserter.count;
+		}
+		for (final T r : rejects) {
+			//System.err.println("reject: "+ r);
+			Updater<T> updater = updaters.get(r.__NOSCO_UPDATED_VALUES);
+			if (updater == null) {
+				updater = new Updater<T>();
+				updaters.put(r.__NOSCO_UPDATED_VALUES, updater);
+			}
+			updater.push(r);
+		}
+		for (final Updater<T> updater : updaters.values()) {
+			updater.finish();
+			count += updater.count;
+		}
+		return count;
 	}
 
-	private <T extends Table> PreparedStatement createInsertPS(final Connection conn,
-			final DBQuery<T> q, final Table table, final Field[] fields) throws SQLException {
-		PreparedStatement ps;
-		final String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		final StringBuffer sb = new StringBuffer();
-		sb.append("insert into ");
-		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
-				+sep+ table.TABLE_NAME());
-		sb.append(" (");
-		sb.append(Util.join(",", fields));
-		final String[] bindStrings = new String[fields.length];
-		for (int i=0; i < fields.length; ++i) bindStrings[i] = "?";
-		sb.append(") values (");
-		sb.append(Util.join(", ", bindStrings));
-		sb.append(")");
-		final String sql = sb.toString();
-		Util.log(sql, null);
-		ps = conn.prepareStatement(sql);
-		return ps;
+	/**
+	 * Deletes from the supplied DataSource all the elements in this Iterable.
+	 * @param iterable
+	 * @return the number of elements deleted
+	 * @throws SQLException
+	 */
+	public <T extends Table> long deleteAll(final Iterable<T> iterable) throws SQLException {
+		return deleteAll(iterable, null, -1);
 	}
-
-	private <T extends Table> PreparedStatement createUpdatePS(final Connection conn,
-			final DBQuery<T> q, final Table table, final Field[] fields, final Field[] pks) throws SQLException {
-		if (pks == null || pks.length == 0) throw new RuntimeException("cannot mass update on a table without primary keys");
-		PreparedStatement ps;
-		final String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		final StringBuffer sb = new StringBuffer();
-		sb.append("update ");
-		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
-				+sep+ table.TABLE_NAME());
-		sb.append(" set ");
-		sb.append(Util.join("=?, ", fields));
-		sb.append("=?  where ");
-		sb.append(Util.join("=? and ", pks));
-		sb.append("=?;");
-		final String sql = sb.toString();
-		Util.log(sql, null);
-		ps = conn.prepareStatement(sql);
-		return ps;
-	}
-
-	private <T extends Table> PreparedStatement createDeletePS(final Connection conn,
-			final DBQuery<T> q, final Table table, final Field[] pks) throws SQLException {
-		PreparedStatement ps;
-		final String sep = q.getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		final StringBuffer sb = new StringBuffer();
-		sb.append("delete from ");
-		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
-				+sep+ table.TABLE_NAME());
-		sb.append(" where ");
-		sb.append(Util.join("=? and ", pks));
-		sb.append("=?;");
-		final String sql = sb.toString();
-		Util.log(sql, null);
-		ps = conn.prepareStatement(sql);
-		return ps;
+	
+	/**
+	 * Deletes from the supplied DataSource all the elements in this Iterable.
+	 * @param iterable
+	 * @param callback
+	 * @param frequency
+	 * @return the number of elements deleted
+	 * @throws SQLException
+	 */
+	public <T extends Table> long deleteAll(final Iterable<T> iterable, final StatusCallback callback,
+			final double frequency) throws SQLException {
+		double lastCallback = System.currentTimeMillis() / 1000.0;
+		final Deleter<T> deleter = new Deleter<T>();
+		for (final T t : iterable) {
+			deleter.push(t);
+			if (callback!=null && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
+				callback.call(deleter.count);
+				lastCallback = System.currentTimeMillis() / 1000.0;
+			}
+		}
+		deleter.finish();
+		return deleter.count;
 	}
 
 	/**
@@ -445,156 +539,49 @@ public class Bulk {
 	 * @author Derek Anderson
 	 */
 	public static interface StatusCallback {
-		public void call(int count);
+		public void call(long count);
 	}
 
-	private static class QueueIterator<T extends Table> implements Iterator<T> {
-		@SuppressWarnings("rawtypes")
-		private final BlockingQueue queue;
-		QueueIterator(final BlockingQueue queue) {
-			this.queue = queue;
-		}
-		T next = null;
-		boolean eoq = false;
-		@Override
-		public boolean hasNext() {
-			if (next != null) return true;
-			if (eoq) return false;
-			Object o;
-			try {
-				o = queue.take();
-				if (EOQ.equals(o)) {
-					eoq = true;
-					return false;
-				}
-				next = (T) o;
-				return true;
-			} catch (final InterruptedException e) {
-				return false;
-			}
-		}
-		@Override
-		public T next() {
-			final T o = next;
-			next = null;
-			return o;
-		}
-		@Override
-		public void remove() {}
-	};
-
-	private static class Counter {
-		int count = 0;
+	static abstract class RejectCallback<T extends Table> {
+		abstract void reject(final Collection<T> rejects);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public <T extends Table> int commitDiff(final Iterable<RowChange<T>> diff) {
-		final Bulk bulk = this;
-		final BlockingQueue adds = new ArrayBlockingQueue(10*1024);
-		final BlockingQueue updates = new ArrayBlockingQueue(10*1024);
-		final BlockingQueue deletes = new ArrayBlockingQueue(10*1024);
-		final Counter count = new Counter();
-
-		final Thread prodThread = new Thread() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				for (final RowChange<T> rc : diff) {
-					count.count++;
-					try {
-						if (rc.isAdd()) adds.put(rc.getObject());
-						if (rc.isUpdate()) updates.put(rc.getObject());
-						if (rc.isDelete()) deletes.put(rc.getObject());
-					} catch (final InterruptedException e) {
-						e.printStackTrace();
-					}
+	public <T extends Table> long commitDiff(final Iterable<RowChange<T>> diff) throws SQLException {
+		final Map<BitSet, Inserter<T>> inserters = new HashMap<BitSet,Inserter<T>>();
+		final Map<BitSet, Updater<T>> updaters = new HashMap<BitSet,Updater<T>>();
+		final Deleter<T> deleter = new Deleter<T>();
+		for (final RowChange<T> rc : diff) {
+			final T t = rc.getObject();
+			if (rc.isAdd()) {
+				Inserter<T> inserter = inserters.get(t.__NOSCO_FETCHED_VALUES);
+				if (inserter == null) {
+					inserter = new Inserter<T>();
+					inserters.put(t.__NOSCO_FETCHED_VALUES, inserter);
 				}
-				try {
-					adds.put(EOQ);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
+				inserter.push(t);
+			} else if (rc.isUpdate()) {
+				Updater<T> updater = updaters.get(t.__NOSCO_UPDATED_VALUES);
+				if (updater == null) {
+					updater = new Updater<T>();
+					updaters.put(t.__NOSCO_UPDATED_VALUES, updater);
 				}
-				try {
-					updates.put(EOQ);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
-				try {
-					deletes.put(EOQ);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
+				updater.push(t);
+			} else if (rc.isDelete()) {
+				deleter.push(t);
 			}
-		};
-		final Thread addThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-					bulk.insertAll(new Iterable<T>() {
-						@Override
-						public Iterator<T> iterator() {
-							return new QueueIterator<T>(adds);
-						}});
-				} catch (final SQLException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		final Thread updateThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-					bulk.updateAll(new Iterable<T>() {
-						@Override
-						public Iterator<T> iterator() {
-							return new QueueIterator<T>(updates);
-						}});
-				} catch (final SQLException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		final Thread deleteThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-					bulk.deleteAll(new Iterable<T>() {
-						@Override
-						public Iterator<T> iterator() {
-							return new QueueIterator<T>(deletes);
-						}});
-				} catch (final SQLException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		prodThread.start();
-		addThread.start();
-		updateThread.start();
-		deleteThread.start();
-
-		try {
-			prodThread.join();
-		} catch (final InterruptedException e) {
-			e.printStackTrace();
 		}
-		try {
-			addThread.join();
-		} catch (final InterruptedException e) {
-			e.printStackTrace();
+		long count = 0;
+		for (final Inserter<T> inserter : inserters.values()) {
+			inserter.finish();
+			count += inserter.count;
 		}
-		try {
-			updateThread.join();
-		} catch (final InterruptedException e1) {
-			e1.printStackTrace();
+		for (final Updater<T> updater : updaters.values()) {
+			updater.finish();
+			count += updater.count;
 		}
-		try {
-			deleteThread.join();
-		} catch (final InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		return count.count;
+		deleter.finish();
+		count += deleter.count;
+		return count;
 	}
 
 }

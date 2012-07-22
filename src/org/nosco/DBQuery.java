@@ -29,6 +29,7 @@ import org.nosco.Field.FK;
 import org.nosco.Field.PK;
 import org.nosco.Table.__Alias;
 import org.nosco.Table.__PrimaryKey;
+import org.nosco.Tuple.Tuple2;
 import org.nosco.datasource.MirroredDataSource;
 import org.nosco.datasource.SingleConnectionDataSource;
 
@@ -255,10 +256,9 @@ class DBQuery<T extends Table> implements Query<T> {
 		return detectedDbType;
 	}
 
-	Tuple2<Connection,Boolean> getConnR(final DataSource ds) throws SQLException {
-		final Context context = Context.getThreadContext();
-		if (context.inTransaction(ds)) {
-			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
+	static Tuple2<Connection,Boolean> getConnR(final DataSource ds) throws SQLException {
+		if (Context.inTransaction(ds)) {
+			return new Tuple2<Connection,Boolean>(Context.getConnection(ds), false);
 		}
 		try {
 			if (ds.isWrapperFor(MirroredDataSource.class)) {
@@ -270,10 +270,9 @@ class DBQuery<T extends Table> implements Query<T> {
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}
 
-	Tuple2<Connection,Boolean> getConnRW(final DataSource ds) throws SQLException {
-		final Context context = Context.getThreadContext();
-		if (context.inTransaction(ds)) {
-			return new Tuple2<Connection,Boolean>(context.getConnection(ds), false);
+	static Tuple2<Connection,Boolean> getConnRW(final DataSource ds) throws SQLException {
+		if (Context.inTransaction(ds)) {
+			return new Tuple2<Connection,Boolean>(Context.getConnection(ds), false);
 		}
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}

@@ -7,17 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -44,7 +39,7 @@ class UsageMonitor<T extends Table> {
 	private static final String WARN_OFF = "To turn these warnings off, "
 			+ "call: Context.getThreadContext().enableUsageWarnings(false);";
 
-	Map<StackTraceKey,MLong> counter = new HashMap<StackTraceKey,MLong>();
+	Map<StackTraceKey,M.Long> counter = new HashMap<StackTraceKey,M.Long>();
 	
 	private static final Logger log = Logger.getLogger("org.nosco.recommendations");
 	long count = 0;
@@ -158,8 +153,8 @@ class UsageMonitor<T extends Table> {
 
 	private void warnBadFKUsage() {
 		if (count > 4) {
-			for (final Entry<StackTraceKey, MLong> e : counter.entrySet()) {
-				final MLong v = e.getValue();
+			for (final Entry<StackTraceKey, M.Long> e : counter.entrySet()) {
+				final M.Long v = e.getValue();
 				final long percent = v.i*100/count;
 				if (percent > 50) {
 					final StackTraceKey k = e.getKey();
@@ -183,13 +178,9 @@ class UsageMonitor<T extends Table> {
 		final StackTraceElement[] st = new StackTraceElement[tmp.length-3];
 		System.arraycopy(tmp, 3, st, 0, st.length);
 		final StackTraceKey key = new StackTraceKey(fk, st);
-		MLong x = counter.get(key);
-		if (x == null) counter.put(key, x = new MLong());
+		M.Long x = counter.get(key);
+		if (x == null) counter.put(key, x = new M.Long());
 		x.i++;
-	}
-
-	static class MLong {
-		long i = 0;
 	}
 
 	static class StackTraceKey {

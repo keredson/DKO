@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
+import org.nosco.Diff.FieldChange;
 import org.nosco.Diff.RowChange;
 import org.nosco.Tuple.Tuple2;
 
@@ -66,7 +67,7 @@ public class Bulk {
 	public <T extends Table> long insertAll(final Iterable<T> iterable) throws SQLException {
 		return insertAll(iterable, null, -1);
 	}
-	
+
 	/**
 	 * Inserts all objects from the source iterable into the target DataSource. &nbsp;
 	 * On error aborts. &nbsp; Callback called every {@code frequency} seconds with the
@@ -167,7 +168,7 @@ public class Bulk {
 		}
 		return count;
 	}
-	
+
 	private class Doer<T extends Table> {
 
 		@SuppressWarnings("unchecked")
@@ -193,7 +194,7 @@ public class Bulk {
 			}
 			return false;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		private void pushBatch() throws SQLException {
 			if (!init) init(buffer[0]);
@@ -299,7 +300,7 @@ public class Bulk {
 	private class Inserter<T extends Table> extends Doer<T> {
 
 		public Inserter() {}
-		
+
 		Inserter(final RejectCallback<T> rc) {
 			this.rc  = rc;
 		}
@@ -346,21 +347,28 @@ public class Bulk {
 			Util.log(sql, null);
 			ps = conn.prepareStatement(sql);
 		}
-		
+
 	}
 
 	private class Updater<T extends Table> extends Doer<T> {
 
+		private BitSet values = null;
+
 		Updater() {}
+
+		public Updater(BitSet values) {
+			this.values  = values;
+		}
 
 		@Override
 		protected void init(final Table table) throws SQLException {
 			super.init(table);
+			if (values==null) values = table.__NOSCO_UPDATED_VALUES;
 			final Field<?>[] allFields = table.FIELDS();
 			final Field<?>[] pks = Util.getPK(table).GET_FIELDS();
-			fields = new Field[table.__NOSCO_UPDATED_VALUES.cardinality() + pks.length];
+			fields = new Field[values.cardinality() + pks.length];
 			for (int i=0, j=0; i<allFields.length; ++i) {
-				if (table.__NOSCO_UPDATED_VALUES.get(i)) {
+				if (values.get(i)) {
 					fields[j++] = allFields[i];
 				}
 			}
@@ -401,7 +409,7 @@ public class Bulk {
 			Util.log(sql, null);
 			ps = conn.prepareStatement(sql);
 		}
-		
+
 	}
 
 	private class Deleter<T extends Table> extends Doer<T> {
@@ -435,7 +443,7 @@ public class Bulk {
 			Util.log(sql, null);
 			ps = conn.prepareStatement(sql);
 		}
-		
+
 	}
 
 	/**
@@ -534,7 +542,7 @@ public class Bulk {
 	public <T extends Table> long deleteAll(final Iterable<T> iterable) throws SQLException {
 		return deleteAll(iterable, null, -1);
 	}
-	
+
 	/**
 	 * Deletes from the supplied DataSource all the elements in this Iterable.
 	 * @param iterable
@@ -586,10 +594,14 @@ public class Bulk {
 				}
 				inserter.push(t);
 			} else if (rc.isUpdate()) {
-				Updater<T> updater = updaters.get(t.__NOSCO_UPDATED_VALUES);
+				BitSet values = new BitSet();
+				for (FieldChange<T, ?> change : rc.getChanges()) {
+					values.set(change.field.INDEX);
+				}
+				Updater<T> updater = updaters.get(values);
 				if (updater == null) {
-					updater = new Updater<T>();
-					updaters.put(t.__NOSCO_UPDATED_VALUES, updater);
+					updater = new Updater<T>(values);
+					updaters.put(values, updater);
 				}
 				updater.push(t);
 			} else if (rc.isDelete()) {

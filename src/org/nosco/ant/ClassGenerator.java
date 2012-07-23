@@ -541,7 +541,7 @@ class ClassGenerator {
 			br.write("\t */\n");
 			br.write("\tpublic "+ cls +" get"+ getInstanceMethodName(column) +"() {\n");
 			br.write("\t\t\t__NOSCO_PRIVATE_accessedColumnCallback(this, "+ getFieldName(column) +");\n");
-			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX) && __NOSCO_ORIGINAL_DATA_SOURCE!=null) {\n");
 			br.write("\t\t\tfinal "+ className +" _tmp = ALL.use(__NOSCO_ORIGINAL_DATA_SOURCE).onlyFields(");
 			br.write(getFieldName(column)+")");
 			for (final String pk : pkSet) {

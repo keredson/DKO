@@ -1,6 +1,6 @@
 package org.nosco;
 
-public class M {
+class M {
 
 	static class Integer {
 		int i = 0;

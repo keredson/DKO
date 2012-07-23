@@ -446,7 +446,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../org/nosco/Field.html#in(org.nosco.Query)">in</A></B>(<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&nbsp;q)</CODE>
+<TD><CODE><B><A HREF="../../org/nosco/Field.html#in(org.nosco.Query)">in</A></B>(<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;?&gt;&nbsp;q)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field being a member of the given sub-query.</TD>
@@ -1787,7 +1787,7 @@ public <A HREF="../../org/nosco/Function.html" title="class in org.nosco">Functi
 <A NAME="in(org.nosco.Query)"><!-- --></A><H3>
 in</H3>
 <PRE>
-public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>in</B>(<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&nbsp;q)</PRE>
+public <A HREF="../../org/nosco/Condition.html" title="class in org.nosco">Condition</A> <B>in</B>(<A HREF="../../org/nosco/Query.html" title="interface in org.nosco">Query</A>&lt;?&gt;&nbsp;q)</PRE>
 <DL>
 <DD>Creates a condition representing this field being a member of the given sub-query. &nbsp;
  Note that the given query MUST return only one field (using the <code>Query.onlyFields()</code>)

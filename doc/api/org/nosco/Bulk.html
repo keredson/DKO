@@ -176,7 +176,7 @@ Provides optimized methods for CRUD operations on collections. &nbsp;
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -193,15 +193,14 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Bulk.html#deleteAll(java.lang.Iterable)">deleteAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
- target DataSource.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deletes from the supplied DataSource all the elements in this Iterable.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -211,7 +210,26 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Bulk.html#deleteAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)">deleteAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deletes from the supplied DataSource all the elements in this Iterable.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -228,7 +246,7 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -247,7 +265,7 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -265,11 +283,51 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Bulk.html#insertOrUpdateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)">insertOrUpdateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                  <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+                  double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Bulk.html#updateAll(java.lang.Iterable)">updateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Bulk.html#updateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)">updateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
@@ -323,8 +381,8 @@ public <B>Bulk</B>(javax.sql.DataSource&nbsp;ds)</PRE>
 <A NAME="insertAll(java.lang.Iterable)"><!-- --></A><H3>
 insertAll</H3>
 <PRE>
-public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; int <B>insertAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
-              throws java.sql.SQLException</PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>insertAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+               throws java.sql.SQLException</PRE>
 <DL>
 <DD>Inserts all objects from the source iterable into the target DataSource. &nbsp;
  On error aborts. &nbsp;
@@ -341,10 +399,10 @@ public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.no
 <A NAME="insertAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><!-- --></A><H3>
 insertAll</H3>
 <PRE>
-public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; int <B>insertAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
-                                       <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
-                                       double&nbsp;frequency)
-              throws java.sql.SQLException</PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>insertAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                        <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+                                        double&nbsp;frequency)
+               throws java.sql.SQLException</PRE>
 <DL>
 <DD>Inserts all objects from the source iterable into the target DataSource. &nbsp;
  On error aborts. &nbsp; Callback called every <code>frequency</code> seconds with the
@@ -363,8 +421,28 @@ public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.no
 <A NAME="updateAll(java.lang.Iterable)"><!-- --></A><H3>
 updateAll</H3>
 <PRE>
-public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; int <B>updateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
-              throws java.sql.SQLException</PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>updateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource. &nbsp; On error aborts. &nbsp;
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><!-- --></A><H3>
+updateAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>updateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                        <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+                                        double&nbsp;frequency)
+               throws java.sql.SQLException</PRE>
 <DL>
 <DD>Updates all objects (based on their primary keys) from the source iterable into the
  target DataSource. &nbsp; On error aborts. &nbsp;
@@ -383,8 +461,8 @@ public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.no
 <A NAME="insertOrUpdateAll(java.lang.Iterable)"><!-- --></A><H3>
 insertOrUpdateAll</H3>
 <PRE>
-public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; int <B>insertOrUpdateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
-                      throws java.sql.SQLException</PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>insertOrUpdateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+                       throws java.sql.SQLException</PRE>
 <DL>
 <DD>Inserts all objects from the source iterable into the
  target DataSource. &nbsp; On error attempts to update (based on their primary keys). &nbsp;
@@ -400,19 +478,58 @@ public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.no
 </DL>
 <HR>
 
-<A NAME="deleteAll(java.lang.Iterable)"><!-- --></A><H3>
-deleteAll</H3>
+<A NAME="insertOrUpdateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><!-- --></A><H3>
+insertOrUpdateAll</H3>
 <PRE>
-public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; int <B>deleteAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
-              throws java.sql.SQLException</PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>insertOrUpdateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                                <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+                                                double&nbsp;frequency)
+                       throws java.sql.SQLException</PRE>
 <DL>
-<DD>Updates all objects (based on their primary keys) from the source iterable into the
- target DataSource. &nbsp; On error aborts. &nbsp;
+<DD>Inserts all objects from the source iterable into the
+ target DataSource. &nbsp; On error attempts to update (based on their primary keys). &nbsp;
+ On update error aborts.
  <p>Note that classes without primary keys are not supported at this time.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - <DD><CODE>callback</CODE> - <DD><CODE>frequency</CODE> - 
 <DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deleteAll(java.lang.Iterable)"><!-- --></A><H3>
+deleteAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>deleteAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Deletes from the supplied DataSource all the elements in this Iterable.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>the number of elements deleted
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deleteAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><!-- --></A><H3>
+deleteAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>deleteAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                        <A HREF="../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+                                        double&nbsp;frequency)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Deletes from the supplied DataSource all the elements in this Iterable.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - <DD><CODE>callback</CODE> - <DD><CODE>frequency</CODE> - 
+<DT><B>Returns:</B><DD>the number of elements deleted
 <DT><B>Throws:</B>
 <DD><CODE>java.sql.SQLException</CODE></DL>
 </DD>
@@ -422,10 +539,13 @@ public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.no
 <A NAME="commitDiff(java.lang.Iterable)"><!-- --></A><H3>
 commitDiff</H3>
 <PRE>
-public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; int <B>commitDiff</B>(java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;&nbsp;diff)</PRE>
+public &lt;T extends <A HREF="../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; long <B>commitDiff</B>(java.lang.Iterable&lt;<A HREF="../../org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>&lt;T&gt;&gt;&nbsp;diff)
+                throws java.sql.SQLException</PRE>
 <DL>
 <DD><DL>
-</DL>
+
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->

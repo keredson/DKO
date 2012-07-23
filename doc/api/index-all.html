@@ -147,7 +147,7 @@ Constructor for class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in 
 <A NAME="_C_"><!-- --></A><H2>
 <B>C</B></H2>
 <DL>
-<DT><A HREF="./org/nosco/Bulk.StatusCallback.html#call(int)"><B>call(int)</B></A> - 
+<DT><A HREF="./org/nosco/Bulk.StatusCallback.html#call(long)"><B>call(long)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/UnClosableConnection.html#clearWarnings()"><B>clearWarnings()</B></A> - 
@@ -293,8 +293,10 @@ Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.n
  (irregardless of if it's already in the database)
 <DT><A HREF="./org/nosco/Bulk.html#deleteAll(java.lang.Iterable)"><B>deleteAll(Iterable&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
-<DD>Updates all objects (based on their primary keys) from the source iterable into the
- target DataSource.
+<DD>Deletes from the supplied DataSource all the elements in this Iterable.
+<DT><A HREF="./org/nosco/Bulk.html#deleteAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><B>deleteAll(Iterable&lt;T&gt;, Bulk.StatusCallback, double)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
+<DD>Deletes from the supplied DataSource all the elements in this Iterable.
 <DT><A HREF="./org/nosco/Query.html#deleteAll()"><B>deleteAll()</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Deletes all rows matching data set with: .where()
@@ -699,7 +701,7 @@ Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.n
 <DT><A HREF="./org/nosco/Field.html#in(java.util.Collection)"><B>in(Collection&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>Creates a condition representing this field being a member of the given set.
-<DT><A HREF="./org/nosco/Field.html#in(org.nosco.Query)"><B>in(Query)</B></A> - 
+<DT><A HREF="./org/nosco/Field.html#in(org.nosco.Query)"><B>in(Query&lt;?&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>Creates a condition representing this field being a member of the given sub-query.
 <DT><A HREF="./org/nosco/Field.FK.html#INDEX"><B>INDEX</B></A> - 
@@ -726,6 +728,10 @@ Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.no
 Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>Inserts all objects from the source iterable into the target DataSource.
 <DT><A HREF="./org/nosco/Bulk.html#insertOrUpdateAll(java.lang.Iterable)"><B>insertOrUpdateAll(Iterable&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
+<DD>Inserts all objects from the source iterable into the
+ target DataSource.
+<DT><A HREF="./org/nosco/Bulk.html#insertOrUpdateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><B>insertOrUpdateAll(Iterable&lt;T&gt;, Bulk.StatusCallback, double)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>Inserts all objects from the source iterable into the
  target DataSource.
@@ -838,6 +844,9 @@ Method in class org.nosco.<A HREF="./org/nosco/Function.html" title="class in or
 <A NAME="_M_"><!-- --></A><H2>
 <B>M</B></H2>
 <DL>
+<DT><A HREF="./org/nosco/M.html" title="class in org.nosco"><B>M</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>&nbsp;<DT><A HREF="./org/nosco/M.html#M()"><B>M()</B></A> - 
+Constructor for class org.nosco.<A HREF="./org/nosco/M.html" title="class in org.nosco">M</A>
+<DD>&nbsp;
 <DT><A HREF="./org/nosco/Query.html#mapBy(org.nosco.Field)"><B>mapBy(Field&lt;S&gt;)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Evaluates your query into a map, keyed by whatever field you specify.
@@ -1417,6 +1426,10 @@ Method in class org.nosco.<A HREF="./org/nosco/Table.html" title="class in org.n
 <DD>Creates and executes an update statement for this object
  (irregardless of if it's already in the database)
 <DT><A HREF="./org/nosco/Bulk.html#updateAll(java.lang.Iterable)"><B>updateAll(Iterable&lt;T&gt;)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
+<DD>Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource.
+<DT><A HREF="./org/nosco/Bulk.html#updateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)"><B>updateAll(Iterable&lt;T&gt;, Bulk.StatusCallback, double)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>Updates all objects (based on their primary keys) from the source iterable into the
  target DataSource.

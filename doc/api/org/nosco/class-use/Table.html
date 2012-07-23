@@ -204,7 +204,7 @@ Uses of <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -221,15 +221,33 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
 <TD><CODE><B>Bulk.</B><B><A HREF="../../../org/nosco/Bulk.html#deleteAll(java.lang.Iterable)">deleteAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
- target DataSource.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deletes from the supplied DataSource all the elements in this Iterable.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B>Bulk.</B><B><A HREF="../../../org/nosco/Bulk.html#deleteAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)">deleteAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deletes from the supplied DataSource all the elements in this Iterable.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -365,7 +383,7 @@ java.util.List&lt;<A HREF="../../../org/nosco/Diff.RowChange.html" title="class 
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -382,7 +400,7 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
@@ -401,11 +419,31 @@ int</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
 <TD><CODE><B>Bulk.</B><B><A HREF="../../../org/nosco/Bulk.html#insertOrUpdateAll(java.lang.Iterable)">insertOrUpdateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B>Bulk.</B><B><A HREF="../../../org/nosco/Bulk.html#insertOrUpdateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)">insertOrUpdateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                  <A HREF="../../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+                  double&nbsp;frequency)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the
@@ -474,11 +512,31 @@ java.util.List&lt;<A HREF="../../../org/nosco/Diff.RowChange.html" title="class 
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
 <BR>
-int</CODE></FONT></TD>
+long</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
 <TD><CODE><B>Bulk.</B><B><A HREF="../../../org/nosco/Bulk.html#updateAll(java.lang.Iterable)">updateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/nosco/Table.html" title="class in org.nosco">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B>Bulk.</B><B><A HREF="../../../org/nosco/Bulk.html#updateAll(java.lang.Iterable, org.nosco.Bulk.StatusCallback, double)">updateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../../org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the

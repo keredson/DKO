@@ -27,6 +27,8 @@ import org.nosco.unittest.nosco_test_jpetstore.Orderstatus;
 import org.nosco.unittest.nosco_test_jpetstore.Product;
 import org.nosco.unittest.nosco_test_jpetstore.Supplier;
 
+import test.db.callback.nosco_test_jpetstore.ItemCB;
+
 
 public class SharedDBTests extends TestCase {
 
@@ -312,4 +314,28 @@ public class SharedDBTests extends TestCase {
     	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
     }
 
+    public void testCallbacks() throws SQLException {
+    	final Item item = Item.ALL.first();
+    	ItemCB.preUpdate = 0;
+    	ItemCB.postUpdate = 0;
+    	item.setAttr3("woot3");
+    	item.update();
+    	assertEquals(1, ItemCB.preUpdate);
+    	assertEquals(1, ItemCB.postUpdate);
+    }
+    
+    public void testCallbacksBulk() throws SQLException {
+    	System.err.println("testCallbacksBulk");
+    	final Item item = Item.ALL.first();
+    	item.setAttr3("woot3");
+    	ItemCB.preUpdate = 0;
+    	ItemCB.postUpdate = 0;
+    	final Bulk bulk = new Bulk(ds);
+    	final List<Item> items = new ArrayList();
+    	items.add(item);
+    	bulk.updateAll(items);
+    	assertEquals(1, ItemCB.preUpdate);
+    	assertEquals(1, ItemCB.postUpdate);
+    }
+    
 }

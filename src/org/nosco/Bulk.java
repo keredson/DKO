@@ -1,5 +1,6 @@
 package org.nosco;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.BatchUpdateException;
@@ -167,7 +168,7 @@ public class Bulk {
 		return count;
 	}
 	
-	private class Inserter<T extends Table> {
+	private class Doer<T extends Table> {
 
 		@SuppressWarnings("unchecked")
 		private final T[] buffer = (T[]) new Table[BATCH_SIZE];
@@ -175,18 +176,14 @@ public class Bulk {
 		protected boolean init = false;
 		protected Field<?>[] fields;
 		protected Connection conn;
-		protected Method pre;
-		protected Method post;
+		protected Method pre = null;
+		protected Method post = null;
 		protected PreparedStatement ps;
 		protected Boolean shouldCloseConn = true;
 		private boolean finished = false;
 		long count = 0;
-		private RejectCallback<T> rc = null;
-
-		Inserter() {}
-		Inserter(final RejectCallback<T> rc) {
-			this.rc  = rc;
-		}
+		RejectCallback<T> rc = null;
+		Class<? extends Table> clazz;
 
 		boolean push(final T t) throws SQLException {
 			buffer[pos++] = t;
@@ -200,16 +197,11 @@ public class Bulk {
 		@SuppressWarnings("unchecked")
 		private void pushBatch() throws SQLException {
 			if (!init) init(buffer[0]);
-			T[] tables;
-			if (buffer.length == pos) {
-				tables = buffer;
-			} else {
-				tables = (T[]) new Table[pos];
-				System.arraycopy(buffer, 0, tables, 0, pos);
-			}
 			if (pre != null) {
 				try {
-					pre.invoke(null, (Object[]) tables);
+					final Object[] cba = (Object[]) Array.newInstance(clazz, pos);
+					System.arraycopy(buffer, 0, cba, 0, pos);
+					pre.invoke(null, cba, ds);
 				} catch (final IllegalArgumentException e) {
 					throw new RuntimeException(e);
 				} catch (final IllegalAccessException e) {
@@ -218,8 +210,26 @@ public class Bulk {
 					throw new RuntimeException(e);
 				}
 			}
-			for (int i=0; i<tables.length; ++i) {
-				final Table table = tables[i];
+			executeBatch(0, pos);
+			if (post != null) {
+				try {
+					final Object[] cba = (Object[]) Array.newInstance(clazz, pos);
+					System.arraycopy(buffer, 0, cba, 0, pos);
+					post.invoke(null, cba, ds);
+				} catch (final IllegalArgumentException e) {
+					throw new RuntimeException(e);
+				} catch (final IllegalAccessException e) {
+					throw new RuntimeException(e);
+				} catch (final InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			pos = 0;
+		}
+
+		private void executeBatch(final int start, final int end) throws SQLException, BatchUpdateException {
+			for (int i=start; i<end; ++i) {
+				final Table table = buffer[i];
 				int k=1;
 				for (int j=0; j<fields.length; ++j) {
 					final Field<?> field = fields[j];
@@ -242,35 +252,60 @@ public class Bulk {
 				if (rc == null) throw e;
 				final int[] batchResults = e.getUpdateCounts();
 				System.err.println(e);
-				System.err.print("batchResults ");
+				System.err.print("batchResults("+ batchResults.length +") ");
 				final List<T> rejects = new ArrayList<T>();
 				for (int i=0; i<batchResults.length; ++i) {
-					System.err.print(" " + batchResults[i] +":"+ tables[i]);
-					if (batchResults[i]<=0) rejects.add(tables[i]);
+					System.err.print(" " + batchResults[i] +":"+ buffer[start+i]);
+					if (batchResults[i]<=0) rejects.add(buffer[start+i]);
 					else count += batchResults[i];
 				}
 				System.err.println();
+				if (batchResults.length < end-start) {
+					// some JDBC drivers (*cough* HSQL *cough*) stop immediately if any
+					// row throws an exception.  (instead of trying all rows and reporting
+					// which rows throw an exception)  this behavior sucks because it forces
+					// you to resubmit each object individually to the db if they all fail,
+					// completely eliminating the benefit of batch operations!
+					rejects.add(buffer[start + batchResults.length]);
+					if (start+1 < end) executeBatch(start+1, end);
+				}
 				rc.reject(rejects);
 			}
-			if (post != null) {
-				try {
-					post.invoke(null, (Object[]) tables);
-				} catch (final IllegalArgumentException e) {
-					throw new RuntimeException(e);
-				} catch (final IllegalAccessException e) {
-					throw new RuntimeException(e);
-				} catch (final InvocationTargetException e) {
-					throw new RuntimeException(e);
-				}
-			}
-			pos = 0;
 		}
-		
+
 		protected void init(final Table table) throws SQLException {
 			init = true;
+			clazz = table.getClass();
 			final Tuple2<Connection, Boolean> connInfo = DBQuery.getConnRW(ds);
 			conn = connInfo.a;
 			shouldCloseConn  = connInfo.b;
+		}
+
+		void finish() throws SQLException {
+			if (pos > 0) pushBatch();
+			safeClose(ps);
+			if (shouldCloseConn) safeClose(conn);
+			finished  = true;
+			//System.err.println(this +" finished "+ count);
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			if (!finished) finish();
+		}
+
+	}
+
+	private class Inserter<T extends Table> extends Doer<T> {
+
+		public Inserter() {}
+		
+		Inserter(final RejectCallback<T> rc) {
+			this.rc  = rc;
+		}
+
+		protected void init(final Table table) throws SQLException {
+			super.init(table);
 			final Field<?>[] allFields = table.FIELDS();
 			fields = new Field[table.__NOSCO_FETCHED_VALUES.cardinality()];
 			for (int i=0, j=0; i<allFields.length; ++i) {
@@ -279,8 +314,13 @@ public class Bulk {
 				}
 			}
 			try {
-				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_INSERT_PRE").get(table);
-				post = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_INSERT_POST").get(table);
+				final Class<? extends Table> clazz = table.getClass();
+				final java.lang.reflect.Field preField = clazz.getDeclaredField("__NOSCO_CALLBACK_INSERT_PRE");
+				preField.setAccessible(true);
+				pre = (Method) preField.get(table);
+				final java.lang.reflect.Field postField = clazz.getDeclaredField("__NOSCO_CALLBACK_INSERT_POST");
+				postField.setAccessible(true);
+				post = (Method) postField.get(table);
 			}
 			catch (final ClassCastException e) { /* ignore */ }
 			catch (final SecurityException e) { /* ignore */ }
@@ -307,31 +347,15 @@ public class Bulk {
 			ps = conn.prepareStatement(sql);
 		}
 		
-		void finish() throws SQLException {
-			if (pos > 0) pushBatch();
-			safeClose(ps);
-			if (shouldCloseConn) safeClose(conn);
-			finished  = true;
-			System.err.println(this +" finished "+ count);
-		}
-
-		@Override
-		protected void finalize() throws Throwable {
-			if (!finished) finish();
-		}
-
 	}
 
-	private class Updater<T extends Table> extends Inserter<T> {
+	private class Updater<T extends Table> extends Doer<T> {
 
 		Updater() {}
 
 		@Override
 		protected void init(final Table table) throws SQLException {
-			init = true;
-			final Tuple2<Connection, Boolean> connInfo = DBQuery.getConnRW(ds);
-			conn = connInfo.a;
-			shouldCloseConn  = connInfo.b;
+			super.init(table);
 			final Field<?>[] allFields = table.FIELDS();
 			final Field<?>[] pks = Util.getPK(table).GET_FIELDS();
 			fields = new Field[table.__NOSCO_UPDATED_VALUES.cardinality() + pks.length];
@@ -344,8 +368,13 @@ public class Bulk {
 				fields[fields.length - pks.length + i] = pks[i];
 			}
 			try {
-				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_UPDATE_PRE").get(table);
-				post = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_UPDATE_POST").get(table);
+				final Class<? extends Table> clazz = table.getClass();
+				final java.lang.reflect.Field preField = clazz.getDeclaredField("__NOSCO_CALLBACK_UPDATE_PRE");
+				preField.setAccessible(true);
+				pre = (Method) preField.get(table);
+				final java.lang.reflect.Field postField = clazz.getDeclaredField("__NOSCO_CALLBACK_UPDATE_POST");
+				postField.setAccessible(true);
+				post = (Method) postField.get(table);
 			}
 			catch (final ClassCastException e) { /* ignore */ }
 			catch (final SecurityException e) { /* ignore */ }
@@ -375,16 +404,13 @@ public class Bulk {
 		
 	}
 
-	private class Deleter<T extends Table> extends Inserter<T> {
+	private class Deleter<T extends Table> extends Doer<T> {
 
 		Deleter() {}
 
 		@Override
 		protected void init(final Table table) throws SQLException {
-			init = true;
-			final Tuple2<Connection, Boolean> connInfo = DBQuery.getConnRW(ds);
-			conn = connInfo.a;
-			shouldCloseConn  = connInfo.b;
+			super.init(table);
 			fields = Util.getPK(table).GET_FIELDS();
 			try {
 				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_DELETE_PRE").get(table);

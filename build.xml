@@ -138,6 +138,7 @@
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"
       schemas="bin/unit_test_schema.json"
+      callbackPackage="test.db.callback"
       aliases="public as nosco_test_jpetstore"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
@@ -205,6 +206,7 @@
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"
       schemas="bin/unit_test_mysql_schema.json"
+      callbackPackage="test.db.callback"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"

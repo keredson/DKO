@@ -850,7 +850,8 @@ class DBQuery<T extends Table> implements Query<T> {
 		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (final TableInfo ti : tableInfos) {
 			final Table t = ti.table;
-			names.add(context.getFullTableName(t) +" "+ ti.tableName);
+			final String fullTableName = context==null ? t.SCHEMA_NAME()+"."+t.TABLE_NAME() : context.getFullTableName(t);
+			names.add(fullTableName +" "+ ti.tableName);
 		}
 		return names;
 	}

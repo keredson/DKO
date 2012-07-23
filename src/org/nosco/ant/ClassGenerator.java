@@ -770,7 +770,7 @@ class ClassGenerator {
 		br.write(";\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_UPDATE_PRE!=null) "
 				+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"
-				+ "\t\t\t__NOSCO_CALLBACK_UPDATE_PRE.invoke(null, (Object)__NOSCO_CALLBACKS); }"
+				+ "\t\t\t__NOSCO_CALLBACK_UPDATE_PRE.invoke(null, (Object)__NOSCO_CALLBACKS, _ds); }"
 				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_UPDATE_PRE==null && __NOSCO_CALLBACK_UPDATE_PRE_OLD!=null) "
@@ -822,7 +822,7 @@ class ClassGenerator {
 		br.write(";\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_DELETE_PRE!=null) "
 				+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"
-				+ "\t\t\t__NOSCO_CALLBACK_DELETE_PRE.invoke(null, (Object)__NOSCO_CALLBACKS); }"
+				+ "\t\t\t__NOSCO_CALLBACK_DELETE_PRE.invoke(null, (Object)__NOSCO_CALLBACKS, _ds); }"
 				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 		br.write("\t\tint count = query.deleteAll();\n");
@@ -855,7 +855,7 @@ class ClassGenerator {
 		if (!pkSet.isEmpty()) {
 			br.write("\t\tif (__NOSCO_CALLBACK_INSERT_PRE!=null) "
 					+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"
-					+ "\t\t\t__NOSCO_CALLBACK_INSERT_PRE.invoke(null, (Object)__NOSCO_CALLBACKS); }"
+					+ "\t\t\t__NOSCO_CALLBACK_INSERT_PRE.invoke(null, (Object)__NOSCO_CALLBACKS, _ds); }"
 					+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 					+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
 			br.write("\t\tif (__NOSCO_CALLBACK_INSERT_PRE==null && __NOSCO_CALLBACK_INSERT_PRE_OLD!=null) "
@@ -922,31 +922,31 @@ class ClassGenerator {
 			br.write("\tstatic {\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
-					+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
 					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
-					+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
 					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preDelete\", "
-					+ className +"[].class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_POST = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postDelete\", "
 					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
-					+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
 					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
-					+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
 					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");

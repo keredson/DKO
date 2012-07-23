@@ -904,6 +904,11 @@ class ClassGenerator {
 		br.write("\t}\n");
 
 
+		// write the logger
+		br.write("\tprivate static final java.util.logging.Logger __NOSCO_LOGGER = " +
+				"java.util.logging.Logger.getLogger(\""+ pkgName +"."+ className +"\");\n");
+
+
 		// write callbacks
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_PRE = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_POST = null;\n");
@@ -920,45 +925,80 @@ class ClassGenerator {
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_POST_OLD = null;\n");
 		if (callbackPackage != null) {
 			br.write("\tstatic {\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
-					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
+					+ className +"[].class, DataSource.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found preInsert callback \"+ __NOSCO_CALLBACK_INSERT_PRE);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_INSERT_POST = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
-					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
+					+ className +"[].class, DataSource.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found postInsert callback \"+ __NOSCO_CALLBACK_INSERT_POST);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_UPDATE_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
-					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
+					+ className +"[].class, DataSource.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found preUpdate callback \"+ __NOSCO_CALLBACK_UPDATE_PRE);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_UPDATE_POST = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
-					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_PRE = Class.forName(\""+ callbackPackage
+					+ className +"[].class, DataSource.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found postUpdate callback \"+ __NOSCO_CALLBACK_UPDATE_POST);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_DELETE_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preDelete\", "
-					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_DELETE_POST = Class.forName(\""+ callbackPackage
+					+ className +"[].class, DataSource.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found preDelete callback \"+ __NOSCO_CALLBACK_DELETE_PRE);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_DELETE_POST = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postDelete\", "
-					+ className +"[].class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_PRE_OLD = Class.forName(\""+ callbackPackage
+					+ className +"[].class, DataSource.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found postDelete callback \"+ __NOSCO_CALLBACK_DELETE_POST);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_INSERT_PRE_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
-					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_INSERT_POST_OLD = Class.forName(\""+ callbackPackage
+					+ className +".class, DataSource.class);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_INSERT_POST_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postInsert\", "
-					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_PRE_OLD = Class.forName(\""+ callbackPackage
+					+ className +".class, DataSource.class);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_UPDATE_PRE_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preUpdate\", "
-					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_UPDATE_POST_OLD = Class.forName(\""+ callbackPackage
+					+ className +".class, DataSource.class);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_UPDATE_POST_OLD = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"postUpdate\", "
-					+ className +".class, DataSource.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_HASH_CODE = Class.forName(\""+ callbackPackage
+					+ className +".class, DataSource.class);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_HASH_CODE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"hashCode\", "
-					+ className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_EQUALS = Class.forName(\""+ callbackPackage
+					+ className +".class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found hashCode callback \"+ __NOSCO_CALLBACK_HASH_CODE);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_EQUALS = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"equals\", "
-					+ className +".class, Object.class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
-			br.write("\t\ttry {\n\t\t\t __NOSCO_CALLBACK_COMPARE_TO = Class.forName(\""+ callbackPackage
+					+ className +".class, Object.class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found equals callback \"+ __NOSCO_CALLBACK_EQUALS);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_COMPARE_TO = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"compareTo\", "
-					+ className +".class, " + className +".class);\n\t\t} catch (final Exception e) { /* ignore */ }\n");
+					+ className +".class, " + className +".class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.info(\"found compareTo callback \"+ __NOSCO_CALLBACK_COMPARE_TO);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t}\n");
 		}
 

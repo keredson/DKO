@@ -40,7 +40,7 @@ class UsageMonitor<T extends Table> {
 			+ "call: Context.getThreadContext().enableUsageWarnings(false);";
 
 	Map<StackTraceKey,M.Long> counter = new HashMap<StackTraceKey,M.Long>();
-	
+
 	private static final Logger log = Logger.getLogger("org.nosco.recommendations");
 	long count = 0;
 	private final StackTraceElement[] st;
@@ -51,14 +51,14 @@ class UsageMonitor<T extends Table> {
 
 	private DBQuery<T> query;
 	private boolean selectOptimized = false;
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		warnBadFKUsage();
 		warnUnusedColumns();
 		super.finalize();
 	}
-	
+
 	static ConcurrentHashMap<String,Map<Field<?>,Long>> qc = new ConcurrentHashMap<String,Map<Field<?>,Long>>();
 	static Map<String,Long> stLastSeen = Collections.synchronizedMap(new HashMap<String,Long>());
 	static Set<String> stSeenThisRun = Collections.synchronizedSet(new HashSet<String>());
@@ -91,11 +91,11 @@ class UsageMonitor<T extends Table> {
 			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
 		}
 		if (!selectOptimized && !unusedColumnDescs.isEmpty()) {
-			final String msg = "The following columns were never accessed:\n\t" 
-					+ Util.join(", ", unusedColumnDescs) + "\nin the query created here:\n\t" 
-					+ Util.join("\n\t", (Object[]) st) + "\n" 
-					+ "You might consider not querying these fields by using the " 
-					+ "deferFields(Field<?>...) method on your query.\n" 
+			final String msg = "The following columns were never accessed:\n\t"
+					+ Util.join(", ", unusedColumnDescs) + "\nin the query created here:\n\t"
+					+ Util.join("\n\t", (Object[]) st) + "\n"
+					+ "You might consider not querying these fields by using the "
+					+ "deferFields(Field<?>...) method on your query.\n"
 					+ WARN_OFF;
 			log.info(msg);
 		}
@@ -143,7 +143,7 @@ class UsageMonitor<T extends Table> {
 	private String digestToString(final byte[] buf) {
 		final char[] ret = new char[buf.length*2];
 		for (int i=0; i<buf.length; ++i) {
-			final int low = buf[i] & 0xF;  
+			final int low = buf[i] & 0xF;
 	        final int high = (buf[i] >> 8) & 0xF;
 	        ret[i*2] = Character.forDigit(high, 16);
 	        ret[i*2+1] = Character.forDigit(low, 16);
@@ -296,9 +296,10 @@ class UsageMonitor<T extends Table> {
 		// do nothing; just make sure the class loads
 		return;
 	}
-	
-	private final static File HOME_DIR = new File(System.getProperty("user.home"));
-	private final static File CACHE_DIR = new File(HOME_DIR, ".nosco_optimizations");
+
+	//private final static File BASE_DIR = new File(System.getProperty("user.home"));
+	private final static File BASE_DIR = new File(System.getProperty("java.io.tmpdir"));
+	private final static File CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations_"+System.getProperty("user.name"));
 	private final static File PERF_CACHE = new File(CACHE_DIR, "performance");
 	private final static String README_TEXT = "Welcome to Nosco!\n\n" +
 			"This directory contains runtime profiles for programs that use the nosco library.\n" +
@@ -315,7 +316,7 @@ class UsageMonitor<T extends Table> {
 			} catch (final InterruptedException e) {
 				//e.printStackTrace();
 			}
-			
+
 			try {
 				final File tmp = File.createTempFile("nosco_performance_", "");
 				final Writer w = new BufferedWriter(new FileWriter(tmp));
@@ -362,9 +363,9 @@ class UsageMonitor<T extends Table> {
 					e.printStackTrace();
 				}
 			}
-			
+
 			long oldest = Long.MAX_VALUE;
-			
+
 			try {
 				final ClassLoader cl = this.getClass().getClassLoader();
 				final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
@@ -418,19 +419,19 @@ class UsageMonitor<T extends Table> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			if (oldest < cutoff - 2*MILLIS_ONE_WEEK) {
 				cleanPerformanceInfo.start();
 			}
 		}
 	};
 
-	
+
 	static {
 		cleanPerformanceInfo.setDaemon(true);
 		loadPerformanceInfo.start();
 	}
-	
+
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() {

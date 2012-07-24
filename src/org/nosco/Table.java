@@ -236,7 +236,7 @@ public abstract class Table {
 	/**
 	 * Represents a primary key of a row. &nbsp; Supports compound primary keys. &nbsp;
 	 * Each attribute is accessible by calling {@code get(field)}. &nbsp; Note that this
-	 * different than {@code Field.PK} which represents the primary key of a table (ie: the 
+	 * different than {@code Field.PK} which represents the primary key of a table (ie: the
 	 * set of columns that make up the key).
 	 * <p>
 	 * Use with enums. &nbsp; Nosco generated enums of table values are always

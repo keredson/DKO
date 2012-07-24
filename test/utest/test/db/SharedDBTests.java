@@ -1,9 +1,12 @@
 package test.db;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,6 +15,7 @@ import javax.sql.DataSource;
 import junit.framework.TestCase;
 
 import org.nosco.Bulk;
+import org.nosco.CSV;
 import org.nosco.Constants.CALENDAR;
 import org.nosco.Context;
 import org.nosco.Context.Undoer;
@@ -323,7 +327,7 @@ public class SharedDBTests extends TestCase {
     	assertEquals(1, ItemCB.preUpdate);
     	assertEquals(1, ItemCB.postUpdate);
     }
-    
+
     public void testCallbacksBulk() throws SQLException {
     	System.err.println("testCallbacksBulk");
     	final Item item = Item.ALL.first();
@@ -337,5 +341,24 @@ public class SharedDBTests extends TestCase {
     	assertEquals(1, ItemCB.preUpdate);
     	assertEquals(1, ItemCB.postUpdate);
     }
-    
+
+    public void testWriteCSV() throws Exception {
+    	CSV.write(Item.ALL, new java.io.File("bin/items.csv"));
+    }
+
+    public void testReadCSV() throws Exception {
+    	List<Item> as = Item.ALL.asList();
+    	File f = new File("bin/items.csv");
+    	CSV.write(as, f);
+    	List<Item> bs = new ArrayList<Item>();
+    	for (Item x : CSV.read(Item.class, f)) {
+    		bs.add(x);
+    	}
+    	assertEquals(as.size(), bs.size());
+    	Collections.sort(as);
+    	Collections.sort(bs);
+    	List<RowChange<Item>> diff = Diff.diffActualized(as, bs);
+    	assertEquals(0, diff.size());
+    }
+
 }

@@ -239,6 +239,9 @@ Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface 
 <DT><A HREF="./org/nosco/Query.html#cross(java.lang.Class)"><B>cross(Class&lt;? extends Table&gt;)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Performs a cross join.
+<DT><A HREF="./org/nosco/CSV.html" title="class in org.nosco"><B>CSV</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Reads and writes nosco objects to CSV files (or any writer, such as System.out)<DT><A HREF="./org/nosco/CSV.html#CSV()"><B>CSV()</B></A> - 
+Constructor for class org.nosco.<A HREF="./org/nosco/CSV.html" title="class in org.nosco">CSV</A>
+<DD>&nbsp;
 </DL>
 <HR>
 <A NAME="_D_"><!-- --></A><H2>
@@ -1050,6 +1053,9 @@ Constructor for class org.nosco.<A HREF="./org/nosco/QueryFactory.html" title="c
 <A NAME="_R_"><!-- --></A><H2>
 <B>R</B></H2>
 <DL>
+<DT><A HREF="./org/nosco/CSV.html#read(java.lang.Class, java.io.File)"><B>read(Class&lt;T&gt;, File)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/CSV.html" title="class in org.nosco">CSV</A>
+<DD>Creates an iterable of objects of type cls from a CSV file.
 <DT><A HREF="./org/nosco/Field.FK.html#REFERENCED_FIELDS()"><B>REFERENCED_FIELDS()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.FK.html" title="class in org.nosco">Field.FK</A>
 <DD>&nbsp;
@@ -1488,6 +1494,12 @@ Method in class org.nosco.<A HREF="./org/nosco/Context.Undoer.html" title="class
 <DT><A HREF="./org/nosco/Query.html#with(org.nosco.Field.FK...)"><B>with(Field.FK...)</B></A> - 
 Method in interface org.nosco.<A HREF="./org/nosco/Query.html" title="interface in org.nosco">Query</A>
 <DD>Joins on foreign keys.
+<DT><A HREF="./org/nosco/CSV.html#write(java.lang.Iterable, java.io.Writer)"><B>write(Iterable&lt;T&gt;, Writer)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/CSV.html" title="class in org.nosco">CSV</A>
+<DD>Writes out an iterable of table objects to a writer.
+<DT><A HREF="./org/nosco/CSV.html#write(java.lang.Iterable, java.io.File)"><B>write(Iterable&lt;T&gt;, File)</B></A> - 
+Static method in class org.nosco.<A HREF="./org/nosco/CSV.html" title="class in org.nosco">CSV</A>
+<DD>Writes out an iterable of table objects to a file.
 </DL>
 <HR>
 <A NAME="_Y_"><!-- --></A><H2>

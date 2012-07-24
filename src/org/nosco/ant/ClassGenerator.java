@@ -404,9 +404,13 @@ class ClassGenerator {
 		}
 
 		// write field value references
-		for (final String column : columns.keySet()) {
+		for (final String column : pkSet) {
 			br.write("\tprivate "+ getFieldType(pkgName, table, column, columns.getString(column)));
-			//System.err.println("column: "+ column +" -> "+ getInstanceFieldName(column));
+			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
+		}
+		for (final String column : columns.keySet()) {
+			if (pkSet.contains(column)) continue;
+			br.write("\tprivate "+ getFieldType(pkgName, table, column, columns.getString(column)));
 			br.write(" "+ getInstanceFieldName(column) + " = null;\n");
 		}
 		br.write("\n");
@@ -416,6 +420,15 @@ class ClassGenerator {
 		br.write("\t * Creates a new (empty) instance of "+ className +".  Call .insert() to insert it into the database.\n");
 		br.write("\t */\n");
 		br.write("\tpublic "+ className +"() {}\n\n");
+		br.write("\tpublic "+ className +"("+ className +" o) {\n");
+		for (final String column : columns.keySet()) {
+			br.write("\t\tif (o.__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+			br.write("\t\t\t"+ getInstanceFieldName(column) +" = o."+ getInstanceFieldName(column) +";\n");
+			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
+			br.write("\t\t}\n");
+		}
+		br.write("\t\tif(o.__NOSCO_UPDATED_VALUES != null) __NOSCO_UPDATED_VALUES = (java.util.BitSet) o.__NOSCO_UPDATED_VALUES.clone();\n\n");
+		br.write("\t}\n\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tprotected "+ className +"(final Field[] _fields, final Object[] _objects, final int _start, final int _end) {\n");
 		br.write("\t\tif (_fields.length != _objects.length)\n\t\t\tthrow new IllegalArgumentException(");

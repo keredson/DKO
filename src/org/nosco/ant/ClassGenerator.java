@@ -423,7 +423,7 @@ class ClassGenerator {
 		br.write("\tpublic "+ className +"("+ className +" o) {\n");
 		for (final String column : columns.keySet()) {
 			br.write("\t\tif (o.__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
-			br.write("\t\t\t"+ getInstanceFieldName(column) +" = o."+ getInstanceFieldName(column) +";\n");
+			br.write("\t\t\t"+ getInstanceFieldName(column) +" = o.get"+ getInstanceMethodName(column) +"();\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ getFieldName(column) +".INDEX);\n");
 			br.write("\t\t}\n");
 		}

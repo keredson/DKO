@@ -35,7 +35,7 @@ import org.nosco.datasource.SingleConnectionDataSource;
 
 
 class DBQuery<T extends Table> implements Query<T> {
-	
+
 	// make sure the UsageMonitor is class-loaded
 	static { UsageMonitor.doNothing(); }
 
@@ -860,12 +860,6 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public Query<T> with(final Field.FK... fkFields) {
 		DBQuery<T> q = new DBQuery<T>(this);
-		if (q.orderByFields == null) {
-			final Table t = q.tables.get(0);
-			final PK pk = Util.getPK(tables.get(0));
-			if (pk != null) q = (DBQuery<T>) q.orderBy(pk.GET_FIELDS());
-			else q = (DBQuery<T>) q.orderBy(t.FIELDS());
-		}
 		if (q.conditions==null) q.conditions = new ArrayList<Condition>();
 		//if (q.fks==null) q.fks = new Tree<Field.FK>();
 		try {
@@ -935,6 +929,17 @@ class DBQuery<T extends Table> implements Query<T> {
 					join.type = "left outer join";
 					join.fk  = field;
 					q.joinsToMany.add(join);
+					if (q.orderByFields == null) {
+						q.orderByDirections = new ArrayList<DIRECTION>();
+						q.orderByFields = new ArrayList<Field<?>>();
+					}
+					final PK pk = Util.getPK(reffedTable);
+					Field<?>[] fields = pk==null ? reffedTable.FIELDS() : pk. GET_FIELDS();
+					for (Field<?> f : fields) {
+						if (q.orderByFields.contains(f)) continue;
+						q.orderByFields.add(f);
+						q.orderByDirections.add(ASCENDING);
+					}
 				} else {
 					throw new IllegalArgumentException("you have a break in your FK chain");
 				}

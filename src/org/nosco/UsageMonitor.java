@@ -33,6 +33,7 @@ class UsageMonitor<T extends Table> {
 	private static final String TIME_STAMP = "ts";
 	private static final String STACK_TRACE = "st";
 	protected static final String USED_FIELDS = "uf";
+	private static final int MIN_WARN_COUNT = 8;
 
 	private static final int MILLIS_ONE_WEEK = 1000*60*60*24*7;
 
@@ -55,7 +56,7 @@ class UsageMonitor<T extends Table> {
 	@Override
 	protected void finalize() throws Throwable {
 		warnBadFKUsage();
-		warnUnusedColumns();
+		questionUnusedColumns();
 		super.finalize();
 	}
 
@@ -63,7 +64,7 @@ class UsageMonitor<T extends Table> {
 	static Map<String,Long> stLastSeen = Collections.synchronizedMap(new HashMap<String,Long>());
 	static Set<String> stSeenThisRun = Collections.synchronizedSet(new HashSet<String>());
 
-	private void warnUnusedColumns() {
+	private void questionUnusedColumns() {
 		qc.putIfAbsent(queryHash, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
 		final Map<Field<?>,Long> used = qc.get(queryHash);
 		final Set<Field<?>> unusedColumns = new LinkedHashSet<Field<?>>();
@@ -90,7 +91,7 @@ class UsageMonitor<T extends Table> {
 		for (final Field<?> field : unusedColumns) {
 			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
 		}
-		if (!selectOptimized && !unusedColumnDescs.isEmpty()) {
+		if (!selectOptimized && !unusedColumnDescs.isEmpty() && count > MIN_WARN_COUNT) {
 			final String msg = "The following columns were never accessed:\n\t"
 					+ Util.join(", ", unusedColumnDescs) + "\nin the query created here:\n\t"
 					+ Util.join("\n\t", (Object[]) st) + "\n"
@@ -152,7 +153,7 @@ class UsageMonitor<T extends Table> {
 	}
 
 	private void warnBadFKUsage() {
-		if (count > 4) {
+		if (count > MIN_WARN_COUNT) {
 			for (final Entry<StackTraceKey, M.Long> e : counter.entrySet()) {
 				final M.Long v = e.getValue();
 				final long percent = v.i*100/count;
@@ -297,9 +298,10 @@ class UsageMonitor<T extends Table> {
 		return;
 	}
 
-	//private final static File BASE_DIR = new File(System.getProperty("user.home"));
-	private final static File BASE_DIR = new File(System.getProperty("java.io.tmpdir"));
-	private final static File CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations_"+System.getProperty("user.name"));
+	private final static File BASE_DIR = new File(System.getProperty("user.home"));
+	private final static File CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations");
+	//private final static File BASE_DIR = new File(System.getProperty("java.io.tmpdir"));
+	//private final static File CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations_"+System.getProperty("user.name"));
 	private final static File PERF_CACHE = new File(CACHE_DIR, "performance");
 	private final static String README_TEXT = "Welcome to Nosco!\n\n" +
 			"This directory contains runtime profiles for programs that use the nosco library.\n" +

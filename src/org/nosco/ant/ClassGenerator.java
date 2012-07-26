@@ -385,6 +385,9 @@ class ClassGenerator {
 				br.write("\t\tPKS("+ pkType +" v) {\n");
 				br.write("\t\t\t"+ getFieldName(pk) +" = v;\n");
 				br.write("\t\t}\n");
+				br.write("\t\tpublic "+ pkType +" get"+ getInstanceMethodName(pk) +"() {\n");
+				br.write("\t\t\treturn "+ getFieldName(pk) +";\n");
+				br.write("\t\t}\n");
 				br.write("\t\t@SuppressWarnings(\"unchecked\")\n");
 				br.write("\t\t@Override\n");
 				br.write("\t\tpublic <R> R get(Field<R> field) {\n");
@@ -1070,7 +1073,7 @@ class ClassGenerator {
 		br.write("\t\tint v = 0;\n");
 		for (final String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
 			final String fieldName = getInstanceFieldName(column);
-			br.write("\t\tif ("+ fieldName +" instanceof Comparable) {");
+			br.write("\t\tif ("+ fieldName +" instanceof Comparable) {\n");
 			br.write("\t\t\tv = "+ fieldName +"==null ? (o."+ fieldName
 					+ "==null ? 0 : -1) : ((Comparable) "
 					+ fieldName +").compareTo(o."+ fieldName +");\n");

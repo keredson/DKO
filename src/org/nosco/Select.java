@@ -65,13 +65,19 @@ class Select<T extends Table> implements Iterator<T> {
 
 	@SuppressWarnings("unchecked")
 	Select(final DBQuery<T> dbQuery) {
+
 		if (Context.usageWarningsEnabled()) {
+			// make sure usage monitor has loaded stats for all the tables we care about
+			for (final TableInfo tableInfo : dbQuery.getAllTableInfos()) {
+				UsageMonitor.loadStatsFor(tableInfo.tableClass);
+			}
 			usageMonitor = new UsageMonitor<T>(dbQuery);
 			this.query = usageMonitor.getSelectOptimizedQuery();
 		} else {
 			usageMonitor = null;
 			this.query = dbQuery;
 		}
+
 		allTableInfos = query.getAllTableInfos();
 		try {
 			constructor = (Constructor<T>) query.getType().getDeclaredConstructor(
@@ -113,6 +119,7 @@ class Select<T extends Table> implements Iterator<T> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+
 	}
 
 	void init() {

@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 
 import org.nosco.DBQuery.Join;
 import org.nosco.Field.FK;
+import org.nosco.Tuple.Tuple2;
+import org.nosco.Tuple.Tuple3;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
 
@@ -139,6 +141,7 @@ class UsageMonitor<T extends Table> {
         queryHash = hash;
         stSeenThisRun.add(hash);
         //System.err.println("queryHash "+ queryHash +" "+ query.hashCode());
+        //System.err.println("queryHash "+ queryHash);
 	}
 
 	private String digestToString(final byte[] buf) {
@@ -351,6 +354,8 @@ class UsageMonitor<T extends Table> {
 		}
 	};
 
+	private static Map<String,Collection<Tuple3<String,String,Long>>> classToFieldToTimeToLoad = Collections.synchronizedMap(new HashMap<String,Collection<Tuple3<String,String,Long>>>());
+
 	private final static Thread loadPerformanceInfo = new Thread() {
 		@Override
 		public void run() {
@@ -378,38 +383,22 @@ class UsageMonitor<T extends Table> {
 						final Long lastSeen = o.getLong(TIME_STAMP);
 						if (lastSeen < oldest) oldest = lastSeen;
 						final JSONObject o2 = o.getJSONObject(USED_FIELDS);
-						final Map<Field<?>, Long> map = Collections.synchronizedMap(new HashMap<Field<?>,Long>());
 						for (final String x : o2.keySet()) {
-							try {
-								final long datetime = o2.getLong(x);
-								if (datetime < cutoff) continue;
-								final int split = x.lastIndexOf('.');
-								final String className = x.substring(0, split);
-								final String fieldName = x.substring(split+1);
-								final Class<?> clz = cl.loadClass(className);
-								final java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
-								final Field<?> field = (Field<?>) f.get(null);
-								map.put(field, datetime);
-							} catch (final ClassNotFoundException e) {
-								e.printStackTrace();
-							} catch (final SecurityException e) {
-								e.printStackTrace();
-							} catch (final NoSuchFieldException e) {
-								e.printStackTrace();
-							} catch (final IllegalArgumentException e) {
-								e.printStackTrace();
-							} catch (final IllegalAccessException e) {
-								e.printStackTrace();
+							final long datetime = o2.getLong(x);
+							if (datetime < cutoff) continue;
+							final int split = x.lastIndexOf('.');
+							final String className = x.substring(0, split);
+							final String fieldName = x.substring(split+1);
+							Collection<Tuple3<String, String, Long>> fieldToTimetoLoad = classToFieldToTimeToLoad.get(className);
+							if (fieldToTimetoLoad == null) {
+								fieldToTimetoLoad = new ArrayList<Tuple3<String, String, Long>>();
+								 classToFieldToTimeToLoad.put(className, fieldToTimetoLoad);
 							}
+							fieldToTimetoLoad.add(new Tuple3<String, String, Long>(st, fieldName, datetime));
 						}
 						if (st!=null && lastSeen!=null) stLastSeen.put(st, lastSeen);
-						if (true || !map.isEmpty()) {
-							qc.putIfAbsent(st, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
-							final Map<Field<?>,Long> used = qc.get(st);
-							used.putAll(map);
-						}
+						qc.putIfAbsent(st, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
 					} catch (final JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -418,7 +407,6 @@ class UsageMonitor<T extends Table> {
 				// no worries
 				//System.err.println("does not exist: "+ PERF_CACHE.getPath());
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -472,6 +460,45 @@ class UsageMonitor<T extends Table> {
 				}
 		    }
 		});
+	}
+
+	static void loadStatsFor(Class<? extends Table> tableClass) {
+		if (loadPerformanceInfo.isAlive())
+			try {
+				loadPerformanceInfo.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		String className = tableClass.getName();
+		Collection<Tuple3<String, String, Long>> fieldToTimeToLoad = classToFieldToTimeToLoad.remove(className);
+		if (fieldToTimeToLoad != null) {
+			final ClassLoader cl = tableClass.getClassLoader();
+			try {
+				final Class<?> clz = cl.loadClass(className);
+				for (Tuple3<String, String, Long> tuple : fieldToTimeToLoad) {
+					String st = tuple.a;
+					String fieldName = tuple.b;
+					Long time = tuple.c;
+					try {
+						java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
+						final Field<?> field = (Field<?>) f.get(null);
+						Map<Field<?>, Long> fieldSeenMap = qc.get(st);
+						fieldSeenMap.put(field, time);
+					} catch (SecurityException e1) {
+						e1.printStackTrace();
+					} catch (NoSuchFieldException e1) {
+						e1.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (ClassNotFoundException e1) {
+				e1.printStackTrace();
+			}
+
+		}
 	}
 
 }

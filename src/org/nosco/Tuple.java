@@ -23,7 +23,7 @@ class Tuple {
 
 		@Override
 		public String toString() {
-			return "Tuple2 [a=" + a + ", b=" + b + "]";
+			return "Tuple [a=" + a + ", b=" + b + "]";
 		}
 
 		@Override
@@ -102,6 +102,12 @@ class Tuple {
 				return false;
 			return true;
 		}
+
+		@Override
+		public String toString() {
+			return "Tuple [a=" + a + ", b=" + b + ", c=" + c + "]";
+		}
+
 	}
-	
+
 }

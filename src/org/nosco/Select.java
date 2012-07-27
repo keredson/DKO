@@ -62,11 +62,16 @@ class Select<T extends Table> implements Iterator<T> {
 	@SuppressWarnings("rawtypes")
 	private final UsageMonitor<T> usageMonitor;
 	private boolean initted = false;
+	long count = 0;
 
 	@SuppressWarnings("unchecked")
 	Select(final DBQuery<T> dbQuery) {
+		this(dbQuery, true);
+	}
+	@SuppressWarnings("unchecked")
+	Select(final DBQuery<T> dbQuery, boolean useWarnings) {
 
-		if (Context.usageWarningsEnabled()) {
+		if (useWarnings && Context.usageWarningsEnabled()) {
 			// make sure usage monitor has loaded stats for all the tables we care about
 			for (final TableInfo tableInfo : dbQuery.getAllTableInfos()) {
 				UsageMonitor.loadStatsFor(tableInfo.tableClass);
@@ -159,7 +164,9 @@ class Select<T extends Table> implements Iterator<T> {
 
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
 		selectedFields = query.getSelectFields(false);
-		this.usageMonitor.setSelectedFields(selectedFields);
+		if (this.usageMonitor!=null) {
+			this.usageMonitor.setSelectedFields(selectedFields);
+		}
 		selectedBoundFields = query.getSelectFields(true);
 		final StringBuffer sb = new StringBuffer();
 		sb.append("select ");
@@ -250,7 +257,7 @@ class Select<T extends Table> implements Iterator<T> {
 	@Override
 	public boolean hasNext() {
 		if (!this.initted) init();
-		if (query.top>0 && usageMonitor.count >= query.top) {
+		if (query.top>0 && count >= query.top) {
 			this.next = null;
 			cleanUp();
 			return false;
@@ -381,7 +388,8 @@ class Select<T extends Table> implements Iterator<T> {
 	public T next() {
 		final T t = next;
 		next = null;
-		++usageMonitor.count;
+		if (usageMonitor!=null) ++usageMonitor.count;
+		++count;
 		return t;
 	}
 

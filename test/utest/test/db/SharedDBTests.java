@@ -361,4 +361,16 @@ public class SharedDBTests extends TestCase {
     	assertEquals(0, diff.size());
     }
 
+    public void testWarningsOff() throws Exception {
+    	Undoer u = Context.getVMContext().enableUsageWarnings(false);
+    	for (Item x : Item.ALL) {}
+    	u.undo();
+    }
+
+    public void testWarningsOff2() throws Exception {
+    	for (Object[] x : Item.ALL.asIterableOfObjectArrays()) {}
+    	System.gc();
+    }
+
+
 }

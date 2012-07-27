@@ -285,7 +285,10 @@ public class Bulk {
 		void finish() throws SQLException {
 			if (pos > 0) pushBatch();
 			safeClose(ps);
-			if (shouldCloseConn) safeClose(conn);
+			if (shouldCloseConn) {
+				if (!conn.getAutoCommit()) conn.commit();
+				safeClose(conn);
+			}
 			finished  = true;
 			//System.err.println(this +" finished "+ count);
 		}

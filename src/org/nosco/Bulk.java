@@ -45,7 +45,8 @@ public class Bulk {
 
 	private final DataSource ds;
 	private final DB_TYPE dbType;
-	private static final int BATCH_SIZE = 64;
+	private final int batchSize;
+	private static final int DEFAULT_BATCH_SIZE = 64;
 
 	/**
 	 * Specify the target DataSource.
@@ -55,6 +56,19 @@ public class Bulk {
 	public Bulk(final DataSource ds) {
 		this.ds = ds;
 		dbType = DB_TYPE.detect(ds);
+		batchSize = DEFAULT_BATCH_SIZE;
+	}
+
+	/**
+	 * Specify the target DataSource.
+	 * Note that you can get the default DataSource from any {@code MyObject.ALL.getDataSource()}.
+	 * @param ds
+	 * @param batchSize the JDBCX batch size to use
+	 */
+	public Bulk(final DataSource ds, int batchSize) {
+		this.ds = ds;
+		dbType = DB_TYPE.detect(ds);
+		this.batchSize = batchSize;
 	}
 
 	/**
@@ -172,7 +186,7 @@ public class Bulk {
 	private class Doer<T extends Table> {
 
 		@SuppressWarnings("unchecked")
-		private final T[] buffer = (T[]) new Table[BATCH_SIZE];
+		private final T[] buffer = (T[]) new Table[batchSize];
 		private int pos = 0;
 		protected boolean init = false;
 		protected Field<?>[] fields;

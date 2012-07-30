@@ -301,6 +301,11 @@ public class Diff {
 			this.version1 = v1;
 			this.version2 = v2;
 		}
+		@Override
+		public String toString() {
+			return "[FieldChange " + field + ", from=" + version1
+					+ ", to=" + version2 + "]";
+		}
 	}
 
 	/**
@@ -373,7 +378,7 @@ public class Diff {
 
 		@Override
 		public String toString() {
-			return "[Change " + type + ", " + o + ", " + updates + "]";
+			return "[RowChange " + type + ", " + o + ", " + updates + "]";
 		}
 
 	}

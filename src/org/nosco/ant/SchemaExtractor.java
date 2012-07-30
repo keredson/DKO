@@ -19,6 +19,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.Task;
 import org.nosco.Constants;
@@ -46,6 +47,9 @@ public class SchemaExtractor extends Task {
 	private String[] enums = {};
 	private File enumsOut = null;
 	private File out = null;
+
+	private List<Pattern> onlyTables = new ArrayList<Pattern>();
+	private List<Pattern> excludeTables = new ArrayList<Pattern>();
 
 	public void setOut(final String s) {
 		this.out  = new File(s);
@@ -112,8 +116,36 @@ public class SchemaExtractor extends Task {
 		}
 	}
 
+	/**
+	 * A comma separated list of regex patterns.  If "schema_name.table_name" contains the
+	 * java pattern, the table will be included.  Otherwise, it will be excluded.
+	 * If this is not set, all tables will be included.
+	 * @param s
+	 */
+	public void setOnlyTables(final String s) {
+		for (String v : s.split(",")) {
+			v = v.trim();
+			Pattern p = Pattern.compile(v);
+			onlyTables.add(p);
+		}
+	}
+
+	/**
+	 * A comma separated list of regex patterns.  If "schema_name.table_name" contains the
+	 * java pattern, the table will be excluded.  Otherwise, it will be included.
+	 * If this is not set, all tables will be included.
+	 * @param s
+	 */
+	public void setExcludeTables(final String s) {
+		for (String v : s.split(",")) {
+			v = v.trim();
+			Pattern p = Pattern.compile(v);
+			excludeTables.add(p);
+		}
+	}
+
 	public void execute() {
-		
+
 		Connection conn;
 		try {
 
@@ -209,10 +241,10 @@ public class SchemaExtractor extends Task {
 	private Map<String, Map<String, Map<String, String>>> getSchemas(
 			final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getSchemasMSSQL(conn);
-		return getSchemasMySQL(conn);
+		else return getSchemasSQL92(conn);
 	}
 
-	private Map<String, Map<String, Map<String, String>>> getSchemasMySQL(
+	private Map<String, Map<String, Map<String, String>>> getSchemasSQL92(
 			final Connection conn)
 			throws SQLException {
 		final Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
@@ -231,6 +263,7 @@ public class SchemaExtractor extends Task {
 				continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
 				continue;
+			if (!includeTable(schema, table)) continue;
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables == null) {
@@ -250,6 +283,30 @@ public class SchemaExtractor extends Task {
 		s.close();
 
 		return schemas;
+	}
+
+	private Set<String> excluded = new HashSet<String>();
+
+	private boolean includeTable(String schema, String table) {
+		String s = schema +"."+ table;
+		if (this.onlyTables.size() > 0) {
+			boolean include = false;
+			for (Pattern p : onlyTables) {
+				if (p.matcher(s).find()) {
+					include = true;
+					break;
+				}
+			}
+			if (!include) return false;
+		}
+		for (Pattern p : this.excludeTables) {
+			if (p.matcher(s).find()) {
+				if (!excluded.contains(s)) System.err.println("excluding: "+ s);
+				excluded.add(s);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private Map<String, Map<String, Map<String, String>>> getSchemasMSSQL(final Connection conn)
@@ -287,13 +344,14 @@ public class SchemaExtractor extends Task {
 				final ResultSet rs2 = s.getResultSet();
 				while (rs2.next()) {
 					final String schema = db; // +"."+ rs2.getString("table_schema");
+					final String table = rs2.getString("table_name");
+					if (!includeTable(schema, table)) continue;
+
 					Map<String, Map<String, String>> tables = schemas.get(schema);
 					if (tables == null) {
 						tables = new LinkedHashMap<String, Map<String, String>>();
 						schemas.put(schema, tables);
 					}
-
-					final String table = rs2.getString("table_name");
 					if (table.startsWith("syncobj_")) continue;
 					if (table.startsWith("MS") && table.length() > 2
 							&& Character.isLowerCase(table.charAt(2))) continue;
@@ -369,6 +427,7 @@ public class SchemaExtractor extends Task {
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
 				continue;
+			if (!includeTable(schema, table)) continue;
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {
@@ -425,6 +484,7 @@ public class SchemaExtractor extends Task {
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
 				continue;
+			if (!includeTable(schema, table)) continue;
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {
@@ -478,6 +538,7 @@ public class SchemaExtractor extends Task {
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
 				continue;
+			if (!includeTable(schema, table)) continue;
 
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables==null) {
@@ -553,6 +614,8 @@ public class SchemaExtractor extends Task {
 			final String referenced_table = rs.getString("referenced_table_name").toLowerCase();
 			final String referenced_column = rs.getString("referenced_column_name").toLowerCase();
 
+			if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
+
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {
 			    fk = new LinkedHashMap<String,Object>();
@@ -601,6 +664,8 @@ public class SchemaExtractor extends Task {
 			final String referenced_schema = rs.getString("pktable_schem").toLowerCase();
 			final String referenced_table = rs.getString("pktable_name").toLowerCase();
 			final String referenced_column = rs.getString("pkcolumn_name").toLowerCase();
+
+			if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
 
 			Map<String, Object> fk = foreignKeys.get(constraint_name);
 			if (fk==null) {

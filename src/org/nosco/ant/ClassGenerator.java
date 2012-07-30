@@ -1199,13 +1199,14 @@ class ClassGenerator {
 
 	private String dePlural(String s) {
 		s = s.toLowerCase();
-		if (s.endsWith("series"));
-		else if (s.endsWith("us"));
-		else if (s.endsWith("is"));
-		else if (s.endsWith("as"));
-		else if (s.endsWith("xes")) s = s.substring(0,s.length()-2);
-		else if (s.endsWith("ies")) s = s.substring(0,s.length()-3)+"y";
-		else if (s.endsWith("s")) s = s.substring(0,s.length()-1);
+//		if (s.endsWith("series"));
+//		else if (s.endsWith("us"));
+//		else if (s.endsWith("is"));
+//		else if (s.endsWith("as"));
+//		else if (s.endsWith("ss"));
+//		else if (s.endsWith("xes")) s = s.substring(0,s.length()-2);
+//		else if (s.endsWith("ies")) s = s.substring(0,s.length()-3)+"y";
+//		else if (s.endsWith("s")) s = s.substring(0,s.length()-1);
 		return s;
 	}
 

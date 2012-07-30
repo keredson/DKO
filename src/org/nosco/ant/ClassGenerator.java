@@ -752,7 +752,7 @@ class ClassGenerator {
 		if (pkSet == null || pkSet.isEmpty()) {
 			br.write("\t\tthrow new RuntimeException(\"save() is ambiguous on objects without PKs - use insert() or update()\");\n");
 		} else {
-			br.write("\t\tfinal int size = query.size();\n");
+			br.write("\t\tfinal long size = query.size();\n");
 			br.write("\t\tif (size == 0) return this.insert(_ds);\n");
 			br.write("\t\telse if (size == 1) return this.update(_ds);\n");
 			br.write("\t\telse throw new RuntimeException(\"more than one result was returned " +
@@ -915,7 +915,7 @@ class ClassGenerator {
 			br.write(".where("+ getFieldName(column) +".eq("+ getInstanceFieldName(column) +"))");
 		}
 		br.write(";\n");
-		br.write("\t\tfinal int size = query.size();\n");
+		br.write("\t\tfinal long size = query.size();\n");
 		br.write("\t\treturn size > 0;\n");
 		br.write("\t}\n");
 

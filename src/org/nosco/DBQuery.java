@@ -278,7 +278,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public int count() throws SQLException {
+	public long count() throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		final String sql = "select count(1)"+ getFromClause(context) + getWhereClauseAndSetBindings();
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
@@ -290,7 +290,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
 		rs.next();
-		final int count = rs.getInt(1);
+		final long count = rs.getLong(1);
 		rs.close();
 		ps.close();
 		_postExecute(context, conn);
@@ -988,7 +988,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public int size() throws SQLException {
+	public long size() throws SQLException {
 		return count();
 	}
 

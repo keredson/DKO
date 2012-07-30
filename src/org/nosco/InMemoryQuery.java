@@ -90,13 +90,13 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public int count() throws SQLException {
+	public long count() throws SQLException {
 		if (!loaded) load();
 		return cache.size();
 	}
 
 	@Override
-	public int size() throws SQLException {
+	public long size() throws SQLException {
 		if (!loaded) load();
 		return cache.size();
 	}

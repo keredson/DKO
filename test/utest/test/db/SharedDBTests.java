@@ -64,8 +64,8 @@ public class SharedDBTests extends TestCase {
 
 	public void testWithAndCross() throws SQLException {
 		int count = 0;
-		final int countp = Product.ALL.use(ds).count();
-		final int countc = Category.ALL.use(ds).count();
+		final long countp = Product.ALL.use(ds).count();
+		final long countc = Category.ALL.use(ds).count();
 		final Query<Product> q = Product.ALL.use(ds).cross(Category.class);
 		for (final Product p : q) {
 			//assertNotNull(p);
@@ -80,8 +80,8 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testFK1() throws SQLException {
-		final int itemCount = Item.ALL.use(ds).count();
-		final int itemCount2 = Item.ALL.use(ds).with(Item.FK_SUPPLIER).count();
+		final long itemCount = Item.ALL.use(ds).count();
+		final long itemCount2 = Item.ALL.use(ds).with(Item.FK_SUPPLIER).count();
 		// counts should be the same w/ and w/o the FK reference
 		assertTrue(itemCount == itemCount2);
 		int count = 0;
@@ -113,13 +113,13 @@ public class SharedDBTests extends TestCase {
 	public void testFKReverseCounts() throws SQLException {
 		System.err.println("testFKReverseCounts start");
 		final Undoer x = Context.getVMContext().setDataSource(ds);
-		final int count1 = Supplier.ALL.count();
-		final int count2 = Supplier.ALL.with(Item.FK_SUPPLIER).count();
+		final long count1 = Supplier.ALL.count();
+		final long count2 = Supplier.ALL.with(Item.FK_SUPPLIER).count();
 		int count3 = 0;
 		int supplierCount = 0;
 		for (final Supplier s : Supplier.ALL) {
 			supplierCount += 1;
-			final int itemCount = s.getItemSet().count();
+			final long itemCount = s.getItemSet().count();
 			count3 += Math.max(1, itemCount);
 		}
 		assertEquals(count2, count3);
@@ -129,8 +129,8 @@ public class SharedDBTests extends TestCase {
 	@SuppressWarnings("unused")
 	public void testFKReverse() throws SQLException {
 		System.err.println("testFKReverse start");
-		final int count1 = Supplier.ALL.count();
-		int count2 = 0;
+		final long count1 = Supplier.ALL.count();
+		long count2 = 0;
 		final Undoer y = Context.getVMContext().setDataSource(ccds);
 		for (final Supplier s : Supplier.ALL.with(Item.FK_SUPPLIER)) {
 			count2++;
@@ -214,7 +214,7 @@ public class SharedDBTests extends TestCase {
 	}
 
 	public void testObjectArray() throws SQLException {
-		final int count = Item.ALL.count();
+		final long count = Item.ALL.count();
 		int count2 = 0;
 		for (final Object[] oa : Item.ALL.asIterableOfObjectArrays()) {
 			count2 += 1;
@@ -250,7 +250,7 @@ public class SharedDBTests extends TestCase {
     }
 
     public void testBulkUpdate() throws SQLException {
-    	final int count = Item.ALL.count();
+    	final long count = Item.ALL.count();
     	final List<Item> items = Item.ALL.asList();
 		for (final Item item : items) {
     		item.setAttr2("woot2");

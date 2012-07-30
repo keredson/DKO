@@ -88,14 +88,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public int count() throws SQLException;
+	public long count() throws SQLException;
 
 	/**
 	 * Same as .count()
 	 * @return
 	 * @throws SQLException
 	 */
-	public int size() throws SQLException;
+	public long size() throws SQLException;
 
 	/**
 	 * Excludes elements that match the conditions.

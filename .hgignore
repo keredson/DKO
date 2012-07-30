@@ -1,2 +1,8 @@
 bin/
+bin_test/
 gensrc/
+.classpath
+.project
+.settings/
+lib/
+reports/

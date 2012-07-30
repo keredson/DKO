@@ -131,6 +131,8 @@ public class Context {
 			}
 			if (x != null) return x;
 		}
+		String prop = System.getProperty(Constants.PROPERTY_WARN_EXCESSIVE_LAZY_LOADING);
+		if (prop != null) return Util.truthy(prop);
 		return true;
 	}
 
@@ -145,6 +147,8 @@ public class Context {
 			}
 			if (x != null) return x;
 		}
+		String prop = System.getProperty(Constants.PROPERTY_OPTIMIZE_SELECT_FIELDS);
+		if (prop != null) return Util.truthy(prop);
 		return true;
 	}
 

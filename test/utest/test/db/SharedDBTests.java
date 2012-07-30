@@ -1,5 +1,6 @@
 package test.db;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,8 @@ import org.nosco.Context;
 import org.nosco.Context.Undoer;
 import org.nosco.Diff;
 import org.nosco.Diff.RowChange;
+import org.nosco.Table;
+
 import static org.nosco.Function.*;
 import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
@@ -100,13 +103,27 @@ public class SharedDBTests extends TestCase {
 		assertEquals(1, ccds.getCount());
 	}
 
-	public void testFKNoWith() throws SQLException {
+	public void testFKNoWith() throws Exception {
 		final Undoer x = Context.getVMContext().setDataSource(ccds);
+		ClassLoader classLoader = this.getClass().getClassLoader();
+		Class<?> clz = classLoader.loadClass("org.nosco.UsageMonitor");
+		java.lang.reflect.Field field = clz.getDeclaredField("warnBadFKUsageCount");
+		field.setAccessible(true);
+		java.lang.reflect.Field __NOSCO_USAGE_MONITOR = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
+		__NOSCO_USAGE_MONITOR.setAccessible(true);
+		Method warnBadFKUsage = clz.getDeclaredMethod("warnBadFKUsage");
+		warnBadFKUsage.setAccessible(true);
+		Object um = null;
+		long warnBadFKUsageCountPre = field.getLong(null);
 		for (final Item item : Item.ALL) { //.with(Item.FK_SUPPLIER)
 			// this should create O(n) queries because we didn't specify with() above
 			item.getSupplierFK();
+			if (um == null) um = __NOSCO_USAGE_MONITOR.get(item);
 		}
 		assertTrue(ccds.getCount() > 1);
+		warnBadFKUsage.invoke(um);
+		long warnBadFKUsageCountPost = field.getLong(null);
+		assertEquals(warnBadFKUsageCountPre+1, warnBadFKUsageCountPost);
 	}
 
 	@SuppressWarnings("unused")

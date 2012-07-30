@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -156,8 +157,40 @@ public class Constants {
 
 	}
 
+	/**
+	 * Writes the generated SQL to stderr.  Now all SQL is logged by default
+	 * to: {@code java.util.logging.Logger.getLogger("org.nosco.sql");}
+	 */
+	@Deprecated
 	public static final String PROP_LOG_SQL = "org.nosco.log_sql";
+
+	/**
+	 * Writes the generated SQL to stderr.  Now all SQL is logged by default
+	 * to: {@code java.util.logging.Logger.getLogger("org.nosco.sql");}
+	 */
+	@Deprecated
 	public static final String PROP_LOG = "org.nosco.log";
+
+	/**
+	 * A Java property that controls the select statement optimizations.
+	 * These optimizations filter out fields from generated queries based on which
+	 * columns have been accessed over the life of all the objects created from the query.
+	 * Enabled by default.
+	 */
+	public static final String PROPERTY_OPTIMIZE_SELECT_FIELDS = "org.nosco.optimize_select_fields";
+
+	/**
+	 * A Java property that controls the automatic warning of excessive lazy loading
+	 * (which can seriously degrade both application and database performance).
+	 * Enabled by default.
+	 */
+	public static final String PROPERTY_WARN_EXCESSIVE_LAZY_LOADING = "org.nosco.warn_excessive_lazy_loading";
+
+	/**
+	 * A Java property that controls where Nosco keeps cached performance metrics.
+	 * By default: ~/.nosco_optimizations
+	 */
+	public static final String PROPERTY_CACHE_DIR = "org.nosco.cache_dir";
 
 }
 

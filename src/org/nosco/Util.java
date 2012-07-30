@@ -143,7 +143,7 @@ class Util {
 	static void log(final String sql, final List<Object> bindings) {
 		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ join("|", bindings) +"]" : "");
 		logSql.fine(msg);
-		
+
 		// legacy prop values
 		PrintStream log = null; // System.err || null;
 		final String property = System.getProperty(Constants.PROP_LOG_SQL);
@@ -163,11 +163,19 @@ class Util {
 
 	static boolean truthy(String s) {
 		if (s == null) return false;
-		s = s.trim();
-		if ("true".equalsIgnoreCase(s)) return true;
-		if ("t".equalsIgnoreCase(s)) return true;
-		if ("1".equals(s)) return true;
-		return false;
+		s = s.trim().toLowerCase();
+		if ("true".equals(s)) return true;
+		if ("false".equals(s)) return false;
+		if ("t".equals(s)) return true;
+		if ("f".equals(s)) return false;
+		if ("yes".equals(s)) return true;
+		if ("no".equals(s)) return false;
+		if ("y".equals(s)) return true;
+		if ("n".equals(s)) return false;
+		try { return Integer.valueOf(s) != 0; }
+		catch (NumberFormatException e) { /* ignore */ }
+		throw new RuntimeException("I don't know the truthiness of '"+ s
+				+"'.  Accepted values are: true/false/t/f/yes/no/y/n/[0-9]+");
 	}
 
 	static String readFileToString(final File file) {

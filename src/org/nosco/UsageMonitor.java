@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import org.nosco.DBQuery.Join;
 import org.nosco.Field.FK;
-import org.nosco.Tuple.Tuple2;
 import org.nosco.Tuple.Tuple3;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -54,6 +53,7 @@ class UsageMonitor<T extends Table> {
 
 	private DBQuery<T> query;
 	private boolean selectOptimized = false;
+	private static long warnBadFKUsageCount = 0;
 
 	@Override
 	protected void finalize() throws Throwable {
@@ -109,7 +109,6 @@ class UsageMonitor<T extends Table> {
 			try {
 				loadPerformanceInfo.join();
 			} catch (final InterruptedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -132,10 +131,8 @@ class UsageMonitor<T extends Table> {
 //        	final String s = Util.join(",", st);
 //        	System.err.println(hash +"\t"+ Arrays.toString(cript.digest()) +"\t"+ s.hashCode());
 //        } catch (final UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (final NoSuchAlgorithmException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
         queryHash = hash;
@@ -172,6 +169,7 @@ class UsageMonitor<T extends Table> {
 							+ Util.join("\n\t", (Object[]) st) +"\n"
 							+ WARN_OFF;
 					log.warning(msg);
+					warnBadFKUsageCount  += 1;
 				}
 			}
 		}
@@ -301,11 +299,7 @@ class UsageMonitor<T extends Table> {
 		return;
 	}
 
-	private final static File BASE_DIR = new File(System.getProperty("user.home"));
-	private final static File CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations");
-	//private final static File BASE_DIR = new File(System.getProperty("java.io.tmpdir"));
-	//private final static File CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations_"+System.getProperty("user.name"));
-	private final static File PERF_CACHE = new File(CACHE_DIR, "performance");
+	private static File PERF_CACHE = null;
 	private final static String README_TEXT = "Welcome to Nosco!\n\n" +
 			"This directory contains runtime profiles for programs that use the nosco library.\n" +
 			"It is always safe to delete.  Your programs will just run a little slower the next\n" +
@@ -332,8 +326,7 @@ class UsageMonitor<T extends Table> {
 						final long ts = o.getLong(TIME_STAMP);
 						if (ts < cutoff) continue;
 					} catch (final JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						log.warning("JSON serialization error:"+ e.getMessage());
 					}
 					w.write(line);
 					w.write('\n');
@@ -349,7 +342,7 @@ class UsageMonitor<T extends Table> {
 				br2.close();
 				w2.close();
 			} catch (final IOException e) {
-				//e.printStackTrace();
+				log.warning("Unable to clean the performance cache: "+ e.getMessage());
 			}
 		}
 	};
@@ -359,6 +352,17 @@ class UsageMonitor<T extends Table> {
 	private final static Thread loadPerformanceInfo = new Thread() {
 		@Override
 		public void run() {
+			final File CACHE_DIR;;
+			String dir = System.getProperty(Constants.PROPERTY_CACHE_DIR);
+			if (dir == null) {
+				final File BASE_DIR = new File(System.getProperty("user.home"));
+				CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations");
+			} else {
+				CACHE_DIR = new File(dir);
+			}
+			PERF_CACHE = new File(CACHE_DIR, "performance");
+
+
 			if (!CACHE_DIR.isDirectory()) {
 				CACHE_DIR.mkdirs();
 				try {
@@ -366,15 +370,14 @@ class UsageMonitor<T extends Table> {
 					w.write(README_TEXT);
 					w.close();
 				} catch (final IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.warning("Unable to write to the cache dir '"+ CACHE_DIR.getPath()
+							+"': "+ e.getMessage());
 				}
 			}
 
 			long oldest = Long.MAX_VALUE;
 
 			try {
-				final ClassLoader cl = this.getClass().getClassLoader();
 				final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
 				for (String line = null; (line=br.readLine())!=null;) {
 					try {
@@ -405,9 +408,11 @@ class UsageMonitor<T extends Table> {
 				//System.err.println("loaded: "+ PERF_CACHE.getPath());
 			} catch (final FileNotFoundException e) {
 				// no worries
+				log.fine("Performace cache file '"+ PERF_CACHE.getPath() +"' not found.  " +
+						"(this is not an error assuming you've never run this program here before)");
 				//System.err.println("does not exist: "+ PERF_CACHE.getPath());
 			} catch (final IOException e) {
-				e.printStackTrace();
+				log.warning("Unable to read the performance cache: "+ e.getMessage());
 			}
 
 			if (oldest < cutoff - 2*MILLIS_ONE_WEEK) {
@@ -450,13 +455,14 @@ class UsageMonitor<T extends Table> {
 								o.write(w).write('\n');
 							}
 						} catch (final JSONException e1) {
-							e1.printStackTrace();
+							log.warning("JSON serialization error:"+ e1.getMessage());
 						}
 					}
 					if (w!=null) w.close();
 					//System.err.println("wrote: "+ PERF_CACHE);
 				} catch (final IOException e) {
-					//e.printStackTrace();
+					log.warning("Could not write the performace cache file '"+ PERF_CACHE.getPath()
+							+"':"+ e.getMessage());
 				}
 		    }
 		});

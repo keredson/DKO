@@ -328,6 +328,15 @@ public class Field<T> implements Cloneable {
 	 * @param set
 	 * @return
 	 */
+	public Condition in(final Field<?>... fields) {
+		return new Condition.In(this, " in ", (Object[]) fields);
+	}
+
+	/**
+	 * Creates a condition representing this field being a member of the given set.
+	 * @param set
+	 * @return
+	 */
 	public Condition in(final Collection<T> set) {
 		if (set.size() < 256) {
 			return new Condition.In(this, " in ", set);

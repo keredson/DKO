@@ -389,5 +389,9 @@ public class SharedDBTests extends TestCase {
     	System.gc();
     }
 
+    public void testFieldInField() throws Exception {
+    	Item.ALL.where(Item.ATTR1.in(Item.ATTR1, Item.ATTR2)).asList();
+    }
+
 
 }

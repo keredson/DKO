@@ -740,9 +740,14 @@ public abstract class Condition {
 			if (set != null && set.length > 0) {
 				for (int i=0; i<set.length; ++i) {
 					final Object v = set[i];
-					sb.append("?");
+					if (v instanceof Field) {
+						Field<?> f = (Field<?>) v;
+						sb.append(Util.derefField(f, context));
+					} else {
+						sb.append("?");
+						bindings.add(v);
+					}
 					if (i<set.length-1) sb.append(",");
-					bindings.add(v);
 				}
 			} else if (set2 != null && set2.size() > 0) {
 				int i = 0;

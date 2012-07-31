@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 
 import org.nosco.Bulk;
 import org.nosco.CSV;
+import org.nosco.Field;
 import org.nosco.Constants.CALENDAR;
 import org.nosco.Context;
 import org.nosco.Context.Undoer;
@@ -391,6 +392,19 @@ public class SharedDBTests extends TestCase {
 
     public void testFieldInField() throws Exception {
     	Item.ALL.where(Item.ATTR1.in(Item.ATTR1, Item.ATTR2)).asList();
+    }
+
+    public void testCrossColumnSelects() throws Exception {
+    	// only select the cols from the primary table
+    	int colCount = Item.ALL.first().FIELDS().length;
+    	Method getSelectFields = Item.ALL.getClass().getDeclaredMethod("getSelectFields");
+    	getSelectFields.setAccessible(true);
+    	Query<Item> q = Item.ALL.cross(Product.class).top(10);
+    	Field<?>[] selectedFields = (Field<?>[]) getSelectFields.invoke(q);
+    	assertEquals(colCount, selectedFields.length);
+    	for (Object[] row : q.asIterableOfObjectArrays()) {
+    		assertTrue(colCount < row.length);
+    	}
     }
 
 

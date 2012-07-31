@@ -66,6 +66,7 @@ class DBQuery<T extends Table> implements Query<T> {
 	DataSource defaultDS = null;
 	String globallyAppliedSelectFunction = null;
 	DB_TYPE dbType = null;
+	private boolean onlySelectFromFirstTableAndJoins = true;
 
 	DBQuery(final Table table) {
 		addTable(table);
@@ -131,6 +132,7 @@ class DBQuery<T extends Table> implements Query<T> {
 		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
 		dbType = q.dbType;
 		defaultDS = q.defaultDS;
+		onlySelectFromFirstTableAndJoins = q.onlySelectFromFirstTableAndJoins;
 	}
 
 	DBQuery(final Class<? extends Table> tableClass) {
@@ -689,12 +691,26 @@ class DBQuery<T extends Table> implements Query<T> {
 		return all;
 	}
 
+	private List<TableInfo> getSelectableTableInfos() {
+		final List<TableInfo> all = new ArrayList<TableInfo>();
+		all.add(tableInfos.get(0));
+		for (final Join join : joinsToOne) {
+			all.add(join.reffedTableInfo);
+		}
+		for (final Join join : joinsToMany) {
+			all.add(join.reffingTableInfo);
+		}
+		return all;
+	}
+
 	Field<?>[] getSelectFields(final boolean bind) {
 		if (!bind && fields==null || bind && boundFields==null) {
 			final List<Field<?>> fields = new ArrayList<Field<?>>();
 			int c = 0;
 			int position = 0;
-			for (final TableInfo ti : getAllTableInfos()) {
+			List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
+					getSelectableTableInfos() : getAllTableInfos();
+			for (final TableInfo ti : allTableInfos) {
 				ti.position = position;
 				position += 1;
 				ti.start = c;
@@ -1277,7 +1293,9 @@ class DBQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Iterable<Object[]> asIterableOfObjectArrays() {
-		return new SelectAsObjectArrayIterable<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.onlySelectFromFirstTableAndJoins  = false;
+		return new SelectAsObjectArrayIterable<T>(q);
 	}
 
 	@Override

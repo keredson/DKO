@@ -212,7 +212,7 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
+<CODE>&nbsp;long</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Query.html#count()">count</A></B>()</CODE>
 
 <BR>
@@ -493,7 +493,7 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
+<CODE>&nbsp;long</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../org/nosco/Query.html#size()">size</A></B>()</CODE>
 
 <BR>
@@ -678,8 +678,8 @@ get</H3>
 <A NAME="count()"><!-- --></A><H3>
 count</H3>
 <PRE>
-int <B>count</B>()
-          throws java.sql.SQLException</PRE>
+long <B>count</B>()
+           throws java.sql.SQLException</PRE>
 <DL>
 <DD>Returns the database-calculated count of the query.
  Does not download the objects into the JVM.
@@ -704,8 +704,8 @@ int <B>count</B>()
 <A NAME="size()"><!-- --></A><H3>
 size</H3>
 <PRE>
-int <B>size</B>()
-         throws java.sql.SQLException</PRE>
+long <B>size</B>()
+          throws java.sql.SQLException</PRE>
 <DL>
 <DD>Same as .count()
 <P>

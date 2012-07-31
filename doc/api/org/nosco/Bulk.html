@@ -158,6 +158,13 @@ Provides optimized methods for CRUD operations on collections. &nbsp;
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specify the target DataSource.</TD>
 </TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../org/nosco/Bulk.html#Bulk(javax.sql.DataSource, int)">Bulk</A></B>(javax.sql.DataSource&nbsp;ds,
+     int&nbsp;batchSize)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specify the target DataSource.</TD>
+</TR>
 </TABLE>
 &nbsp;
 <!-- ========== METHOD SUMMARY =========== -->
@@ -366,6 +373,20 @@ public <B>Bulk</B>(javax.sql.DataSource&nbsp;ds)</PRE>
 <P>
 <DL>
 <DT><B>Parameters:</B><DD><CODE>ds</CODE> - </DL>
+</DL>
+<HR>
+
+<A NAME="Bulk(javax.sql.DataSource, int)"><!-- --></A><H3>
+Bulk</H3>
+<PRE>
+public <B>Bulk</B>(javax.sql.DataSource&nbsp;ds,
+            int&nbsp;batchSize)</PRE>
+<DL>
+<DD>Specify the target DataSource.
+ Note that you can get the default DataSource from any <code>MyObject.ALL.getDataSource()</code>.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>ds</CODE> - <DD><CODE>batchSize</CODE> - the JDBCX batch size to use</DL>
 </DL>
 
 <!-- ============ METHOD DETAIL ========== -->

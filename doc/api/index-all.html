@@ -142,6 +142,9 @@ Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.n
 <DT><A HREF="./org/nosco/Bulk.html" title="class in org.nosco"><B>Bulk</B></A> - Class in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>Provides optimized methods for CRUD operations on collections.<DT><A HREF="./org/nosco/Bulk.html#Bulk(javax.sql.DataSource)"><B>Bulk(DataSource)</B></A> - 
 Constructor for class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
 <DD>Specify the target DataSource.
+<DT><A HREF="./org/nosco/Bulk.html#Bulk(javax.sql.DataSource, int)"><B>Bulk(DataSource, int)</B></A> - 
+Constructor for class org.nosco.<A HREF="./org/nosco/Bulk.html" title="class in org.nosco">Bulk</A>
+<DD>Specify the target DataSource.
 <DT><A HREF="./org/nosco/Bulk.StatusCallback.html" title="interface in org.nosco"><B>Bulk.StatusCallback</B></A> - Interface in <A HREF="./org/nosco/package-summary.html">org.nosco</A><DD>A callback interface for bulk load operations.</DL>
 <HR>
 <A NAME="_C_"><!-- --></A><H2>
@@ -701,6 +704,9 @@ Static method in class org.nosco.<A HREF="./org/nosco/Function.html" title="clas
 <DT><A HREF="./org/nosco/Field.html#in(T...)"><B>in(T...)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>Creates a condition representing this field being a member of the given set.
+<DT><A HREF="./org/nosco/Field.html#in(org.nosco.Field...)"><B>in(Field&lt;?&gt;...)</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
+<DD>Creates a condition representing this field being a member of the given set.
 <DT><A HREF="./org/nosco/Field.html#in(java.util.Collection)"><B>in(Collection&lt;T&gt;)</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Field.html" title="class in org.nosco">Field</A>
 <DD>Creates a condition representing this field being a member of the given set.
@@ -1035,10 +1041,20 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/UnClosableC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Constants.html#PROP_LOG"><B>PROP_LOG</B></A> - 
 Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
-<DD>&nbsp;
+<DD><B>Deprecated.</B>&nbsp;
 <DT><A HREF="./org/nosco/Constants.html#PROP_LOG_SQL"><B>PROP_LOG_SQL</B></A> - 
 Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
-<DD>&nbsp;
+<DD><B>Deprecated.</B>&nbsp;
+<DT><A HREF="./org/nosco/Constants.html#PROPERTY_CACHE_DIR"><B>PROPERTY_CACHE_DIR</B></A> - 
+Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
+<DD>A Java property that controls where Nosco keeps cached performance metrics.
+<DT><A HREF="./org/nosco/Constants.html#PROPERTY_OPTIMIZE_SELECT_FIELDS"><B>PROPERTY_OPTIMIZE_SELECT_FIELDS</B></A> - 
+Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
+<DD>A Java property that controls the select statement optimizations.
+<DT><A HREF="./org/nosco/Constants.html#PROPERTY_WARN_EXCESSIVE_LAZY_LOADING"><B>PROPERTY_WARN_EXCESSIVE_LAZY_LOADING</B></A> - 
+Static variable in class org.nosco.<A HREF="./org/nosco/Constants.html" title="class in org.nosco">Constants</A>
+<DD>A Java property that controls the automatic warning of excessive lazy loading
+ (which can seriously degrade both application and database performance).
 </DL>
 <HR>
 <A NAME="_Q_"><!-- --></A><H2>
@@ -1184,6 +1200,9 @@ Method in class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" tit
 <DT><A HREF="./org/nosco/ant/SchemaExtractor.html#setEnumsOut(java.lang.String)"><B>setEnumsOut(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant">SchemaExtractor</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/ant/SchemaExtractor.html#setExcludeTables(java.lang.String)"><B>setExcludeTables(String)</B></A> - 
+Method in class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant">SchemaExtractor</A>
+<DD>A comma separated list of regex patterns.
 <DT><A HREF="./org/nosco/ant/CodeGenerator.html#setFakeFKs(java.lang.String)"><B>setFakeFKs(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/CodeGenerator.html" title="class in org.nosco.ant">CodeGenerator</A>
 <DD>&nbsp;
@@ -1229,6 +1248,9 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ReflectedDa
 <DT><A HREF="./org/nosco/datasource/SingleConnectionDataSource.html#setLogWriter(java.io.PrintWriter)"><B>setLogWriter(PrintWriter)</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/SingleConnectionDataSource.html" title="class in org.nosco.datasource">SingleConnectionDataSource</A>
 <DD>&nbsp;
+<DT><A HREF="./org/nosco/ant/SchemaExtractor.html#setOnlyTables(java.lang.String)"><B>setOnlyTables(String)</B></A> - 
+Method in class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant">SchemaExtractor</A>
+<DD>A comma separated list of regex patterns.
 <DT><A HREF="./org/nosco/ant/SchemaExtractor.html#setOut(java.lang.String)"><B>setOut(String)</B></A> - 
 Method in class org.nosco.ant.<A HREF="./org/nosco/ant/SchemaExtractor.html" title="class in org.nosco.ant">SchemaExtractor</A>
 <DD>&nbsp;
@@ -1369,6 +1391,9 @@ Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/ConnectionC
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/datasource/MirroredDataSource.html#toString()"><B>toString()</B></A> - 
 Method in class org.nosco.datasource.<A HREF="./org/nosco/datasource/MirroredDataSource.html" title="class in org.nosco.datasource">MirroredDataSource</A>
+<DD>&nbsp;
+<DT><A HREF="./org/nosco/Diff.FieldChange.html#toString()"><B>toString()</B></A> - 
+Method in class org.nosco.<A HREF="./org/nosco/Diff.FieldChange.html" title="class in org.nosco">Diff.FieldChange</A>
 <DD>&nbsp;
 <DT><A HREF="./org/nosco/Diff.RowChange.html#toString()"><B>toString()</B></A> - 
 Method in class org.nosco.<A HREF="./org/nosco/Diff.RowChange.html" title="class in org.nosco">Diff.RowChange</A>

@@ -204,6 +204,22 @@ Extracts schema information from a provided database into a JSON file. &nbsp;
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/nosco/ant/SchemaExtractor.html#setExcludeTables(java.lang.String)">setExcludeTables</A></B>(java.lang.String&nbsp;s)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A comma separated list of regex patterns.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/nosco/ant/SchemaExtractor.html#setOnlyTables(java.lang.String)">setOnlyTables</A></B>(java.lang.String&nbsp;s)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A comma separated list of regex patterns.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/nosco/ant/SchemaExtractor.html#setOut(java.lang.String)">setOut</A></B>(java.lang.String&nbsp;s)</CODE>
 
 <BR>
@@ -405,6 +421,36 @@ public void <B>setSchemas</B>(java.lang.String&nbsp;s)</PRE>
 <DL>
 <DD><DL>
 </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setOnlyTables(java.lang.String)"><!-- --></A><H3>
+setOnlyTables</H3>
+<PRE>
+public void <B>setOnlyTables</B>(java.lang.String&nbsp;s)</PRE>
+<DL>
+<DD>A comma separated list of regex patterns.  If "schema_name.table_name" contains the
+ java pattern, the table will be included.  Otherwise, it will be excluded.
+ If this is not set, all tables will be included.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>s</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setExcludeTables(java.lang.String)"><!-- --></A><H3>
+setExcludeTables</H3>
+<PRE>
+public void <B>setExcludeTables</B>(java.lang.String&nbsp;s)</PRE>
+<DL>
+<DD>A comma separated list of regex patterns.  If "schema_name.table_name" contains the
+ java pattern, the table will be excluded.  Otherwise, it will be included.
+ If this is not set, all tables will be included.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>s</CODE> - </DL>
 </DD>
 </DL>
 <HR>

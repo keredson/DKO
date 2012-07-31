@@ -157,7 +157,7 @@ Defines constants for use in this API.
 <TD><CODE><B><A HREF="../../org/nosco/Constants.html#PROP_LOG">PROP_LOG</A></B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -165,7 +165,32 @@ Defines constants for use in this API.
 <TD><CODE><B><A HREF="../../org/nosco/Constants.html#PROP_LOG_SQL">PROP_LOG_SQL</A></B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Constants.html#PROPERTY_CACHE_DIR">PROPERTY_CACHE_DIR</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Java property that controls where Nosco keeps cached performance metrics.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Constants.html#PROPERTY_OPTIMIZE_SELECT_FIELDS">PROPERTY_OPTIMIZE_SELECT_FIELDS</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Java property that controls the select statement optimizations.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../org/nosco/Constants.html#PROPERTY_WARN_EXCESSIVE_LAZY_LOADING">PROPERTY_WARN_EXCESSIVE_LAZY_LOADING</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Java property that controls the automatic warning of excessive lazy loading
+ (which can seriously degrade both application and database performance).</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -219,8 +244,12 @@ Defines constants for use in this API.
 <A NAME="PROP_LOG_SQL"><!-- --></A><H3>
 PROP_LOG_SQL</H3>
 <PRE>
-public static final java.lang.String <B>PROP_LOG_SQL</B></PRE>
+<FONT SIZE="-1">@Deprecated
+</FONT>public static final java.lang.String <B>PROP_LOG_SQL</B></PRE>
 <DL>
+<DD><B>Deprecated.</B>&nbsp;<DD>Writes the generated SQL to stderr.  Now all SQL is logged by default
+ to: <code>java.util.logging.Logger.getLogger("org.nosco.sql");</code>
+<P>
 <DL>
 <DT><B>See Also:</B><DD><A HREF="../../constant-values.html#org.nosco.Constants.PROP_LOG_SQL">Constant Field Values</A></DL>
 </DL>
@@ -229,10 +258,56 @@ public static final java.lang.String <B>PROP_LOG_SQL</B></PRE>
 <A NAME="PROP_LOG"><!-- --></A><H3>
 PROP_LOG</H3>
 <PRE>
-public static final java.lang.String <B>PROP_LOG</B></PRE>
+<FONT SIZE="-1">@Deprecated
+</FONT>public static final java.lang.String <B>PROP_LOG</B></PRE>
 <DL>
+<DD><B>Deprecated.</B>&nbsp;<DD>Writes the generated SQL to stderr.  Now all SQL is logged by default
+ to: <code>java.util.logging.Logger.getLogger("org.nosco.sql");</code>
+<P>
 <DL>
 <DT><B>See Also:</B><DD><A HREF="../../constant-values.html#org.nosco.Constants.PROP_LOG">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="PROPERTY_OPTIMIZE_SELECT_FIELDS"><!-- --></A><H3>
+PROPERTY_OPTIMIZE_SELECT_FIELDS</H3>
+<PRE>
+public static final java.lang.String <B>PROPERTY_OPTIMIZE_SELECT_FIELDS</B></PRE>
+<DL>
+<DD>A Java property that controls the select statement optimizations.
+ These optimizations filter out fields from generated queries based on which
+ columns have been accessed over the life of all the objects created from the query.
+ Enabled by default.
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../constant-values.html#org.nosco.Constants.PROPERTY_OPTIMIZE_SELECT_FIELDS">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="PROPERTY_WARN_EXCESSIVE_LAZY_LOADING"><!-- --></A><H3>
+PROPERTY_WARN_EXCESSIVE_LAZY_LOADING</H3>
+<PRE>
+public static final java.lang.String <B>PROPERTY_WARN_EXCESSIVE_LAZY_LOADING</B></PRE>
+<DL>
+<DD>A Java property that controls the automatic warning of excessive lazy loading
+ (which can seriously degrade both application and database performance).
+ Enabled by default.
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../constant-values.html#org.nosco.Constants.PROPERTY_WARN_EXCESSIVE_LAZY_LOADING">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="PROPERTY_CACHE_DIR"><!-- --></A><H3>
+PROPERTY_CACHE_DIR</H3>
+<PRE>
+public static final java.lang.String <B>PROPERTY_CACHE_DIR</B></PRE>
+<DL>
+<DD>A Java property that controls where Nosco keeps cached performance metrics.
+ By default: ~/.nosco_optimizations
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../constant-values.html#org.nosco.Constants.PROPERTY_CACHE_DIR">Constant Field Values</A></DL>
 </DL>
 
 <!-- ========= CONSTRUCTOR DETAIL ======== -->

@@ -266,15 +266,15 @@ public class Bulk {
 			} catch (final BatchUpdateException e) {
 				if (rc == null) throw e;
 				final int[] batchResults = e.getUpdateCounts();
-				System.err.println(e);
-				System.err.print("batchResults("+ batchResults.length +") ");
+				//System.err.println(e);
+				//System.err.print("batchResults("+ batchResults.length +") ");
 				final List<T> rejects = new ArrayList<T>();
 				for (int i=0; i<batchResults.length; ++i) {
-					System.err.print(" " + batchResults[i] +":"+ buffer[start+i]);
+					//System.err.print(" " + batchResults[i] +":"+ buffer[start+i]);
 					if (batchResults[i]<=0) rejects.add(buffer[start+i]);
 					else count += batchResults[i];
 				}
-				System.err.println();
+				//System.err.println();
 				if (batchResults.length < end-start) {
 					// some JDBC drivers (*cough* HSQL *cough*) stop immediately if any
 					// row throws an exception.  (instead of trying all rows and reporting

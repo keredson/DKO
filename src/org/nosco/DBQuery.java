@@ -681,12 +681,19 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	List<TableInfo> getAllTableInfos() {
-		final List<TableInfo> all = new ArrayList<TableInfo>(tableInfos);
+		final List<TableInfo> all = new ArrayList<TableInfo>();
+		int position = 0;
+		for (TableInfo ti : tableInfos) {
+			all.add(ti);
+			ti.position = position++;
+		}
 		for (final Join join : joinsToOne) {
 			all.add(join.reffedTableInfo);
+			join.reffedTableInfo.position = position++;
 		}
 		for (final Join join : joinsToMany) {
 			all.add(join.reffingTableInfo);
+			join.reffingTableInfo.position = position++;
 		}
 		return all;
 	}
@@ -707,12 +714,9 @@ class DBQuery<T extends Table> implements Query<T> {
 		if (!bind && fields==null || bind && boundFields==null) {
 			final List<Field<?>> fields = new ArrayList<Field<?>>();
 			int c = 0;
-			int position = 0;
 			List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
 			for (final TableInfo ti : allTableInfos) {
-				ti.position = position;
-				position += 1;
 				ti.start = c;
 				final String tableName = bind ? ti.tableName : null;
 				for (final Field<?> field : ti.table.FIELDS()) {

@@ -48,47 +48,63 @@ class UsageMonitor<T extends Table> {
 	private final StackTraceElement[] st;
 	private final BitSet accessedField = new BitSet();
 	private Field<?>[] selectedFields;
-	private Collection<Field<?>> surpriseFields = null;
+	private Set<Field<?>> surpriseFields = null;
 	private final String queryHash;
 
 	private DBQuery<T> query;
 	private boolean selectOptimized = false;
+	private Set<Field<?>> pks = new HashSet<Field<?>>();
 	private static long warnBadFKUsageCount = 0;
 
 	@Override
 	protected void finalize() throws Throwable {
-		warnBadFKUsage();
-		questionUnusedColumns();
+		try {
+			warnBadFKUsage();
+			questionUnusedColumns();
+		} catch (Throwable t) {
+			t.printStackTrace();
+			log.severe(t.toString());
+		}
 		super.finalize();
 	}
 
-	static ConcurrentHashMap<String,Map<Field<?>,Long>> qc = new ConcurrentHashMap<String,Map<Field<?>,Long>>();
+	final static Map<String,Map<Field<?>,Long>> qc = Collections.synchronizedMap(new HashMap<String,Map<Field<?>,Long>>());
 	static Map<String,Long> stLastSeen = Collections.synchronizedMap(new HashMap<String,Long>());
 	static Set<String> stSeenThisRun = Collections.synchronizedSet(new HashSet<String>());
 
 	private void questionUnusedColumns() {
-		qc.putIfAbsent(queryHash, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
-		final Map<Field<?>,Long> used = qc.get(queryHash);
+		Map<Field<?>,Long> used = qc.get(queryHash);
+		if (used==null) {
+			synchronized(qc) {
+				used = qc.get(queryHash);
+				if (used == null) {
+					used = Collections.synchronizedMap(new HashMap<Field<?>,Long>());
+					qc.put(queryHash, used);
+					//System.err.println("questionUnusedColumns new used for "+ queryHash);
+				}
+			}
+			//qc.putIfAbsent(queryHash, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
+			//used = qc.get(queryHash);
+		}
 		final Set<Field<?>> unusedColumns = new LinkedHashSet<Field<?>>();
+		long now = System.currentTimeMillis();
 		for (int i=0; i<selectedFields.length; ++i) {
 			if (!accessedField.get(i)) {
 				unusedColumns.add(selectedFields[i]);
 			} else {
 				final Long date = used.get(selectedFields[i]);
 				if (date==null || (date+MILLIS_ONE_WEEK)<START) {
-					used.put(selectedFields[i], System.currentTimeMillis());
+					used.put(selectedFields[i], now);
 				}
 			}
 		}
 		if (surpriseFields!=null) {
 			for (final Field<?> f : surpriseFields) {
-				final Long date = used.get(f);
-				if (date==null || (date+MILLIS_ONE_WEEK)<START) {
-					used.put(f, System.currentTimeMillis());
-				}
+				//System.err.println("fixing surpriseField "+ f +" @ "+ this.queryHash);
+				used.put(f, now);
 			}
 		}
-		removePKFieldsFromSet(unusedColumns);
+		unusedColumns.removeAll(pks);
 		final List<String> unusedColumnDescs = new ArrayList<String>();
 		for (final Field<?> field : unusedColumns) {
 			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
@@ -139,6 +155,31 @@ class UsageMonitor<T extends Table> {
         stSeenThisRun.add(hash);
         //System.err.println("queryHash "+ queryHash +" "+ query.hashCode());
         //System.err.println("queryHash "+ queryHash);
+
+        // get pks for all tables
+
+		for (final Table table : query.tables) {
+			for (final Field<?> f : Util.getPK(table).GET_FIELDS()) {
+				pks.add(f);
+			}
+		}
+		for (final Join join : query.joinsToOne) {
+			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+				pks.add(f);
+			}
+			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
+				pks.add(f);
+			}
+		}
+		for (final Join join : query.joinsToMany) {
+			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+				pks.add(f);
+			}
+			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
+				pks.add(f);
+			}
+		}
+		pks = Collections.unmodifiableSet(pks);
 	}
 
 	private String digestToString(final byte[] buf) {
@@ -227,8 +268,21 @@ class UsageMonitor<T extends Table> {
 				return;
 			}
 		}
-		if (surpriseFields==null) surpriseFields = new ArrayList<Field<?>>();
-		surpriseFields.add(field);
+		if (surpriseFields==null) surpriseFields = Collections.synchronizedSet(new HashSet<Field<?>>());
+		if (!surpriseFields.contains(field)) {
+			surpriseFields.add(field);
+			final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
+			StackTraceElement[] st = new StackTraceElement[tmp.length-3];
+			System.arraycopy(tmp, 3, st, 0, st.length);
+			String msg = "Optimizer was surprised by field "+ field.TABLE.getSimpleName()
+					+"."+ field.JAVA_NAME +" here:\n\t"
+					+ Util.join("\n\t", st) +"\nIf this happens once it's normal "
+					+"(the optimizer will learn to include it the next time this is run).\n"
+					+"But if this is happening every time you run "
+					+"please report this as a bug to http://code.google.com/p/nosco/";
+
+			log.info(msg);
+		}
 	}
 
 	void setSelectedFields(final Field<?>[] selectedFields) {
@@ -247,14 +301,14 @@ class UsageMonitor<T extends Table> {
 				//System.err.println("getOptimizedQuery no runtime info for "+ this.queryHash);
 				return query;
 			}
-			//System.err.println("used "+ used);
+			//System.err.println("used "+ used +" @ "+ this.queryHash);
 			final Set<Field<?>> deffer = new HashSet<Field<?>>();
 			final Field<?>[] originalSelectedFields = query.getSelectFields(false);
 			for (final Field<?> f : originalSelectedFields) {
 				if (!used.containsKey(f)) deffer.add(f);
 			}
 			if (deffer.isEmpty()) return query;
-			removePKFieldsFromSet(deffer);
+			deffer.removeAll(pks);
 			if (deffer.size()==originalSelectedFields.length && originalSelectedFields.length>0) {
 				// make sure we don't remove every field!
 				deffer.remove(originalSelectedFields[0]);
@@ -264,30 +318,6 @@ class UsageMonitor<T extends Table> {
 			return (DBQuery<T>) query.deferFields(deffer);
 		} finally {
 			query = null;
-		}
-	}
-
-	private void removePKFieldsFromSet(final Set<Field<?>> deffer) {
-		for (final Table table : query.tables) {
-			for (final Field<?> f : Util.getPK(table).GET_FIELDS()) {
-				deffer.remove(f);
-			}
-		}
-		for (final Join join : query.joinsToOne) {
-			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
-				deffer.remove(f);
-			}
-			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
-				deffer.remove(f);
-			}
-		}
-		for (final Join join : query.joinsToMany) {
-			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
-				deffer.remove(f);
-			}
-			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
-				deffer.remove(f);
-			}
 		}
 	}
 
@@ -349,6 +379,65 @@ class UsageMonitor<T extends Table> {
 
 	private static Map<String,Collection<Tuple3<String,String,Long>>> classToFieldToTimeToLoad = Collections.synchronizedMap(new HashMap<String,Collection<Tuple3<String,String,Long>>>());
 
+	private static void loadPerfData(File CACHE_DIR) {
+		PERF_CACHE = new File(CACHE_DIR, "performance");
+
+		if (!CACHE_DIR.isDirectory()) {
+			CACHE_DIR.mkdirs();
+			try {
+				final Writer w = new FileWriter(new File(CACHE_DIR, "README.TXT"));
+				w.write(README_TEXT);
+				w.close();
+			} catch (final IOException e) {
+				log.warning("Unable to write to the cache dir '"+ CACHE_DIR.getPath()
+						+"': "+ e.getMessage());
+			}
+		}
+
+		long oldest = Long.MAX_VALUE;
+
+		try {
+			final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
+			for (String line = null; (line=br.readLine())!=null;) {
+				try {
+					final JSONObject o = new JSONObject(line);
+					final String st = o.getString(STACK_TRACE);
+					final Long lastSeen = o.getLong(TIME_STAMP);
+					if (lastSeen < oldest) oldest = lastSeen;
+					final JSONObject o2 = o.getJSONObject(USED_FIELDS);
+					for (final String x : o2.keySet()) {
+						final long datetime = o2.getLong(x);
+						if (datetime < cutoff) continue;
+						final int split = x.lastIndexOf('.');
+						final String className = x.substring(0, split);
+						final String fieldName = x.substring(split+1);
+						Collection<Tuple3<String, String, Long>> fieldToTimetoLoad = classToFieldToTimeToLoad.get(className);
+						if (fieldToTimetoLoad == null) {
+							fieldToTimetoLoad = new ArrayList<Tuple3<String, String, Long>>();
+							 classToFieldToTimeToLoad.put(className, fieldToTimetoLoad);
+						}
+						fieldToTimetoLoad.add(new Tuple3<String, String, Long>(st, fieldName, datetime));
+					}
+					if (st!=null && lastSeen!=null) stLastSeen.put(st, lastSeen);
+				} catch (final JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			//System.err.println("loaded: "+ PERF_CACHE.getPath());
+		} catch (final FileNotFoundException e) {
+			// no worries
+			log.fine("Performace cache file '"+ PERF_CACHE.getPath() +"' not found.  " +
+					"(this is not an error assuming you've never run this program here before)");
+			//System.err.println("does not exist: "+ PERF_CACHE.getPath());
+		} catch (final IOException e) {
+			log.warning("Unable to read the performance cache: "+ e.getMessage());
+		}
+
+		if (oldest < cutoff - 2*MILLIS_ONE_WEEK) {
+			cleanPerformanceInfo.start();
+		}
+	}
+
 	private final static Thread loadPerformanceInfo = new Thread() {
 		@Override
 		public void run() {
@@ -360,67 +449,9 @@ class UsageMonitor<T extends Table> {
 			} else {
 				CACHE_DIR = new File(dir);
 			}
-			PERF_CACHE = new File(CACHE_DIR, "performance");
-
-
-			if (!CACHE_DIR.isDirectory()) {
-				CACHE_DIR.mkdirs();
-				try {
-					final Writer w = new FileWriter(new File(CACHE_DIR, "README.TXT"));
-					w.write(README_TEXT);
-					w.close();
-				} catch (final IOException e) {
-					log.warning("Unable to write to the cache dir '"+ CACHE_DIR.getPath()
-							+"': "+ e.getMessage());
-				}
-			}
-
-			long oldest = Long.MAX_VALUE;
-
-			try {
-				final BufferedReader br = new BufferedReader(new FileReader(PERF_CACHE));
-				for (String line = null; (line=br.readLine())!=null;) {
-					try {
-						final JSONObject o = new JSONObject(line);
-						final String st = o.getString(STACK_TRACE);
-						final Long lastSeen = o.getLong(TIME_STAMP);
-						if (lastSeen < oldest) oldest = lastSeen;
-						final JSONObject o2 = o.getJSONObject(USED_FIELDS);
-						for (final String x : o2.keySet()) {
-							final long datetime = o2.getLong(x);
-							if (datetime < cutoff) continue;
-							final int split = x.lastIndexOf('.');
-							final String className = x.substring(0, split);
-							final String fieldName = x.substring(split+1);
-							Collection<Tuple3<String, String, Long>> fieldToTimetoLoad = classToFieldToTimeToLoad.get(className);
-							if (fieldToTimetoLoad == null) {
-								fieldToTimetoLoad = new ArrayList<Tuple3<String, String, Long>>();
-								 classToFieldToTimeToLoad.put(className, fieldToTimetoLoad);
-							}
-							fieldToTimetoLoad.add(new Tuple3<String, String, Long>(st, fieldName, datetime));
-						}
-						if (st!=null && lastSeen!=null) stLastSeen.put(st, lastSeen);
-						qc.putIfAbsent(st, Collections.synchronizedMap(new HashMap<Field<?>,Long>()));
-					} catch (final JSONException e) {
-						e.printStackTrace();
-					}
-				}
-				//System.err.println("loaded: "+ PERF_CACHE.getPath());
-			} catch (final FileNotFoundException e) {
-				// no worries
-				log.fine("Performace cache file '"+ PERF_CACHE.getPath() +"' not found.  " +
-						"(this is not an error assuming you've never run this program here before)");
-				//System.err.println("does not exist: "+ PERF_CACHE.getPath());
-			} catch (final IOException e) {
-				log.warning("Unable to read the performance cache: "+ e.getMessage());
-			}
-
-			if (oldest < cutoff - 2*MILLIS_ONE_WEEK) {
-				cleanPerformanceInfo.start();
-			}
+			loadPerfData(CACHE_DIR);
 		}
 	};
-
 
 	static {
 		cleanPerformanceInfo.setDaemon(true);
@@ -489,6 +520,16 @@ class UsageMonitor<T extends Table> {
 						java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
 						final Field<?> field = (Field<?>) f.get(null);
 						Map<Field<?>, Long> fieldSeenMap = qc.get(st);
+						if (fieldSeenMap==null) {
+							synchronized(qc) {
+								fieldSeenMap = qc.get(st);
+								if (fieldSeenMap == null) {
+									fieldSeenMap = Collections.synchronizedMap(new HashMap<Field<?>,Long>());
+									qc.put(st, fieldSeenMap);
+									//System.err.println("loadStatsFor new fieldSeenMap for "+ st);
+								}
+							}
+						}
 						fieldSeenMap.put(field, time);
 					} catch (SecurityException e1) {
 						e1.printStackTrace();

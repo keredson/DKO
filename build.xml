@@ -238,6 +238,7 @@
       <batchtest fork="yes" todir="${reports}">
         <fileset dir="test/utest">
           <include name="**/*TestMySQL*.java"/>
+          <include name="**/TestUsageMonitor.java"/>
         </fileset>
       </batchtest>
     </junit>

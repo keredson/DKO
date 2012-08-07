@@ -407,5 +407,8 @@ public class SharedDBTests extends TestCase {
     	}
     }
 
+    public void testBetweenFields() throws Exception {
+    	Item.ALL.where(Item.ATTR1.between(Item.ATTR1, Item.ATTR2)).asList();
+    }
 
 }

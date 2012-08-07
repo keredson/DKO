@@ -275,7 +275,7 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
-	 * Creates a condition representing this field between the literal values of the parameters.
+	 * Creates a condition representing this field between the values of the parameters.
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -285,7 +285,7 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
-	 * Creates a condition representing this field between the literal values of the parameters.
+	 * Creates a condition representing this field between the values of the parameters.
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -295,7 +295,7 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
-	 * Creates a condition representing this field between the literal values of the parameters.
+	 * Creates a condition representing this field between the values of the parameters.
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -305,12 +305,62 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
-	 * Creates a condition representing this field between the literal values of the parameters.
+	 * Creates a condition representing this field between the values of the parameters.
 	 * @param v1
 	 * @param v2
 	 * @return
 	 */
 	public Condition between(final Function v1, final Function v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(final Field v1, final Field v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(final Field v1, final Function v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(final Function v1, final Field v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(final Field v1, final T v2) {
+		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing this field between the values of the parameters.
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public Condition between(final T v1, final Field v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 

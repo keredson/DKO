@@ -439,8 +439,6 @@ public abstract class Condition {
 		private final String cmp2;
 		private final Object v1;
 		private final Object v2;
-		private final Function function1;
-		private final Function function2;
 
 		public Ternary(final Field<?> field, final String cmp1, final Object v1, final String cmp2, final Object v2) {
 			this.field = field;
@@ -448,57 +446,30 @@ public abstract class Condition {
 			this.cmp2 = cmp2;
 			this.v1 = v1;
 			this.v2 = v2;
-			function1 = null;
-			function2 = null;
 		}
 
-		public Ternary(final Field<?> field, final String cmp1, final Function f1, final String cmp2, final Object v2) {
-			this.field = field;
-			this.cmp1 = cmp1;
-			this.cmp2 = cmp2;
-			this.v1 = null;
-			this.v2 = v2;
-			function1 = f1;
-			function2 = null;
-		}
-
-		public Ternary(final Field<?> field, final String cmp1, final Object v1, final String cmp2, final Function f2) {
-			this.field = field;
-			this.cmp1 = cmp1;
-			this.cmp2 = cmp2;
-			this.v1 = v1;
-			this.v2 = null;
-			function1 = null;
-			function2 = f2;
-		}
-
-		public Ternary(final Field<?> field, final String cmp1, final Function f1, final String cmp2, final Function f2) {
-			this.field = field;
-			this.cmp1 = cmp1;
-			this.cmp2 = cmp2;
-			this.v1 = null;
-			this.v2 = null;
-			function1 = f1;
-			function2 = f2;
-		}
-
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			sb.append(Util.derefField(field, context));
 			sb.append(cmp1);
-			if (function1 == null) {
+			if (v1 instanceof Function) {
+				((Function)v1).getSQL(sb, bindings, context);
+			} else if (v1 instanceof Field) {
+				sb.append(Util.derefField((Field)v1, context));
+			} else {
 				sb.append("?");
 				bindings.add(v1);
-			} else {
-				function1.getSQL(sb, bindings, context);
 			}
 			sb.append(cmp2);
-			if (function2 == null) {
+			if (v2 instanceof Function) {
+				((Function)v2).getSQL(sb, bindings, context);
+			} else if (v1 instanceof Field) {
+				sb.append(Util.derefField((Field)v2, context));
+			} else {
 				sb.append("?");
 				bindings.add(v2);
-			} else {
-				function2.getSQL(sb, bindings, context);
 			}
 		}
 

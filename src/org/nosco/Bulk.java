@@ -96,12 +96,13 @@ public class Bulk {
 	public <T extends Table> long insertAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
 		double lastCallback = System.currentTimeMillis() / 1000.0;
-		final Map<BitSet, Inserter<T>> inserters = new HashMap<BitSet,Inserter<T>>();
+		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
 		for (final T t : iterable) {
-			Inserter<T> inserter = inserters.get(t.__NOSCO_FETCHED_VALUES);
+			String key = t.__NOSCO_FETCHED_VALUES.toString();
+			Inserter<T> inserter = inserters.get(key);
 			if (inserter == null) {
 				inserter = new Inserter<T>();
-				inserters.put(t.__NOSCO_FETCHED_VALUES, inserter);
+				inserters.put(key, inserter);
 			}
 			final boolean batchWentOut = inserter.push(t);
 			if (callback!=null && batchWentOut && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
@@ -158,12 +159,14 @@ public class Bulk {
 	public <T extends Table> long updateAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
 		double lastCallback = System.currentTimeMillis() / 1000.0;
-		final Map<BitSet, Updater<T>> updaters = new HashMap<BitSet,Updater<T>>();
+		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		for (final T t : iterable) {
-			Updater<T> updater = updaters.get(t.__NOSCO_UPDATED_VALUES);
+			String key = t.__NOSCO_UPDATED_VALUES.toString();
+			Updater<T> updater = updaters.get(key);
 			if (updater == null) {
+				//System.err.println("t.__NOSCO_UPDATED_VALUES: "+ t.__NOSCO_UPDATED_VALUES);
 				updater = new Updater<T>();
-				updaters.put(t.__NOSCO_UPDATED_VALUES, updater);
+				updaters.put(key, updater);
 			}
 			final boolean batchWentOut = updater.push(t);
 			if (callback!=null && batchWentOut && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
@@ -243,6 +246,7 @@ public class Bulk {
 		}
 
 		private void executeBatch(final int start, final int end) throws SQLException, BatchUpdateException {
+			//System.err.println("executing batch of " + (end-start));
 			for (int i=start; i<end; ++i) {
 				final Table table = buffer[i];
 				int k=1;
@@ -255,18 +259,26 @@ public class Bulk {
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.
 					if (o instanceof Character) ps.setString(k++, o.toString());
 					else ps.setObject(k++, o);
+					//System.err.print(o + ", ");
 				}
+				//System.err.println();
 				ps.addBatch();
 			}
 			try {
+				//System.err.println("executing batch of " + (end-start));
 				final int[] batchResults = ps.executeBatch();
+				//System.err.println("... done! "+ Util.join(",", batchResults));
+				if (shouldCloseConn && !conn.getAutoCommit()) conn.commit();
+				//System.err.println("... committed!");
 				for (final int k : batchResults) {
 					count += k;
 				}
 			} catch (final BatchUpdateException e) {
+				if (shouldCloseConn && !conn.getAutoCommit()) conn.rollback();
 				if (rc == null) throw e;
 				final int[] batchResults = e.getUpdateCounts();
 				//System.err.println(e);
+				//System.err.println(e.getCause());
 				//System.err.print("batchResults("+ batchResults.length +") ");
 				final List<T> rejects = new ArrayList<T>();
 				for (int i=0; i<batchResults.length; ++i) {
@@ -381,8 +393,11 @@ public class Bulk {
 		protected void init(final Table table) throws SQLException {
 			super.init(table);
 			if (values==null) values = table.__NOSCO_UPDATED_VALUES;
-			final Field<?>[] allFields = table.FIELDS();
 			final Field<?>[] pks = Util.getPK(table).GET_FIELDS();
+			for (Field<?> pk : pks) {
+				values.clear(pk.INDEX);
+			}
+			final Field<?>[] allFields = table.FIELDS();
 			fields = new Field[values.cardinality() + pks.length];
 			for (int i=0, j=0; i<allFields.length; ++i) {
 				if (values.get(i)) {
@@ -489,11 +504,13 @@ public class Bulk {
 	public <T extends Table> long insertOrUpdateAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
 		double lastCallback = System.currentTimeMillis() / 1000.0;
-		final Map<BitSet, Inserter<T>> inserters = new HashMap<BitSet,Inserter<T>>();
-		final Map<BitSet, Updater<T>> updaters = new HashMap<BitSet,Updater<T>>();
+		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
+		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		final List<T> rejects = new ArrayList<T>();
 		for (final T t : iterable) {
-			Inserter<T> inserter = inserters.get(t.__NOSCO_FETCHED_VALUES);
+			// we use a string for the key because the bitset could change out from under us
+			String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
+			Inserter<T> inserter = inserters.get(insertKey);
 			if (inserter == null) {
 				inserter = new Inserter<T>(new RejectCallback<T>() {
 					@Override
@@ -502,16 +519,19 @@ public class Bulk {
 						//System.err.println("found rejects "+ rs.size());
 					}
 				});
-				inserters.put(t.__NOSCO_FETCHED_VALUES, inserter);
+				inserters.put(insertKey, inserter);
 			}
 			inserter.push(t);
 			if (!rejects.isEmpty()) {
 				for (final T r : rejects) {
 					//System.err.println("reject: "+ r);
-					Updater<T> updater = updaters.get(r.__NOSCO_UPDATED_VALUES);
+					String key = r.__NOSCO_UPDATED_VALUES.toString();
+					Updater<T> updater = updaters.get(key);
 					if (updater == null) {
+						//System.err.println("updaters.size(): "+ updaters.size());
+						//System.err.println("r.__NOSCO_UPDATED_VALUES: "+ key);
 						updater = new Updater<T>();
-						updaters.put(r.__NOSCO_UPDATED_VALUES, updater);
+						updaters.put(key, updater);
 					}
 					updater.push(r);
 				}
@@ -536,10 +556,12 @@ public class Bulk {
 		}
 		for (final T r : rejects) {
 			//System.err.println("reject: "+ r);
-			Updater<T> updater = updaters.get(r.__NOSCO_UPDATED_VALUES);
+			String updateKey = r.__NOSCO_UPDATED_VALUES.toString();
+			Updater<T> updater = updaters.get(updateKey);
 			if (updater == null) {
+				//System.err.println("r2.__NOSCO_UPDATED_VALUES: "+ r.__NOSCO_UPDATED_VALUES);
 				updater = new Updater<T>();
-				updaters.put(r.__NOSCO_UPDATED_VALUES, updater);
+				updaters.put(updateKey, updater);
 			}
 			updater.push(r);
 		}
@@ -598,16 +620,17 @@ public class Bulk {
 	}
 
 	public <T extends Table> long commitDiff(final Iterable<RowChange<T>> diff) throws SQLException {
-		final Map<BitSet, Inserter<T>> inserters = new HashMap<BitSet,Inserter<T>>();
+		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
 		final Map<BitSet, Updater<T>> updaters = new HashMap<BitSet,Updater<T>>();
 		final Deleter<T> deleter = new Deleter<T>();
 		for (final RowChange<T> rc : diff) {
 			final T t = rc.getObject();
 			if (rc.isAdd()) {
-				Inserter<T> inserter = inserters.get(t.__NOSCO_FETCHED_VALUES);
+				String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
+				Inserter<T> inserter = inserters.get(insertKey);
 				if (inserter == null) {
 					inserter = new Inserter<T>();
-					inserters.put(t.__NOSCO_FETCHED_VALUES, inserter);
+					inserters.put(insertKey, inserter);
 				}
 				inserter.push(t);
 			} else if (rc.isUpdate()) {
@@ -617,6 +640,7 @@ public class Bulk {
 				}
 				Updater<T> updater = updaters.get(values);
 				if (updater == null) {
+					System.err.println("values: "+ values);
 					updater = new Updater<T>(values);
 					updaters.put(values, updater);
 				}

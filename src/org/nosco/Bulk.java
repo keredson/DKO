@@ -312,7 +312,7 @@ public class Bulk {
 			if (pos > 0) pushBatch();
 			safeClose(ps);
 			if (shouldCloseConn) {
-				if (!conn.getAutoCommit()) conn.commit();
+				if (conn != null && !conn.getAutoCommit()) conn.commit();
 				safeClose(conn);
 			}
 			finished  = true;

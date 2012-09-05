@@ -1,1 +1,157 @@
-TODO
+<html>
+  <head>
+    <title>Getting Started</title>
+    <link href="google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="google-code-prettify/prettify.js"></script>
+    <link rel="stylesheet" type="text/css" href="default.css" />
+    <style>
+      li {margin-top:1em;margin-bottom:1em;}
+    </style>
+  </head>
+  <body onload="prettyPrint()">
+    <h1>Getting Started</h1>
+
+<p>
+This document shows you how to quickly set up Nosco to run against your existing database.
+</p>
+
+<h2>Setting Up <code>build.xml</code></h2>
+
+<h3>Importing the Nosco Library</h3>
+
+<p>Add the following to your <code>build.xml</code> file:
+
+<pre class="prettyprint"><code>&lt;property name="nosco_jar" value="/some_path_to_nosco/nosco.jar"/&gt;</code></pre>
+
+<h3>Extracting Your Database Schema</h3>
+
+<p>Add the following task to your <code>build.xml</code>:
+
+<pre class="prettyprint"><code>&lt;target name="extract_schema" depends=""&gt;
+    &lt;taskdef name="noscoextractschema" classname="org.nosco.ant.SchemaExtractor" 
+             classpath="${nosco_jar}:/[...]/my_jdbc_driver.jar"/&gt;
+
+    &lt;noscoextractschema
+    	url="jdbc:sqlserver://mydatabaseserver:1433"
+    	username="sa"
+    	password="pa55w0rd"
+    	schemas="my_apps_database"
+    	out="schema.json"
+    /&gt;
+    
+&lt;/target&gt;</code></pre>
+
+<p>
+Replace <code>{url, username, password, schemas}</code> with the values specific for your database. &nbsp; 
+The <code>schemas</code> attribute
+takes a comma-seperated list of values. &nbsp; Each database schema will generate its own java package.
+</p>
+
+<p>Then run:</p>
+
+<pre class="prettyprint"><code>$ ant extract_schema</code></pre>
+
+<p>This will generate a file <code>schema.json</code>, which is nothing more than a snapshot of your database
+schema. &nbsp; <b>Please check this file into your version control system (VCS)!</b> &nbsp; This is the base
+dependency all automated code generation will derive from. &nbsp; You will need to run this command (and commit the
+resulting file) every time you change your database schema.
+
+<p>
+<b>Q:</b> Why am I checking this into version control?  Why doesn't Nosco query my database directly during the build?<br>
+<b>A:</b> Builds should be 100% repeatable historically for the life of your project. &nbsp; Without tracking the history
+of your schema changes, this is impossible. &nbsp; Also, builds should be really fast. &nbsp; Querying database
+metadata is rarely so.
+</p>
+
+<h3>Setting Up Code Generation</h3>
+
+<p>Add the following task to your <code>build.xml</code>:
+
+<pre class="prettyprint"><code>&lt;target name="gen_src" depends="init">
+    &lt;taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator"
+             classpath="${nosco_jar}"/>
+            
+    &lt;noscogen package="com.myapp.nosco" 
+        javaoutputdir="gensrc"
+        schemas="schemas.json"
+        datasource="ds = com.myapp.MyDataSourceFactory.instance();"
+        callbackpackage="com.myapp.nosco.callbacks"
+    />
+&lt;/target&gt;</code></pre>
+
+<p>Obviously <code>depends="init"</code> can be anything you wish it to be. &nbsp; As a general rule, this task
+should run right before your compile task.</p>
+
+<p>
+The <code>package</code> attribute specifies the top-level package of all the generated classes. &nbsp;
+For example, the table <code>my_apps_database.my_table</code> would become class 
+<code>com.myapp.nosco.my_apps_database.MyTable</code>.
+</p>
+
+<p>The <code>javaoutputdir</code> attribute specifies where the generated java code is to saved. &nbsp; 
+Do <b>not</b> intermingle the generated code with your version controlled code. &nbsp; Do <b>not</b>
+commit this generated code to your CVS/Git/Hg/SVN repository. &nbsp; This is designed to run <i>every</i>
+time you build. &nbsp; You are <b>not</b> supposed to manually edit these files. &nbsp;
+
+<p>Alternatively (to setting <code>javaoutputdir</code>), you can set the <code>jarfile</code> attribute. &nbsp; If your
+compile step is fairly straight-forward, this is the recommended option. &nbsp; The code will be generated, compiled
+and jarred automatically for you, giving you just a single dependency for all your real code. &nbsp; Another
+advantage of specifying <code>jarfile</code> instead of <code>javaoutputdir</code> is that Nosco can skip the code
+generation when the <code>schema.json</code> file hasn't changed, speeding up your build.
+</p>
+
+<p>The <code>datasource</code> attribute is optional, but recommended for most setups. (esp. if you only have
+one database) &nbsp; An implementation of Java interface <code>javax.sql.DataSource</code> is required for Nosco 
+generated classes to work. &nbsp; You can manually specify one in each query like this:
+
+<pre class="prettyprint"><code class="language-java">import javax.sql.DataSource;
+DataSource ds = com.myapp.MyDataSourceFactory.instance();
+for (MyTable x : MyTable.ALL.use(ds)) {
+    // do something with 'x'
+}</code></pre>
+
+<p>Or you can specify the <code>datasource</code> attribute, with makes the <code>.use(ds)</code> call above 
+unnecessary. &nbsp; All generated classes will default to the provided instance. &nbsp; So it becomes:
+
+<pre class="prettyprint"><code class="language-java">for (MyTable x : MyTable.ALL) {
+    // do something with 'x'
+}</code></pre>
+
+<p>The <code>callbackpackage</code> attribute is also optional. &nbsp; If you specify it, the generated classes will 
+look for corrisponding "callback" classes (via reflection) when performing database operations.  For instance, 
+the class <code>MyTable</code> would look for a class 
+<code>MyTableCB</code>:
+
+<pre class="prettyprint"><code class="language-java">package com.myapp.nosco.callbacks.my_apps_database;
+import com.myapp.nosco.my_apps_database.MyTable;
+
+public class MyTableCB {
+    public static void preInsert(MyTable[] oa, DataSource ds) {
+        // do something
+    }
+    public static void postInsert(MyTable[] oa, DataSource ds) {
+        // do something
+    }
+}</code></pre>
+
+<p>The methods supported are <code>preInsert</code>, <code>postInsert</code>, <code>preUpdate</code>, 
+<code>postUpdate</code>, <code>preDelete</code>, <code>postDelete</code>. &nbsp; Any exceptions thrown in the pre*
+methods will stop the database operation.
+
+<h3>Setting Up the Compile</h3>
+
+<p>This is no different from a normal Java project. &nbsp; Just make the task dependent on your <code>gen_src</code>
+task defined earlier. &nbsp; For example:
+
+<pre class="prettyprint"><code>&lt;target name="compile" depends="gen_src">
+    &lt;javac
+        srcdir="src:gensrc"
+        destdir="build"
+        classpath="${nosco_jar}"
+        debug="on"
+    />
+&lt;/target&gt;</code></pre>
+
+<p>Now just run <code>ant</code>.
+
+<h3>You're Done! &nbsp; Go Code!</h3>

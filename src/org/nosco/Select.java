@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -37,6 +38,8 @@ class Select<T extends Table> implements Iterator<T> {
 		if (rs != null && !rs.isClosed()) rs.close();
 		if (ps != null && !ps.isClosed()) ps.close();
 	}
+
+	private static final Logger log = Logger.getLogger("org.nosco.Select");
 
 	private String sql;
 	private final DBQuery<T> query;
@@ -145,6 +148,7 @@ class Select<T extends Table> implements Iterator<T> {
 			done = false;
 			//m = query.getType().getMethod("INSTANTIATE", Map.class);
 		} catch (final SQLException e) {
+			log.severe(sql + "\n => " + e.getMessage());
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		} catch (final SecurityException e) {

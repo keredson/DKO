@@ -355,7 +355,28 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <S> Map<S, T> mapBy(Field<S> byField) throws SQLException;
+	public <S> Map<S,T> mapBy(Field<S> byField) throws SQLException;
+
+	/**
+	 * Evaluates your query into a map, keyed by whatever fields you specify.
+	 * If more than one instance has the same key value, the last instance
+	 * read will be what the map contains.  (use orderBy() to control ordering)<br>
+	 * Note: this reads your entire query into memory.
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S,U> Map<S,Map<U,T>> mapBy(Field<S> byField1, Field<U> byField2) throws SQLException;
+
+	/**
+	 * Evaluates your query into a map, keyed by whatever field you specify.
+	 * Multiple instances having the same key value are grouped into one collection.<br>
+	 * Note: this reads your entire query into memory.
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S> Map<S, Collection<T>> multiMapBy(Field<S> byField) throws SQLException;
 
 	/**
 	 * Counts the rows grouped by a given field.

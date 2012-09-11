@@ -34,7 +34,7 @@ import org.nosco.datasource.MirroredDataSource;
 import org.nosco.datasource.SingleConnectionDataSource;
 
 
-class DBQuery<T extends Table> implements Query<T> {
+class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	// make sure the UsageMonitor is class-loaded
 	static { UsageMonitor.doNothing(); }
@@ -303,19 +303,6 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T get(final Condition... conditions) {
-		//Field[] fields = tables.get(0).FIELDS();
-		final DBQuery<T> q = new DBQuery<T>(this);
-		if (conditions!=null && conditions.length>0) {
-			if (q.conditions == null) q.conditions = new ArrayList<Condition>();
-			for (final Condition condition : conditions) {
-				q.conditions.add(condition);
-			}
-		}
-		return q.getTheOnly();
-	}
-
-	@Override
 	public Query<T> exclude(final Condition... conditions) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.conditions = new ArrayList<Condition>();
@@ -521,11 +508,6 @@ class DBQuery<T extends Table> implements Query<T> {
 		};
 	}
 
-	@Override
-	public Iterable<T> none() {
-		return Collections.emptyList();
-	}
-
 ///	@Override
 //	public Query<Table> join(Field field, Relationship equals, Field field2) {
 //		// TODO Auto-generated method stub
@@ -656,11 +638,6 @@ class DBQuery<T extends Table> implements Query<T> {
 		q.orderByDirections = Collections.unmodifiableList(q.orderByDirections);
 		q.orderByFields = Collections.unmodifiableList(q.orderByFields);
 		return q;
-	}
-
-	@Override
-	public Query<T> top(final int i) {
-		return limit(i);
 	}
 
 	@Override
@@ -989,29 +966,6 @@ class DBQuery<T extends Table> implements Query<T> {
 		return sb.toString();
 	}
 
-	@Override
-	public T first() {
-		for(final T t : this.top(1)) {
-			return t;
-		}
-		return null;
-	}
-
-	@Override
-	public T getTheOnly() {
-		T x = null;
-		for (final T t : this.top(2)) {
-			if (x==null) x = t;
-			else throw new RuntimeException("more than one result found in Query.getTheOnly()");
-		}
-		return x;
-	}
-
-	@Override
-	public long size() throws SQLException {
-		return count();
-	}
-
 	static class Join implements Cloneable {
 		public FK fk = null;
 		public TableInfo reffingTableInfo = null;
@@ -1028,29 +982,6 @@ class DBQuery<T extends Table> implements Query<T> {
 			j.condition = condition;
 			return j;
 		}
-	}
-
-	@Override
-	public List<T> asList() {
-		final List<T> list = new ArrayList<T>();
-		for (final T t : this) list.add(t);
-		return list;
-	}
-
-	@Override
-	public Set<T> asSet() {
-		final Set<T> set = new HashSet<T>();
-		for (final T t : this) set.add(t);
-		return set;
-	}
-
-	@Override
-	public <S> Set<S> asSet(final Field<S> field) {
-		final Set<S> ret = new HashSet<S>();
-		for (final S s : this.distinct().select(field)) {
-			ret.add(s);
-		}
-		return ret;
 	}
 
 	String getFromClause(final SqlContext context) {
@@ -1204,15 +1135,6 @@ class DBQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S> Map<S, T> mapBy(final Field<S> byField) throws SQLException {
-		final Map<S, T> ret = new LinkedHashMap<S, T>();
-		for (final T t : this) {
-			ret.put(t.get(byField), t);
-		}
-		return ret;
-	}
-
-	@Override
 	public Query<T> toMemory() {
 		return new InMemoryQuery<T>(this);
 	}
@@ -1247,15 +1169,6 @@ class DBQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S> Iterable<S> select(final Field<S> field) {
 		return new SelectSingleColumn<S>(this, field);
-	}
-
-	@Override
-	public <S> List<S> asList(final Field<S> field) {
-		final List<S> ret = new ArrayList<S>();
-		for (final S s : select(field)) {
-			ret.add(s);
-		}
-		return ret;
 	}
 
 	@Override

@@ -7,11 +7,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -21,7 +19,7 @@ import org.nosco.Field.FK;
 import org.nosco.Table.__Alias;
 import org.nosco.Table.__PrimaryKey;
 
-class InMemoryQuery<T extends Table> implements Query<T> {
+class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 
 	List<T> cache = null;
 	private Field<?>[] selectFields;
@@ -85,18 +83,7 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T get(final Condition... conditions) {
-		return where(conditions).getTheOnly();
-	}
-
-	@Override
 	public long count() throws SQLException {
-		if (!loaded) load();
-		return cache.size();
-	}
-
-	@Override
-	public long size() throws SQLException {
 		if (!loaded) load();
 		return cache.size();
 	}
@@ -125,11 +112,6 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 				return 0;
 			}});
 		return q;
-	}
-
-	@Override
-	public Query<T> top(final int n) {
-		return limit(n);
 	}
 
 	@Override
@@ -184,13 +166,6 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T first() {
-		if (!loaded) load();
-		if (cache == null || cache.size() == 0) return null;
-		return cache.get(0);
-	}
-
-	@Override
 	public boolean isEmpty() throws SQLException {
 		if (!loaded) load();
 		return cache.isEmpty();
@@ -219,11 +194,6 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Iterable<T> none() {
-		return Collections.emptyList();
-	}
-
-	@Override
 	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
 		// TODO Auto-generated method stub
 		return null;
@@ -245,31 +215,10 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public T getTheOnly() {
-		if (!loaded) load();
-		if (cache.size() == 0) return null;
-		if (cache.size() > 1) throw new RuntimeException("more than one result found in Query.getTheOnly()");
-		return cache.get(0);
-	}
-
-	@Override
-	public List<T> asList() {
-		if (!loaded) load();
-		return Collections.unmodifiableList(cache);
-	}
-
-	@Override
-	public Set<T> asSet() {
-		if (!loaded) load();
-		return new HashSet<T>(cache);
-	}
-
-	@Override
 	public <S> Map<S, Double> sumBy(final Field<? extends Number> sumField,
 			final Field<S> byField) throws SQLException {
-		if (!loaded) load();
 		final Map<S, Double> ret = new HashMap<S, Double>();
-		for (final T t : cache) {
+		for (final T t : this) {
 			final S key = t.get(byField);
 			Double value = ret.get(key);
 			if (value == null) value = 0.0;
@@ -281,29 +230,17 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Double sum(final Field<? extends Number> f) throws SQLException {
-		if (!loaded) load();
 		double sum = 0;
-		for (final T t : cache) {
+		for (final T t : this) {
 			sum += t.get(f).doubleValue();
 		}
 		return sum;
 	}
 
 	@Override
-	public <S> Map<S, T> mapBy(final Field<S> byField) throws SQLException {
-		if (!loaded) load();
-		final Map<S, T> ret = new HashMap<S, T>();
-		for (final T t : cache) {
-			ret.put(t.get(byField), t);
-		}
-		return ret;
-	}
-
-	@Override
 	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
-		if (!loaded) load();
 		final Map<S, Integer> ret = new HashMap<S, Integer>();
-		for (final T t : cache) {
+		for (final T t : this) {
 			final S key = t.get(byField);
 			Integer value = ret.get(key);
 			if (value == null) value = 0;
@@ -339,25 +276,22 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 		return this;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Query<T> max() {
-		if (!loaded) load();
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("max not supported yet on in-memory queries");
 	}
 
 	@Override
 	public Query<T> min() {
-		if (!loaded) load();
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("min not supported yet on in-memory queries");
 	}
 
 	@Override
 	public Condition exists() {
 		if (!loaded) load();
-		// TODO Auto-generated method stub
-		return null;
+		if (cache.isEmpty()) return Condition.Literal.FALSE;
+		else return Condition.Literal.TRUE;
 	}
 
 	@Override
@@ -367,9 +301,8 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public <S> Iterable<S> select(final Field<S> field) {
-		if (!loaded) load();
 		final List<S> ret = new ArrayList<S>();
-		for (final T t : cache) ret.add(t.get(field));
+		for (final T t : this) ret.add(t.get(field));
 		return ret;
 	}
 
@@ -405,23 +338,9 @@ class InMemoryQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Iterable<Object[]> asIterableOfObjectArrays() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public Query<T> use(final DB_TYPE type) {
 		// ignore
 		return this;
-	}
-
-	@Override
-	public <S> Set<S> asSet(final Field<S> field) {
-		final Set<S> ret = new HashSet<S>();
-		for (final S s : this.distinct().select(field)) {
-			ret.add(s);
-		}
-		return ret;
 	}
 
 }

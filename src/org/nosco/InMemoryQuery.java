@@ -36,6 +36,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private synchronized void load() {
+		if (loaded) return;
 		cache = new ArrayList<T>();
 		this.selectFields = query.getSelectFields();
 		for (final T t : query) {

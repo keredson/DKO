@@ -178,8 +178,8 @@ public class PetStoreMysql {
 	}
 
 	private static void clean() throws SQLException {
-		Item.ALL.use(ds).deleteAll();
-		Product.ALL.use(ds).deleteAll();
+		Item.ALL.use(ds).delete();
+		Product.ALL.use(ds).delete();
 	}
 
 }

@@ -160,25 +160,12 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public T latest(final Field<?> field) {
-		if (!loaded) load();
-		if (cache == null || cache.size() == 0) return null;
-		return cache.get(cache.size() - 1);
-	}
-
-	@Override
-	public boolean isEmpty() throws SQLException {
-		if (!loaded) load();
-		return cache.isEmpty();
-	}
-
-	@Override
 	public int update() throws SQLException {
 		throw new UnsupportedOperationException("can't update on an in-memory query");
 	}
 
 	@Override
-	public int deleteAll() throws SQLException {
+	public int delete() throws SQLException {
 		throw new UnsupportedOperationException("can't delete on an in-memory query");
 	}
 

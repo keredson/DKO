@@ -232,10 +232,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Deletes all rows matching data set with: .where()
-	 * Example:  SomeClass.ALL.where(SomeClass.SOME_FIELD.eq("abc")).deleteAll()
+	 * Example:  SomeClass.ALL.where(SomeClass.SOME_FIELD.eq("abc")).delete()
 	 * Use with caution!
 	 * @return
 	 * @throws SQLException
+	 */
+	public int delete() throws SQLException;
+
+	/**
+	 * @deprecated use delete()
 	 */
 	public int deleteAll() throws SQLException;
 

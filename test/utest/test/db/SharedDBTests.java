@@ -257,7 +257,7 @@ public class SharedDBTests extends TestCase {
 
     public void testBulkInsert() throws SQLException {
     	final Query<Category> them = Category.ALL.where(Category.CATID.like("test-%"));
-		them.deleteAll();
+		them.delete();
     	final List<Category> categories = new ArrayList<Category>();
     	categories.add(new Category().setCatid("test-1"));
     	categories.add(new Category().setCatid("test-2").setName("woot"));
@@ -286,7 +286,7 @@ public class SharedDBTests extends TestCase {
 
     public void testBulkInsertOrUpdate() throws SQLException {
     	System.err.println("testBulkInsertOrUpdate");
-    	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
+    	Item.ALL.where(Item.ITEMID.like("test-%")).delete();
     	final List<Item> updates = Item.ALL.asList();
     	String pid = null;
     	Integer sid = -1;
@@ -319,7 +319,7 @@ public class SharedDBTests extends TestCase {
     public void testBulkCommitDiff() throws SQLException {
     	System.err.println("testBulkCommitDiff");
     	final Product p = Product.ALL.first();
-    	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
+    	Item.ALL.where(Item.ITEMID.like("test-%")).delete();
     	new Item().setItemid("test-1").setProductid(p.getProductid()).insert();
     	new Item().setItemid("test-2").setProductid(p.getProductid()).insert();
     	new Item().setItemid("test-3").setProductid(p.getProductid()).insert();
@@ -333,7 +333,7 @@ public class SharedDBTests extends TestCase {
     	final Bulk bulk = new Bulk(ds);
     	final long ret = bulk.commitDiff(diff);
     	assertEquals(3, ret);
-    	Item.ALL.where(Item.ITEMID.like("test-%")).deleteAll();
+    	Item.ALL.where(Item.ITEMID.like("test-%")).delete();
     }
 
     public void testCallbacks() throws SQLException {

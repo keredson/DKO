@@ -376,19 +376,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public T latest(final Field<?> field) {
-		for(final T t : orderBy(DESCENDING, field).top(1)) {
-			return t;
-		}
-		return null;
-	}
-
-	@Override
-	public boolean isEmpty() throws SQLException {
-		return this.count()==0;
-	}
-
-	@Override
 	public int update() throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		if (data==null || data.size()==0) return 0;
@@ -432,7 +419,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public int deleteAll() throws SQLException {
+	public int delete() throws SQLException {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		final DataSource ds = getDataSource();
 		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);

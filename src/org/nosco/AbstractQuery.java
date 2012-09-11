@@ -1,5 +1,7 @@
 package org.nosco;
 
+import static org.nosco.Constants.DIRECTION.DESCENDING;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +39,19 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 			return t;
 		}
 		return null;
+	}
+
+	@Override
+	public T latest(final Field<?> field) {
+		for(final T t : orderBy(DESCENDING, field).top(1)) {
+			return t;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isEmpty() throws SQLException {
+		return this.count()==0;
 	}
 
 	@Override
@@ -158,6 +173,11 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 				};
 			}
 		};
+	}
+
+	@Override
+	public int deleteAll() throws SQLException {
+		return this.delete();
 	}
 
 }

@@ -120,7 +120,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 		if (!loaded) load();
 		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache = new ArrayList<T>();
-		q.cache.addAll(cache.subList(0, n));
+		q.cache.addAll(cache.subList(0, Math.min(n, cache.size())));
 		return q;
 	}
 

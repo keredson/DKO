@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.nosco.Constants;
 import org.nosco.json.JSONArray;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -41,19 +42,6 @@ class ClassGenerator {
 	private JSONObject typeMappingFunctions = new JSONObject();
 	private Map<Pattern, String> schemaTypeMappings;
 	private final Map<String, String> schemaAliases;
-
-	@SuppressWarnings("serial")
-	final static Set<String> KEYWORDS = Collections.unmodifiableSet(new HashSet<String>() {{
-		final String[] kws = {"abstract", "continue", "for", "new", "switch", "assert",
-				"default", "goto", "package", "synchronized", "boolean", "do",
-				"if", "private", "this", "break", "double", "implements", "protected",
-				"throw", "byte", "else", "import", "public", "throws", "case", "enum",
-				"instanceof", "return", "transient", "catch", "extends", "int",
-				"short", "try", "char", "final", "interface", "static", "void",
-				"class", "finally", "long", "strictfp", "volatile", "const", "float",
-				"native", "super", "while"};
-		for (final String kw : kws) this.add(kw);
-	}});
 
 
 	public ClassGenerator(final String dir, final String pkg, final String[] stripPrefixes, final String[] stripSuffixes, final Map<String, String> schemaAliases) {
@@ -166,7 +154,7 @@ class ClassGenerator {
 
 	static String sanitizeJavaKeywords(String s) {
 		s = s.toLowerCase();
-		if (KEYWORDS.contains(s)) return s+"_";
+		if (Constants.KEYWORDS_JAVA.contains(s)) return s+"_";
 		return s;
 
 	}
@@ -377,12 +365,14 @@ class ClassGenerator {
 					String value = instances.optJSONArray(name).getString(0);
 					if ("java.lang.String".equals(pkType)) value = "\""+ value +"\"";
 					br.write("\t\t"+ name.toUpperCase().replaceAll("\\W", "_"));
-					br.write("("+ value +")");
+					br.write("(\""+ name.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\"") +"\", "+ value +")");
 					if (count < instances.keySet().size()) br.write(",\n");
 				}
 				br.write(";\n\n");
+				br.write("\t\tprivate final String _NAME;\n");
 				br.write("\t\tpublic final "+ pkType +" "+ getFieldName(pk) +";\n");
-				br.write("\t\tPKS("+ pkType +" v) {\n");
+				br.write("\t\tPKS(String _name, "+ pkType +" v) {\n");
+				br.write("\t\t\t_NAME = _name;\n");
 				br.write("\t\t\t"+ getFieldName(pk) +" = v;\n");
 				br.write("\t\t}\n");
 				br.write("\t\tpublic "+ pkType +" get"+ getInstanceMethodName(pk) +"() {\n");
@@ -401,6 +391,22 @@ class ClassGenerator {
 				br.write("\t\t@Override\n");
 				br.write("\t\tpublic "+ pkType +" value() {\n");
 				br.write("\t\t\treturn "+ getFieldName(pk)+ ";\n");
+				br.write("\t\t}\n\n");
+				br.write("\t\tpublic static PKS lookup("+ pkType +" v) {\n");
+				br.write("\t\t\tfor (final PKS x : PKS.values()) {\n");
+				br.write("\t\t\t\tif (x."+ getFieldName(pk) +" == null ? v == null : x."+ getFieldName(pk) +".equals(v)) {\n");
+				br.write("\t\t\t\t\treturn x;\n");
+				br.write("\t\t\t\t}\n");
+				br.write("\t\t\t}\n");
+				br.write("\t\t\treturn null;\n");
+				br.write("\t\t}\n\n");
+				br.write("\t\tpublic static PKS lookup(String _name) {\n");
+				br.write("\t\t\tfor (final PKS x : PKS.values()) {\n");
+				br.write("\t\t\t\tif (x._NAME == null ? _name == null : x._NAME.equals(_name)) {\n");
+				br.write("\t\t\t\t\treturn x;\n");
+				br.write("\t\t\t\t}\n");
+				br.write("\t\t\t}\n");
+				br.write("\t\t\treturn null;\n");
 				br.write("\t\t}\n\n");
 				br.write("\t}\n");
 			}
@@ -1142,7 +1148,7 @@ class ClassGenerator {
 
 	private static String getInstanceFieldName(String column) {
 		column = column.toLowerCase();
-		if (KEYWORDS.contains(column)) column = "NOSCO_JAVA_KEYWORD_PROTECTION" + column;
+		if (Constants.KEYWORDS_JAVA.contains(column)) column = "NOSCO_JAVA_KEYWORD_PROTECTION" + column;
 	    column = column.replace("-", "_DASH_");
 	    return underscoreToCamelCase(column, false);
 	}

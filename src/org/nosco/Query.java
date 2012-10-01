@@ -380,8 +380,29 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param byField
 	 * @return
 	 * @throws SQLException
+	 * @deprecated Use {@link #collectBy(Field<S>)} instead
 	 */
 	public <S> Map<S, Collection<T>> multiMapBy(Field<S> byField) throws SQLException;
+
+	/**
+	 * Evaluates your query into a map, keyed by whatever field you specify.
+	 * Multiple instances having the same key value are grouped into one collection.<br>
+	 * Note: this reads your entire query into memory.
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S> Map<S, Collection<T>> collectBy(Field<S> byField) throws SQLException;
+
+	/**
+	 * Evaluates your query into a map, keyed by whatever field you specify.
+	 * Multiple instances having the same key value are grouped into one collection.<br>
+	 * Note: this reads your entire query into memory.
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S,U> Map<S, Map<U,Collection<T>>> collectBy(Field<S> byField1, Field<U> byField2) throws SQLException;
 
 	/**
 	 * Counts the rows grouped by a given field.

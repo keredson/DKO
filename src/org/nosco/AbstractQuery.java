@@ -79,12 +79,12 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S, U> Map<S, Map<U, T>> mapBy(Field<S> byField1, Field<U> byField2)
+	public <S, U> Map<S, Map<U, T>> mapBy(final Field<S> byField1, final Field<U> byField2)
 			throws SQLException {
 		final Map<S, Map<U, T>> ret = new LinkedHashMap<S, Map<U,T>>();
 		for (final T t : this) {
-			S f1 = t.get(byField1);
-			U f2 = t.get(byField2);
+			final S f1 = t.get(byField1);
+			final U f2 = t.get(byField2);
 			Map<U, T> inner = ret.get(f1);
 			if (inner == null) {
 				inner = new LinkedHashMap<U,T>();
@@ -95,18 +95,48 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return ret;
 	}
 
+	/**
+	 * @deprecated Use {@link #collectBy(Field<S>)} instead
+	 */
 	@Override
-	public <S> Map<S, Collection<T>> multiMapBy(Field<S> byField)
+	public <S> Map<S, Collection<T>> multiMapBy(final Field<S> byField)
+			throws SQLException {
+				return collectBy(byField);
+			}
+
+	@Override
+	public <S> Map<S, Collection<T>> collectBy(final Field<S> byField)
 			throws SQLException {
 		final Map<S, Collection<T>> ret = new LinkedHashMap<S, Collection<T>>();
 		for (final T t : this) {
-			S key = t.get(byField);
+			final S key = t.get(byField);
 			Collection<T> col = ret.get(key);
 			if (col == null) {
 				col = new ArrayList<T>();
 				ret.put(key, col);
 			}
 			col.add(t);
+		}
+		return ret;
+	}
+
+	@Override
+	public <S, U> Map<S, Map<U, Collection<T>>> collectBy(final Field<S> byField1, final Field<U> byField2) throws SQLException {
+		final Map<S, Map<U, Collection<T>>> ret = new LinkedHashMap<S, Map<U, Collection<T>>>();
+		for (final T t : this) {
+			final S key1 = t.get(byField1);
+			final U key2 = t.get(byField2);
+			Map<U, Collection<T>> col = ret.get(key1);
+			if (col == null) {
+				col = new LinkedHashMap<U, Collection<T>>();
+				ret.put(key1, col);
+			}
+			Collection<T> col2 = col.get(key2);
+			if (col2 == null) {
+				col2 = new ArrayList<T>();
+				col.put(key2, col2);
+			}
+			col2.add(t);
 		}
 		return ret;
 	}
@@ -158,9 +188,9 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 					}
 					@Override
 					public Object[] next() {
-						T t = it.next();
+						final T t = it.next();
 						if (fields == null) fields = t.FIELDS();
-						Object[] oa = new Object[fields.length];
+						final Object[] oa = new Object[fields.length];
 						for (int i=0; i<oa.length; ++i) {
 							oa[i] = t.get(fields[i]);
 						}

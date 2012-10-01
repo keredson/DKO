@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -419,6 +420,16 @@ public class SharedDBTests extends TestCase {
     	final Map<String, Map<String, Item>> x = Item.ALL.mapBy(Item.ATTR2, Item.ATTR1);
     	for (final Entry<String, Map<String, Item>> e : x.entrySet()) {
     		for (final Entry<String, Item> e2 : e.getValue().entrySet()) {
+    			System.err.println(e.getKey() +" "+ e2.getKey() + " "+ e2.getValue());
+    		}
+    	}
+    	assertTrue(x.size() > 0);
+    }
+
+    public void testCollectBy2() throws Exception {
+    	final Map<String, Map<String, Collection<Item>>> x = Item.ALL.collectBy(Item.ATTR2, Item.ATTR1);
+    	for (final Entry<String, Map<String, Collection<Item>>> e : x.entrySet()) {
+    		for (final Entry<String, Collection<Item>> e2 : e.getValue().entrySet()) {
     			System.err.println(e.getKey() +" "+ e2.getKey() + " "+ e2.getValue());
     		}
     	}

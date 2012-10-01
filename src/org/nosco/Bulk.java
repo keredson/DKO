@@ -430,12 +430,12 @@ public class Bulk {
 					+sep+ table.TABLE_NAME());
 			sb.append(" set ");
 			for (int i=0; i<fields.length-pks.length; ++i) {
-				sb.append(fields[i].toString());
+				sb.append(fields[i].getSQL(dbType));
 				sb.append("=?, ");
 			}
 			sb.delete(sb.length()-2, sb.length());
 			sb.append(" where ");
-			sb.append(Util.join("=? and ", pks));
+			sb.append(Util.joinFields(dbType, "=? and ", pks));
 			sb.append("=?;");
 			final String sql = sb.toString();
 			Util.log(sql, null);

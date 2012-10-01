@@ -3,9 +3,12 @@ package org.nosco;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.nosco.Condition.Binary;
 import org.nosco.Condition.Ternary;
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.Table.__SimplePrimaryKey;
 
 
@@ -50,6 +53,39 @@ public class Field<T> implements Cloneable {
 		if (boundTable == null) return NAME;
 		return boundTable +"."+ NAME;
 	}
+
+	protected String getSQL(final SqlContext context) {
+		final StringBuffer sb = new StringBuffer();
+		getSQL(sb, context);
+		return sb.toString();
+	}
+
+	protected void getSQL(final StringBuffer sb, final SqlContext context) {
+		getSQL(sb, context.dbType);
+	}
+
+	protected void getSQL(final StringBuffer sb, final Constants.DB_TYPE dbType) {
+		final Set<String> kws = null;
+		String name = NAME;
+		if (dbType == Constants.DB_TYPE.SQLSERVER) {
+			name = Constants.KEYWORDS_SQLSERVER.contains(NAME.toLowerCase()) ? "["+NAME+"]" : NAME;
+		} else if (dbType == Constants.DB_TYPE.MYSQL) {
+			name = Constants.KEYWORDS_MYSQL.contains(NAME.toLowerCase()) ? "`"+NAME+"`" : NAME;
+		} else if (dbType == Constants.DB_TYPE.SQL92) {
+			name = Constants.KEYWORDS_SQL92.contains(NAME.toLowerCase()) ? "\""+NAME+"\"" : NAME;
+		}
+		if (boundTable != null) {
+			sb.append(boundTable).append(".");
+		}
+		sb.append(name);
+	}
+
+	protected String getSQL(final DB_TYPE dbType) {
+		final StringBuffer sb = new StringBuffer();
+		getSQL(sb, dbType);
+		return sb.toString();
+	}
+
 
 	public final int INDEX;
 	public final Class<? extends Table> TABLE;

@@ -65,7 +65,7 @@ public class Bulk {
 	 * @param ds
 	 * @param batchSize the JDBCX batch size to use
 	 */
-	public Bulk(final DataSource ds, int batchSize) {
+	public Bulk(final DataSource ds, final int batchSize) {
 		this.ds = ds;
 		dbType = DB_TYPE.detect(ds);
 		this.batchSize = batchSize;
@@ -98,7 +98,7 @@ public class Bulk {
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
 		for (final T t : iterable) {
-			String key = t.__NOSCO_FETCHED_VALUES.toString();
+			final String key = t.__NOSCO_FETCHED_VALUES.toString();
 			Inserter<T> inserter = inserters.get(key);
 			if (inserter == null) {
 				inserter = new Inserter<T>();
@@ -161,7 +161,7 @@ public class Bulk {
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		for (final T t : iterable) {
-			String key = t.__NOSCO_UPDATED_VALUES.toString();
+			final String key = t.__NOSCO_UPDATED_VALUES.toString();
 			Updater<T> updater = updaters.get(key);
 			if (updater == null) {
 				//System.err.println("t.__NOSCO_UPDATED_VALUES: "+ t.__NOSCO_UPDATED_VALUES);
@@ -365,7 +365,7 @@ public class Bulk {
 			sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 					+sep+ table.TABLE_NAME());
 			sb.append(" (");
-			sb.append(Util.join(", ", fields));
+			sb.append(Util.joinFields(dbType, ", ", fields));
 			sb.append(") values (");
 			for (int i=0; i<fields.length; ++i) {
 				sb.append("?,");
@@ -385,7 +385,7 @@ public class Bulk {
 
 		Updater() {}
 
-		public Updater(BitSet values) {
+		public Updater(final BitSet values) {
 			this.values  = values;
 		}
 
@@ -394,7 +394,7 @@ public class Bulk {
 			super.init(table);
 			if (values==null) values = table.__NOSCO_UPDATED_VALUES;
 			final Field<?>[] pks = Util.getPK(table).GET_FIELDS();
-			for (Field<?> pk : pks) {
+			for (final Field<?> pk : pks) {
 				values.clear(pk.INDEX);
 			}
 			final Field<?>[] allFields = table.FIELDS();
@@ -509,7 +509,7 @@ public class Bulk {
 		final List<T> rejects = new ArrayList<T>();
 		for (final T t : iterable) {
 			// we use a string for the key because the bitset could change out from under us
-			String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
+			final String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
 			Inserter<T> inserter = inserters.get(insertKey);
 			if (inserter == null) {
 				inserter = new Inserter<T>(new RejectCallback<T>() {
@@ -525,7 +525,7 @@ public class Bulk {
 			if (!rejects.isEmpty()) {
 				for (final T r : rejects) {
 					//System.err.println("reject: "+ r);
-					String key = r.__NOSCO_UPDATED_VALUES.toString();
+					final String key = r.__NOSCO_UPDATED_VALUES.toString();
 					Updater<T> updater = updaters.get(key);
 					if (updater == null) {
 						//System.err.println("updaters.size(): "+ updaters.size());
@@ -556,7 +556,7 @@ public class Bulk {
 		}
 		for (final T r : rejects) {
 			//System.err.println("reject: "+ r);
-			String updateKey = r.__NOSCO_UPDATED_VALUES.toString();
+			final String updateKey = r.__NOSCO_UPDATED_VALUES.toString();
 			Updater<T> updater = updaters.get(updateKey);
 			if (updater == null) {
 				//System.err.println("r2.__NOSCO_UPDATED_VALUES: "+ r.__NOSCO_UPDATED_VALUES);
@@ -626,7 +626,7 @@ public class Bulk {
 		for (final RowChange<T> rc : diff) {
 			final T t = rc.getObject();
 			if (rc.isAdd()) {
-				String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
+				final String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
 				Inserter<T> inserter = inserters.get(insertKey);
 				if (inserter == null) {
 					inserter = new Inserter<T>();
@@ -634,8 +634,8 @@ public class Bulk {
 				}
 				inserter.push(t);
 			} else if (rc.isUpdate()) {
-				BitSet values = new BitSet();
-				for (FieldChange<T, ?> change : rc.getChanges()) {
+				final BitSet values = new BitSet();
+				for (final FieldChange<T, ?> change : rc.getChanges()) {
 					values.set(change.field.INDEX);
 				}
 				Updater<T> updater = updaters.get(values);

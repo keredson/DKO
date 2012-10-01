@@ -391,7 +391,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final List<Object> bindings = new ArrayList<Object>();
 		int i=0;
 		for (final Entry<Field<?>, Object> entry : data.entrySet()) {
-			fields[i++] = entry.getKey().NAME+"=?";
+			fields[i++] = entry.getKey().getSQL(context)+"=?";
 			bindings.add(entry.getValue());
 		}
 		sb.append(Util.join(", ", fields));
@@ -647,7 +647,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	List<TableInfo> getAllTableInfos() {
 		final List<TableInfo> all = new ArrayList<TableInfo>();
 		int position = 0;
-		for (TableInfo ti : tableInfos) {
+		for (final TableInfo ti : tableInfos) {
 			all.add(ti);
 			ti.position = position++;
 		}
@@ -678,7 +678,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (!bind && fields==null || bind && boundFields==null) {
 			final List<Field<?>> fields = new ArrayList<Field<?>>();
 			int c = 0;
-			List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
+			final List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
 			for (final TableInfo ti : allTableInfos) {
 				ti.start = c;
@@ -779,7 +779,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		q.bindings = new ArrayList<Object>();
 		int i=0;
 		for (final Entry<Field<?>, Object> entry : q.data.entrySet()) {
-			fields[i] = entry.getKey().NAME;
+			fields[i] = entry.getKey().getSQL(context);
 			bindStrings[i] = "?";
 			q.bindings.add(entry.getValue());
 			++i;
@@ -843,7 +843,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Query<T> with(final Field.FK... fkFields) {
-		DBQuery<T> q = new DBQuery<T>(this);
+		final DBQuery<T> q = new DBQuery<T>(this);
 		if (q.conditions==null) q.conditions = new ArrayList<Condition>();
 		//if (q.fks==null) q.fks = new Tree<Field.FK>();
 		try {
@@ -918,8 +918,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						q.orderByFields = new ArrayList<Field<?>>();
 					}
 					final PK pk = Util.getPK(reffedTable);
-					Field<?>[] fields = pk==null ? reffedTable.FIELDS() : pk. GET_FIELDS();
-					for (Field<?> f : fields) {
+					final Field<?>[] fields = pk==null ? reffedTable.FIELDS() : pk. GET_FIELDS();
+					for (final Field<?> f : fields) {
 						if (q.orderByFields.contains(f)) continue;
 						q.orderByFields.add(f);
 						q.orderByDirections.add(ASCENDING);

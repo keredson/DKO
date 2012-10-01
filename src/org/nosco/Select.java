@@ -72,7 +72,7 @@ class Select<T extends Table> implements Iterator<T> {
 		this(dbQuery, true);
 	}
 	@SuppressWarnings("unchecked")
-	Select(final DBQuery<T> dbQuery, boolean useWarnings) {
+	Select(final DBQuery<T> dbQuery, final boolean useWarnings) {
 
 		if (useWarnings && Context.usageWarningsEnabled()) {
 			// make sure usage monitor has loaded stats for all the tables we care about
@@ -179,11 +179,11 @@ class Select<T extends Table> implements Iterator<T> {
 			sb.append(" top ").append(query.top).append(" ");
 		}
 		if (query.globallyAppliedSelectFunction == null) {
-			sb.append(Util.join(", ", selectedBoundFields));
+			sb.append(Util.joinFields(context, ", ", selectedBoundFields));
 		} else {
 			final String[] x = new String[selectedBoundFields.length];
 			for (int i=0; i < x.length; ++i) {
-				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i] +")";
+				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i].getSQL(context) +")";
 			}
 			sb.append(Util.join(", ", x));
 		}

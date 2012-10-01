@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.nosco.Constants.DB_TYPE;
 import org.nosco.Field.PK;
 import org.nosco.json.JSONException;
 import org.nosco.json.JSONObject;
@@ -19,8 +20,8 @@ import org.nosco.json.JSONObject;
 class Util {
 
 	static String derefField(final Field<?> field, final SqlContext context) {
-		if (context == null) return field.toString();
-		if (field.isBound()) return field.toString();
+		if (context == null) return field.getSQL(context);
+		if (field.isBound()) return field.getSQL(context);
 		final List<String> selectedTables = new ArrayList<String>();
 		final List<TableInfo> unboundTables = new ArrayList<TableInfo>();
 		SqlContext tmp = context;
@@ -47,7 +48,7 @@ class Util {
 		} else {
 			final TableInfo theOne = unboundTables.iterator().next();
 			return (theOne.tableName == null ? theOne.table.TABLE_NAME() : theOne.tableName)
-					+ "."+ field;
+					+ "."+ field.getSQL(context);
 		}
 	}
 
@@ -173,7 +174,7 @@ class Util {
 		if ("y".equals(s)) return true;
 		if ("n".equals(s)) return false;
 		try { return Integer.valueOf(s) != 0; }
-		catch (NumberFormatException e) { /* ignore */ }
+		catch (final NumberFormatException e) { /* ignore */ }
 		throw new RuntimeException("I don't know the truthiness of '"+ s
 				+"'.  Accepted values are: true/false/t/f/yes/no/y/n/[0-9]+");
 	}
@@ -215,6 +216,20 @@ class Util {
 			if (!sameObject) return false;
 		}
 		return true;
+	}
+
+	static String joinFields(final SqlContext context, final String s, final Field<?>[] c) {
+		return joinFields(context.dbType, s, c);
+	}
+
+	static String joinFields(final DB_TYPE dbType, final String s, final Field<?>[] c) {
+		if(c==null || c.length==0) return "";
+	    final StringBuilder sb = new StringBuilder();
+	    for (final Field<?> o : c) {
+	    	sb.append(o==null ? "" : o.getSQL(dbType));
+	    	sb.append(s);
+	    }
+	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
 	}
 
 

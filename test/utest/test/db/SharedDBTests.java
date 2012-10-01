@@ -1,5 +1,6 @@
 package test.db;
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,6 +11,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
@@ -17,6 +20,7 @@ import junit.framework.TestCase;
 
 import org.nosco.Bulk;
 import org.nosco.CSV;
+import org.nosco.Constants;
 import org.nosco.Field;
 import org.nosco.Constants.CALENDAR;
 import org.nosco.Context;
@@ -106,16 +110,16 @@ public class SharedDBTests extends TestCase {
 
 	public void testFKNoWith() throws Exception {
 		final Undoer x = Context.getVMContext().setDataSource(ccds);
-		ClassLoader classLoader = this.getClass().getClassLoader();
-		Class<?> clz = classLoader.loadClass("org.nosco.UsageMonitor");
-		java.lang.reflect.Field field = clz.getDeclaredField("warnBadFKUsageCount");
+		final ClassLoader classLoader = this.getClass().getClassLoader();
+		final Class<?> clz = classLoader.loadClass("org.nosco.UsageMonitor");
+		final java.lang.reflect.Field field = clz.getDeclaredField("warnBadFKUsageCount");
 		field.setAccessible(true);
-		java.lang.reflect.Field __NOSCO_USAGE_MONITOR = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
+		final java.lang.reflect.Field __NOSCO_USAGE_MONITOR = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
 		__NOSCO_USAGE_MONITOR.setAccessible(true);
-		Method warnBadFKUsage = clz.getDeclaredMethod("warnBadFKUsage");
+		final Method warnBadFKUsage = clz.getDeclaredMethod("warnBadFKUsage");
 		warnBadFKUsage.setAccessible(true);
 		Object um = null;
-		long warnBadFKUsageCountPre = field.getLong(null);
+		final long warnBadFKUsageCountPre = field.getLong(null);
 		for (final Item item : Item.ALL) { //.with(Item.FK_SUPPLIER)
 			// this should create O(n) queries because we didn't specify with() above
 			item.getSupplierFK();
@@ -123,7 +127,7 @@ public class SharedDBTests extends TestCase {
 		}
 		assertTrue(ccds.getCount() > 1);
 		warnBadFKUsage.invoke(um);
-		long warnBadFKUsageCountPost = field.getLong(null);
+		final long warnBadFKUsageCountPost = field.getLong(null);
 		assertEquals(warnBadFKUsageCountPre+1, warnBadFKUsageCountPost);
 	}
 
@@ -365,28 +369,28 @@ public class SharedDBTests extends TestCase {
     }
 
     public void testReadCSV() throws Exception {
-    	List<Item> as = Item.ALL.asList();
-    	File f = new File("bin/items.csv");
+    	final List<Item> as = Item.ALL.asList();
+    	final File f = new File("bin/items.csv");
     	CSV.write(as, f);
-    	List<Item> bs = new ArrayList<Item>();
-    	for (Item x : CSV.read(Item.class, f)) {
+    	final List<Item> bs = new ArrayList<Item>();
+    	for (final Item x : CSV.read(Item.class, f)) {
     		bs.add(x);
     	}
     	assertEquals(as.size(), bs.size());
     	Collections.sort(as);
     	Collections.sort(bs);
-    	List<RowChange<Item>> diff = Diff.diffActualized(as, bs);
+    	final List<RowChange<Item>> diff = Diff.diffActualized(as, bs);
     	assertEquals(0, diff.size());
     }
 
     public void testWarningsOff() throws Exception {
-    	Undoer u = Context.getVMContext().enableUsageWarnings(false);
-    	for (Item x : Item.ALL) {}
+    	final Undoer u = Context.getVMContext().enableUsageWarnings(false);
+    	for (final Item x : Item.ALL) {}
     	u.undo();
     }
 
     public void testWarningsOff2() throws Exception {
-    	for (Object[] x : Item.ALL.asIterableOfObjectArrays()) {}
+    	for (final Object[] x : Item.ALL.asIterableOfObjectArrays()) {}
     	System.gc();
     }
 
@@ -396,19 +400,45 @@ public class SharedDBTests extends TestCase {
 
     public void testCrossColumnSelects() throws Exception {
     	// only select the cols from the primary table
-    	int colCount = Item.ALL.first().FIELDS().length;
-    	Method getSelectFields = Item.ALL.getClass().getDeclaredMethod("getSelectFields");
+    	final int colCount = Item.ALL.first().FIELDS().length;
+    	final Method getSelectFields = Item.ALL.getClass().getDeclaredMethod("getSelectFields");
     	getSelectFields.setAccessible(true);
-    	Query<Item> q = Item.ALL.cross(Product.class).top(10);
-    	Field<?>[] selectedFields = (Field<?>[]) getSelectFields.invoke(q);
+    	final Query<Item> q = Item.ALL.cross(Product.class).top(10);
+    	final Field<?>[] selectedFields = (Field<?>[]) getSelectFields.invoke(q);
     	assertEquals(colCount, selectedFields.length);
-    	for (Object[] row : q.asIterableOfObjectArrays()) {
+    	for (final Object[] row : q.asIterableOfObjectArrays()) {
     		assertTrue(colCount < row.length);
     	}
     }
 
     public void testBetweenFields() throws Exception {
     	Item.ALL.where(Item.ATTR1.between(Item.ATTR1, Item.ATTR2)).asList();
+    }
+
+    public void testMapBy2() throws Exception {
+    	final Map<String, Map<String, Item>> x = Item.ALL.mapBy(Item.ATTR2, Item.ATTR1);
+    	for (final Entry<String, Map<String, Item>> e : x.entrySet()) {
+    		for (final Entry<String, Item> e2 : e.getValue().entrySet()) {
+    			System.err.println(e.getKey() +" "+ e2.getKey() + " "+ e2.getValue());
+    		}
+    	}
+    	assertTrue(x.size() > 0);
+    }
+
+    @SuppressWarnings("unchecked")
+	public void testFieldKeywordCheck() throws Exception {
+    	final Field<Integer> field = new Field(0, null, "ADD", null, null, null);
+    	final Class classSqlContext = this.getClass().getClassLoader().loadClass("org.nosco.SqlContext");
+    	final java.lang.reflect.Field fieldDbType = classSqlContext.getDeclaredField("dbType");
+    	fieldDbType.setAccessible(true);
+    	final Constructor con = classSqlContext.getDeclaredConstructor();
+    	con.setAccessible(true);
+    	final Object context = con.newInstance();
+    	fieldDbType.set(context, Constants.DB_TYPE.SQLSERVER);
+    	final Method method = Field.class.getDeclaredMethod("getSQL", classSqlContext);
+    	method.setAccessible(true);
+    	final Object ret = method.invoke(field, context);
+    	assertEquals("[ADD]", ret);
     }
 
 }

@@ -49,20 +49,20 @@ public class TestUsageMonitor extends TestCase {
 			umqucm.setAccessible(true);
 			umlsfm  = umc.getDeclaredMethod("loadStatsFor", Class.class);
 			umlsfm.setAccessible(true);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		MysqlDataSource mysqlDS = new MysqlDataSource();
+		final MysqlDataSource mysqlDS = new MysqlDataSource();
 		mysqlDS.setUser("root");
 		mysqlDS.setDatabaseName("nosco_test_jpetstore");
-		Context vmContext = Context.getVMContext();
+		final Context vmContext = Context.getVMContext();
 		vmContext.setDataSource(mysqlDS).setAutoUndo(false);
 		umlsfm.invoke(null, Item.class);
-		Map<String,Map<org.nosco.Field<?>,Long>> qc =
+		final Map<String,Map<org.nosco.Field<?>,Long>> qc =
 				(Map<String,Map<org.nosco.Field<?>,Long>>)umqcf.get(null);
 		qc.clear();
 	}
@@ -79,28 +79,28 @@ public class TestUsageMonitor extends TestCase {
 			//WeakReference<?> wfum = null;
 			boolean first = true;
 			Object um = null;
-			for (Item item : Item.ALL) {
+			for (final Item item : Item.ALL) {
 				um = tumf.get(item);
 				sth = (String) umqhf.get(um);
 //				if (wfum==null) {
 //					wfum = new WeakReference(um);
 //				}
-				BitSet fv = (BitSet) tfvf.get(item);
+				final BitSet fv = (BitSet) tfvf.get(item);
 				if (i==0) {
-					assertEquals(item.FIELDS().length, fv.cardinality());
+					assertEquals(item.FIELDS().size(), fv.cardinality());
 					assertTrue(fv.get(Item.ATTR1.INDEX));
 				}
 				if (i==1) {
-					assertEquals(item.PK.GET_FIELDS().length, fv.cardinality());
+					assertEquals(item.PK.GET_FIELDS().size(), fv.cardinality());
 					assertFalse(fv.get(Item.ATTR1.INDEX));
 				}
 				if (i==2) {
-					assertEquals(item.PK.GET_FIELDS().length+1, fv.cardinality());
+					assertEquals(item.PK.GET_FIELDS().size()+1, fv.cardinality());
 					assertTrue(fv.get(Item.ATTR1.INDEX));
 				}
 				Collection<org.nosco.Field<?>> surpriseFields = null;
 				surpriseFields = (Collection<org.nosco.Field<?>>)umsff.get(um);
-				int sizeBefore = surpriseFields == null ? 0 : surpriseFields.size();
+				final int sizeBefore = surpriseFields == null ? 0 : surpriseFields.size();
 				item.getAttr1();
 				if (first) {
 					surpriseFields = (Collection<org.nosco.Field<?>>)umsff.get(um);
@@ -117,9 +117,9 @@ public class TestUsageMonitor extends TestCase {
 			umqucm.invoke(um);
 			//waitUntilGone(wfum);
 			if (i==0) {
-				Map<String,Map<org.nosco.Field<?>,Long>> qc =
+				final Map<String,Map<org.nosco.Field<?>,Long>> qc =
 						(Map<String,Map<org.nosco.Field<?>,Long>>)umqcf.get(null);
-				Map<org.nosco.Field<?>,Long> used = qc.get(sth);
+				final Map<org.nosco.Field<?>,Long> used = qc.get(sth);
 				used.clear();
 			}
 		}

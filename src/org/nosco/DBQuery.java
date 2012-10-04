@@ -918,7 +918,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						q.orderByFields = new ArrayList<Field<?>>();
 					}
 					final PK pk = Util.getPK(reffedTable);
-					final Field<?>[] fields = pk==null ? reffedTable.FIELDS() : pk. GET_FIELDS();
+					final List<Field<?>> fields = pk==null ? reffedTable.FIELDS() : pk. GET_FIELDS();
 					for (final Field<?> f : fields) {
 						if (q.orderByFields.contains(f)) continue;
 						q.orderByFields.add(f);

@@ -11,7 +11,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.nosco.Field.PK;
 
@@ -30,22 +32,24 @@ public class CSV {
 	 * @return the number of objects written
 	 * @throws IOException
 	 */
-	public static <T extends Table> long write(Iterable<T> items, Writer w) throws IOException {
-		long count = 0;
+	public static <T extends Table> long write(final Iterable<T> items, final Writer w) throws IOException {
+		final long count = 0;
 		boolean first = true;
-		Field<?>[] fields = null;
-		for (T t : items) {
+		List<Field<?>> fields = null;
+		for (final T t : items) {
 			if (first) {
-				fields = t.FIELDS();
-				PK<T> pk = Util.getPK(t);
-				Field[] pks = pk==null ? null : pk.GET_FIELDS();
+				fields = new ArrayList<Field<?>>(t.FIELDS());
+				final PK<T> pk = Util.getPK(t);
+				final List<Field<?>> pks = pk==null ? null : pk.GET_FIELDS();
 				if (pks != null) {
-					for (int i=0; i<pks.length; ++i) {
-						for (int j=0; j<fields.length; ++j) {
-							if (pks[i] == fields[j] && i!=j) {
-								Field<?> tmp = fields[i];
-								fields[i] = fields[j];
-								fields[j] = tmp;
+					final int s1 = pks.size();
+					for (int i=0; i<s1; ++i) {
+						final int s2 = fields.size();
+						for (int j=0; j<s2; ++j) {
+							if (pks.get(i) == fields.get(j) && i!=j) {
+								final Field<?> tmp = fields.get(i);
+								fields.set(i, fields.get(j));
+								fields.set(j, tmp);
 							}
 						}
 					}
@@ -54,10 +58,10 @@ public class CSV {
 				w.write('\n');
 				first = false;
 			}
-			for (int i=0; i<fields.length; ++i) {
-				Field<?> f = fields[i];
+			for (int i=0; i<fields.size(); ++i) {
+				final Field<?> f = fields.get(i);
 				if (t.__NOSCO_FETCHED_VALUES.get(f.INDEX)) {
-					Object o = t.get(f);
+					final Object o = t.get(f);
 					if (o != null) {
 						String s = o.toString();
 						if (s.contains(",") || s.contains("\"") || s.length()==0) {
@@ -65,7 +69,7 @@ public class CSV {
 						}
 						w.write(s);
 					}
-					if (i < fields.length-1) w.write(',');
+					if (i < fields.size()-1) w.write(',');
 				}
 			}
 			w.write('\n');
@@ -81,9 +85,9 @@ public class CSV {
 	 * @return the number of objects written
 	 * @throws IOException
 	 */
-	public static <T extends Table> long write(Iterable<T> items, File f) throws IOException {
-		Writer w = new BufferedWriter(new FileWriter(f));
-		long count = write(items, w);
+	public static <T extends Table> long write(final Iterable<T> items, final File f) throws IOException {
+		final Writer w = new BufferedWriter(new FileWriter(f));
+		final long count = write(items, w);
 		w.close();
 		return count;
 	}
@@ -100,6 +104,7 @@ public class CSV {
 					new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 			constructor.setAccessible(true);
 			return new Iterable<T>() {
+				@SuppressWarnings("resource")
 				@Override
 				public Iterator<T> iterator() {
 					try {
@@ -117,16 +122,16 @@ public class CSV {
 								try {
 									if (first) {
 										first  = false;
-										String line = r.readLine();
+										final String line = r.readLine();
 										if (line != null) {
-											String[] headers = line.split(",");
+											final String[] headers = line.split(",");
 											fields = new Field<?>[headers.length];
 											fieldConstructors  = new Constructor<?>[fields.length];
-											Field[] clsFields = cls.newInstance().FIELDS();
+											final List<Field<?>> clsFields = cls.newInstance().FIELDS();
 											for (int i=0; i<fields.length; ++i) {
-												for (int j=0; j<clsFields.length; ++j) {
-													if (clsFields[j].NAME.equals(headers[i])) {
-														fields[i] = clsFields[j];
+												for (int j=0; j<clsFields.size(); ++j) {
+													if (clsFields.get(j).NAME.equals(headers[i])) {
+														fields[i] = clsFields.get(j);
 														break;
 													}
 												}
@@ -139,20 +144,20 @@ public class CSV {
 
 										}
 									}
-									Object[] oa = new Object[fields.length];
+									final Object[] oa = new Object[fields.length];
 									int pos = 0;
-									String line = r.readLine();
+									final String line = r.readLine();
 									if (line != null) {
 							            StringBuilder sb = new StringBuilder();
 							            boolean quoted = false;
 										for (int i = 0; i < line.length(); ++i) {
-							                char c = line.charAt(i);
+							                final char c = line.charAt(i);
 							                sb.append(c);
 							                if (c == '"') {
 							                    quoted = !quoted;
 							                }
 							                if ((!quoted && c == ',') || i == line.length()-1) {
-							                    String s = sb.toString()
+							                    final String s = sb.toString()
 							                    		.replaceAll(",$", "")
 							                    		.replaceAll("^\"|\"$", "")
 							                    		.replace("\"\"", "\"")
@@ -170,30 +175,30 @@ public class CSV {
 										next = constructor.newInstance(fields, oa, 0, fields.length);
 									}
 
-								} catch (IOException e) {
+								} catch (final IOException e) {
 									try {
 										r.close();
-									} catch (IOException e1) {
+									} catch (final IOException e1) {
 										e1.printStackTrace();
 									}
 									throw new RuntimeException(e);
-								} catch (InstantiationException e) {
+								} catch (final InstantiationException e) {
 									throw new RuntimeException(e);
-								} catch (IllegalAccessException e) {
+								} catch (final IllegalAccessException e) {
 									throw new RuntimeException(e);
-								} catch (IllegalArgumentException e) {
+								} catch (final IllegalArgumentException e) {
 									throw new RuntimeException(e);
-								} catch (InvocationTargetException e) {
+								} catch (final InvocationTargetException e) {
 									throw new RuntimeException(e);
-								} catch (SecurityException e) {
+								} catch (final SecurityException e) {
 									throw new RuntimeException(e);
-								} catch (NoSuchMethodException e) {
+								} catch (final NoSuchMethodException e) {
 									throw new RuntimeException(e);
 								}
 								if (next != null) return true;
 								try {
 									r.close();
-								} catch (IOException e) {
+								} catch (final IOException e) {
 									throw new RuntimeException(e);
 								}
 								return false;
@@ -202,7 +207,7 @@ public class CSV {
 							@Override
 							public T next() {
 								if (next == null) hasNext();
-								T t = next;
+								final T t = next;
 								next = null;
 								return t;
 							}
@@ -213,14 +218,14 @@ public class CSV {
 							}
 
 						};
-					} catch (FileNotFoundException e) {
+					} catch (final FileNotFoundException e) {
 						throw new RuntimeException(e);
 					}
 				}
 			};
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			throw new RuntimeException(e);
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
 	}

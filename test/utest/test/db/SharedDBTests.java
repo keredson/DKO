@@ -401,7 +401,7 @@ public class SharedDBTests extends TestCase {
 
     public void testCrossColumnSelects() throws Exception {
     	// only select the cols from the primary table
-    	final int colCount = Item.ALL.first().FIELDS().length;
+    	final int colCount = Item.ALL.first().FIELDS().size();
     	final Method getSelectFields = Item.ALL.getClass().getDeclaredMethod("getSelectFields");
     	getSelectFields.setAccessible(true);
     	final Query<Item> q = Item.ALL.cross(Product.class).top(10);

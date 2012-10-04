@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -37,7 +38,7 @@ public abstract class Table {
 	 * @return A list of the fields defined for this class.
 	 */
 	@SuppressWarnings("rawtypes")
-	public abstract Field[] FIELDS();
+	public abstract List<Field<?>> FIELDS();
 
 	/**
 	 * Please do not use.
@@ -274,7 +275,7 @@ public abstract class Table {
 	    final int prime = 31;
 	    int result = 1;
 	    final Field.PK<?> pk = Util.getPK(this);
-	    final Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
+	    final List<Field<?>> fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
 	    for (final Field<?> f : fields) {
 	    	final Object o = this.get(f);
 		    result = prime * result + ((o == null) ? 0 : o.hashCode());
@@ -288,7 +289,7 @@ public abstract class Table {
 		if (other == null) return false;
 		if (!(other instanceof Table)) return false;
 	    final Field.PK<?> pk = Util.getPK(this);
-	    final Field<?>[] fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
+	    final List<Field<?>> fields = pk == null ? this.FIELDS() : pk.GET_FIELDS();
 	    for (final Field<?> f : fields) {
 	    	final Object o1 = this.get(f);
 	    	final Object o2 = ((Table)other).get(f);

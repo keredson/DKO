@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -15,7 +16,7 @@ import org.nosco.Field.FK;
 class TmpTableBuilder {
 
 	private final String tmpTableName = "NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
-	private final Field<?>[] fields;
+	private final List<Field<?>> fields;
 	private final List<Object[]> rows = new ArrayList<Object[]>();
 
 	private final Table table = new Table() {
@@ -31,8 +32,8 @@ class TmpTableBuilder {
 			sbCreate.append(" (");
 			final StringBuilder sbPS = new StringBuilder();
 			sbPS.append("insert into "+ tmpTableName +" values (");
-			for (int i=0; i<fields.length; ++i) {
-				final Field<?> field = fields[i];
+			for (int i=0; i<fields.size(); ++i) {
+				final Field<?> field = fields.get(i);
 				sbCreate.append(field.NAME +" "+ field.SQL_TYPE +",");
 				sbPS.append("?,");
 			}
@@ -119,7 +120,7 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		public Field[] FIELDS() {
+		public List<Field<?>> FIELDS() {
 			return fields;
 		}
 
@@ -208,7 +209,9 @@ class TmpTableBuilder {
 	};
 
 	TmpTableBuilder(final Field<?>... fields) {
-		this.fields = fields;
+		final List<Field<?>> tmp = new ArrayList<Field<?>>();
+		for (final Field<?> f : fields) tmp.add(f);
+		this.fields = Collections.unmodifiableList(tmp);
 		final StringBuilder sb = new StringBuilder();
 	}
 

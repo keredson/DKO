@@ -336,11 +336,11 @@ public class Bulk {
 
 		protected void init(final Table table) throws SQLException {
 			super.init(table);
-			final Field<?>[] allFields = table.FIELDS();
+			final List<Field<?>> allFields = table.FIELDS();
 			fields = new Field[table.__NOSCO_FETCHED_VALUES.cardinality()];
-			for (int i=0, j=0; i<allFields.length; ++i) {
+			for (int i=0, j=0; i<allFields.size(); ++i) {
 				if (table.__NOSCO_FETCHED_VALUES.get(i)) {
-					fields[j++] = allFields[i];
+					fields[j++] = allFields.get(i);
 				}
 			}
 			try {
@@ -393,19 +393,19 @@ public class Bulk {
 		protected void init(final Table table) throws SQLException {
 			super.init(table);
 			if (values==null) values = table.__NOSCO_UPDATED_VALUES;
-			final Field<?>[] pks = Util.getPK(table).GET_FIELDS();
+			final List<Field<?>> pks = Util.getPK(table).GET_FIELDS();
 			for (final Field<?> pk : pks) {
 				values.clear(pk.INDEX);
 			}
-			final Field<?>[] allFields = table.FIELDS();
-			fields = new Field[values.cardinality() + pks.length];
-			for (int i=0, j=0; i<allFields.length; ++i) {
+			final List<Field<?>> allFields = table.FIELDS();
+			fields = new Field[values.cardinality() + pks.size()];
+			for (int i=0, j=0; i<allFields.size(); ++i) {
 				if (values.get(i)) {
-					fields[j++] = allFields[i];
+					fields[j++] = allFields.get(i);
 				}
 			}
-			for (int i=0; i<pks.length; ++i) {
-				fields[fields.length - pks.length + i] = pks[i];
+			for (int i=0; i<pks.size(); ++i) {
+				fields[fields.length - pks.size() + i] = pks.get(i);
 			}
 			try {
 				final Class<? extends Table> clazz = table.getClass();
@@ -429,7 +429,7 @@ public class Bulk {
 			sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 					+sep+ table.TABLE_NAME());
 			sb.append(" set ");
-			for (int i=0; i<fields.length-pks.length; ++i) {
+			for (int i=0; i<fields.length-pks.size(); ++i) {
 				sb.append(fields[i].getSQL(dbType));
 				sb.append("=?, ");
 			}
@@ -451,7 +451,9 @@ public class Bulk {
 		@Override
 		protected void init(final Table table) throws SQLException {
 			super.init(table);
-			fields = Util.getPK(table).GET_FIELDS();
+			final List<Field<?>> get_FIELDS = Util.getPK(table).GET_FIELDS();
+			fields = new Field[get_FIELDS.size()];
+			for (int i=0; i<get_FIELDS.size(); ++i) fields[i] = get_FIELDS.get(i);
 			try {
 				pre = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_DELETE_PRE").get(table);
 				post = (Method) table.getClass().getDeclaredField("__NOSCO_CALLBACK_DELETE_POST").get(table);

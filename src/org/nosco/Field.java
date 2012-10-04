@@ -795,19 +795,19 @@ public class Field<T> implements Cloneable {
 			return super.toString();
 		}
 
-		@SuppressWarnings("rawtypes")
-		private final Field[] FIELDS;
+		private final List<Field<?>> FIELDS;
 
 		public PK(@SuppressWarnings("rawtypes") final Field... fields) {
-			FIELDS = new Field[fields.length];
-			System.arraycopy(fields, 0, FIELDS, 0, fields.length);
+			final List<Field<?>> tmp = new ArrayList<Field<?>>();
+			for (final Field<?> f : fields) {
+				tmp.add(f);
+			}
+			FIELDS = Collections.unmodifiableList(tmp);
 		}
 
 		@SuppressWarnings("rawtypes")
-		public Field[] GET_FIELDS() {
-			final Field[] fields = new Field[FIELDS.length];
-			System.arraycopy(FIELDS, 0, fields, 0, FIELDS.length);
-			return fields;
+		public List<Field<?>> GET_FIELDS() {
+			return FIELDS;
 		}
 
 		public Condition eq(final Table.__PrimaryKey<S> pk) {

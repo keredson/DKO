@@ -463,12 +463,17 @@ class ClassGenerator {
 
 		br.write("\tpublic String TABLE_NAME() {\n\t\treturn \""+ table +"\";\n\t}\n\n");
 
-		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tpublic Field[] FIELDS() {\n\t\tfinal Field[] fields = {");
+		br.write("\tprivate static java.util.List<Field<?>> __NOSCO_FIELDS;\n");
+		br.write("\tstatic {\n");
+		br.write("\t\tjava.util.List<Field<?>> fields = new java.util.ArrayList<Field<?>>();\n");
 		for (final String column : columns.keySet()) {
-			br.write(getFieldName(column)+",");
+			br.write("\t\tfields.add("+getFieldName(column)+");\n");
 		}
-		br.write("};\n\t\treturn fields;\n\t}\n\n");
+		br.write("\t\t__NOSCO_FIELDS = java.util.Collections.unmodifiableList(fields);\n");
+		br.write("\t}\n");
+		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
+		br.write("\tpublic java.util.List<Field<?>> FIELDS() {\n");
+		br.write("\t\treturn __NOSCO_FIELDS;\n\t}\n\n");
 
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic Field.FK[] FKS() {\n\t\tfinal Field.FK[] fields = {");
@@ -847,7 +852,7 @@ class ClassGenerator {
 				+ "\t\t\t__NOSCO_CALLBACK_DELETE_PRE.invoke(null, (Object)__NOSCO_CALLBACKS, _ds); }"
 				+ "catch (IllegalAccessException e) { e.printStackTrace(); } "
 				+ "catch (InvocationTargetException e) { e.printStackTrace(); }\n");
-		br.write("\t\tint count = query.deleteAll();\n");
+		br.write("\t\tint count = query.delete();\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_DELETE_POST!=null) "
 				+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"
 				+ "\t\t\t__NOSCO_CALLBACK_DELETE_POST.invoke(null, (Object)__NOSCO_CALLBACKS); }"

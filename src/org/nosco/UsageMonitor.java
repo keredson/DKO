@@ -61,7 +61,7 @@ class UsageMonitor<T extends Table> {
 		try {
 			warnBadFKUsage();
 			questionUnusedColumns();
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			t.printStackTrace();
 			log.severe(t.toString());
 		}
@@ -87,7 +87,7 @@ class UsageMonitor<T extends Table> {
 			//used = qc.get(queryHash);
 		}
 		final Set<Field<?>> unusedColumns = new LinkedHashSet<Field<?>>();
-		long now = System.currentTimeMillis();
+		final long now = System.currentTimeMillis();
 		for (int i=0; i<selectedFields.length; ++i) {
 			if (!accessedField.get(i)) {
 				unusedColumns.add(selectedFields[i]);
@@ -272,9 +272,9 @@ class UsageMonitor<T extends Table> {
 		if (!surpriseFields.contains(field)) {
 			surpriseFields.add(field);
 			final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
-			StackTraceElement[] st = new StackTraceElement[tmp.length-3];
+			final StackTraceElement[] st = new StackTraceElement[tmp.length-3];
 			System.arraycopy(tmp, 3, st, 0, st.length);
-			String msg = "Optimizer was surprised by field "+ field.TABLE.getSimpleName()
+			final String msg = "Optimizer was surprised by field "+ field.TABLE.getSimpleName()
 					+"."+ field.JAVA_NAME +" here:\n\t"
 					+ Util.join("\n\t", st) +"\nIf this happens once it's normal "
 					+"(the optimizer will learn to include it the next time this is run).\n"
@@ -303,15 +303,15 @@ class UsageMonitor<T extends Table> {
 			}
 			//System.err.println("used "+ used +" @ "+ this.queryHash);
 			final Set<Field<?>> deffer = new HashSet<Field<?>>();
-			final Field<?>[] originalSelectedFields = query.getSelectFields(false);
+			final List<Field<?>> originalSelectedFields = query.getSelectFields(false);
 			for (final Field<?> f : originalSelectedFields) {
 				if (!used.containsKey(f)) deffer.add(f);
 			}
 			if (deffer.isEmpty()) return query;
 			deffer.removeAll(pks);
-			if (deffer.size()==originalSelectedFields.length && originalSelectedFields.length>0) {
+			if (deffer.size()==originalSelectedFields.size() && originalSelectedFields.size()>0) {
 				// make sure we don't remove every field!
-				deffer.remove(originalSelectedFields[0]);
+				deffer.remove(originalSelectedFields.get(0));
 			}
 			//System.err.println("getOptimizedQuery optimized!");
 			this.selectOptimized  = true;
@@ -379,7 +379,7 @@ class UsageMonitor<T extends Table> {
 
 	private static Map<String,Collection<Tuple3<String,String,Long>>> classToFieldToTimeToLoad = Collections.synchronizedMap(new HashMap<String,Collection<Tuple3<String,String,Long>>>());
 
-	private static void loadPerfData(File CACHE_DIR) {
+	private static void loadPerfData(final File CACHE_DIR) {
 		PERF_CACHE = new File(CACHE_DIR, "performance");
 
 		if (!CACHE_DIR.isDirectory()) {
@@ -442,7 +442,7 @@ class UsageMonitor<T extends Table> {
 		@Override
 		public void run() {
 			final File CACHE_DIR;;
-			String dir = System.getProperty(Constants.PROPERTY_CACHE_DIR);
+			final String dir = System.getProperty(Constants.PROPERTY_CACHE_DIR);
 			if (dir == null) {
 				final File BASE_DIR = new File(System.getProperty("user.home"));
 				CACHE_DIR = new File(BASE_DIR, ".nosco_optimizations");
@@ -499,25 +499,25 @@ class UsageMonitor<T extends Table> {
 		});
 	}
 
-	static void loadStatsFor(Class<? extends Table> tableClass) {
+	static void loadStatsFor(final Class<? extends Table> tableClass) {
 		if (loadPerformanceInfo.isAlive())
 			try {
 				loadPerformanceInfo.join();
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
-		String className = tableClass.getName();
-		Collection<Tuple3<String, String, Long>> fieldToTimeToLoad = classToFieldToTimeToLoad.remove(className);
+		final String className = tableClass.getName();
+		final Collection<Tuple3<String, String, Long>> fieldToTimeToLoad = classToFieldToTimeToLoad.remove(className);
 		if (fieldToTimeToLoad != null) {
 			final ClassLoader cl = tableClass.getClassLoader();
 			try {
 				final Class<?> clz = cl.loadClass(className);
-				for (Tuple3<String, String, Long> tuple : fieldToTimeToLoad) {
-					String st = tuple.a;
-					String fieldName = tuple.b;
-					Long time = tuple.c;
+				for (final Tuple3<String, String, Long> tuple : fieldToTimeToLoad) {
+					final String st = tuple.a;
+					final String fieldName = tuple.b;
+					final Long time = tuple.c;
 					try {
-						java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
+						final java.lang.reflect.Field f = clz.getDeclaredField(fieldName);
 						final Field<?> field = (Field<?>) f.get(null);
 						Map<Field<?>, Long> fieldSeenMap = qc.get(st);
 						if (fieldSeenMap==null) {
@@ -531,17 +531,17 @@ class UsageMonitor<T extends Table> {
 							}
 						}
 						fieldSeenMap.put(field, time);
-					} catch (SecurityException e1) {
+					} catch (final SecurityException e1) {
 						e1.printStackTrace();
-					} catch (NoSuchFieldException e1) {
+					} catch (final NoSuchFieldException e1) {
 						e1.printStackTrace();
-					} catch (IllegalArgumentException e) {
+					} catch (final IllegalArgumentException e) {
 						e.printStackTrace();
-					} catch (IllegalAccessException e) {
+					} catch (final IllegalAccessException e) {
 						e.printStackTrace();
 					}
 				}
-			} catch (ClassNotFoundException e1) {
+			} catch (final ClassNotFoundException e1) {
 				e1.printStackTrace();
 			}
 

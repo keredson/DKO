@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,8 +42,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	// genned once and cached
 	private String sql;
-	private Field<?>[] fields;
-	private Field<?>[] boundFields;
+	private List<Field<?>> fields;
+	private List<Field<?>> boundFields;
 	List<Object> bindings = null;
 	Map<String,Set<String>> tableNameMap = null;
 	DB_TYPE detectedDbType = null;
@@ -111,7 +112,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			deferSet.addAll(q.deferSet);
 		}
 		if (q.onlySet!=null) {
-			onlySet = new HashSet<Field<?>>();
+			onlySet = new LinkedHashSet<Field<?>>();
 			onlySet.addAll(q.onlySet);
 		}
 		if (q.orderByDirections!=null) {
@@ -216,7 +217,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private void sanityCheckToManyJoins() {
-		final Field<?>[] selectFields = getSelectFields();
+		final List<Field<?>> selectFields = getSelectFields();
 		for (final Join join : this.joinsToMany) {
 			final List<Field<?>> missing = new ArrayList<Field<?>>();
 			for (final Field<?> f1 : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
@@ -348,7 +349,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public Query<T> onlyFields(final Field<?>... fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = new HashSet<Field<?>>();
+		q.onlySet = new LinkedHashSet<Field<?>>();
 		for (final Field<?> field : fields) {
 			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 				throw new RuntimeException("cannot use bound fields " +
@@ -363,7 +364,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public Query<T> onlyFields(final Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = new HashSet<Field<?>>();
+		q.onlySet = new LinkedHashSet<Field<?>>();
 		for (final Field<?> field : fields) {
 			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 				throw new RuntimeException("cannot use bound fields " +
@@ -674,18 +675,18 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return all;
 	}
 
-	Field<?>[] getSelectFields(final boolean bind) {
+	List<Field<?>> getSelectFields(final boolean bind) {
 		if (!bind && fields==null || bind && boundFields==null) {
 			final List<Field<?>> fields = new ArrayList<Field<?>>();
 			int c = 0;
 			final List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
-			for (final TableInfo ti : allTableInfos) {
-				ti.start = c;
-				final String tableName = bind ? ti.tableName : null;
-				for (final Field<?> field : ti.table.FIELDS()) {
-					if(onlySet!=null) {
-						for (final Field<?> other : onlySet) {
+			if(onlySet!=null) {
+				for (final Field<?> other : onlySet) {
+					for (final TableInfo ti : allTableInfos) {
+						ti.start = c;
+						final String tableName = bind ? ti.tableName : null;
+						for (final Field<?> field : ti.table.FIELDS()) {
 							if (field == other && ti.nameAutogenned) {
 								fields.add(bind ? field.from(tableName) : field);
 								++c;
@@ -698,24 +699,29 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 								continue;
 							}
 						}
-					} else {
+						ti.end = c;
+					}
+				}
+			} else {
+				for (final TableInfo ti : allTableInfos) {
+					ti.start = c;
+					final String tableName = bind ? ti.tableName : null;
+					for (final Field<?> field : ti.table.FIELDS()) {
 						if(deferSet==null || !deferSet.contains(field)) {
 							fields.add(bind ? field.from(tableName) : field);
 							++c;
 						}
 					}
+					ti.end = c;
 				}
-				ti.end = c;
 			}
 			if (bind) {
-				this.boundFields = new Field[fields.size()];
-				fields.toArray(this.boundFields);
+				this.boundFields = Collections.unmodifiableList(fields);
 			} else {
-				this.fields = new Field[fields.size()];
-				fields.toArray(this.fields);
+				this.fields = Collections.unmodifiableList(fields);
 			}
 		}
-		return bind ? boundFields.clone() : fields.clone();
+		return bind ? boundFields : fields;
 	}
 
 	List<DIRECTION> getOrderByDirections() {
@@ -1191,7 +1197,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Field<?>[] getSelectFields() {
+	public List<Field<?>> getSelectFields() {
 		return this.getSelectFields(false);
 	}
 

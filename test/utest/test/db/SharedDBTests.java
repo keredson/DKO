@@ -405,8 +405,8 @@ public class SharedDBTests extends TestCase {
     	final Method getSelectFields = Item.ALL.getClass().getDeclaredMethod("getSelectFields");
     	getSelectFields.setAccessible(true);
     	final Query<Item> q = Item.ALL.cross(Product.class).top(10);
-    	final Field<?>[] selectedFields = (Field<?>[]) getSelectFields.invoke(q);
-    	assertEquals(colCount, selectedFields.length);
+    	final List<Field<?>> selectedFields = (List<Field<?>>) getSelectFields.invoke(q);
+    	assertEquals(colCount, selectedFields.size());
     	for (final Object[] row : q.asIterableOfObjectArrays()) {
     		assertTrue(colCount < row.length);
     	}
@@ -440,16 +440,26 @@ public class SharedDBTests extends TestCase {
 	public void testFieldKeywordCheck() throws Exception {
     	final Field<Integer> field = new Field(0, null, "ADD", null, null, null);
     	final Class classSqlContext = this.getClass().getClassLoader().loadClass("org.nosco.SqlContext");
+    	final Class classDBQuery = this.getClass().getClassLoader().loadClass("org.nosco.DBQuery");
     	final java.lang.reflect.Field fieldDbType = classSqlContext.getDeclaredField("dbType");
     	fieldDbType.setAccessible(true);
-    	final Constructor con = classSqlContext.getDeclaredConstructor();
+    	final Constructor con = classSqlContext.getDeclaredConstructor(classDBQuery);
     	con.setAccessible(true);
-    	final Object context = con.newInstance();
+    	final Object context = con.newInstance(Item.ALL);
     	fieldDbType.set(context, Constants.DB_TYPE.SQLSERVER);
     	final Method method = Field.class.getDeclaredMethod("getSQL", classSqlContext);
     	method.setAccessible(true);
     	final Object ret = method.invoke(field, context);
     	assertEquals("[ADD]", ret);
     }
+
+	public void testSelectColumnOrdering() throws Exception {
+		final Query<Item> q = Item.ALL.onlyFields(Item.ATTR5, Item.ATTR3, Item.ATTR1, Item.LISTPRICE);
+		final List<Field<?>> fields = q.getSelectFields();
+		assertEquals(Item.ATTR5, fields.get(0));
+		assertEquals(Item.ATTR3, fields.get(1));
+		assertEquals(Item.ATTR1, fields.get(2));
+		assertEquals(Item.LISTPRICE, fields.get(3));
+	}
 
 }

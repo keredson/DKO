@@ -22,7 +22,7 @@ import org.nosco.Table.__PrimaryKey;
 class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 
 	List<T> cache = null;
-	private Field<?>[] selectFields;
+	private List<Field<?>> selectFields;
 	private Query<T> query;
 	private boolean loaded = false;
 
@@ -318,11 +318,9 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Field<?>[] getSelectFields() {
+	public List<Field<?>> getSelectFields() {
 		if (!loaded) load();
-		final Field<?>[] ret = new Field<?>[selectFields.length];
-		System.arraycopy(selectFields, 0, ret, 0, selectFields.length);
-		return ret;
+		return selectFields;
 	}
 
 	@Override

@@ -15,13 +15,6 @@ class SqlContext {
 
 	private final DBQuery<?> q;
 
-	/**
-	 * use for unit testing only!
-	 */
-	SqlContext() {
-		this(new DBQuery(Table.class), null);
-	}
-
 	SqlContext(final DBQuery<?> q) {
 		this(q, null);
 	}

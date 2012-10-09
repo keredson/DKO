@@ -167,11 +167,11 @@ class Select<T extends Table> implements Iterator<T> {
 	}
 
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
-		selectedFields = query.getSelectFields(false);
+		selectedFields = toArray(query.getSelectFields(false));
 		if (this.usageMonitor!=null) {
 			this.usageMonitor.setSelectedFields(selectedFields);
 		}
-		selectedBoundFields = query.getSelectFields(true);
+		selectedBoundFields = toArray(query.getSelectFields(true));
 		final StringBuffer sb = new StringBuffer();
 		sb.append("select ");
 		if (query.distinct) sb.append("distinct ");
@@ -223,6 +223,15 @@ class Select<T extends Table> implements Iterator<T> {
 //	protected List<Object> getSQLBindings() {
 //		return query.getSQLBindings();
 //	}
+
+	private Field<?>[] toArray(final List<Field<?>> fields) {
+		final Field<?>[] ret = new Field<?>[fields.size()];
+		int i = 0;
+		for (final Field<?> field : fields) {
+			ret[i++] = field;
+		}
+		return ret;
+	}
 
 	Object[] getNextRow() throws SQLException {
 		final Object[] tmp = peekNextRow();

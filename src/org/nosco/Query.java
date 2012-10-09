@@ -510,7 +510,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * Returns an array of the fields to be selected for this query.
 	 * @return
 	 */
-	public Field<?>[] getSelectFields();
+	public List<Field<?>> getSelectFields();
 
 	/**
 	 * Returns the results of the query as a {@code Iterator} of {@code Object[]}s. &nbsp;

@@ -698,11 +698,11 @@ public class Field<T> implements Cloneable {
 		if (q instanceof DBQuery) {
 			return new Binary(this, " in ", (DBQuery<?>) q);
 		} else {
-			final Field[] fields = q.getSelectFields();
-			if (fields.length != 1) throw new RuntimeException("cannot select more than one field in an inner query.");
+			final List<Field<?>> fields = q.getSelectFields();
+			if (fields.size() != 1) throw new RuntimeException("cannot select more than one field in an inner query.");
 			final Collection values = new ArrayList();
 			for (final Table t : q) {
-				values.add(t.get(fields[0]));
+				values.add(t.get(fields.get(0)));
 			}
 			return in(values);
 		}

@@ -3,6 +3,7 @@ package org.nosco;
 import static org.nosco.Constants.DIRECTION.ASCENDING;
 import static org.nosco.Constants.DIRECTION.DESCENDING;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,13 +50,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DB_TYPE detectedDbType = null;
 
 	// these should be cloned
-	Class<? extends Table> type = null;
+	Class<T> type = null;
 	List<Condition> conditions = null;
 	List<Table> tables = new ArrayList<Table>();
 	Set<String> usedTableNames = new HashSet<String>();
 	List<TableInfo> tableInfos = new ArrayList<TableInfo>();
-	List<Join> joinsToOne = new ArrayList<Join>();
-	List<Join> joinsToMany = new ArrayList<Join>();
+	List<JoinInfo> joins = new ArrayList<JoinInfo>();
+	List<JoinInfo> joinsToOne = new ArrayList<JoinInfo>();
+	List<JoinInfo> joinsToMany = new ArrayList<JoinInfo>();
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
 	private List<DIRECTION> orderByDirections = null;
@@ -92,15 +94,16 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		tables.addAll(q.tables);
 		usedTableNames.addAll(q.usedTableNames);
 		try {
-			for (final Join x : q.joinsToOne) joinsToOne.add((Join) x.clone());
-			for (final Join x : q.joinsToMany) joinsToMany.add((Join) x.clone());
+			for (final JoinInfo x : q.joins) joins.add((JoinInfo) x.clone());
+			for (final JoinInfo x : q.joinsToOne) joinsToOne.add((JoinInfo) x.clone());
+			for (final JoinInfo x : q.joinsToMany) joinsToMany.add((JoinInfo) x.clone());
 			for (final TableInfo x : q.tableInfos) {
 				final TableInfo clone = (TableInfo) x.clone();
-				for (final Join y : joinsToOne) {
+				for (final JoinInfo y : joinsToOne) {
 					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
 					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
 				}
-				for (final Join y : joinsToMany) {
+				for (final JoinInfo y : joinsToMany) {
 					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
 					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
 				}
@@ -136,7 +139,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		onlySelectFromFirstTableAndJoins = q.onlySelectFromFirstTableAndJoins;
 	}
 
-	DBQuery(final Class<? extends Table> tableClass) {
+	DBQuery(final Class<T> tableClass) {
 		try {
 			type = tableClass;
 			final Table table = tableClass.getConstructor().newInstance();
@@ -181,12 +184,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	DBQuery(final Class<? extends Table> tableClass, final DataSource ds) {
+	DBQuery(final Class<T> tableClass, final DataSource ds) {
 		this(tableClass);
 		this.ds = ds;
 	}
 
-	public DBQuery(final __Alias<? extends Table> alias) {
+	public DBQuery(final __Alias<T> alias) {
 		type = alias.table;
 		try {
 			final Table table = alias.table.getConstructor().newInstance();
@@ -210,6 +213,77 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
+	public <R extends Table, S extends Table> DBQuery(final DBQuery<R> q, final String joinType, final Class<S> other, String alias, final Condition condition) {
+		if (q.conditions!=null) {
+			conditions = new ArrayList<Condition>();
+			conditions.addAll(q.conditions);
+		}
+		type = (Class<T>) Join.class;
+		tables.addAll(q.tables);
+		usedTableNames.addAll(q.usedTableNames);
+		try {
+			for (final JoinInfo x : q.joins) joins.add((JoinInfo) x.clone());
+			final JoinInfo<R,S> ji = new JoinInfo<R,S>();
+			ji.lType = q.type;
+			ji.rType = other;
+			ji.type = joinType;
+			ji.condition = condition;
+			final Table otherInstance = other.newInstance();
+			final boolean autogenName = alias == null;
+			if (autogenName) alias = genTableName(otherInstance, usedTableNames);
+			usedTableNames.add(alias);
+			ji.reffedTableInfo = new TableInfo(otherInstance, alias, null);
+			ji.reffedTableInfo.nameAutogenned = autogenName;
+			joins.add(ji);
+			for (final JoinInfo x : q.joinsToOne) joinsToOne.add((JoinInfo) x.clone());
+			for (final JoinInfo x : q.joinsToMany) joinsToMany.add((JoinInfo) x.clone());
+			for (final TableInfo x : q.tableInfos) {
+				final TableInfo clone = (TableInfo) x.clone();
+				for (final JoinInfo y : joinsToOne) {
+					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
+					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
+				}
+				for (final JoinInfo y : joinsToMany) {
+					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
+					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
+				}
+				tableInfos.add(clone);
+			}
+		} catch (final InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (final IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (final CloneNotSupportedException e) { /* ignore */ }
+
+		if (q.deferSet!=null) {
+			deferSet = new HashSet<Field<?>>();
+			deferSet.addAll(q.deferSet);
+		}
+		if (q.onlySet!=null) {
+			onlySet = new LinkedHashSet<Field<?>>();
+			onlySet.addAll(q.onlySet);
+		}
+		if (q.orderByDirections!=null) {
+			orderByDirections = new ArrayList<DIRECTION>();
+			orderByDirections.addAll(q.orderByDirections);
+		}
+		if (q.orderByFields!=null) {
+			orderByFields = new ArrayList<Field<?>>();
+			orderByFields.addAll(q.orderByFields);
+		}
+		top = q.top;
+		if (q.data!=null) {
+			data = new HashMap<Field<?>,Object>();
+			data.putAll(q.data);
+		}
+		distinct = q.distinct;
+		ds = q.ds;
+		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
+		dbType = q.dbType;
+		defaultDS = q.defaultDS;
+		onlySelectFromFirstTableAndJoins = false;
+	}
+
 	@Override
 	public Iterator<T> iterator() {
 		//sanityCheckToManyJoins();
@@ -218,7 +292,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	private void sanityCheckToManyJoins() {
 		final List<Field<?>> selectFields = getSelectFields();
-		for (final Join join : this.joinsToMany) {
+		for (final JoinInfo join : this.joinsToMany) {
 			final List<Field<?>> missing = new ArrayList<Field<?>>();
 			for (final Field<?> f1 : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
 				boolean found = false;
@@ -575,13 +649,29 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = getDBType();
 		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
-		final ArrayList<Join> joinsToOne = new ArrayList<Join>(this.joinsToOne);
-		final ArrayList<Join> joinsToMany = new ArrayList<Join>(this.joinsToMany);
+
+		// explicit joins
+		for (final JoinInfo join : joins) {
+			final TableInfo tableInfo = join.reffedTableInfo;
+			final Table table = tableInfo.table;
+			sb.append(" ");
+			sb.append(join.type);
+			sb.append(" ");
+			sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+			if (join.condition != null) {
+				sb.append(" on ");
+				sb.append(join.condition.getSQL(context));
+			}
+		}
+
+		// "with" joins
+		final ArrayList<JoinInfo> joinsToOne = new ArrayList<JoinInfo>(this.joinsToOne);
+		final ArrayList<JoinInfo> joinsToMany = new ArrayList<JoinInfo>(this.joinsToMany);
 		final Set<Class> seen = new HashSet<Class>();
 		seen.add(getType());
 		while (!joinsToOne.isEmpty() || !joinsToMany.isEmpty()) {
 			for (int i=0; i<joinsToOne.size(); ++i) {
-				final Join join  = joinsToOne.get(i);
+				final JoinInfo join  = joinsToOne.get(i);
 				if (!seen.contains(join.reffingTableInfo.tableClass)) continue;
 				seen.add(join.reffedTableInfo.tableClass);
 				joinsToOne.remove(i--);
@@ -595,7 +685,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				sb.append(join.condition.getSQL(context));
 			}
 			for (int i=0; i<joinsToMany.size(); ++i) {
-				final Join join  = joinsToMany.get(i);
+				final JoinInfo join  = joinsToMany.get(i);
 				if (!seen.contains(join.reffedTableInfo.tableClass)) continue;
 				seen.add(join.reffingTableInfo.tableClass);
 				joinsToMany.remove(i--);
@@ -652,11 +742,15 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			all.add(ti);
 			ti.position = position++;
 		}
-		for (final Join join : joinsToOne) {
+		for (final JoinInfo join : joins) {
 			all.add(join.reffedTableInfo);
 			join.reffedTableInfo.position = position++;
 		}
-		for (final Join join : joinsToMany) {
+		for (final JoinInfo join : joinsToOne) {
+			all.add(join.reffedTableInfo);
+			join.reffedTableInfo.position = position++;
+		}
+		for (final JoinInfo join : joinsToMany) {
 			all.add(join.reffingTableInfo);
 			join.reffingTableInfo.position = position++;
 		}
@@ -666,10 +760,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private List<TableInfo> getSelectableTableInfos() {
 		final List<TableInfo> all = new ArrayList<TableInfo>();
 		all.add(tableInfos.get(0));
-		for (final Join join : joinsToOne) {
+		for (final JoinInfo join : joinsToOne) {
 			all.add(join.reffedTableInfo);
 		}
-		for (final Join join : joinsToMany) {
+		for (final JoinInfo join : joinsToMany) {
 			all.add(join.reffingTableInfo);
 		}
 		return all;
@@ -897,7 +991,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					q.usedTableNames.add(tableName);
 					final TableInfo info = new TableInfo(reffedTable, tableName, path);
 					info.nameAutogenned = true;
-					final Join join = new Join();
+					final JoinInfo join = new JoinInfo();
 					join.condition = condition;
 					join.reffingTableInfo  = prevTableInfo;
 					join.reffedTableInfo = info;
@@ -911,7 +1005,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					q.usedTableNames.add(tableName);
 					final TableInfo info = new TableInfo(refingTable, tableName, path);
 					info.nameAutogenned = true;
-					final Join join = new Join();
+					final JoinInfo join = new JoinInfo();
 					join.condition = condition;
 					join.reffingTableInfo = info;
 					join.reffedTableInfo = prevTableInfo;
@@ -959,20 +1053,24 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return sb.toString();
 	}
 
-	static class Join implements Cloneable {
+	static class JoinInfo<L extends Table, R extends Table> implements Cloneable {
 		public FK fk = null;
 		public TableInfo reffingTableInfo = null;
 		String type = null;
+		Class<L> lType = null;
+		Class<R> rType = null;
 		TableInfo reffedTableInfo = null;
 		Condition condition = null;
 		@Override
 		protected Object clone() throws CloneNotSupportedException {
-			final Join j = new Join();
+			final JoinInfo j = new JoinInfo();
 			j.fk = fk;
 			j.reffingTableInfo = reffingTableInfo;
 			j.type = type;
 			j.reffedTableInfo = reffedTableInfo;
 			j.condition = condition;
+			j.lType = lType;
+			j.rType = rType;
 			return j;
 		}
 	}
@@ -1088,23 +1186,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> cross(final Table t) {
-		final DBQuery<T> q = new DBQuery<T>(this);
-		q.addTable(t);
-		for (final Field<?> field : t.FIELDS()) {
-			this.deferFields(field.from("i2"));
-		}
-		return q;
-	}
-
-	@Override
 	public Query<T> cross(final Class<? extends Table> tableClass) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
 			final Table table = tableClass.getConstructor().newInstance();
 			q.addTable(table);
 		} catch (final Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return q;
 	}
@@ -1341,6 +1429,64 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (onlySet!=null) return false;
 		if (deferSet!=null) return false;
 		return true;
+	}
+
+	@Override
+	public <S extends Table> Query<org.nosco.Join<T, S>> crossJoin(final Class<S> other) {
+		return new DBQuery<Join<T,S>>(this, "cross join", other, null, null);
+	}
+
+	@Override
+	public <S extends Table> Query<org.nosco.Join<T, S>> crossJoin(final __Alias<S> alias) {
+		return new DBQuery<Join<T,S>>(this, "cross join", alias.table, alias.alias, null);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> other,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "left outer join", other, null, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> alias,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "left outer join", alias.table, alias.alias, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> other,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "right outer join", other, null, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> alias,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "right outer join", alias.table, alias.alias, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> other,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "full outer join", other, null, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> alias,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "full outer join", alias.table, alias.alias, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> other,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "inner join", other, null, condition);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> alias,
+			final Condition condition) {
+		return new DBQuery<Join<T,S>>(this, "inner join", alias.table, alias.alias, condition);
 	}
 
 }

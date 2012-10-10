@@ -446,18 +446,6 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param t
 	 * @return
 	 */
-	public Query<T> cross(Table t);
-
-	/**
-	 * Performs a cross join.  Note that this can result in an extraordinary number
-	 * of rows returned if not paired with additional where() clauses.
-	 * Note you will not be able to access the data in the second table (unless there is
-	 * a FK relationship between the &lt;T&gt; and the given object - which if true why
-	 * are you using this instead of with()?)
-	 * Use with care.
-	 * @param t
-	 * @return
-	 */
 	public Query<T> cross(__Alias<? extends Table> t);
 
 	/**
@@ -527,5 +515,83 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public <S> Set<S> asSet(Field<S> field);
+
+	/**
+	 * Performs a cross join.
+	 * @param table
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> crossJoin(Class<S> table);
+
+	/**
+	 * Performs a cross join.
+	 * @param table
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> crossJoin(__Alias<S> table);
+
+	/**
+	 * Performs a left join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> leftJoin(Class<S> table, Condition on);
+
+	/**
+	 * Performs a left join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> leftJoin(__Alias<S> table, Condition on);
+
+	/**
+	 * Performs a right join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> rightJoin(Class<S> table, Condition on);
+
+	/**
+	 * Performs a right join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> rightJoin(__Alias<S> table, Condition on);
+
+	/**
+	 * Performs an outer join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> outerJoin(Class<S> table, Condition on);
+
+	/**
+	 * Performs an outer join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> outerJoin(__Alias<S> table, Condition on);
+
+	/**
+	 * Performs an inner join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> innerJoin(Class<S> table, Condition on);
+
+	/**
+	 * Performs an inner join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> innerJoin(__Alias<S> table, Condition on);
 
 }

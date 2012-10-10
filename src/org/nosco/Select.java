@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.Constants.DIRECTION;
-import org.nosco.DBQuery.Join;
+import org.nosco.DBQuery.JoinInfo;
 import org.nosco.Field.FK;
 import org.nosco.Tuple.Tuple2;
 
@@ -48,7 +48,6 @@ class Select<T extends Table> implements Iterator<T> {
 	private T next;
 	private Field<?>[] selectedFields;
 	private Field<?>[] selectedBoundFields;
-	private Constructor<T> constructor;
 	private final Map<Class<? extends Table>,Constructor<? extends Table>> constructors =
 			new HashMap<Class<? extends Table>, Constructor<? extends Table>>();
 	private final Map<Class<? extends Table>,Method> fkToOneSetMethods =
@@ -88,10 +87,6 @@ class Select<T extends Table> implements Iterator<T> {
 
 		allTableInfos = query.getAllTableInfos();
 		try {
-			constructor = (Constructor<T>) query.getType().getDeclaredConstructor(
-					new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
-			constructor.setAccessible(true);
-
 			final List<TableInfo> tableInfos = query.getAllTableInfos();
 			for (final TableInfo tableInfo : tableInfos) {
 				if (tableInfo.tableClass.getName().startsWith("org.nosco.TmpTableBuilder")) continue;
@@ -109,7 +104,7 @@ class Select<T extends Table> implements Iterator<T> {
 				}
 			}
 			try {
-				for (final Join join : query.joinsToMany) {
+				for (final JoinInfo join : query.joinsToMany) {
 					final FK<?> fk = join.fk;
 					final Method setFKSetMethod  = fk.referenced.getDeclaredMethod(
 							"SET_FK_SET", Field.FK.class, Query.class);
@@ -265,7 +260,7 @@ class Select<T extends Table> implements Iterator<T> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private final Map<Join,InMemoryQuery> ttbMap = new HashMap<Join,InMemoryQuery>();
+	private final Map<JoinInfo,InMemoryQuery> ttbMap = new HashMap<JoinInfo,InMemoryQuery>();
 
 	@Override
 	public boolean hasNext() {
@@ -298,42 +293,40 @@ class Select<T extends Table> implements Iterator<T> {
 				final
 				LinkedHashSet<Table>[] inMemoryCacheSets = new LinkedHashSet[objectSize];
 				final InMemoryQuery[] inMemoryCaches = new InMemoryQuery[objectSize];
-				TableInfo baseTableInfo = null;
 				for (int i=0; i<objectSize; ++i) {
 					final TableInfo ti = allTableInfos.get(i);
-					if (i == 0) baseTableInfo = ti;
-					if (ti.path == null) {
-						if (next == null) {
-							next = constructor.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-							next.__NOSCO_USAGE_MONITOR = usageMonitor;
-							next.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
-							newObjectThisRow[i] = true;
-						}
-						objects[i] = next;
+					if (Util.allTheSame(prevFieldValues, fieldValues, ti.start, ti.end)) {
+						objects[i] = prevObjects[i];
+						newObjectThisRow[i] = false;
 					} else {
-						if (Util.allTheSame(prevFieldValues, fieldValues, ti.start, ti.end)) {
-							objects[i] = prevObjects[i];
-							newObjectThisRow[i] = false;
-						} else {
-							if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
-								final Table fkv = constructors.get(ti.table.getClass())
-										.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-								fkv.__NOSCO_USAGE_MONITOR = usageMonitor;
-								fkv.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
-								objects[i] = fkv;
-							}
-							newObjectThisRow[i] = true;
+						if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
+							final Table fkv = constructors.get(ti.table.getClass())
+									.newInstance(selectedFields, fieldValues, ti.start, ti.end);
+							fkv.__NOSCO_USAGE_MONITOR = usageMonitor;
+							fkv.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
+							objects[i] = fkv;
 						}
+						newObjectThisRow[i] = true;
 					}
 				}
-				for(final Join join : query.joinsToOne) {
+				if (next == null) {
+					if (Join.class.equals(query.type)) {
+						for (int i=0; i<query.joins.size(); ++i) {
+							final JoinInfo ji = query.joins.get(i);
+							next = (T) new Join(next==null ? objects[i] : next, objects[i+1]);
+						}
+					} else {
+						next = (T) objects[0];
+					}
+				}
+				for(final JoinInfo join : query.joinsToOne) {
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
 					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
 					final Method fkSetMethod = fkToOneSetMethods.get(reffingObject.getClass());
 					fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
 				}
-				for(final Join join : query.joinsToMany) {
+				for(final JoinInfo join : query.joinsToMany) {
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
 					final Method fkSetSetMethod = fkToManySetMethods.get(join.fk);

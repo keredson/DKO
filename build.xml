@@ -162,6 +162,7 @@
       </classpath>
       <!--jvmarg value="-Xdebug"/>
       <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/-->
+      <jvmarg value="-Dorg.nosco.log_sql=true"/>
       <jvmarg value="-Djava.util.logging.config.file=test/logging.properties"/>
       <formatter type="plain"/>
       <batchtest fork="yes" todir="${reports}">

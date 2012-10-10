@@ -245,11 +245,6 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> cross(final Table t) {
-		throw new UnsupportedOperationException("can't join on an in-memory query");
-	}
-
-	@Override
 	public Query<T> cross(final __Alias<? extends Table> t) {
 		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
@@ -327,6 +322,64 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	public Query<T> use(final DB_TYPE type) {
 		// ignore
 		return this;
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> crossJoin(final Class<S> other) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> crossJoin(final __Alias<S> other) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> other,
+			final Condition condition) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
 
 }

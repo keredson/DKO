@@ -4,11 +4,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.nosco.Context;
+import org.nosco.Join;
+import org.nosco.Query;
 import org.nosco.datasource.ConnectionCountingDataSource;
+import org.nosco.unittest.nosco_test_jpetstore.Item;
+import org.nosco.unittest.nosco_test_jpetstore.Supplier;
 
 public class TestHSQLDB extends SharedDBTests {
 
@@ -65,5 +70,15 @@ public class TestHSQLDB extends SharedDBTests {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
+
+	// mysql doesn't support outer joins
+//	public void testOuterJoin() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final Query<Join<Supplier, Item>> q = Supplier.ALL.outerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+//		//assertEquals(c1,  q.count());
+//		for (final Join<Supplier, Item> x : q.top(64)) {
+//			System.err.println(x);
+//		}
+//	}
 
 }

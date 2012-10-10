@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import org.nosco.DBQuery.Join;
+import org.nosco.DBQuery.JoinInfo;
 import org.nosco.Field.FK;
 import org.nosco.Tuple.Tuple3;
 import org.nosco.json.JSONException;
@@ -163,7 +163,7 @@ class UsageMonitor<T extends Table> {
 				pks.add(f);
 			}
 		}
-		for (final Join join : query.joinsToOne) {
+		for (final JoinInfo join : query.joinsToOne) {
 			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
 				pks.add(f);
 			}
@@ -171,7 +171,7 @@ class UsageMonitor<T extends Table> {
 				pks.add(f);
 			}
 		}
-		for (final Join join : query.joinsToMany) {
+		for (final JoinInfo join : query.joinsToMany) {
 			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
 				pks.add(f);
 			}

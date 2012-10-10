@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
-import org.nosco.DBQuery.Join;
+import org.nosco.DBQuery.JoinInfo;
 
 class SqlContext {
 
@@ -22,8 +22,9 @@ class SqlContext {
 	public SqlContext(final DBQuery<?> q, final SqlContext parentContext) {
 		tableNameMap = q.tableNameMap;
 		tableInfos = new ArrayList<TableInfo>(q.tableInfos);
-		for (final Join join : q.joinsToOne) tableInfos.add(join.reffedTableInfo);
-		for (final Join join : q.joinsToMany) tableInfos.add(join.reffingTableInfo);
+		for (final JoinInfo join : q.joins) tableInfos.add(join.reffedTableInfo);
+		for (final JoinInfo join : q.joinsToOne) tableInfos.add(join.reffedTableInfo);
+		for (final JoinInfo join : q.joinsToMany) tableInfos.add(join.reffingTableInfo);
 		this.parentContext = parentContext;
 		dbType = parentContext == null ? q.getDBType() : parentContext.dbType;
 		this.q = q;

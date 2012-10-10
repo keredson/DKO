@@ -35,7 +35,7 @@ class Util {
 			tmp = tmp.parentContext;
 		}
 		if (unboundTables.size() < 1) {
-			throw new RuntimeException("field "+ field +
+			throw new RuntimeException("field "+ field.TABLE.getSimpleName() +"."+ field +
 					" is not from one of the selected tables {"+
 					join(",", selectedTables) +"}");
 		} else if (unboundTables.size() > 1) {

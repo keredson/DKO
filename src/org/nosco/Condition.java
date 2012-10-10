@@ -106,7 +106,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		public void _preExecute(final Connection conn) throws SQLException {
+		public void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
 			Statement stmt = null;
 			PreparedStatement ps = null;
 			try {
@@ -146,7 +146,7 @@ public abstract class Condition {
 		}
 
 		@Override
-		public void _postExecute(final Connection conn) throws SQLException {
+		public void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
 			Statement stmt = null;
 			try {
 				stmt = conn.createStatement();
@@ -319,18 +319,18 @@ public abstract class Condition {
 		}
 
 		@Override
-		void _preExecute(final Connection conn) throws SQLException {
-			super._preExecute(conn);
+		void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
+			super._preExecute(context, conn);
 			for (final Condition condition : conditions) {
-				condition._preExecute(conn);
+				condition._preExecute(context, conn);
 			}
 		}
 
 		@Override
-		void _postExecute(final Connection conn) throws SQLException {
-			super._postExecute(conn);
+		void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
+			super._postExecute(context, conn);
 			for (final Condition condition : conditions) {
-				condition._postExecute(conn);
+				condition._postExecute(context, conn);
 			}
 		}
 
@@ -374,18 +374,18 @@ public abstract class Condition {
 		}
 
 		@Override
-		void _preExecute(final Connection conn) throws SQLException {
-			super._preExecute(conn);
+		void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
+			super._preExecute(context, conn);
 			for (final Condition condition : conditions) {
-				condition._preExecute(conn);
+				condition._preExecute(context, conn);
 			}
 		}
 
 		@Override
-		void _postExecute(final Connection conn) throws SQLException {
-			super._postExecute(conn);
+		void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
+			super._postExecute(context, conn);
 			for (final Condition condition : conditions) {
-				condition._postExecute(conn);
+				condition._postExecute(context, conn);
 			}
 		}
 
@@ -419,15 +419,15 @@ public abstract class Condition {
 		}
 
 		@Override
-		void _preExecute(final Connection conn) throws SQLException {
-			super._preExecute(conn);
-			condition._preExecute(conn);
+		void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
+			super._preExecute(context, conn);
+			condition._preExecute(context, conn);
 		}
 
 		@Override
-		void _postExecute(final Connection conn) throws SQLException {
-			super._postExecute(conn);
-			condition._postExecute(conn);
+		void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
+			super._postExecute(context, conn);
+			condition._postExecute(context, conn);
 		}
 
 	}
@@ -712,7 +712,7 @@ public abstract class Condition {
 				for (int i=0; i<set.length; ++i) {
 					final Object v = set[i];
 					if (v instanceof Field) {
-						Field<?> f = (Field<?>) v;
+						final Field<?> f = (Field<?>) v;
 						sb.append(Util.derefField(f, context));
 					} else {
 						sb.append("?");
@@ -797,11 +797,11 @@ public abstract class Condition {
 
 	}
 
-	void _preExecute(final Connection conn) throws SQLException {
+	void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
 		// default to do nothing
 	}
 
-	void _postExecute(final Connection conn) throws SQLException {
+	void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
 		// default to do nothing
 	}
 

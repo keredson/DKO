@@ -95,6 +95,16 @@ class Util {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	static <T extends Table> Field.PK<T> getPK(final Class<T> t) {
+		try {
+			return (PK<T>) t.getField("PK").get(null);
+		} catch (final Exception e) {
+			//e.printStackTrace();
+			return null;
+		}
+	}
+
 	static boolean deepEqual(final Object[] path, final Object[] path2) {
 		if (path == null && path2 == null) return true;
 		if (path == path2) return true;

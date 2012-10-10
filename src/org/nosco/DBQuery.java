@@ -192,7 +192,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public DBQuery(final __Alias<T> alias) {
 		type = alias.table;
 		try {
-			final Table table = alias.table.getConstructor().newInstance();
+			final Table table = alias.instance;
 			tables.add(table);
 			usedTableNames.add(alias.alias);
 			final TableInfo info = new TableInfo(table, alias.alias, null);
@@ -201,14 +201,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (final SecurityException e) {
-			e.printStackTrace();
-		} catch (final InstantiationException e) {
-			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (final InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (final NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 	}
@@ -1201,14 +1193,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Query<T> cross(final __Alias<? extends Table> tableAlias) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
-			final Table table = tableAlias.table.getConstructor().newInstance();
-			q.tables.add(table);
+			q.tables.add(tableAlias.instance);
 			if (q.usedTableNames.contains(tableAlias.alias)) {
 				throw new RuntimeException("table alias "+ tableAlias.alias
 						+" already exists in this query");
 			}
 			q.usedTableNames.add(tableAlias.alias);
-			q.tableInfos.add(new TableInfo(table, tableAlias.alias, null));
+			q.tableInfos.add(new TableInfo(tableAlias.instance, tableAlias.alias, null));
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -1268,7 +1259,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 		if (conditions != null) {
 			for (final Condition c : conditions) {
-				c._preExecute(conn);
+				c._preExecute(context, conn);
 			}
 		}
 	}
@@ -1276,7 +1267,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
 		if (conditions != null) {
 			for (final Condition c : conditions) {
-				c._postExecute(conn);
+				c._postExecute(context, conn);
 			}
 		}
 		for (final Table table : tables) {
@@ -1487,6 +1478,22 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> alias,
 			final Condition condition) {
 		return new DBQuery<Join<T,S>>(this, "inner join", alias.table, alias.alias, condition);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Query<T> in(final Collection<T> set) {
+		final String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
+		//final String aliasName = "tmp_"+ Math.round(Math.random() * Integer.MAX_VALUE);
+		final String aliasName = tmpTableName.replace("#NOSCO_", "tmp_");
+		final PK<T> pk = Util.getPK(type);
+		final T tmp = TemporaryTableFactory.createTemporaryTable(type, pk.GET_FIELDS(), set);
+		final Table.__Alias<T> alias = new Table.__Alias<T>(tmp, aliasName);
+		Query<T> q = cross(alias);
+		for (@SuppressWarnings("rawtypes") final Field field : pk.GET_FIELDS()) {
+			q = q.where(field.eq(field.from(aliasName)));
+		}
+		return q;
 	}
 
 }

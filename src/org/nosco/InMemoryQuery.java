@@ -382,4 +382,9 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 		throw new UnsupportedOperationException("can't join on an in-memory query");
 	}
 
+	@Override
+	public Query<T> in(final Collection<T> set) {
+		throw new UnsupportedOperationException("can't join on an in-memory query");
+	}
+
 }

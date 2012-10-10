@@ -206,30 +206,46 @@ public abstract class Table {
 	public static class __Alias<S extends Table> {
 
 		final Class<S> table;
+		final S instance;
 		final String alias;
 		public final Query<S> ALL;
 
 		public __Alias(final Class<S> table, final String alias) {
 			this.table = table;
 			this.alias = alias;
-			Query<S> all = new DBQuery<S>(this);
+			Query<S> all = null;
 			try {
+				instance = table.newInstance();
+				all = new DBQuery<S>(this);
 				final java.lang.reflect.Field f = table.getDeclaredField("ALL");
 				f.setAccessible(true);
 				@SuppressWarnings("unchecked")
 				final
 				DBQuery<S> q = (DBQuery<S>) f.get(null);
 				all = all.use(q.ds);
-			} catch (final SecurityException e) {
-				e.printStackTrace();
-			} catch (final NoSuchFieldException e) {
-				e.printStackTrace();
-			} catch (final IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (final IllegalAccessException e) {
-				e.printStackTrace();
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
 			}
 			this.ALL = all;
+		}
+
+		@SuppressWarnings("unchecked")
+		__Alias(final S tmp, final String alias) {
+			this.table = (Class<S>) tmp.getClass();
+			this.alias = alias;
+			this.instance = tmp;
+//			Query<S> all = new DBQuery<S>(this);
+//			try {
+//				final java.lang.reflect.Field f = table.getDeclaredField("ALL");
+//				f.setAccessible(true);
+//				@SuppressWarnings("unchecked")
+//				final
+//				DBQuery<S> q = (DBQuery<S>) f.get(null);
+//				all = all.use(q.ds);
+//			} catch (final Exception e) {
+//				throw new RuntimeException(e);
+//			}
+			this.ALL = null;
 		}
 
 	}
@@ -341,6 +357,10 @@ public abstract class Table {
 	 */
 	protected void __NOSCO_PRIVATE_accessedColumnCallback(final Table table, final Field<?> field) {
 		if (__NOSCO_USAGE_MONITOR!=null) __NOSCO_USAGE_MONITOR.__NOSCO_PRIVATE_accessedColumnCallback(table, field);
+	}
+
+	String TABLE_NAME(final SqlContext sqlContext) {
+		return TABLE_NAME();
 	}
 
 }

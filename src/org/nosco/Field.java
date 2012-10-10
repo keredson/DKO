@@ -805,6 +805,10 @@ public class Field<T> implements Cloneable {
 			FIELDS = Collections.unmodifiableList(tmp);
 		}
 
+		public PK(final Collection<Field<?>> fields) {
+			FIELDS = Collections.unmodifiableList(new ArrayList<Field<?>>(fields));
+		}
+
 		@SuppressWarnings("rawtypes")
 		public List<Field<?>> GET_FIELDS() {
 			return FIELDS;

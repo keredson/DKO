@@ -567,4 +567,17 @@ public class SharedDBTests extends TestCase {
 		}
 	}
 
+    public void testTableIn() throws SQLException {
+    	final List<Category> cats = new ArrayList<Category>();
+    	cats.add(Category.ALL.get(Category.CATID.eq("FISH")));
+    	cats.add(Category.ALL.get(Category.CATID.eq("DOGS")));
+    	final Query<Category> q = Category.ALL.in(cats);
+    	assertEquals(2, q.size());
+    	for (final Category c : q) {
+    		System.err.println(c);
+    		final String id = c.getCatid();
+    		assertTrue("FISH".equals(id) || "DOGS".equals(id));
+    	}
+    }
+
 }

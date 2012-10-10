@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -203,6 +204,50 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 				};
 			}
 		};
+	}
+
+	@Override
+	public Iterable<Map<Field<?>, Object>> asIterableOfMaps() {
+		final Query<T> q = this;
+		return new Iterable<Map<Field<?>, Object>>() {
+			@Override
+			public Iterator<Map<Field<?>, Object>> iterator() {
+				final Iterator<T> it = q.iterator();
+				return new Iterator<Map<Field<?>, Object>>() {
+					List<Field<?>> fields = null;
+					@Override
+					public boolean hasNext() {
+						return it.hasNext();
+					}
+					@Override
+					public Map<Field<?>, Object> next() {
+						final T t = it.next();
+						if (fields == null) fields = t.FIELDS();
+						final Map<Field<?>, Object> ret = new HashMap<Field<?>, Object>();
+						for (final Field<?> field : fields) {
+							ret.put(field, t.get(field));
+						}
+						return ret;
+					}
+					@Override
+					public void remove() {
+						it.remove();
+					}
+				};
+			}
+		};
+	}
+
+//	public Query<T> in(final Collection<T> set) {
+//		return intersection(set);
+//	}
+
+	public Query<T> in(final T... ts) {
+		final List<T> set = new ArrayList<T>();
+		for (final T t : ts) {
+			set.add(t);
+		}
+		return in(set);
 	}
 
 	@Override

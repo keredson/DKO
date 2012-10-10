@@ -461,6 +461,30 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> cross(Class<? extends Table> t);
 
 	/**
+	 * Filters the returned results by the specified values.  If the type has a primary key,
+	 * this is used for the comparison.
+	 * @param set
+	 * @return
+	 */
+	public Query<T> in(Collection<T> set);
+
+	/**
+	 * Filters the returned results by the specified values.  If the type has a primary key,
+	 * this is used for the comparison.
+	 * @param set
+	 * @return
+	 */
+	public Query<T> in(T... ts);
+
+//	/**
+//	 * Calculates the intersection between this set and the query.
+//	 * If the type has a primary key, this is used for the comparison.
+//	 * @param set
+//	 * @return
+//	 */
+//	public Query<T> intersection(Collection<T> set);
+
+	/**
 	 * Returns you an iterable of the values only in the given field. &nbsp;
 	 * If you want an iterable of more than one field type, you should use
 	 * {@code onlyFields(field1, field2, ...)}. &nbsp; This will return you an
@@ -508,6 +532,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Iterable<Object[]> asIterableOfObjectArrays();
+
+	public Iterable<Map<Field<?>,Object>> asIterableOfMaps();
 
 	/**
 	 * Runs the query (with distinct), populating a set of the values only in the given field.

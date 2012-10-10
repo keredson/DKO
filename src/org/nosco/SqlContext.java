@@ -1,12 +1,9 @@
 package org.nosco;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.sql.DataSource;
 
 import org.nosco.Constants.DB_TYPE;
 import org.nosco.DBQuery.JoinInfo;
@@ -53,7 +50,7 @@ class SqlContext {
 			sb.append(schema);
 			sb.append(dbType==Constants.DB_TYPE.SQLSERVER ? ".dbo." : ".");
 		}
-		sb.append(table.TABLE_NAME());
+		sb.append(table.TABLE_NAME(this));
 		return sb.toString();
 	}
 

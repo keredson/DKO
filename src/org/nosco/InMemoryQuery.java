@@ -116,11 +116,11 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> limit(final int n) {
+	public Query<T> limit(final long n) {
 		if (!loaded) load();
 		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache = new ArrayList<T>();
-		q.cache.addAll(cache.subList(0, Math.min(n, cache.size())));
+		q.cache.addAll(cache.subList(0, Math.min((int)n, cache.size())));
 		return q;
 	}
 
@@ -167,12 +167,6 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public int delete() throws SQLException {
 		throw new UnsupportedOperationException("can't delete on an in-memory query");
-	}
-
-	@Override
-	public Statistics stats(final Field<?>... field) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

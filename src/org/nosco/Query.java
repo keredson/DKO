@@ -121,7 +121,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param n
 	 * @return
 	 */
-	public Query<T> top(int n);
+	public Query<T> top(long n);
 
 	/**
 	 * Returns the first n rows of the query.
@@ -131,7 +131,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param n
 	 * @return
 	 */
-	public Query<T> limit(int n);
+	public Query<T> limit(long n);
 
 	/**
 	 * Sets the distinct keyword in the select statement.
@@ -244,12 +244,12 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public int deleteAll() throws SQLException;
 
-	/**
-	 * Not implemented yet.
-	 * @param field
-	 * @return
-	 */
-	public Statistics stats(Field<?>... field);
+//	/**
+//	 * Not implemented yet.
+//	 * @param field
+//	 * @return
+//	 */
+//	public Statistics stats(Field<?>... field);
 
 	/**
 	 * Returns an Iterable for this query.  Not usually necessary as the Query itself is Iterable, but useful if you want to

@@ -62,7 +62,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private Set<Field<?>> onlySet = null;
 	private List<DIRECTION> orderByDirections = null;
 	private List<Field<?>> orderByFields = null;
-	int top = 0;
+	long top = 0;
 	private Map<Field<?>,Object> data = null;
 	boolean distinct = false;
 	DataSource ds = null;
@@ -545,11 +545,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	@Override
-	public Statistics stats(final Field<?>... field) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Statistics stats(final Field<?>... field) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public Iterable<T> all() {
@@ -711,7 +711,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> limit(final int i) {
+	public Query<T> limit(final long i) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.top  = i;
 		return q;
@@ -1325,7 +1325,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		result = prime * result
 				+ ((tableInfos == null) ? 0 : tableInfos.hashCode());
 		result = prime * result + ((tables == null) ? 0 : tables.hashCode());
-		result = prime * result + top;
+		result = prime * result + (int)top;
 		result = prime * result
 				+ ((usedTableNames == null) ? 0 : usedTableNames.hashCode());
 		return result;

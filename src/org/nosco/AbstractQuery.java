@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * shared methods between query implementations
  */
-abstract class AbstractQuery<T extends Table> implements Query<T> {
+public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public T get(final Condition... conditions) {
@@ -29,8 +29,15 @@ abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return Collections.emptyList();
 	}
 
+    @Override
+    public long count() throws SQLException {
+    	long c = 0;
+    	for (final T x : this) ++c;
+    	return c;
+    }
+
 	@Override
-	public Query<T> top(final int i) {
+	public Query<T> top(final long i) {
 		return limit(i);
 	}
 

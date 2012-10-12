@@ -31,6 +31,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	InMemoryQuery(final Query<T> query, final boolean lazy) {
+		super(query);
 		this.query = query;
 		if (!lazy) load();
 	}
@@ -46,16 +47,19 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private InMemoryQuery(final InMemoryQuery<T> q) {
+		super(q);
 		cache = new ArrayList<T>();
 		loaded = true;
 	}
 
-	InMemoryQuery() {
+	InMemoryQuery(final Class<T> type) {
+		super(type);
 		cache = new ArrayList<T>();
 		loaded = true;
 	}
 
-	InMemoryQuery(final Iterable<T> items) {
+	InMemoryQuery(final Class<T> type, final Iterable<T> items) {
+		super(type);
 		cache = new ArrayList<T>();
 		for (final T t : items) {
 			cache.add(t);

@@ -14,14 +14,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nosco.Table.__PrimaryKey;
+
 /**
  * shared methods between query implementations
  */
 public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
+	final Class<T> type;
+
+	AbstractQuery(final Query<T> q) {
+		type = q.getType();
+	}
+
+	AbstractQuery(final Class<? extends Table> type) {
+		this.type = (Class<T>) type;
+	}
+
+	@Override
+	public Class<T> getType() {
+		return type;
+	}
+
 	@Override
 	public T get(final Condition... conditions) {
 		return where(conditions).getTheOnly();
+	}
+
+	@Override
+	public T get(final __PrimaryKey<T> pk) {
+		Condition c = null;
+		for (@SuppressWarnings("rawtypes") final Field f : pk.FIELDS()) {
+			@SuppressWarnings("unchecked") final Condition tmp = f.eq(pk.get(f));
+			c = c==null ? tmp : c.and(tmp);
+		}
+		return this.where(c).getTheOnly();
 	}
 
 	@Override

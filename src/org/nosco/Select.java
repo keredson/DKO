@@ -332,7 +332,7 @@ class Select<T extends Table> implements Iterator<T> {
 					final Method fkSetSetMethod = fkToManySetMethods.get(join.fk);
 					InMemoryQuery tmpQuery = ttbMap.get(join);
 					if (tmpQuery == null || newObjectThisRow[join.reffedTableInfo.position]) {
-						tmpQuery = new InMemoryQuery();
+						tmpQuery = new InMemoryQuery(join.fk.referencing);
 						fkSetSetMethod.invoke(reffedObject, join.fk, tmpQuery);
 						ttbMap.put(join, tmpQuery);
 					}

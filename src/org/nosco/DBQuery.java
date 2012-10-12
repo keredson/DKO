@@ -50,7 +50,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DB_TYPE detectedDbType = null;
 
 	// these should be cloned
-	Class<T> type = null;
 	List<Condition> conditions = null;
 	List<Table> tables = new ArrayList<Table>();
 	Set<String> usedTableNames = new HashSet<String>();
@@ -71,7 +70,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DB_TYPE dbType = null;
 	private boolean onlySelectFromFirstTableAndJoins = true;
 
-	DBQuery(final Table table) {
+	DBQuery(final T table) {
+		super(table.getClass());
 		addTable(table);
 	}
 
@@ -86,11 +86,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	DBQuery(final DBQuery<T> q) {
+		super(q);
 		if (q.conditions!=null) {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
 		}
-		type = q.type;
 		tables.addAll(q.tables);
 		usedTableNames.addAll(q.usedTableNames);
 		try {
@@ -140,8 +140,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	DBQuery(final Class<T> tableClass) {
+		super(tableClass);
 		try {
-			type = tableClass;
 			final Table table = tableClass.getConstructor().newInstance();
 			addTable(table);
 		} catch (final IllegalArgumentException e) {
@@ -190,7 +190,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	public DBQuery(final __Alias<T> alias) {
-		type = alias.table;
+		super(alias.table);
 		try {
 			final Table table = alias.instance;
 			tables.add(table);
@@ -206,11 +206,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	public <R extends Table, S extends Table> DBQuery(final DBQuery<R> q, final String joinType, final Class<S> other, String alias, final Condition condition) {
+		super(Join.class);
 		if (q.conditions!=null) {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
 		}
-		type = (Class<T>) Join.class;
 		tables.addAll(q.tables);
 		usedTableNames.addAll(q.usedTableNames);
 		try {
@@ -626,10 +626,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	List<Object> getSQLBindings() {
 		return bindings;
-	}
-
-	Class<? extends Table> getType() {
-		return tables.get(0).getClass();
 	}
 
 	/**

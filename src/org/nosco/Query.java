@@ -620,4 +620,10 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public <S extends Table> Query<Join<T,S>> innerJoin(__Alias<S> table, Condition on);
 
+	/**
+	 * Returns the base type of this query.
+	 * @return
+	 */
+	public Class<T> getType();
+
 }

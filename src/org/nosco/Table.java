@@ -271,6 +271,7 @@ public abstract class Table {
 	 */
 	public static interface __PrimaryKey<S extends Table> {
 		<R> R get(Field<R> field);
+		List<Field<?>> FIELDS();
 	}
 
 	/**

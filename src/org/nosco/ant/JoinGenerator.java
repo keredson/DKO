@@ -5,12 +5,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.sql.SQLException;
 import java.util.List;
 
-import org.nosco.Field;
+import org.nosco.Query;
 import org.nosco.Table;
-import org.nosco.Field.FK;
+import org.nosco.Join.J2;
+import org.nosco.Join.J3;
 
 public class JoinGenerator {
 
@@ -19,7 +19,7 @@ public class JoinGenerator {
 	 * @throws IOException
 	 */
 	public static void main(final String[] args) throws IOException {
-		genJoinsFile(new File("Join.java"), 8);
+		genJoinsFile(new File("Join.java"), 3);
 	}
 
 	private static void genJoinsFile(final File file, final int n) throws IOException {
@@ -40,14 +40,57 @@ public class JoinGenerator {
 		w.write("import org.nosco.Field.FK;\n\n");
 		w.write("public class Join {\n");
 
+		w.write("\tstatic abstract class J extends Table {\n");
+		w.write("\n");
+		w.write("\t\tList<Class<?>> types = null;\n");
+		w.write("\t}\n");
+
 		for (int i=2; i<=n; ++i) {
 			w.write("\n");
-			w.write("\tpublic static class J"+ i +" <");
-			for (int j=1; j<=i; ++j) {
-				w.write("T"+ j +" extends Table");
-				if (j < i) w.write(", ");
+
+			final String tExtendsTable =genTExtendsTable(i);
+			final String tTypes =genTTypes(i);
+
+
+			w.write("\t/** \n");
+			w.write("\t * Joins types "+ tTypes +" into one query.\n");
+			w.write("\t * The return is a private type (to avoid type erasure conflicts), but you should use\n");
+			w.write("\t * it as a {@code org.nosco.Query<Join.J"+ i +"<"+ tTypes +">>}\n");
+			w.write("\t */\n");
+			if (i == 2) {
+				w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
+				w.write("> crossJoin(final Query<T"+ (i-1) +"> q, Class<T"+ i +"> t) {\n");
+				w.write("\t\treturn new Query2<T1, T2>("+ i +", q, t);\n");
+				w.write("\t}\n");
+			} else {
+				w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
+				w.write("> crossJoin(final Query<J"+ (i-1) +"<"+ genTTypes(i-1));
+				w.write(">> q, Class<T"+ i +"> t) {\n");
+				w.write("\t\treturn new Query"+ i +"<"+ tTypes +">("+ i +", q, t);\n");
+				w.write("\t}\n");
 			}
-			w.write("> extends Table {\n");
+
+			w.write("\tprivate static class Query"+ i +"<"+ tExtendsTable +"> extends DBQuery<J"+ i +"<"+ tTypes +">> {\n");
+			if (i == 2) {
+				w.write("\t\tpublic Query2(int size, final Query<T1> q, final Class<T2> t) {\n");
+				w.write("\t\t\tsuper(q, t, \"cross join\");\n");
+				//w.write("\t\t\ttypes = new ArrayList;\n");
+				w.write("\t\t}\n");
+			} else {
+				w.write("\t\tQuery"+ i +"(int size, final Query<J"+ (i-1) +"<"+ genTTypes(i-1) +">> q, final Class<T"+ i +"> t) {\n");
+				w.write("\t\t\tsuper(new J"+ i +"<"+ tTypes +">(");
+				for (int j=1; j<=i; ++j) {
+					w.write("null");
+					if (j < i) w.write(",");
+				}
+				w.write("));\n");
+				w.write("\t\t}\n");
+			}
+			w.write("\t}\n");
+
+
+			w.write("\n");
+			w.write("\tpublic static class J"+ i +" <"+ tExtendsTable +"> extends J {\n");
 
 			w.write("\t\tprivate List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;\n");
 			for (int j=1; j<=i; ++j) {
@@ -181,6 +224,24 @@ public class JoinGenerator {
 		}
 
 		w.write("\n}\n");
+	}
+
+	private static String genTTypes(final int i) {
+		final StringBuffer sb = new StringBuffer();
+		for (int j=1; j<=i; ++j) {
+			sb.append("T"+ j);
+			if (j < i) sb.append(", ");
+		}
+		return sb.toString();
+	}
+
+	public static String genTExtendsTable(final int i) {
+		final StringBuffer sb = new StringBuffer();
+		for (int j=1; j<=i; ++j) {
+			sb.append("T"+ j +" extends Table");
+			if (j < i) sb.append(", ");
+		}
+		return sb.toString();
 	}
 
 }

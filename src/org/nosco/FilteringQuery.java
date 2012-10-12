@@ -223,74 +223,6 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> crossJoin(final Class<S> table) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> crossJoin(final __Alias<S> table) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Iterator<T> iterator() {
 		// TODO Auto-generated method stub
 		return null;
@@ -299,6 +231,66 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	@Override
 	public Query<T> getUnderlying() {
 		return q;
+	}
+
+	@Override
+	public <S extends Table> Query<T> crossJoin(final Class<S> table) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> crossJoin(final __Alias<S> table) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> leftJoin(final Class<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> leftJoin(final __Alias<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> rightJoin(final Class<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> rightJoin(final __Alias<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> outerJoin(final Class<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> outerJoin(final __Alias<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> innerJoin(final Class<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Table> Query<T> innerJoin(final __Alias<S> table, final Condition on) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

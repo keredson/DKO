@@ -87,6 +87,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	DBQuery(final DBQuery<T> q) {
 		super(q);
+		copy(q);
+	}
+
+	private void copy(final DBQuery<T> q) {
 		if (q.conditions!=null) {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
@@ -159,6 +163,27 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
+	<S extends Table> DBQuery(final DBQuery<T> q, final String joinType, final Class<S> other, String alias, final Condition condition) {
+		this(q);
+		final JoinInfo<T,S> ji = new JoinInfo<T,S>();
+		ji.lType = type;
+		ji.rType = other;
+		ji.type = "inner join";
+		ji.condition = condition;
+		Table otherInstance;
+		try {
+			otherInstance = other.newInstance();
+			final boolean autogenName = alias == null;
+			if (autogenName) alias = genTableName(otherInstance, usedTableNames);
+			usedTableNames.add(alias);
+			ji.reffedTableInfo = new TableInfo(otherInstance, alias, null);
+			ji.reffedTableInfo.nameAutogenned = autogenName;
+			joins.add(ji);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private DataSource getDefaultDS() {
 		try {
 			if (defaultDS != null) return defaultDS;
@@ -205,21 +230,16 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	public <R extends Table, S extends Table> DBQuery(final DBQuery<R> q, final String joinType, final Class<S> other, String alias, final Condition condition) {
-		super(Join.class);
-		if (q.conditions!=null) {
-			conditions = new ArrayList<Condition>();
-			conditions.addAll(q.conditions);
-		}
-		tables.addAll(q.tables);
-		usedTableNames.addAll(q.usedTableNames);
+	public <T1 extends Table, T2 extends Table> DBQuery(final Query<T1> q, final Class<T2> other, final String joinType) {
+		super(Join.J2.class);
+		copy((DBQuery<T>) q);
+		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
+		ji.lType = q.getType();
+		ji.rType = other;
+		ji.type = joinType;
+		ji.condition = null;
+		String alias = null;
 		try {
-			for (final JoinInfo x : q.joins) joins.add((JoinInfo) x.clone());
-			final JoinInfo<R,S> ji = new JoinInfo<R,S>();
-			ji.lType = q.type;
-			ji.rType = other;
-			ji.type = joinType;
-			ji.condition = condition;
 			final Table otherInstance = other.newInstance();
 			final boolean autogenName = alias == null;
 			if (autogenName) alias = genTableName(otherInstance, usedTableNames);
@@ -227,53 +247,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			ji.reffedTableInfo = new TableInfo(otherInstance, alias, null);
 			ji.reffedTableInfo.nameAutogenned = autogenName;
 			joins.add(ji);
-			for (final JoinInfo x : q.joinsToOne) joinsToOne.add((JoinInfo) x.clone());
-			for (final JoinInfo x : q.joinsToMany) joinsToMany.add((JoinInfo) x.clone());
-			for (final TableInfo x : q.tableInfos) {
-				final TableInfo clone = (TableInfo) x.clone();
-				for (final JoinInfo y : joinsToOne) {
-					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
-					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
-				}
-				for (final JoinInfo y : joinsToMany) {
-					if (y.reffedTableInfo == x) y.reffedTableInfo = clone;
-					if (y.reffingTableInfo == x) y.reffingTableInfo = clone;
-				}
-				tableInfos.add(clone);
-			}
-		} catch (final InstantiationException e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
-		} catch (final IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (final CloneNotSupportedException e) { /* ignore */ }
-
-		if (q.deferSet!=null) {
-			deferSet = new HashSet<Field<?>>();
-			deferSet.addAll(q.deferSet);
 		}
-		if (q.onlySet!=null) {
-			onlySet = new LinkedHashSet<Field<?>>();
-			onlySet.addAll(q.onlySet);
-		}
-		if (q.orderByDirections!=null) {
-			orderByDirections = new ArrayList<DIRECTION>();
-			orderByDirections.addAll(q.orderByDirections);
-		}
-		if (q.orderByFields!=null) {
-			orderByFields = new ArrayList<Field<?>>();
-			orderByFields.addAll(q.orderByFields);
-		}
-		top = q.top;
-		if (q.data!=null) {
-			data = new HashMap<Field<?>,Object>();
-			data.putAll(q.data);
-		}
-		distinct = q.distinct;
-		ds = q.ds;
-		globallyAppliedSelectFunction = q.globallyAppliedSelectFunction;
-		dbType = q.dbType;
-		defaultDS = q.defaultDS;
-		onlySelectFromFirstTableAndJoins = false;
+		this.onlySelectFromFirstTableAndJoins = false;
 	}
 
 	@Override
@@ -1419,61 +1396,60 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public <S extends Table> Query<org.nosco.Join<T, S>> crossJoin(final Class<S> other) {
-		return new DBQuery<Join<T,S>>(this, "cross join", other, null, null);
+	public <S extends Table> Query<T> crossJoin(final Class<S> other) {
+		return new DBQuery<T>(this, "cross join", other, null, null);
 	}
 
 	@Override
-	public <S extends Table> Query<org.nosco.Join<T, S>> crossJoin(final __Alias<S> alias) {
-		return new DBQuery<Join<T,S>>(this, "cross join", alias.table, alias.alias, null);
+	public <S extends Table> Query<T> crossJoin(final __Alias<S> alias) {
+		return new DBQuery<T>(this, "cross join", alias.table, alias.alias, null);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> other,
+	public <S extends Table> Query<T> leftJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "left outer join", other, null, condition);
+		return new DBQuery<T>(this, "left outer join", other, null, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> alias,
+	public <S extends Table> Query<T> leftJoin(final __Alias<S> alias,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "left outer join", alias.table, alias.alias, condition);
+		return new DBQuery<T>(this, "left outer join", alias.table, alias.alias, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> other,
+	public <S extends Table> Query<T> rightJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "right outer join", other, null, condition);
+		return new DBQuery<T>(this, "right outer join", other, null, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> alias,
+	public <S extends Table> Query<T> rightJoin(final __Alias<S> alias,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "right outer join", alias.table, alias.alias, condition);
+		return new DBQuery<T>(this, "right outer join", alias.table, alias.alias, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> other,
+	public <S extends Table> Query<T> outerJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "full outer join", other, null, condition);
+		return new DBQuery<T>(this, "full outer join", other, null, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> alias,
+	public <S extends Table> Query<T> outerJoin(final __Alias<S> alias,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "full outer join", alias.table, alias.alias, condition);
+		return new DBQuery<T>(this, "full outer join", alias.table, alias.alias, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> other,
+	public <S extends Table> Query<T> innerJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "inner join", other, null, condition);
+		return new DBQuery<T>(this, "inner join", other, null, condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> alias,
-			final Condition condition) {
-		return new DBQuery<Join<T,S>>(this, "inner join", alias.table, alias.alias, condition);
+	public <S extends Table> Query<T> innerJoin(final __Alias<S> alias, final Condition condition) {
+		return new DBQuery<T>(this, "inner join", alias.table, alias.alias, condition);
 	}
 
 	@SuppressWarnings("unchecked")

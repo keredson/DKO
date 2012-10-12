@@ -310,11 +310,12 @@ class Select<T extends Table> implements Iterator<T> {
 					}
 				}
 				if (next == null) {
-					if (Join.class.equals(query.type)) {
-						for (int i=0; i<query.joins.size(); ++i) {
-							final JoinInfo ji = query.joins.get(i);
-							next = (T) new Join(next==null ? objects[i] : next, objects[i+1]);
-						}
+					if (Join.J2.class.equals(query.type)) {
+//						for (int i=0; i<query.joins.size(); ++i) {
+//							final JoinInfo ji = query.joins.get(i);
+//							//next = (T) new Join(next==null ? objects[i] : next, objects[i+1]);
+//						}
+						next = (T) new Join.J2(objects[0], objects[1]);
 					} else {
 						next = (T) objects[0];
 					}

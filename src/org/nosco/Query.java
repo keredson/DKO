@@ -547,14 +547,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param table
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> crossJoin(Class<S> table);
+	public <S extends Table> Query<T> crossJoin(Class<S> table);
 
 	/**
 	 * Performs a cross join.
 	 * @param table
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> crossJoin(__Alias<S> table);
+	public <S extends Table> Query<T> crossJoin(__Alias<S> table);
 
 	/**
 	 * Performs a left join using the given condition.
@@ -562,7 +562,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> leftJoin(Class<S> table, Condition on);
+	public <S extends Table> Query<T> leftJoin(Class<S> table, Condition on);
 
 	/**
 	 * Performs a left join using the given condition.
@@ -570,7 +570,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> leftJoin(__Alias<S> table, Condition on);
+	public <S extends Table> Query<T> leftJoin(__Alias<S> table, Condition on);
 
 	/**
 	 * Performs a right join using the given condition.
@@ -578,7 +578,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> rightJoin(Class<S> table, Condition on);
+	public <S extends Table> Query<T> rightJoin(Class<S> table, Condition on);
 
 	/**
 	 * Performs a right join using the given condition.
@@ -586,7 +586,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> rightJoin(__Alias<S> table, Condition on);
+	public <S extends Table> Query<T> rightJoin(__Alias<S> table, Condition on);
 
 	/**
 	 * Performs an outer join using the given condition.
@@ -594,7 +594,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> outerJoin(Class<S> table, Condition on);
+	public <S extends Table> Query<T> outerJoin(Class<S> table, Condition on);
 
 	/**
 	 * Performs an outer join using the given condition.
@@ -602,7 +602,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> outerJoin(__Alias<S> table, Condition on);
+	public <S extends Table> Query<T> outerJoin(__Alias<S> table, Condition on);
 
 	/**
 	 * Performs an inner join using the given condition.
@@ -610,7 +610,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> innerJoin(Class<S> table, Condition on);
+	public <S extends Table> Query<T> innerJoin(Class<S> table, Condition on);
 
 	/**
 	 * Performs an inner join using the given condition.
@@ -618,7 +618,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public <S extends Table> Query<Join<T,S>> innerJoin(__Alias<S> table, Condition on);
+	public <S extends Table> Query<T> innerJoin(__Alias<S> table, Condition on);
 
 	/**
 	 * Returns the base type of this query.

@@ -29,6 +29,8 @@ import org.nosco.Context.Undoer;
 import org.nosco.Diff;
 import org.nosco.Diff.RowChange;
 import org.nosco.Join;
+import org.nosco.Join.J2;
+import org.nosco.Join.J3;
 import org.nosco.Table;
 
 import static org.nosco.Function.*;
@@ -467,12 +469,11 @@ public class SharedDBTests extends TestCase {
 	public void testJoin() throws SQLException {
 		final long c1 = Item.ALL.count();
 		final long c2 = Product.ALL.count();
-		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(Product.class);
+		final Query<Item> q = Item.ALL.crossJoin(Product.class);
 		assertEquals(c1 * c2,  q.count());
-		for (final Join<Item, Product> x : q.top(64)) {
+		for (final Item x : q.top(64)) {
 			System.err.println(x);
-			x.l.getItemid();
-			x.r.getProductid();
+			x.getItemid();
 		}
 	}
 
@@ -480,13 +481,11 @@ public class SharedDBTests extends TestCase {
 		final long c1 = Item.ALL.count();
 		final long c2 = Product.ALL.count();
 		final long c3 = Category.ALL.count();
-		final Query<Join<Join<Item, Product>, Category>> q = Item.ALL.crossJoin(Product.class).crossJoin(Category.class);
+		final Query<Item> q = Item.ALL.crossJoin(Product.class).crossJoin(Category.class);
 		assertEquals(c1 * c2 * c3,  q.count());
-		for (final Join<Join<Item, Product>, Category> x : q.top(64)) {
+		for (final Item x : q.top(64)) {
 			System.err.println(x);
-			x.l.l.getItemid();
-			x.l.r.getProductid();
-			x.r.getCatid();
+			x.getItemid();
 		}
 	}
 
@@ -495,72 +494,69 @@ public class SharedDBTests extends TestCase {
 		final long c2 = Product.ALL.count();
 		final long c3 = Category.ALL.count();
 		final long c4 = Account.ALL.count();
-		final Query<Join<Join<Join<Item, Product>, Category>, Account>> q = Item.ALL.crossJoin(Product.class)
+		final Query<Item> q = Item.ALL.crossJoin(Product.class)
 				.crossJoin(Category.class).crossJoin(Account.class);
 		assertEquals(c1 * c2 * c3 * c4,  q.count());
-		for (final Join<Join<Join<Item, Product>, Category>, Account> x : q.top(64)) {
+		for (final Item x : q.top(64)) {
 			System.err.println(x);
-			x.l.l.l.getItemid();
-			x.l.l.r.getProductid();
-			x.l.r.getCatid();
-			x.r.getEmail();
+			x.getItemid();
 		}
 	}
-
-	public void test3JoinsAltAccessMethod() throws SQLException {
-		final long c1 = Item.ALL.count();
-		final long c2 = Product.ALL.count();
-		final long c3 = Category.ALL.count();
-		final long c4 = Account.ALL.count();
-		final Query<Join<Join<Join<Item, Product>, Category>, Account>> q = Item.ALL.crossJoin(Product.class)
-				.crossJoin(Category.class).crossJoin(Account.class);
-		assertEquals(c1 * c2 * c3 * c4,  q.count());
-		for (final Join<Join<Join<Item, Product>, Category>, Account> x : q.top(64)) {
-			System.err.println(x);
-			x.get(Item.class).getItemid();
-			x.get(Product.class).getProductid();
-			x.get(Category.class).getCatid();
-			x.get(Account.class).getEmail();
-		}
-	}
-
-	public void testJoinAlias() throws SQLException {
-		final long c1 = Item.ALL.count();
-		final long c2 = Product.ALL.count();
-		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(Product.as("pddt"));
-		assertEquals(c1 * c2,  q.count());
-		for (final Join<Item, Product> x : q) {
-			x.l.getItemid();
-			x.r.getProductid();
-		}
-	}
-
-	public void testLeftJoin() throws SQLException {
-		final long c1 = Item.ALL.count();
-		final Query<Join<Item, Supplier>> q = Item.ALL.leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
-		assertEquals(c1,  q.count());
-		for (final Join<Item, Supplier> x : q.top(64)) {
-			System.err.println(x);
-		}
-	}
-
-	public void testRightJoin() throws SQLException {
-		final long c1 = Item.ALL.count();
-		final Query<Join<Supplier, Item>> q = Supplier.ALL.rightJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
-		assertEquals(c1,  q.count());
-		for (final Join<Supplier, Item> x : q.top(64)) {
-			System.err.println(x);
-		}
-	}
-
-	public void testInnerJoin() throws SQLException {
-		final long c1 = Item.ALL.count();
-		final Query<Join<Supplier, Item>> q = Supplier.ALL.innerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
-		assertEquals(c1-1,  q.count());
-		for (final Join<Supplier, Item> x : q.top(64)) {
-			System.err.println(x);
-		}
-	}
+//
+//	public void test3JoinsAltAccessMethod() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final long c2 = Product.ALL.count();
+//		final long c3 = Category.ALL.count();
+//		final long c4 = Account.ALL.count();
+//		final Query<Join<Join<Join<Item, Product>, Category>, Account>> q = Item.ALL.crossJoin(Product.class)
+//				.crossJoin(Category.class).crossJoin(Account.class);
+//		assertEquals(c1 * c2 * c3 * c4,  q.count());
+//		for (final Join<Join<Join<Item, Product>, Category>, Account> x : q.top(64)) {
+//			System.err.println(x);
+//			x.get(Item.class).getItemid();
+//			x.get(Product.class).getProductid();
+//			x.get(Category.class).getCatid();
+//			x.get(Account.class).getEmail();
+//		}
+//	}
+//
+//	public void testJoinAlias() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final long c2 = Product.ALL.count();
+//		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(Product.as("pddt"));
+//		assertEquals(c1 * c2,  q.count());
+//		for (final Join<Item, Product> x : q) {
+//			x.l.getItemid();
+//			x.r.getProductid();
+//		}
+//	}
+//
+//	public void testLeftJoin() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final Query<Join<Item, Supplier>> q = Item.ALL.leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+//		assertEquals(c1,  q.count());
+//		for (final Join<Item, Supplier> x : q.top(64)) {
+//			System.err.println(x);
+//		}
+//	}
+//
+//	public void testRightJoin() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final Query<Join<Supplier, Item>> q = Supplier.ALL.rightJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+//		assertEquals(c1,  q.count());
+//		for (final Join<Supplier, Item> x : q.top(64)) {
+//			System.err.println(x);
+//		}
+//	}
+//
+//	public void testInnerJoin() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final Query<Join<Supplier, Item>> q = Supplier.ALL.innerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+//		assertEquals(c1-1,  q.count());
+//		for (final Join<Supplier, Item> x : q.top(64)) {
+//			System.err.println(x);
+//		}
+//	}
 
 	// mysql doesn't support outer joins
 //	public void testOuterJoin() throws SQLException {
@@ -572,17 +568,17 @@ public class SharedDBTests extends TestCase {
 //		}
 //	}
 
-	public void testLeftJoin2() throws SQLException {
-		final long c1 = Item.ALL.count();
-		final long c2 = Product.ALL.count();
-		final Query<Join<Product, Item>> q = Product.ALL.leftJoin(Item.class, Item.PRODUCTID.eq(Product.PRODUCTID));
-		assertEquals(c1,  q.count());
-		for (final Join<Product, Item> x : q.top(64)) {
-			System.err.println(x);
-			x.r.getItemid();
-			x.l.getProductid();
-		}
-	}
+//	public void testLeftJoin2() throws SQLException {
+//		final long c1 = Item.ALL.count();
+//		final long c2 = Product.ALL.count();
+//		final Query<Join<Product, Item>> q = Product.ALL.leftJoin(Item.class, Item.PRODUCTID.eq(Product.PRODUCTID));
+//		assertEquals(c1,  q.count());
+//		for (final Join<Product, Item> x : q.top(64)) {
+//			System.err.println(x);
+//			x.r.getItemid();
+//			x.l.getProductid();
+//		}
+//	}
 
     public void testTableIn() throws SQLException {
     	final List<Category> cats = new ArrayList<Category>();
@@ -596,5 +592,26 @@ public class SharedDBTests extends TestCase {
     		assertTrue("FISH".equals(id) || "DOGS".equals(id));
     	}
     }
+
+    public void testJ2() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final long c2 = Product.ALL.count();
+    	final Query<J2<Item, Product>> q = Join.crossJoin(Item.ALL, Product.class);
+		assertEquals(c1 * c2,  q.count());
+    	for (final J2<Item, Product> j : q) {
+    		System.err.println(j);
+    		j.t1.getItemid();
+    		j.t2.getProductid();
+    	}
+    }
+//
+//    public void testJ3() throws SQLException {
+//    	final Query<J3<Item, Product, Category>> q2 = Join.leftJoin(Join.leftJoin(Item.class, Product.class), Category.class);
+//    	for (final J3<Item, Product, Category> j : q2) {
+//    		j.t1.getItemid();
+//    		j.t2.getProductid();
+//    		j.t3.getCatid();
+//    	}
+//    }
 
 }

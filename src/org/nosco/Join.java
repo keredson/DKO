@@ -9,10 +9,27 @@ import javax.sql.DataSource;
 import org.nosco.DBQuery.JoinInfo;
 import org.nosco.Field.FK;
 
+/**
+ * Represents multiple tables joined together.  This object can be used as one table (with all the fields of both)
+ * children.  Or the children can be accessed directly (with the typed left/right member variables).
+ *
+ * @author dander
+ *
+ * @param <L>
+ * @param <R>
+ */
 public class Join<L extends Table, R extends Table> extends Table {
 
+	/**
+	 * The left-hand side of this join.
+	 */
 	public final L l;
+
+	/**
+	 * The right-hand side of this join.
+	 */
 	public final R r;
+
 	private List<Field<?>> __NOSCO_PRIVATE_FIELDS;
 
 	Join(final L l, final R r) {
@@ -44,6 +61,53 @@ public class Join<L extends Table, R extends Table> extends Table {
 	protected FK[] FKS() {
 		final FK[] ret = {};
 		return ret;
+	}
+
+	/**
+	 * Let's assume you have types A,B,C (all extend Table).  The code
+	 * {@code Query<Join<A,B> q1 = A.ALL.leftJoin(B.class);} is easy to use with the left/right syntax.  For example:
+	 * {@code for (Join<A,B> j : q1) {
+	 *     A a = j.l;
+	 *     B b = j.r;
+	 * }}
+	 * But if you then join with C:
+	 * {@code Query<Join<Join<A,B>,C> q2 = q1.leftJoin(C.class);
+	 * for (Join<Join<A,B>,C> j : q2) {
+	 *     A a = j.l.l;
+	 *     B b = j.l.r;
+	 *     C c = j.r;
+	 * }}
+	 * That's less nice.  And it gets worse the more tables you join.
+	 * <p>
+	 * So for ease of use, there is this method.
+	 * {@code for (Join<Join<A,B>,C> j : q2) {
+	 *     A a = j.get(A.class);
+	 *     B b = j.get(B.class);
+	 *     C c = j.get(C.class);
+	 * }}
+	 * Which returns you the first object in a left-depth-first search of the join tree.
+	 * (or more succinctly: the first object in the join of that type)
+	 *
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <S extends Table> S get(final Class<S> type) {
+		if (type.isInstance(l)) return (S) l;
+		if (l instanceof Join) {
+			@SuppressWarnings("rawtypes")
+			final
+			S ret = (S) ((Join)l).get(type);
+			if (ret != null) return ret;
+		}
+		if (type.isInstance(r)) return (S) r;
+		if (r instanceof Join) {
+			@SuppressWarnings("rawtypes")
+			final
+			S ret = (S) ((Join)r).get(type);
+			if (ret != null) return ret;
+		}
+		return null;
 	}
 
 	@Override

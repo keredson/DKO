@@ -61,16 +61,17 @@ class Select<T extends Table> implements Iterator<T> {
 	private boolean shouldCloseConnection = true;
 	private SqlContext context = null;
 	private DataSource ds = null;
-	@SuppressWarnings("rawtypes")
 	private final UsageMonitor<T> usageMonitor;
 	private boolean initted = false;
 	long count = 0;
 
-	@SuppressWarnings("unchecked")
+	private boolean returnJoin;
+
+	private Constructor<T> joinConstructor = null;
+
 	Select(final DBQuery<T> dbQuery) {
 		this(dbQuery, true);
 	}
-	@SuppressWarnings("unchecked")
 	Select(final DBQuery<T> dbQuery, final boolean useWarnings) {
 
 		if (useWarnings && Context.usageWarningsEnabled()) {
@@ -104,7 +105,7 @@ class Select<T extends Table> implements Iterator<T> {
 				}
 			}
 			try {
-				for (final JoinInfo join : query.joinsToMany) {
+				for (final JoinInfo<?,?> join : query.joinsToMany) {
 					final FK<?> fk = join.fk;
 					final Method setFKSetMethod  = fk.referenced.getDeclaredMethod(
 							"SET_FK_SET", Field.FK.class, Query.class);
@@ -115,6 +116,14 @@ class Select<T extends Table> implements Iterator<T> {
 			} catch (final NoSuchMethodException e) {
 				/* ignore */
 			}
+
+			returnJoin = Join.J.class.isAssignableFrom(query.type);
+			if (returnJoin) {
+				joinConstructor = query.type.getDeclaredConstructor(new Object[0].getClass(), Integer.TYPE);
+				joinConstructor.setAccessible(true);
+			}
+
+
 		} catch (final SecurityException e) {
 			e.printStackTrace();
 			throw e;
@@ -129,7 +138,7 @@ class Select<T extends Table> implements Iterator<T> {
 		// old iterator method before merging
 		try {
 			ds  = query.getDataSource();
-			final Tuple2<Connection,Boolean> connInfo = query.getConnR(ds);
+			final Tuple2<Connection,Boolean> connInfo = DBQuery.getConnR(ds);
 			conn = connInfo.a;
 			shouldCloseConnection  = connInfo.b;
 			context  = new SqlContext(query);
@@ -229,7 +238,7 @@ class Select<T extends Table> implements Iterator<T> {
 	}
 
 	Object[] getNextRow() throws SQLException {
-		final Object[] tmp = peekNextRow();
+		peekNextRow();
 		return nextRows.poll();
 	}
 
@@ -262,6 +271,7 @@ class Select<T extends Table> implements Iterator<T> {
 	@SuppressWarnings("rawtypes")
 	private final Map<JoinInfo,InMemoryQuery> ttbMap = new HashMap<JoinInfo,InMemoryQuery>();
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean hasNext() {
 		if (!this.initted) init();
@@ -310,24 +320,20 @@ class Select<T extends Table> implements Iterator<T> {
 					}
 				}
 				if (next == null) {
-					if (Join.J2.class.equals(query.type)) {
-//						for (int i=0; i<query.joins.size(); ++i) {
-//							final JoinInfo ji = query.joins.get(i);
-//							//next = (T) new Join(next==null ? objects[i] : next, objects[i+1]);
-//						}
-						next = (T) new Join.J2(objects[0], objects[1]);
+					if (this.returnJoin) {
+						next = this.joinConstructor.newInstance(objects, 0);
 					} else {
 						next = (T) objects[0];
 					}
 				}
-				for(final JoinInfo join : query.joinsToOne) {
+				for(final JoinInfo<?,?> join : query.joinsToOne) {
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
 					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
 					final Method fkSetMethod = fkToOneSetMethods.get(reffingObject.getClass());
 					fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
 				}
-				for(final JoinInfo join : query.joinsToMany) {
+				for(final JoinInfo<?,?> join : query.joinsToMany) {
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
 					final Method fkSetSetMethod = fkToManySetMethods.get(join.fk);
@@ -365,13 +371,13 @@ class Select<T extends Table> implements Iterator<T> {
 		return hasNext;
 	}
 
-	private String key4IMQ(final FK<?>[] path) {
-		final StringBuffer sb = new StringBuffer();
-		for (final FK<?> fk : path) {
-			sb.append(fk);
-		}
-		return sb.toString();
-	}
+//	private String key4IMQ(final FK<?>[] path) {
+//		final StringBuffer sb = new StringBuffer();
+//		for (final FK<?> fk : path) {
+//			sb.append(fk);
+//		}
+//		return sb.toString();
+//	}
 
 	private void cleanUp() {
 		if (done) return;
@@ -413,7 +419,6 @@ class Select<T extends Table> implements Iterator<T> {
 		return true;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private final Map<Class<? extends Table>,Map<Condition,WeakReference<Query<? extends Table>>>> subQueryCache = new HashMap<Class<? extends Table>,Map<Condition,WeakReference<Query<? extends Table>>>>();
 	private final List<TableInfo> allTableInfos;
 

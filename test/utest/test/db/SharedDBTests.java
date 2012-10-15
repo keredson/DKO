@@ -596,12 +596,26 @@ public class SharedDBTests extends TestCase {
     public void testJ2() throws SQLException {
 		final long c1 = Item.ALL.count();
 		final long c2 = Product.ALL.count();
-    	final Query<J2<Item, Product>> q = Join.crossJoin(Item.ALL, Product.class);
+    	final Query<J2<Item, Product>> q = Join.cross(Item.ALL, Product.class);
 		assertEquals(c1 * c2,  q.count());
     	for (final J2<Item, Product> j : q) {
     		System.err.println(j);
     		j.t1.getItemid();
     		j.t2.getProductid();
+    	}
+    }
+
+    public void testJ3() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final long c2 = Product.ALL.count();
+		final long c3 = Category.ALL.count();
+    	final Query<J3<Item, Product, Category>> q = Join.cross(Join.cross(Item.ALL, Product.class), Category.class);
+		assertEquals(c1 * c2 * c3,  q.count());
+    	for (final J3<Item, Product, Category> j : q) {
+    		System.err.println(j);
+    		j.t1.getItemid();
+    		j.t2.getProductid();
+    		j.t3.getCatid();
     	}
     }
 //

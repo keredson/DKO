@@ -19,7 +19,7 @@ public class JoinGenerator {
 	 * @throws IOException
 	 */
 	public static void main(final String[] args) throws IOException {
-		genJoinsFile(new File("Join.java"), 3);
+		genJoinsFile(new File("Join.java"), 4);
 	}
 
 	private static void genJoinsFile(final File file, final int n) throws IOException {
@@ -59,31 +59,27 @@ public class JoinGenerator {
 			w.write("\t */\n");
 			if (i == 2) {
 				w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
-				w.write("> crossJoin(final Query<T"+ (i-1) +"> q, Class<T"+ i +"> t) {\n");
-				w.write("\t\treturn new Query2<T1, T2>("+ i +", q, t);\n");
+				w.write("> cross(final Query<T"+ (i-1) +"> q, Class<T"+ i +"> t) {\n");
+				w.write("\t\treturn new Query2<T1, T2>(q, t);\n");
 				w.write("\t}\n");
 			} else {
 				w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
-				w.write("> crossJoin(final Query<J"+ (i-1) +"<"+ genTTypes(i-1));
+				w.write("> cross(final Query<J"+ (i-1) +"<"+ genTTypes(i-1));
 				w.write(">> q, Class<T"+ i +"> t) {\n");
-				w.write("\t\treturn new Query"+ i +"<"+ tTypes +">("+ i +", q, t);\n");
+				w.write("\t\treturn new Query"+ i +"<"+ tTypes +">(q, t);\n");
 				w.write("\t}\n");
 			}
 
 			w.write("\tprivate static class Query"+ i +"<"+ tExtendsTable +"> extends DBQuery<J"+ i +"<"+ tTypes +">> {\n");
+			w.write("\t\tfinal int SIZE = "+ i +";\n");
 			if (i == 2) {
-				w.write("\t\tpublic Query2(int size, final Query<T1> q, final Class<T2> t) {\n");
-				w.write("\t\t\tsuper(q, t, \"cross join\");\n");
+				w.write("\t\tpublic Query2(final Query<T1> q, final Class<T2> t) {\n");
+				w.write("\t\t\tsuper(J"+ i +".class, q, t, \"cross join\");\n");
 				//w.write("\t\t\ttypes = new ArrayList;\n");
 				w.write("\t\t}\n");
 			} else {
-				w.write("\t\tQuery"+ i +"(int size, final Query<J"+ (i-1) +"<"+ genTTypes(i-1) +">> q, final Class<T"+ i +"> t) {\n");
-				w.write("\t\t\tsuper(new J"+ i +"<"+ tTypes +">(");
-				for (int j=1; j<=i; ++j) {
-					w.write("null");
-					if (j < i) w.write(",");
-				}
-				w.write("));\n");
+				w.write("\t\tQuery"+ i +"(final Query<J"+ (i-1) +"<"+ genTTypes(i-1) +">> q, final Class<T"+ i +"> t) {\n");
+				w.write("\t\t\tsuper(J"+ i +".class, q, t, \"cross join\");\n");
 				w.write("\t\t}\n");
 			}
 			w.write("\t}\n");
@@ -119,7 +115,7 @@ public class JoinGenerator {
 			w.write("\t\tprotected String SCHEMA_NAME() {\n");
 			w.write("\t\t\treturn ");
 			for (int j=1; j<=i; ++j) {
-				w.write("t"+ j +".SCHEMA_NAME()");
+				w.write("(t"+ j +"==null ? null : t"+ j +".SCHEMA_NAME())");
 				if (j < i) w.write("+\" + \"+");
 			}
 			w.write(";\n");
@@ -129,7 +125,7 @@ public class JoinGenerator {
 			w.write("\t\tprotected String TABLE_NAME() {\n");
 			w.write("\t\t\treturn ");
 			for (int j=1; j<=i; ++j) {
-				w.write("t"+ j +".TABLE_NAME()");
+				w.write("(t"+ j +"==null ? null : t"+ j +".TABLE_NAME())");
 				if (j < i) w.write("+\" + \"+");
 			}
 			w.write(";\n");
@@ -178,7 +174,7 @@ public class JoinGenerator {
 				w.write("\t\tpublic boolean "+ op +"() throws SQLException {\n");
 				w.write("\t\t\treturn ");
 				for (int j=1; j<=i; ++j) {
-					w.write("t"+ j +"."+ op +"()");
+					w.write("(t"+ j +"!=null && t"+ j +"."+ op +"())");
 					if (j < i) w.write(cmp);
 				}
 				w.write(";\n");
@@ -187,7 +183,7 @@ public class JoinGenerator {
 				w.write("\t\tpublic boolean "+ op +"(DataSource ds) throws SQLException {\n");
 				w.write("\t\t\treturn ");
 				for (int j=1; j<=i; ++j) {
-					w.write("t"+ j +"."+ op +"(ds)");
+					w.write("(t"+ j +"!=null && t"+ j +"."+ op +"(ds))");
 					if (j < i) w.write(cmp);
 				}
 				w.write(";\n");

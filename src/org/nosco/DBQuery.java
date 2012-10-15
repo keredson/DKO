@@ -230,8 +230,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	public <T1 extends Table, T2 extends Table> DBQuery(final Query<T1> q, final Class<T2> other, final String joinType) {
-		super(Join.J2.class);
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType) {
+		super(type);
 		copy((DBQuery<T>) q);
 		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
 		ji.lType = q.getType();

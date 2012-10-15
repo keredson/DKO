@@ -558,6 +558,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a left join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -566,6 +568,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a left join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -574,6 +578,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a right join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -582,6 +588,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a right join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -590,6 +598,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs an outer join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -598,6 +608,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs an outer join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -606,6 +618,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs an inner join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -614,6 +628,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs an inner join using the given condition.
+	 * This returns a query of the existing type.  (this is useful for filtering)
+	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return

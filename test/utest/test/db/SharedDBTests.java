@@ -31,6 +31,7 @@ import org.nosco.Diff.RowChange;
 import org.nosco.Join;
 import org.nosco.Join.J2;
 import org.nosco.Join.J3;
+import org.nosco.Join.J4;
 import org.nosco.Table;
 
 import static org.nosco.Function.*;
@@ -502,35 +503,44 @@ public class SharedDBTests extends TestCase {
 			x.getItemid();
 		}
 	}
-//
-//	public void test3JoinsAltAccessMethod() throws SQLException {
-//		final long c1 = Item.ALL.count();
-//		final long c2 = Product.ALL.count();
-//		final long c3 = Category.ALL.count();
-//		final long c4 = Account.ALL.count();
-//		final Query<Join<Join<Join<Item, Product>, Category>, Account>> q = Item.ALL.crossJoin(Product.class)
-//				.crossJoin(Category.class).crossJoin(Account.class);
-//		assertEquals(c1 * c2 * c3 * c4,  q.count());
-//		for (final Join<Join<Join<Item, Product>, Category>, Account> x : q.top(64)) {
-//			System.err.println(x);
-//			x.get(Item.class).getItemid();
-//			x.get(Product.class).getProductid();
-//			x.get(Category.class).getCatid();
-//			x.get(Account.class).getEmail();
-//		}
-//	}
-//
-//	public void testJoinAlias() throws SQLException {
-//		final long c1 = Item.ALL.count();
-//		final long c2 = Product.ALL.count();
-//		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(Product.as("pddt"));
-//		assertEquals(c1 * c2,  q.count());
-//		for (final Join<Item, Product> x : q) {
-//			x.l.getItemid();
-//			x.r.getProductid();
-//		}
-//	}
-//
+
+	public void test3JoinsAlt() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final long c2 = Product.ALL.count();
+		final long c3 = Category.ALL.count();
+		final long c4 = Account.ALL.count();
+		final Query<J4<Item, Product, Category, Account>> q = Join.cross(Join.cross(Join.cross(Item.ALL, Product.class), Category.class), Account.class);
+		assertEquals(c1 * c2 * c3 * c4,  q.count());
+		for (final J4<Item, Product, Category, Account> x : q.top(64)) {
+			System.err.println(x);
+			x.t1.getItemid();
+			x.t2.getProductid();
+			x.t3.getCatid();
+			x.t4.getEmail();
+		}
+	}
+
+	public void testJoinAlias() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final long c2 = Product.ALL.count();
+		final Query<J2<Item, Product>> q = Join.cross(Item.class, Product.as("pddt"));
+		assertEquals(c1 * c2,  q.count());
+		for (final J2<Item, Product> x : q) {
+			x.t1.getItemid();
+			x.t2.getProductid();
+		}
+	}
+
+	public void testJoinAliasSelf() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final Query<J2<Item, Item>> q = Join.inner(Item.class, Item.as("pddt"), Item.ITEMID.eq(Item.ITEMID.from("pddt")));
+		assertEquals(c1,  q.count());
+		for (final J2<Item, Item> x : q) {
+			System.err.println(x);
+			assertEquals(x.t1.getItemid(), x.t2.getItemid());
+		}
+	}
+
 	public void testLeftJoin() throws SQLException {
 		final long c1 = Item.ALL.count();
 		final Query<J2<Item, Supplier>> q = Join.left(Item.class, Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));

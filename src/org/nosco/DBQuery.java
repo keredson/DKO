@@ -231,6 +231,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
+		this(type, q, other, null, joinType, on);
+	}
+
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
+		this(type, q, other.table, other.alias, joinType, on);
+	}
+
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
 		super(type);
 		copy((DBQuery<T>) q);
 		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
@@ -238,7 +246,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		ji.rType = other;
 		ji.type = joinType;
 		ji.condition = on;
-		String alias = null;
 		try {
 			final Table otherInstance = other.newInstance();
 			final boolean autogenName = alias == null;

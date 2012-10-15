@@ -19,7 +19,7 @@ public class JoinGenerator {
 	 * @throws IOException
 	 */
 	public static void main(final String[] args) throws IOException {
-		genJoinsFile(new File("Join.java"), 4);
+		genJoinsFile(new File("Join.java"), 16);
 	}
 
 	private static void genJoinsFile(final File file, final int n) throws IOException {
@@ -52,12 +52,13 @@ public class JoinGenerator {
 			final String tTypes =genTTypes(i);
 
 
-			w.write("\t/** \n");
-			w.write("\t * Joins types "+ tTypes +" into one query.\n");
-			w.write("\t * The return is a private type (to avoid type erasure conflicts), but you should use\n");
-			w.write("\t * it as a {@code org.nosco.Query<Join.J"+ i +"<"+ tTypes +">>}\n");
-			w.write("\t */\n");
+			writeJoinJavadoc(w, i, tTypes);
 			if (i == 2) {
+				w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
+				w.write("> cross(final Class<T1> t1, Class<T2> t2) {\n");
+				w.write("\t\treturn new Query2<T1, T2>(new DBQuery<T1>(t1), t2);\n");
+				w.write("\t}\n");
+				writeJoinJavadoc(w, i, tTypes);
 				w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
 				w.write("> cross(final Query<T"+ (i-1) +"> q, Class<T"+ i +"> t) {\n");
 				w.write("\t\treturn new Query2<T1, T2>(q, t);\n");
@@ -86,6 +87,11 @@ public class JoinGenerator {
 
 
 			w.write("\n");
+			w.write("\t/**\n");
+			w.write("\t * This class represents a join across "+ i +" tables.\n");
+			w.write("\t * It contains "+ i +" typed references (t1 to t"+ i +") to the join row components.\n");
+			w.write("\t * (each of them containing all the columns they contributed to the join)\n");
+			w.write("\t */\n");
 			w.write("\tpublic static class J"+ i +" <"+ tExtendsTable +"> extends J {\n");
 
 			w.write("\t\tprivate List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;\n");
@@ -220,6 +226,15 @@ public class JoinGenerator {
 		}
 
 		w.write("\n}\n");
+	}
+
+	private static void writeJoinJavadoc(final Writer w, final int i,
+			final String tTypes) throws IOException {
+		w.write("\t/** \n");
+		w.write("\t * Joins types "+ tTypes +" into one query.\n");
+		w.write("\t * The return is a private type (to avoid type erasure conflicts), but you should use\n");
+		w.write("\t * it as a {@code org.nosco.Query<Join.J"+ i +"<"+ tTypes +">>}\n");
+		w.write("\t */\n");
 	}
 
 	private static String genTTypes(final int i) {

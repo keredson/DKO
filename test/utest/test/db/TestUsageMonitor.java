@@ -8,10 +8,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.nosco.Context;
-import org.nosco.Table;
-import org.nosco.datasource.ConnectionCountingDataSource;
-import org.nosco.unittest.nosco_test_jpetstore.Item;
+import org.kered.dko.Context;
+import org.kered.dko.Table;
+import org.kered.dko.datasource.ConnectionCountingDataSource;
+import org.kered.dko.unittest.nosco_test_jpetstore.Item;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
@@ -32,7 +32,7 @@ public class TestUsageMonitor extends TestCase {
 
 	public TestUsageMonitor() {
 		try {
-			umc = cl.loadClass("org.nosco.UsageMonitor");
+			umc = cl.loadClass("org.kered.dko.UsageMonitor");
 			tumf = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
 			tumf.setAccessible(true);
 			tfvf  = Table.class.getDeclaredField("__NOSCO_FETCHED_VALUES");
@@ -62,8 +62,8 @@ public class TestUsageMonitor extends TestCase {
 		final Context vmContext = Context.getVMContext();
 		vmContext.setDataSource(mysqlDS).setAutoUndo(false);
 		umlsfm.invoke(null, Item.class);
-		final Map<String,Map<org.nosco.Field<?>,Long>> qc =
-				(Map<String,Map<org.nosco.Field<?>,Long>>)umqcf.get(null);
+		final Map<String,Map<org.kered.dko.Field<?>,Long>> qc =
+				(Map<String,Map<org.kered.dko.Field<?>,Long>>)umqcf.get(null);
 		qc.clear();
 	}
 
@@ -98,12 +98,12 @@ public class TestUsageMonitor extends TestCase {
 					assertEquals(item.PK.GET_FIELDS().size()+1, fv.cardinality());
 					assertTrue(fv.get(Item.ATTR1.INDEX));
 				}
-				Collection<org.nosco.Field<?>> surpriseFields = null;
-				surpriseFields = (Collection<org.nosco.Field<?>>)umsff.get(um);
+				Collection<org.kered.dko.Field<?>> surpriseFields = null;
+				surpriseFields = (Collection<org.kered.dko.Field<?>>)umsff.get(um);
 				final int sizeBefore = surpriseFields == null ? 0 : surpriseFields.size();
 				item.getAttr1();
 				if (first) {
-					surpriseFields = (Collection<org.nosco.Field<?>>)umsff.get(um);
+					surpriseFields = (Collection<org.kered.dko.Field<?>>)umsff.get(um);
 					if (i==1) {
 						assertEquals(sizeBefore+1, surpriseFields.size());
 					}
@@ -117,9 +117,9 @@ public class TestUsageMonitor extends TestCase {
 			umqucm.invoke(um);
 			//waitUntilGone(wfum);
 			if (i==0) {
-				final Map<String,Map<org.nosco.Field<?>,Long>> qc =
-						(Map<String,Map<org.nosco.Field<?>,Long>>)umqcf.get(null);
-				final Map<org.nosco.Field<?>,Long> used = qc.get(sth);
+				final Map<String,Map<org.kered.dko.Field<?>,Long>> qc =
+						(Map<String,Map<org.kered.dko.Field<?>,Long>>)umqcf.get(null);
+				final Map<org.kered.dko.Field<?>,Long> used = qc.get(sth);
 				used.clear();
 			}
 		}

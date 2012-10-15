@@ -19,31 +19,31 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
-import org.nosco.Bulk;
-import org.nosco.CSV;
-import org.nosco.Constants;
-import org.nosco.Field;
-import org.nosco.Constants.CALENDAR;
-import org.nosco.Context;
-import org.nosco.Context.Undoer;
-import org.nosco.Diff;
-import org.nosco.Diff.RowChange;
-import org.nosco.Join;
-import org.nosco.Join.J2;
-import org.nosco.Join.J3;
-import org.nosco.Join.J4;
-import org.nosco.Table;
+import org.kered.dko.Bulk;
+import org.kered.dko.CSV;
+import org.kered.dko.Constants;
+import org.kered.dko.Context;
+import org.kered.dko.Diff;
+import org.kered.dko.Field;
+import org.kered.dko.Join;
+import org.kered.dko.Query;
+import org.kered.dko.Table;
+import org.kered.dko.Constants.CALENDAR;
+import org.kered.dko.Context.Undoer;
+import org.kered.dko.Diff.RowChange;
+import org.kered.dko.Join.J2;
+import org.kered.dko.Join.J3;
+import org.kered.dko.Join.J4;
+import org.kered.dko.datasource.ConnectionCountingDataSource;
+import org.kered.dko.unittest.nosco_test_jpetstore.Account;
+import org.kered.dko.unittest.nosco_test_jpetstore.Category;
+import org.kered.dko.unittest.nosco_test_jpetstore.Inventory;
+import org.kered.dko.unittest.nosco_test_jpetstore.Item;
+import org.kered.dko.unittest.nosco_test_jpetstore.Orderstatus;
+import org.kered.dko.unittest.nosco_test_jpetstore.Product;
+import org.kered.dko.unittest.nosco_test_jpetstore.Supplier;
 
-import static org.nosco.Function.*;
-import org.nosco.Query;
-import org.nosco.datasource.ConnectionCountingDataSource;
-import org.nosco.unittest.nosco_test_jpetstore.Account;
-import org.nosco.unittest.nosco_test_jpetstore.Category;
-import org.nosco.unittest.nosco_test_jpetstore.Inventory;
-import org.nosco.unittest.nosco_test_jpetstore.Item;
-import org.nosco.unittest.nosco_test_jpetstore.Orderstatus;
-import org.nosco.unittest.nosco_test_jpetstore.Product;
-import org.nosco.unittest.nosco_test_jpetstore.Supplier;
+import static org.kered.dko.Function.*;
 
 import test.db.callback.nosco_test_jpetstore.ItemCB;
 
@@ -117,7 +117,7 @@ public class SharedDBTests extends TestCase {
 	public void testFKNoWith() throws Exception {
 		final Undoer x = Context.getVMContext().setDataSource(ccds);
 		final ClassLoader classLoader = this.getClass().getClassLoader();
-		final Class<?> clz = classLoader.loadClass("org.nosco.UsageMonitor");
+		final Class<?> clz = classLoader.loadClass("org.kered.dko.UsageMonitor");
 		final java.lang.reflect.Field field = clz.getDeclaredField("warnBadFKUsageCount");
 		field.setAccessible(true);
 		final java.lang.reflect.Field __NOSCO_USAGE_MONITOR = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
@@ -444,8 +444,8 @@ public class SharedDBTests extends TestCase {
     @SuppressWarnings("unchecked")
 	public void testFieldKeywordCheck() throws Exception {
     	final Field<Integer> field = new Field(0, null, "ADD", null, null, null);
-    	final Class classSqlContext = this.getClass().getClassLoader().loadClass("org.nosco.SqlContext");
-    	final Class classDBQuery = this.getClass().getClassLoader().loadClass("org.nosco.DBQuery");
+    	final Class classSqlContext = this.getClass().getClassLoader().loadClass("org.kered.dko.SqlContext");
+    	final Class classDBQuery = this.getClass().getClassLoader().loadClass("org.kered.dko.DBQuery");
     	final java.lang.reflect.Field fieldDbType = classSqlContext.getDeclaredField("dbType");
     	fieldDbType.setAccessible(true);
     	final Constructor con = classSqlContext.getDeclaredConstructor(classDBQuery);

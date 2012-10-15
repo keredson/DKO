@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.hsqldb.jdbc.JDBCDataSource;
-import org.nosco.Context;
-import org.nosco.Join;
-import org.nosco.Query;
-import org.nosco.datasource.ConnectionCountingDataSource;
-import org.nosco.unittest.nosco_test_jpetstore.Item;
-import org.nosco.unittest.nosco_test_jpetstore.Supplier;
+import org.kered.dko.Context;
+import org.kered.dko.Join;
+import org.kered.dko.Query;
+import org.kered.dko.datasource.ConnectionCountingDataSource;
+import org.kered.dko.unittest.nosco_test_jpetstore.Item;
+import org.kered.dko.unittest.nosco_test_jpetstore.Supplier;
 
 public class TestHSQLDB extends SharedDBTests {
 

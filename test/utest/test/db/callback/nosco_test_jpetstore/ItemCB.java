@@ -2,7 +2,7 @@ package test.db.callback.nosco_test_jpetstore;
 
 import javax.sql.DataSource;
 
-import org.nosco.unittest.nosco_test_jpetstore.Item;
+import org.kered.dko.unittest.nosco_test_jpetstore.Item;
 
 public class ItemCB {
 	

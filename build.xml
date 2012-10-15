@@ -85,9 +85,9 @@
     <delete includeemptydirs="true">
       <fileset dir="doc/api" includes="**/*.html"/>
     </delete>
-    <javadoc packagenames="org.nosco.*"
+    <javadoc packagenames="org.kered.dko.*"
            sourcepath="src"
-           excludepackagenames="org.nosco.json.*,org.nosco.util.*,org.nosco.QueryImpl,org.nosco.RSArgsParser"
+           excludepackagenames="org.kered.dko.json.*,org.kered.dko.util.*,org.kered.dko.QueryImpl,org.kered.dko.RSArgsParser"
            defaultexcludes="yes"
            destdir="doc/api"
            author="true"
@@ -121,7 +121,7 @@
   <!-- ========[ BEGIN UNIT TEST HSQL ]======== -->
   
   <target name="unit-test-extract-schema-hsql" depends="jar">
-    <taskdef name="noscoextractschema" classname="org.nosco.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_hsqldb_jar}"/>
+    <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_hsqldb_jar}"/>
     <noscoextractschema
     	url="jdbc:hsqldb:file:deps/jpetstore/hsql/jpetstore.jsqldb"
     	username="sa"
@@ -132,7 +132,7 @@
   </target>
 
   <target name="unit-test-gen-src-hsql" depends="unit-test-extract-schema-hsql">
-    <taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <taskdef name="noscogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
     <noscogen package="org.nosco.unittest" 
       debug="true"
       javaoutputdir="gensrc"
@@ -181,7 +181,7 @@
   
   <available file="bin/unit_test_mysql_schema.json" property="exists.unit_test_mysql_schema"/>
   <target name="unit-test-extract-schema-mysql" depends="jar" unless="${exists.unit_test_mysql_schema}">
-    <taskdef name="noscoextractschema" classname="org.nosco.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_mysql_jar}"/>
+    <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_mysql_jar}"/>
     <exec executable="mysql" input="deps/jpetstore/mysql/jpetstore-mysql-schema.sql">
       <arg value="-u"/>
       <arg value="root"/>
@@ -201,8 +201,8 @@
   </target>
   
   <target name="unit-test-gen-src-mysql" depends="unit-test-extract-schema-mysql">
-    <taskdef name="noscogen" classname="org.nosco.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
-    <noscogen package="org.nosco.unittest" 
+    <taskdef name="noscogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <noscogen package="org.kered.dko.unittest" 
       debug="true"
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"

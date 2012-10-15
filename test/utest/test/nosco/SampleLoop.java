@@ -2,8 +2,8 @@ package test.nosco;
 
 import java.util.logging.Logger;
 
-import org.nosco.Query;
-import org.nosco.unittest.nosco_test_jpetstore.Item;
+import org.kered.dko.Query;
+import org.kered.dko.unittest.nosco_test_jpetstore.Item;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 

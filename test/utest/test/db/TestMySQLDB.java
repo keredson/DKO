@@ -1,7 +1,7 @@
 package test.db;
 
-import org.nosco.Context;
-import org.nosco.datasource.ConnectionCountingDataSource;
+import org.kered.dko.Context;
+import org.kered.dko.datasource.ConnectionCountingDataSource;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 

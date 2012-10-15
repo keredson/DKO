@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.io.StringWriter;
 
-import org.nosco.json.CDL;
-import org.nosco.json.Cookie;
-import org.nosco.json.CookieList;
-import org.nosco.json.HTTP;
-import org.nosco.json.JSONArray;
-import org.nosco.json.JSONException;
-import org.nosco.json.JSONML;
-import org.nosco.json.JSONObject;
-import org.nosco.json.JSONString;
-import org.nosco.json.JSONStringer;
-import org.nosco.json.JSONTokener;
-import org.nosco.json.XML;
+import org.kered.dko.json.CDL;
+import org.kered.dko.json.Cookie;
+import org.kered.dko.json.CookieList;
+import org.kered.dko.json.HTTP;
+import org.kered.dko.json.JSONArray;
+import org.kered.dko.json.JSONException;
+import org.kered.dko.json.JSONML;
+import org.kered.dko.json.JSONObject;
+import org.kered.dko.json.JSONString;
+import org.kered.dko.json.JSONStringer;
+import org.kered.dko.json.JSONTokener;
+import org.kered.dko.json.XML;
 
 import junit.framework.TestCase;
 

@@ -531,32 +531,32 @@ public class SharedDBTests extends TestCase {
 //		}
 //	}
 //
-//	public void testLeftJoin() throws SQLException {
-//		final long c1 = Item.ALL.count();
-//		final Query<Join<Item, Supplier>> q = Item.ALL.leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
-//		assertEquals(c1,  q.count());
-//		for (final Join<Item, Supplier> x : q.top(64)) {
-//			System.err.println(x);
-//		}
-//	}
-//
-//	public void testRightJoin() throws SQLException {
-//		final long c1 = Item.ALL.count();
-//		final Query<Join<Supplier, Item>> q = Supplier.ALL.rightJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
-//		assertEquals(c1,  q.count());
-//		for (final Join<Supplier, Item> x : q.top(64)) {
-//			System.err.println(x);
-//		}
-//	}
-//
-//	public void testInnerJoin() throws SQLException {
-//		final long c1 = Item.ALL.count();
-//		final Query<Join<Supplier, Item>> q = Supplier.ALL.innerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
-//		assertEquals(c1-1,  q.count());
-//		for (final Join<Supplier, Item> x : q.top(64)) {
-//			System.err.println(x);
-//		}
-//	}
+	public void testLeftJoin() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final Query<J2<Item, Supplier>> q = Join.left(Item.class, Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		assertEquals(c1,  q.count());
+		for (final J2<Item, Supplier> x : q.top(64)) {
+			System.err.println(x);
+		}
+	}
+
+	public void testRightJoin() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final Query<J2<Supplier, Item>> q = Join.right(Supplier.class, Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		assertEquals(c1,  q.count());
+		for (final J2<Supplier, Item> x : q.top(64)) {
+			System.err.println(x);
+		}
+	}
+
+	public void testInnerJoin() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final Query<J2<Supplier, Item>> q = Join.inner(Supplier.class, Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		assertEquals(c1-1,  q.count());
+		for (final J2<Supplier, Item> x : q.top(64)) {
+			System.err.println(x);
+		}
+	}
 
 	// mysql doesn't support outer joins
 //	public void testOuterJoin() throws SQLException {
@@ -568,17 +568,17 @@ public class SharedDBTests extends TestCase {
 //		}
 //	}
 
-//	public void testLeftJoin2() throws SQLException {
-//		final long c1 = Item.ALL.count();
-//		final long c2 = Product.ALL.count();
-//		final Query<Join<Product, Item>> q = Product.ALL.leftJoin(Item.class, Item.PRODUCTID.eq(Product.PRODUCTID));
-//		assertEquals(c1,  q.count());
-//		for (final Join<Product, Item> x : q.top(64)) {
-//			System.err.println(x);
-//			x.r.getItemid();
-//			x.l.getProductid();
-//		}
-//	}
+	public void testLeftJoin2() throws SQLException {
+		final long c1 = Item.ALL.count();
+		final long c2 = Product.ALL.count();
+		final Query<J2<Product, Item>> q = Join.left(Product.class, Item.class, Item.PRODUCTID.eq(Product.PRODUCTID));
+		assertEquals(c1,  q.count());
+		for (final J2<Product, Item> x : q.top(64)) {
+			System.err.println(x);
+			x.t2.getItemid();
+			x.t1.getProductid();
+		}
+	}
 
     public void testTableIn() throws SQLException {
     	final List<Category> cats = new ArrayList<Category>();

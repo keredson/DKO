@@ -18,8 +18,72 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
 	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> left(final Class<T1> t1, Class<T2> t2, Condition on) {
+		return new Query2<T1, T2>(new DBQuery<T1>(t1), t2, "left join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> left(final Query<T1> q, Class<T2> t, Condition on) {
+		return new Query2<T1, T2>(q, t, "left join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> right(final Class<T1> t1, Class<T2> t2, Condition on) {
+		return new Query2<T1, T2>(new DBQuery<T1>(t1), t2, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> right(final Query<T1> q, Class<T2> t, Condition on) {
+		return new Query2<T1, T2>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> inner(final Class<T1> t1, Class<T2> t2, Condition on) {
+		return new Query2<T1, T2>(new DBQuery<T1>(t1), t2, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> inner(final Query<T1> q, Class<T2> t, Condition on) {
+		return new Query2<T1, T2>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> outer(final Class<T1> t1, Class<T2> t2, Condition on) {
+		return new Query2<T1, T2>(new DBQuery<T1>(t1), t2, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
+	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> outer(final Query<T1> q, Class<T2> t, Condition on) {
+		return new Query2<T1, T2>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
+	 */
 	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> cross(final Class<T1> t1, Class<T2> t2) {
-		return new Query2<T1, T2>(new DBQuery<T1>(t1), t2);
+		return new Query2<T1, T2>(new DBQuery<T1>(t1), t2, "cross join", null);
 	}
 	/** 
 	 * Joins types T1, T2 into one query.
@@ -27,12 +91,13 @@ public class Join {
 	 * it as a {@code org.nosco.Query<Join.J2<T1, T2>>}
 	 */
 	public static <T1 extends Table, T2 extends Table> Query2<T1, T2> cross(final Query<T1> q, Class<T2> t) {
-		return new Query2<T1, T2>(q, t);
+		return new Query2<T1, T2>(q, t, "cross join", null);
 	}
+
 	private static class Query2<T1 extends Table, T2 extends Table> extends DBQuery<J2<T1, T2>> {
 		final int SIZE = 2;
-		public Query2(final Query<T1> q, final Class<T2> t) {
-			super(J2.class, q, t, "cross join");
+		public Query2(final Query<T1> q, final Class<T2> t, String joinType, Condition on) {
+			super(J2.class, q, t, joinType, on);
 		}
 	}
 
@@ -153,13 +218,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J3<T1, T2, T3>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table> Query3<T1, T2, T3> cross(final Query<J2<T1, T2>> q, Class<T3> t) {
-		return new Query3<T1, T2, T3>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table> Query3<T1, T2, T3> left(final Query<J2<T1, T2>> q, Class<T3> t, Condition on) {
+		return new Query3<T1, T2, T3>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J3<T1, T2, T3>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table> Query3<T1, T2, T3> right(final Query<J2<T1, T2>> q, Class<T3> t, Condition on) {
+		return new Query3<T1, T2, T3>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J3<T1, T2, T3>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table> Query3<T1, T2, T3> inner(final Query<J2<T1, T2>> q, Class<T3> t, Condition on) {
+		return new Query3<T1, T2, T3>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J3<T1, T2, T3>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table> Query3<T1, T2, T3> outer(final Query<J2<T1, T2>> q, Class<T3> t, Condition on) {
+		return new Query3<T1, T2, T3>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J3<T1, T2, T3>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table> Query3<T1, T2, T3> cross(final Query<J2<T1, T2>> q, Class<T3> t) {
+		return new Query3<T1, T2, T3>(q, t, "cross join", null);
+	}
+
 	private static class Query3<T1 extends Table, T2 extends Table, T3 extends Table> extends DBQuery<J3<T1, T2, T3>> {
 		final int SIZE = 3;
-		Query3(final Query<J2<T1, T2>> q, final Class<T3> t) {
-			super(J3.class, q, t, "cross join");
+		Query3(final Query<J2<T1, T2>> q, final Class<T3> t, String joinType, Condition on) {
+			super(J3.class, q, t, joinType, on);
 		}
 	}
 
@@ -288,13 +386,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J4<T1, T2, T3, T4>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> Query4<T1, T2, T3, T4> cross(final Query<J3<T1, T2, T3>> q, Class<T4> t) {
-		return new Query4<T1, T2, T3, T4>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> Query4<T1, T2, T3, T4> left(final Query<J3<T1, T2, T3>> q, Class<T4> t, Condition on) {
+		return new Query4<T1, T2, T3, T4>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J4<T1, T2, T3, T4>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> Query4<T1, T2, T3, T4> right(final Query<J3<T1, T2, T3>> q, Class<T4> t, Condition on) {
+		return new Query4<T1, T2, T3, T4>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J4<T1, T2, T3, T4>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> Query4<T1, T2, T3, T4> inner(final Query<J3<T1, T2, T3>> q, Class<T4> t, Condition on) {
+		return new Query4<T1, T2, T3, T4>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J4<T1, T2, T3, T4>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> Query4<T1, T2, T3, T4> outer(final Query<J3<T1, T2, T3>> q, Class<T4> t, Condition on) {
+		return new Query4<T1, T2, T3, T4>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J4<T1, T2, T3, T4>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> Query4<T1, T2, T3, T4> cross(final Query<J3<T1, T2, T3>> q, Class<T4> t) {
+		return new Query4<T1, T2, T3, T4>(q, t, "cross join", null);
+	}
+
 	private static class Query4<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> extends DBQuery<J4<T1, T2, T3, T4>> {
 		final int SIZE = 4;
-		Query4(final Query<J3<T1, T2, T3>> q, final Class<T4> t) {
-			super(J4.class, q, t, "cross join");
+		Query4(final Query<J3<T1, T2, T3>> q, final Class<T4> t, String joinType, Condition on) {
+			super(J4.class, q, t, joinType, on);
 		}
 	}
 
@@ -431,13 +562,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J5<T1, T2, T3, T4, T5>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> Query5<T1, T2, T3, T4, T5> cross(final Query<J4<T1, T2, T3, T4>> q, Class<T5> t) {
-		return new Query5<T1, T2, T3, T4, T5>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> Query5<T1, T2, T3, T4, T5> left(final Query<J4<T1, T2, T3, T4>> q, Class<T5> t, Condition on) {
+		return new Query5<T1, T2, T3, T4, T5>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J5<T1, T2, T3, T4, T5>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> Query5<T1, T2, T3, T4, T5> right(final Query<J4<T1, T2, T3, T4>> q, Class<T5> t, Condition on) {
+		return new Query5<T1, T2, T3, T4, T5>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J5<T1, T2, T3, T4, T5>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> Query5<T1, T2, T3, T4, T5> inner(final Query<J4<T1, T2, T3, T4>> q, Class<T5> t, Condition on) {
+		return new Query5<T1, T2, T3, T4, T5>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J5<T1, T2, T3, T4, T5>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> Query5<T1, T2, T3, T4, T5> outer(final Query<J4<T1, T2, T3, T4>> q, Class<T5> t, Condition on) {
+		return new Query5<T1, T2, T3, T4, T5>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J5<T1, T2, T3, T4, T5>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> Query5<T1, T2, T3, T4, T5> cross(final Query<J4<T1, T2, T3, T4>> q, Class<T5> t) {
+		return new Query5<T1, T2, T3, T4, T5>(q, t, "cross join", null);
+	}
+
 	private static class Query5<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> extends DBQuery<J5<T1, T2, T3, T4, T5>> {
 		final int SIZE = 5;
-		Query5(final Query<J4<T1, T2, T3, T4>> q, final Class<T5> t) {
-			super(J5.class, q, t, "cross join");
+		Query5(final Query<J4<T1, T2, T3, T4>> q, final Class<T5> t, String joinType, Condition on) {
+			super(J5.class, q, t, joinType, on);
 		}
 	}
 
@@ -582,13 +746,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J6<T1, T2, T3, T4, T5, T6>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> Query6<T1, T2, T3, T4, T5, T6> cross(final Query<J5<T1, T2, T3, T4, T5>> q, Class<T6> t) {
-		return new Query6<T1, T2, T3, T4, T5, T6>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> Query6<T1, T2, T3, T4, T5, T6> left(final Query<J5<T1, T2, T3, T4, T5>> q, Class<T6> t, Condition on) {
+		return new Query6<T1, T2, T3, T4, T5, T6>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J6<T1, T2, T3, T4, T5, T6>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> Query6<T1, T2, T3, T4, T5, T6> right(final Query<J5<T1, T2, T3, T4, T5>> q, Class<T6> t, Condition on) {
+		return new Query6<T1, T2, T3, T4, T5, T6>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J6<T1, T2, T3, T4, T5, T6>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> Query6<T1, T2, T3, T4, T5, T6> inner(final Query<J5<T1, T2, T3, T4, T5>> q, Class<T6> t, Condition on) {
+		return new Query6<T1, T2, T3, T4, T5, T6>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J6<T1, T2, T3, T4, T5, T6>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> Query6<T1, T2, T3, T4, T5, T6> outer(final Query<J5<T1, T2, T3, T4, T5>> q, Class<T6> t, Condition on) {
+		return new Query6<T1, T2, T3, T4, T5, T6>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J6<T1, T2, T3, T4, T5, T6>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> Query6<T1, T2, T3, T4, T5, T6> cross(final Query<J5<T1, T2, T3, T4, T5>> q, Class<T6> t) {
+		return new Query6<T1, T2, T3, T4, T5, T6>(q, t, "cross join", null);
+	}
+
 	private static class Query6<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> extends DBQuery<J6<T1, T2, T3, T4, T5, T6>> {
 		final int SIZE = 6;
-		Query6(final Query<J5<T1, T2, T3, T4, T5>> q, final Class<T6> t) {
-			super(J6.class, q, t, "cross join");
+		Query6(final Query<J5<T1, T2, T3, T4, T5>> q, final Class<T6> t, String joinType, Condition on) {
+			super(J6.class, q, t, joinType, on);
 		}
 	}
 
@@ -741,13 +938,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J7<T1, T2, T3, T4, T5, T6, T7>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> Query7<T1, T2, T3, T4, T5, T6, T7> cross(final Query<J6<T1, T2, T3, T4, T5, T6>> q, Class<T7> t) {
-		return new Query7<T1, T2, T3, T4, T5, T6, T7>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> Query7<T1, T2, T3, T4, T5, T6, T7> left(final Query<J6<T1, T2, T3, T4, T5, T6>> q, Class<T7> t, Condition on) {
+		return new Query7<T1, T2, T3, T4, T5, T6, T7>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J7<T1, T2, T3, T4, T5, T6, T7>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> Query7<T1, T2, T3, T4, T5, T6, T7> right(final Query<J6<T1, T2, T3, T4, T5, T6>> q, Class<T7> t, Condition on) {
+		return new Query7<T1, T2, T3, T4, T5, T6, T7>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J7<T1, T2, T3, T4, T5, T6, T7>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> Query7<T1, T2, T3, T4, T5, T6, T7> inner(final Query<J6<T1, T2, T3, T4, T5, T6>> q, Class<T7> t, Condition on) {
+		return new Query7<T1, T2, T3, T4, T5, T6, T7>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J7<T1, T2, T3, T4, T5, T6, T7>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> Query7<T1, T2, T3, T4, T5, T6, T7> outer(final Query<J6<T1, T2, T3, T4, T5, T6>> q, Class<T7> t, Condition on) {
+		return new Query7<T1, T2, T3, T4, T5, T6, T7>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J7<T1, T2, T3, T4, T5, T6, T7>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> Query7<T1, T2, T3, T4, T5, T6, T7> cross(final Query<J6<T1, T2, T3, T4, T5, T6>> q, Class<T7> t) {
+		return new Query7<T1, T2, T3, T4, T5, T6, T7>(q, t, "cross join", null);
+	}
+
 	private static class Query7<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> extends DBQuery<J7<T1, T2, T3, T4, T5, T6, T7>> {
 		final int SIZE = 7;
-		Query7(final Query<J6<T1, T2, T3, T4, T5, T6>> q, final Class<T7> t) {
-			super(J7.class, q, t, "cross join");
+		Query7(final Query<J6<T1, T2, T3, T4, T5, T6>> q, final Class<T7> t, String joinType, Condition on) {
+			super(J7.class, q, t, joinType, on);
 		}
 	}
 
@@ -908,13 +1138,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J8<T1, T2, T3, T4, T5, T6, T7, T8>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> Query8<T1, T2, T3, T4, T5, T6, T7, T8> cross(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, Class<T8> t) {
-		return new Query8<T1, T2, T3, T4, T5, T6, T7, T8>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> Query8<T1, T2, T3, T4, T5, T6, T7, T8> left(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, Class<T8> t, Condition on) {
+		return new Query8<T1, T2, T3, T4, T5, T6, T7, T8>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J8<T1, T2, T3, T4, T5, T6, T7, T8>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> Query8<T1, T2, T3, T4, T5, T6, T7, T8> right(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, Class<T8> t, Condition on) {
+		return new Query8<T1, T2, T3, T4, T5, T6, T7, T8>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J8<T1, T2, T3, T4, T5, T6, T7, T8>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> Query8<T1, T2, T3, T4, T5, T6, T7, T8> inner(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, Class<T8> t, Condition on) {
+		return new Query8<T1, T2, T3, T4, T5, T6, T7, T8>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J8<T1, T2, T3, T4, T5, T6, T7, T8>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> Query8<T1, T2, T3, T4, T5, T6, T7, T8> outer(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, Class<T8> t, Condition on) {
+		return new Query8<T1, T2, T3, T4, T5, T6, T7, T8>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J8<T1, T2, T3, T4, T5, T6, T7, T8>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> Query8<T1, T2, T3, T4, T5, T6, T7, T8> cross(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, Class<T8> t) {
+		return new Query8<T1, T2, T3, T4, T5, T6, T7, T8>(q, t, "cross join", null);
+	}
+
 	private static class Query8<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> extends DBQuery<J8<T1, T2, T3, T4, T5, T6, T7, T8>> {
 		final int SIZE = 8;
-		Query8(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, final Class<T8> t) {
-			super(J8.class, q, t, "cross join");
+		Query8(final Query<J7<T1, T2, T3, T4, T5, T6, T7>> q, final Class<T8> t, String joinType, Condition on) {
+			super(J8.class, q, t, joinType, on);
 		}
 	}
 
@@ -1083,13 +1346,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9> cross(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, Class<T9> t) {
-		return new Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9> left(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, Class<T9> t, Condition on) {
+		return new Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9> right(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, Class<T9> t, Condition on) {
+		return new Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9> inner(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, Class<T9> t, Condition on) {
+		return new Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9> outer(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, Class<T9> t, Condition on) {
+		return new Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9> cross(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, Class<T9> t) {
+		return new Query9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(q, t, "cross join", null);
+	}
+
 	private static class Query9<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> extends DBQuery<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> {
 		final int SIZE = 9;
-		Query9(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, final Class<T9> t) {
-			super(J9.class, q, t, "cross join");
+		Query9(final Query<J8<T1, T2, T3, T4, T5, T6, T7, T8>> q, final Class<T9> t, String joinType, Condition on) {
+			super(J9.class, q, t, joinType, on);
 		}
 	}
 
@@ -1266,13 +1562,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> cross(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, Class<T10> t) {
-		return new Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> left(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, Class<T10> t, Condition on) {
+		return new Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> right(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, Class<T10> t, Condition on) {
+		return new Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> inner(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, Class<T10> t, Condition on) {
+		return new Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> outer(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, Class<T10> t, Condition on) {
+		return new Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> cross(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, Class<T10> t) {
+		return new Query10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(q, t, "cross join", null);
+	}
+
 	private static class Query10<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table> extends DBQuery<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> {
 		final int SIZE = 10;
-		Query10(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, final Class<T10> t) {
-			super(J10.class, q, t, "cross join");
+		Query10(final Query<J9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> q, final Class<T10> t, String joinType, Condition on) {
+			super(J10.class, q, t, joinType, on);
 		}
 	}
 
@@ -1457,13 +1786,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> cross(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, Class<T11> t) {
-		return new Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> left(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, Class<T11> t, Condition on) {
+		return new Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> right(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, Class<T11> t, Condition on) {
+		return new Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> inner(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, Class<T11> t, Condition on) {
+		return new Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> outer(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, Class<T11> t, Condition on) {
+		return new Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> cross(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, Class<T11> t) {
+		return new Query11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(q, t, "cross join", null);
+	}
+
 	private static class Query11<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table> extends DBQuery<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> {
 		final int SIZE = 11;
-		Query11(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, final Class<T11> t) {
-			super(J11.class, q, t, "cross join");
+		Query11(final Query<J10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> q, final Class<T11> t, String joinType, Condition on) {
+			super(J11.class, q, t, joinType, on);
 		}
 	}
 
@@ -1656,13 +2018,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> cross(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, Class<T12> t) {
-		return new Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> left(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, Class<T12> t, Condition on) {
+		return new Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> right(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, Class<T12> t, Condition on) {
+		return new Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> inner(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, Class<T12> t, Condition on) {
+		return new Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> outer(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, Class<T12> t, Condition on) {
+		return new Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> cross(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, Class<T12> t) {
+		return new Query12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(q, t, "cross join", null);
+	}
+
 	private static class Query12<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table> extends DBQuery<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> {
 		final int SIZE = 12;
-		Query12(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, final Class<T12> t) {
-			super(J12.class, q, t, "cross join");
+		Query12(final Query<J11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> q, final Class<T12> t, String joinType, Condition on) {
+			super(J12.class, q, t, joinType, on);
 		}
 	}
 
@@ -1863,13 +2258,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> cross(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, Class<T13> t) {
-		return new Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> left(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, Class<T13> t, Condition on) {
+		return new Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> right(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, Class<T13> t, Condition on) {
+		return new Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> inner(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, Class<T13> t, Condition on) {
+		return new Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> outer(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, Class<T13> t, Condition on) {
+		return new Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> cross(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, Class<T13> t) {
+		return new Query13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(q, t, "cross join", null);
+	}
+
 	private static class Query13<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table> extends DBQuery<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> {
 		final int SIZE = 13;
-		Query13(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, final Class<T13> t) {
-			super(J13.class, q, t, "cross join");
+		Query13(final Query<J12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> q, final Class<T13> t, String joinType, Condition on) {
+			super(J13.class, q, t, joinType, on);
 		}
 	}
 
@@ -2078,13 +2506,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> cross(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, Class<T14> t) {
-		return new Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> left(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, Class<T14> t, Condition on) {
+		return new Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> right(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, Class<T14> t, Condition on) {
+		return new Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> inner(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, Class<T14> t, Condition on) {
+		return new Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> outer(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, Class<T14> t, Condition on) {
+		return new Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> cross(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, Class<T14> t) {
+		return new Query14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(q, t, "cross join", null);
+	}
+
 	private static class Query14<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table> extends DBQuery<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> {
 		final int SIZE = 14;
-		Query14(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, final Class<T14> t) {
-			super(J14.class, q, t, "cross join");
+		Query14(final Query<J13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> q, final Class<T14> t, String joinType, Condition on) {
+			super(J14.class, q, t, joinType, on);
 		}
 	}
 
@@ -2301,13 +2762,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> cross(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, Class<T15> t) {
-		return new Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> left(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, Class<T15> t, Condition on) {
+		return new Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> right(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, Class<T15> t, Condition on) {
+		return new Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> inner(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, Class<T15> t, Condition on) {
+		return new Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> outer(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, Class<T15> t, Condition on) {
+		return new Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> cross(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, Class<T15> t) {
+		return new Query15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(q, t, "cross join", null);
+	}
+
 	private static class Query15<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table> extends DBQuery<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> {
 		final int SIZE = 15;
-		Query15(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, final Class<T15> t) {
-			super(J15.class, q, t, "cross join");
+		Query15(final Query<J14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> q, final Class<T15> t, String joinType, Condition on) {
+			super(J15.class, q, t, joinType, on);
 		}
 	}
 
@@ -2532,13 +3026,46 @@ public class Join {
 	 * The return is a private type (to avoid type erasure conflicts), but you should use
 	 * it as a {@code org.nosco.Query<Join.J16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>}
 	 */
-	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> cross(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, Class<T16> t) {
-		return new Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(q, t);
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> left(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, Class<T16> t, Condition on) {
+		return new Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(q, t, "left join", on);
 	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> right(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, Class<T16> t, Condition on) {
+		return new Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(q, t, "right join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> inner(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, Class<T16> t, Condition on) {
+		return new Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(q, t, "inner join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> outer(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, Class<T16> t, Condition on) {
+		return new Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(q, t, "outer join", on);
+	}
+	/** 
+	 * Joins types T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16 into one query.
+	 * The return is a private type (to avoid type erasure conflicts), but you should use
+	 * it as a {@code org.nosco.Query<Join.J16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>}
+	 */
+	public static <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> cross(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, Class<T16> t) {
+		return new Query16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(q, t, "cross join", null);
+	}
+
 	private static class Query16<T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table, T10 extends Table, T11 extends Table, T12 extends Table, T13 extends Table, T14 extends Table, T15 extends Table, T16 extends Table> extends DBQuery<J16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> {
 		final int SIZE = 16;
-		Query16(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, final Class<T16> t) {
-			super(J16.class, q, t, "cross join");
+		Query16(final Query<J15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> q, final Class<T16> t, String joinType, Condition on) {
+			super(J16.class, q, t, joinType, on);
 		}
 	}
 

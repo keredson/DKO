@@ -1,0 +1,1800 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+Function (Nosco API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Function (Nosco API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Function.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../org/kered/dko/Field.PK.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Function.Custom.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/Function.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Function.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+org.kered.dko</FONT>
+<BR>
+Class Function&lt;T&gt;</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.kered.dko.Function&lt;T&gt;</B>
+</PRE>
+<DL>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../../org/kered/dko/Function.Custom.html" title="class in org.kered.dko">Function.Custom</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public abstract class <B>Function&lt;T&gt;</B><DT>extends java.lang.Object</DL>
+</PRE>
+
+<P>
+A collection of SQL functions. &nbsp; Use these to call functions on fields
+ or values in the generated SQL. &nbsp; For example:
+
+ <pre>   import static org.kered.dko.Function.*;
+   SomeClass.ALL.where(SomeClass.BIRTH_DATE.gt(NOW())).count()</pre>
+
+ <p>would generate:
+
+ <pre>   select * from some_class where birth_date > NOW()</pre>
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>Derek Anderson</DD>
+</DL>
+<HR>
+
+<P>
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+
+<A NAME="nested_class_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Nested Class Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;class</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.Custom.html" title="class in org.kered.dko">Function.Custom</A>&lt;<A HREF="../../../org/kered/dko/Function.Custom.html" title="type parameter in Function.Custom">T</A>&gt;</B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The list of built-in functions is far from comprehensive.</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#Function()">Function</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#add(org.kered.dko.Field)">add</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#add(org.kered.dko.Function)">add</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#add(T)">add</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;T&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#COALESCE(java.lang.Object...)">COALESCE</A></B>(java.lang.Object...&nbsp;fields)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COALESCE is a sql function that will return the first non-null parameter value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.String&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#CONCAT(java.lang.Object...)">CONCAT</A></B>(java.lang.Object...&nbsp;fields)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The CONCAT() function is used to concatenate the values of any number of
+ string arguments passed to it.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEADD(org.kered.dko.Field, int, org.kered.dko.Constants.CALENDAR)">DATEADD</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends T&gt;&nbsp;field,
+        int&nbsp;count,
+        <A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEADD(org.kered.dko.Function, int, org.kered.dko.Constants.CALENDAR)">DATEADD</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;? extends T&gt;&nbsp;f1,
+        int&nbsp;count,
+        <A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Field, org.kered.dko.Field)">DATEDIFF</A></B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Field, org.kered.dko.Function)">DATEDIFF</A></B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Function, org.kered.dko.Field)">DATEDIFF</A></B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Function, org.kered.dko.Function)">DATEDIFF</A></B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f1,
+         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEPART(org.kered.dko.Constants.CALENDAR, org.kered.dko.Field)">DATEPART</A></B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The DATEPART function allows retrieving any part of the date and time variable provided.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DATEPART(org.kered.dko.Constants.CALENDAR, org.kered.dko.Function)">DATEPART</A></B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The DATEPART function allows retrieving any part of the date and time variable provided.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#DAY(org.kered.dko.Field)">DAY</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DAY, MONTH and YEAR functions are deterministic.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#div(org.kered.dko.Field)">div</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#div(org.kered.dko.Function)">div</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#div(T)">div</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#divide(org.kered.dko.Field)">divide</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use div()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#divide(org.kered.dko.Function)">divide</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use div()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#divide(T)">divide</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use div()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#eq(org.kered.dko.Field)">eq</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#eq(org.kered.dko.Function)">eq</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#eq(T)">eq</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#eq(org.kered.dko.Table.__SimplePrimaryKey)">eq</A></B>(<A HREF="../../../org/kered/dko/Table.__SimplePrimaryKey.html" title="interface in org.kered.dko">Table.__SimplePrimaryKey</A>&lt;?,<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#GETDATE()">GETDATE</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GETDATE and GETUTCDATE functions both return the current date and time.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#GETUTCDATE()">GETUTCDATE</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GETDATE and GETUTCDATE functions both return the current date and time.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#gt(org.kered.dko.Field)">gt</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#gt(org.kered.dko.Function)">gt</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#gt(T)">gt</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#gte(org.kered.dko.Field)">gte</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than or equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#gte(org.kered.dko.Function)">gte</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than or equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#gte(T)">gte</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function greater than or equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Boolean&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#IFNULL(org.kered.dko.Field, T)">IFNULL</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends T&gt;&nbsp;f,
+       T&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create a SQL function for IFNULL() (ISNULL() on SQL Server).</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Boolean&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#IFNULL(org.kered.dko.Function, T)">IFNULL</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;? extends T&gt;&nbsp;f,
+       T&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create a SQL function for IFNULL() (ISNULL() on SQL Server).</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#lt(org.kered.dko.Field)">lt</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#lt(org.kered.dko.Function)">lt</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#lt(T)">lt</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#lte(org.kered.dko.Field)">lte</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than or equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#lte(org.kered.dko.Function)">lte</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than or equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#lte(T)">lte</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function less than or equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#mod(org.kered.dko.Field)">mod</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#mod(org.kered.dko.Function)">mod</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#mod(T)">mod</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#modulus(org.kered.dko.Field)">modulus</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mod()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#modulus(org.kered.dko.Function)">modulus</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mod()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#modulus(T)">modulus</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mod()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#MONTH(org.kered.dko.Field)">MONTH</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DAY, MONTH and YEAR functions are deterministic.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#mul(org.kered.dko.Field)">mul</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#mul(org.kered.dko.Function)">mul</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#mul(T)">mul</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#multiply(org.kered.dko.Field)">multiply</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mul()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#multiply(org.kered.dko.Function)">multiply</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mul()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#multiply(T)">multiply</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mul()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#neq(org.kered.dko.Field)">neq</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function not equal to some other field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#neq(org.kered.dko.Function)">neq</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function not equal to some function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#neq(T)">neq</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this function not equal to the literal value of the parameter.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#NOW()">NOW</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#sub(org.kered.dko.Field)">sub</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#sub(org.kered.dko.Function)">sub</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#sub(T)">sub</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this function.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#subtract(org.kered.dko.Field)">subtract</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use sub()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#subtract(org.kered.dko.Function)">subtract</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use sub()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#subtract(T)">subtract</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use sub()</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Function.html#YEAR(org.kered.dko.Field)">YEAR</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DAY, MONTH and YEAR functions are deterministic.</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="Function()"><!-- --></A><H3>
+Function</H3>
+<PRE>
+public <B>Function</B>()</PRE>
+<DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="IFNULL(org.kered.dko.Field,java.lang.Object)"><!-- --></A><A NAME="IFNULL(org.kered.dko.Field, T)"><!-- --></A><H3>
+IFNULL</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Boolean&gt; <B>IFNULL</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends T&gt;&nbsp;f,
+                                                     T&nbsp;v)</PRE>
+<DL>
+<DD>Create a SQL function for IFNULL() (ISNULL() on SQL Server).
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - <DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="IFNULL(org.kered.dko.Function,java.lang.Object)"><!-- --></A><A NAME="IFNULL(org.kered.dko.Function, T)"><!-- --></A><H3>
+IFNULL</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Boolean&gt; <B>IFNULL</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;? extends T&gt;&nbsp;f,
+                                                     T&nbsp;v)</PRE>
+<DL>
+<DD>Create a SQL function for IFNULL() (ISNULL() on SQL Server).
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - <DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="NOW()"><!-- --></A><H3>
+NOW</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt; <B>NOW</B>()</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>the sql NOW() function (or GETDATE() on sql server)</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="GETDATE()"><!-- --></A><H3>
+GETDATE</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt; <B>GETDATE</B>()</PRE>
+<DL>
+<DD>GETDATE and GETUTCDATE functions both return the current date and time. However,
+ GETUTCDATE returns the current Universal Time Coordinate (UTC) time, whereas
+ GETDATE returns the date and time on the computer where SQL Server is running.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>same as NOW()</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="GETUTCDATE()"><!-- --></A><H3>
+GETUTCDATE</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt; <B>GETUTCDATE</B>()</PRE>
+<DL>
+<DD>GETDATE and GETUTCDATE functions both return the current date and time. However,
+ GETUTCDATE returns the current Universal Time Coordinate (UTC) time, whereas
+ GETDATE returns the date and time on the computer where SQL Server is running.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>the sql GETUTCDATE() function</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="COALESCE(java.lang.Object...)"><!-- --></A><H3>
+COALESCE</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;T&gt; <B>COALESCE</B>(java.lang.Object...&nbsp;fields)</PRE>
+<DL>
+<DD>COALESCE is a sql function that will return the first non-null parameter value.
+ All objects other than functions or fields are passed verbatim to the
+ PreparedStatement with setObject().
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>fields</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEADD(org.kered.dko.Function, int, org.kered.dko.Constants.CALENDAR)"><!-- --></A><H3>
+DATEADD</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt; <B>DATEADD</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;? extends T&gt;&nbsp;f1,
+                                                  int&nbsp;count,
+                                                  <A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component)</PRE>
+<DL>
+<DD>DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>count</CODE> - <DD><CODE>component</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEADD(org.kered.dko.Field, int, org.kered.dko.Constants.CALENDAR)"><!-- --></A><H3>
+DATEADD</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.sql.Date&gt; <B>DATEADD</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends T&gt;&nbsp;field,
+                                                  int&nbsp;count,
+                                                  <A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component)</PRE>
+<DL>
+<DD>DATEADD function is deterministic; it adds a certain period of time to the
+ existing date and time value.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f1</CODE> - <DD><CODE>count</CODE> - <DD><CODE>component</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEPART(org.kered.dko.Constants.CALENDAR, org.kered.dko.Function)"><!-- --></A><H3>
+DATEPART</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DATEPART</B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>The DATEPART function allows retrieving any part of the date and time variable provided.
+ This function is deterministic except when used with days of the week.
+ <p>
+ The DATEPART function takes two parameters: the part of the date that you want to
+ retrieve and the date itself. The DATEPART function returns an integer representing any
+ of the following parts of the supplied date: year, quarter, month, day of the year, day,
+ week number, weekday number, hour, minute, second, or millisecond.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEPART(org.kered.dko.Constants.CALENDAR, org.kered.dko.Field)"><!-- --></A><H3>
+DATEPART</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DATEPART</B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>The DATEPART function allows retrieving any part of the date and time variable provided.
+ This function is deterministic except when used with days of the week.
+ <p>
+ The DATEPART function takes two parameters: the part of the date that you want to
+ retrieve and the date itself. The DATEPART function returns an integer representing any
+ of the following parts of the supplied date: year, quarter, month, day of the year, day,
+ week number, weekday number, hour, minute, second, or millisecond.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DAY(org.kered.dko.Field)"><!-- --></A><H3>
+DAY</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DAY</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>DAY, MONTH and YEAR functions are deterministic. Each of these accepts a single date
+ value as a parameter and returns respective portions of the date as an integer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="MONTH(org.kered.dko.Field)"><!-- --></A><H3>
+MONTH</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>MONTH</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>DAY, MONTH and YEAR functions are deterministic. Each of these accepts a single date
+ value as a parameter and returns respective portions of the date as an integer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="YEAR(org.kered.dko.Field)"><!-- --></A><H3>
+YEAR</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>YEAR</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f)</PRE>
+<DL>
+<DD>DAY, MONTH and YEAR functions are deterministic. Each of these accepts a single date
+ value as a parameter and returns respective portions of the date as an integer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Field, org.kered.dko.Field)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Field, org.kered.dko.Function)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Function, org.kered.dko.Field)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="DATEDIFF(org.kered.dko.Constants.CALENDAR, org.kered.dko.Function, org.kered.dko.Function)"><!-- --></A><H3>
+DATEDIFF</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.Integer&gt; <B>DATEDIFF</B>(<A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A>&nbsp;component,
+                                                   <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f1,
+                                                   <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>DATEDIFF function is deterministic; it accepts two DATETIME values and a date portion
+ (minute, hour, day, month, etc) as parameters. DATEDIFF() determines the difference
+ between the two date values passed, expressed in the date portion specified.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>component</CODE> - <DD><CODE>f1</CODE> - <DD><CODE>f2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="CONCAT(java.lang.Object...)"><!-- --></A><H3>
+CONCAT</H3>
+<PRE>
+public static <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;java.lang.String&gt; <B>CONCAT</B>(java.lang.Object...&nbsp;fields)</PRE>
+<DL>
+<DD>The CONCAT() function is used to concatenate the values of any number of
+ string arguments passed to it.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>fields</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(java.lang.Object)"><!-- --></A><A NAME="eq(T)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>eq</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(org.kered.dko.Field)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>eq</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(org.kered.dko.Table.__SimplePrimaryKey)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>eq</B>(<A HREF="../../../org/kered/dko/Table.__SimplePrimaryKey.html" title="interface in org.kered.dko">Table.__SimplePrimaryKey</A>&lt;?,<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="eq(org.kered.dko.Function)"><!-- --></A><H3>
+eq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>eq</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="neq(java.lang.Object)"><!-- --></A><A NAME="neq(T)"><!-- --></A><H3>
+neq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>neq</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function not equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="neq(org.kered.dko.Field)"><!-- --></A><H3>
+neq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>neq</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function not equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="neq(org.kered.dko.Function)"><!-- --></A><H3>
+neq</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>neq</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function not equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lt(java.lang.Object)"><!-- --></A><A NAME="lt(T)"><!-- --></A><H3>
+lt</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lt</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lt(org.kered.dko.Field)"><!-- --></A><H3>
+lt</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lt</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lt(org.kered.dko.Function)"><!-- --></A><H3>
+lt</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lt</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lte(java.lang.Object)"><!-- --></A><A NAME="lte(T)"><!-- --></A><H3>
+lte</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lte</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than or equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lte(org.kered.dko.Field)"><!-- --></A><H3>
+lte</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lte</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than or equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="lte(org.kered.dko.Function)"><!-- --></A><H3>
+lte</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lte</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function less than or equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gt(java.lang.Object)"><!-- --></A><A NAME="gt(T)"><!-- --></A><H3>
+gt</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gt</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gt(org.kered.dko.Field)"><!-- --></A><H3>
+gt</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gt</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gt(org.kered.dko.Function)"><!-- --></A><H3>
+gt</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gt</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gte(java.lang.Object)"><!-- --></A><A NAME="gte(T)"><!-- --></A><H3>
+gte</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gte</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than or equal to the literal value of the parameter.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gte(org.kered.dko.Field)"><!-- --></A><H3>
+gte</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gte</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than or equal to some other field.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="gte(org.kered.dko.Function)"><!-- --></A><H3>
+gte</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gte</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;?&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Creates a condition representing this function greater than or equal to some function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="add(java.lang.Object)"><!-- --></A><A NAME="add(T)"><!-- --></A><H3>
+add</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="add(org.kered.dko.Field)"><!-- --></A><H3>
+add</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="add(org.kered.dko.Function)"><!-- --></A><H3>
+add</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="sub(java.lang.Object)"><!-- --></A><A NAME="sub(T)"><!-- --></A><H3>
+sub</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="sub(org.kered.dko.Field)"><!-- --></A><H3>
+sub</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="sub(org.kered.dko.Function)"><!-- --></A><H3>
+sub</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mul(java.lang.Object)"><!-- --></A><A NAME="mul(T)"><!-- --></A><H3>
+mul</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mul(org.kered.dko.Field)"><!-- --></A><H3>
+mul</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mul(org.kered.dko.Function)"><!-- --></A><H3>
+mul</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="div(java.lang.Object)"><!-- --></A><A NAME="div(T)"><!-- --></A><H3>
+div</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="div(org.kered.dko.Field)"><!-- --></A><H3>
+div</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="div(org.kered.dko.Function)"><!-- --></A><H3>
+div</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mod(java.lang.Object)"><!-- --></A><A NAME="mod(T)"><!-- --></A><H3>
+mod</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mod(org.kered.dko.Field)"><!-- --></A><H3>
+mod</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mod(org.kered.dko.Function)"><!-- --></A><H3>
+mod</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="subtract(java.lang.Object)"><!-- --></A><A NAME="subtract(T)"><!-- --></A><H3>
+subtract</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="subtract(org.kered.dko.Field)"><!-- --></A><H3>
+subtract</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="subtract(org.kered.dko.Function)"><!-- --></A><H3>
+subtract</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiply(java.lang.Object)"><!-- --></A><A NAME="multiply(T)"><!-- --></A><H3>
+multiply</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiply(org.kered.dko.Field)"><!-- --></A><H3>
+multiply</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiply(org.kered.dko.Function)"><!-- --></A><H3>
+multiply</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="divide(java.lang.Object)"><!-- --></A><A NAME="divide(T)"><!-- --></A><H3>
+divide</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="divide(org.kered.dko.Field)"><!-- --></A><H3>
+divide</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="divide(org.kered.dko.Function)"><!-- --></A><H3>
+divide</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="modulus(java.lang.Object)"><!-- --></A><A NAME="modulus(T)"><!-- --></A><H3>
+modulus</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="modulus(org.kered.dko.Field)"><!-- --></A><H3>
+modulus</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt;&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="modulus(org.kered.dko.Function)"><!-- --></A><H3>
+modulus</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Function.html" title="type parameter in Function">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
+<P>
+<DD>Performs a mathematical function on this function.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Function.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../org/kered/dko/Field.PK.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Function.Custom.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/Function.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Function.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>
+</BODY>
+</HTML>

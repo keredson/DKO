@@ -1,0 +1,978 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+Table (Nosco API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Table (Nosco API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Table.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../org/kered/dko/QueryFactory.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Table.__Alias.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/Table.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Table.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+org.kered.dko</FONT>
+<BR>
+Class Table</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.kered.dko.Table</B>
+</PRE>
+<DL>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../../org/kered/dko/Join.J10.html" title="class in org.kered.dko">Join.J10</A>, <A HREF="../../../org/kered/dko/Join.J11.html" title="class in org.kered.dko">Join.J11</A>, <A HREF="../../../org/kered/dko/Join.J12.html" title="class in org.kered.dko">Join.J12</A>, <A HREF="../../../org/kered/dko/Join.J13.html" title="class in org.kered.dko">Join.J13</A>, <A HREF="../../../org/kered/dko/Join.J14.html" title="class in org.kered.dko">Join.J14</A>, <A HREF="../../../org/kered/dko/Join.J15.html" title="class in org.kered.dko">Join.J15</A>, <A HREF="../../../org/kered/dko/Join.J16.html" title="class in org.kered.dko">Join.J16</A>, <A HREF="../../../org/kered/dko/Join.J17.html" title="class in org.kered.dko">Join.J17</A>, <A HREF="../../../org/kered/dko/Join.J18.html" title="class in org.kered.dko">Join.J18</A>, <A HREF="../../../org/kered/dko/Join.J19.html" title="class in org.kered.dko">Join.J19</A>, <A HREF="../../../org/kered/dko/Join.J2.html" title="class in org.kered.dko">Join.J2</A>, <A HREF="../../../org/kered/dko/Join.J20.html" title="class in org.kered.dko">Join.J20</A>, <A HREF="../../../org/kered/dko/Join.J21.html" title="class in org.kered.dko">Join.J21</A>, <A HREF="../../../org/kered/dko/Join.J22.html" title="class in org.kered.dko">Join.J22</A>, <A HREF="../../../org/kered/dko/Join.J23.html" title="class in org.kered.dko">Join.J23</A>, <A HREF="../../../org/kered/dko/Join.J24.html" title="class in org.kered.dko">Join.J24</A>, <A HREF="../../../org/kered/dko/Join.J25.html" title="class in org.kered.dko">Join.J25</A>, <A HREF="../../../org/kered/dko/Join.J26.html" title="class in org.kered.dko">Join.J26</A>, <A HREF="../../../org/kered/dko/Join.J27.html" title="class in org.kered.dko">Join.J27</A>, <A HREF="../../../org/kered/dko/Join.J28.html" title="class in org.kered.dko">Join.J28</A>, <A HREF="../../../org/kered/dko/Join.J29.html" title="class in org.kered.dko">Join.J29</A>, <A HREF="../../../org/kered/dko/Join.J3.html" title="class in org.kered.dko">Join.J3</A>, <A HREF="../../../org/kered/dko/Join.J30.html" title="class in org.kered.dko">Join.J30</A>, <A HREF="../../../org/kered/dko/Join.J31.html" title="class in org.kered.dko">Join.J31</A>, <A HREF="../../../org/kered/dko/Join.J32.html" title="class in org.kered.dko">Join.J32</A>, <A HREF="../../../org/kered/dko/Join.J4.html" title="class in org.kered.dko">Join.J4</A>, <A HREF="../../../org/kered/dko/Join.J5.html" title="class in org.kered.dko">Join.J5</A>, <A HREF="../../../org/kered/dko/Join.J6.html" title="class in org.kered.dko">Join.J6</A>, <A HREF="../../../org/kered/dko/Join.J7.html" title="class in org.kered.dko">Join.J7</A>, <A HREF="../../../org/kered/dko/Join.J8.html" title="class in org.kered.dko">Join.J8</A>, <A HREF="../../../org/kered/dko/Join.J9.html" title="class in org.kered.dko">Join.J9</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public abstract class <B>Table</B><DT>extends java.lang.Object</DL>
+</PRE>
+
+<P>
+This is the base class of all classes generated by this API.
+ Some of these methods are public only by necessity.  Please use only
+ <code>insert()</code>, <code>update()</code>, <code>save()</code> and <code>dirty()</code>.
+ I consider all others fair game for changing in later versions of the API.
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>Derek Anderson</DD>
+</DL>
+<HR>
+
+<P>
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+
+<A NAME="nested_class_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Nested Class Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;class</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.__Alias.html" title="class in org.kered.dko">Table.__Alias</A>&lt;<A HREF="../../../org/kered/dko/Table.__Alias.html" title="type parameter in Table.__Alias">S</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is used for conditional statements where the fields are ambiguous.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;interface</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.__PrimaryKey.html" title="interface in org.kered.dko">Table.__PrimaryKey</A>&lt;<A HREF="../../../org/kered/dko/Table.__PrimaryKey.html" title="type parameter in Table.__PrimaryKey">S</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Represents a primary key of a row.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;interface</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.__SimplePrimaryKey.html" title="interface in org.kered.dko">Table.__SimplePrimaryKey</A>&lt;<A HREF="../../../org/kered/dko/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">S</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>,<A HREF="../../../org/kered/dko/Table.__SimplePrimaryKey.html" title="type parameter in Table.__SimplePrimaryKey">V</A>&gt;</B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Represents a simple (ie: non-compound) primary key of a row.</TD>
+</TR>
+</TABLE>
+&nbsp;<!-- =========== FIELD SUMMARY =========== -->
+
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;java.util.BitSet</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_FETCHED_VALUES">__NOSCO_FETCHED_VALUES</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please do not use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;javax.sql.DataSource</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_ORIGINAL_DATA_SOURCE">__NOSCO_ORIGINAL_DATA_SOURCE</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please do not use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;java.util.BitSet</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_UPDATED_VALUES">__NOSCO_UPDATED_VALUES</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please do not use.</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#Table()">Table</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_PRIVATE_accessedColumnCallback(org.kered.dko.Table, org.kered.dko.Field)">__NOSCO_PRIVATE_accessedColumnCallback</A></B>(<A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&nbsp;table,
+                                       <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Internal function - please don't use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_PRIVATE_accessedFkCallback(org.kered.dko.Table, org.kered.dko.Field.FK)">__NOSCO_PRIVATE_accessedFkCallback</A></B>(<A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&nbsp;table,
+                                   <A HREF="../../../org/kered/dko/Field.FK.html" title="class in org.kered.dko">Field.FK</A>&lt;? extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;&nbsp;fk)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Internal function - please don't use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected abstract &nbsp;java.lang.Object</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_PRIVATE_mapType(java.lang.Object)">__NOSCO_PRIVATE_mapType</A></B>(java.lang.Object&nbsp;o)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Internal function - please don't use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_PRIVATE_postExecute(org.kered.dko.SqlContext, java.sql.Connection)">__NOSCO_PRIVATE_postExecute</A></B>(org.kered.dko.SqlContext&nbsp;context,
+                            java.sql.Connection&nbsp;conn)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Internal function - please don't use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#__NOSCO_PRIVATE_preExecute(org.kered.dko.SqlContext, java.sql.Connection)">__NOSCO_PRIVATE_preExecute</A></B>(org.kered.dko.SqlContext&nbsp;context,
+                           java.sql.Connection&nbsp;conn)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Internal function - please don't use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#delete()">delete</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes a delete statement for this object
+ (irregardless of if it's already in the database)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#delete(javax.sql.DataSource)">delete</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes a delete statement for this object
+ (irregardless of if it's already in the database)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#dirty()">dirty</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns true if the object has been modified</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#equals(java.lang.Object)">equals</A></B>(java.lang.Object&nbsp;other)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#exists()">exists</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns if this object exists in the database.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#exists(javax.sql.DataSource)">exists</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns if this object exists in the database.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;java.util.List&lt;<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#FIELDS()">FIELDS</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected abstract &nbsp;<A HREF="../../../org/kered/dko/Field.FK.html" title="class in org.kered.dko">Field.FK</A>[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#FKS()">FKS</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please do not use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract 
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; S</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#get(org.kered.dko.Field)">get</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Return the value of this instance that corresponds to the given field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#hashCode()">hashCode</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#insert()">insert</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes an insert statement for this object
+ (irregardless of if it's already in the database)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#insert(javax.sql.DataSource)">insert</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes an insert statement for this object
+ (irregardless of if it's already in the database)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#save()">save</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes an insert or update statement for this object
+ based on if the object came from the database or not.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#save(javax.sql.DataSource)">save</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes an insert or update statement for this object
+ based on if the object came from the database or not.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected abstract &nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#SCHEMA_NAME()">SCHEMA_NAME</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract 
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; void</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#set(org.kered.dko.Field, S)">set</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field,
+    S&nbsp;value)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the value of this instance that corresponds to the given field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected abstract &nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#TABLE_NAME()">TABLE_NAME</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please do not use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#toStringDetailed()">toStringDetailed</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The <code>toString()</code> methods generated by nosco print out PK values.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#update()">update</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes an update statement for this object
+ (irregardless of if it's already in the database)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>abstract &nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Table.html#update(javax.sql.DataSource)">update</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates and executes an update statement for this object
+ (irregardless of if it's already in the database)</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>clone, finalize, getClass, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ============ FIELD DETAIL =========== -->
+
+<A NAME="field_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Field Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="__NOSCO_FETCHED_VALUES"><!-- --></A><H3>
+__NOSCO_FETCHED_VALUES</H3>
+<PRE>
+protected java.util.BitSet <B>__NOSCO_FETCHED_VALUES</B></PRE>
+<DL>
+<DD>Please do not use.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_UPDATED_VALUES"><!-- --></A><H3>
+__NOSCO_UPDATED_VALUES</H3>
+<PRE>
+protected java.util.BitSet <B>__NOSCO_UPDATED_VALUES</B></PRE>
+<DL>
+<DD>Please do not use.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_ORIGINAL_DATA_SOURCE"><!-- --></A><H3>
+__NOSCO_ORIGINAL_DATA_SOURCE</H3>
+<PRE>
+protected javax.sql.DataSource <B>__NOSCO_ORIGINAL_DATA_SOURCE</B></PRE>
+<DL>
+<DD>Please do not use.
+<P>
+<DL>
+</DL>
+</DL>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="Table()"><!-- --></A><H3>
+Table</H3>
+<PRE>
+public <B>Table</B>()</PRE>
+<DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="SCHEMA_NAME()"><!-- --></A><H3>
+SCHEMA_NAME</H3>
+<PRE>
+protected abstract java.lang.String <B>SCHEMA_NAME</B>()</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The database schema</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="TABLE_NAME()"><!-- --></A><H3>
+TABLE_NAME</H3>
+<PRE>
+protected abstract java.lang.String <B>TABLE_NAME</B>()</PRE>
+<DL>
+<DD>Please do not use.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="FIELDS()"><!-- --></A><H3>
+FIELDS</H3>
+<PRE>
+public abstract java.util.List&lt;<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&gt; <B>FIELDS</B>()</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>A list of the fields defined for this class.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="FKS()"><!-- --></A><H3>
+FKS</H3>
+<PRE>
+protected abstract <A HREF="../../../org/kered/dko/Field.FK.html" title="class in org.kered.dko">Field.FK</A>[] <B>FKS</B>()</PRE>
+<DL>
+<DD>Please do not use.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="dirty()"><!-- --></A><H3>
+dirty</H3>
+<PRE>
+public boolean <B>dirty</B>()</PRE>
+<DL>
+<DD>Returns true if the object has been modified
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>true if the object has been modified</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="get(org.kered.dko.Field)"><!-- --></A><H3>
+get</H3>
+<PRE>
+public abstract &lt;S&gt; S <B>get</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</PRE>
+<DL>
+<DD>Return the value of this instance that corresponds to the given field.
+ Throws an IllegalArgumentException if the field isn't part of this instance.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>field</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="set(org.kered.dko.Field,java.lang.Object)"><!-- --></A><A NAME="set(org.kered.dko.Field, S)"><!-- --></A><H3>
+set</H3>
+<PRE>
+public abstract &lt;S&gt; void <B>set</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field,
+                             S&nbsp;value)</PRE>
+<DL>
+<DD>Sets the value of this instance that corresponds to the given field.
+ Throws an IllegalArgumentException if the field isn't part of this instance.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>field</CODE> - <DD><CODE>value</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="insert()"><!-- --></A><H3>
+insert</H3>
+<PRE>
+public abstract boolean <B>insert</B>()
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes an insert statement for this object
+ (irregardless of if it's already in the database)
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="update()"><!-- --></A><H3>
+update</H3>
+<PRE>
+public abstract boolean <B>update</B>()
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes an update statement for this object
+ (irregardless of if it's already in the database)
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="delete()"><!-- --></A><H3>
+delete</H3>
+<PRE>
+public abstract boolean <B>delete</B>()
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes a delete statement for this object
+ (irregardless of if it's already in the database)
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="save()"><!-- --></A><H3>
+save</H3>
+<PRE>
+public abstract boolean <B>save</B>()
+                      throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes an insert or update statement for this object
+ based on if the object came from the database or not.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="exists()"><!-- --></A><H3>
+exists</H3>
+<PRE>
+public abstract boolean <B>exists</B>()
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Returns if this object exists in the database. &nbsp;
+ Executes SQL looking for the PK values, or all columns if no PK.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="insert(javax.sql.DataSource)"><!-- --></A><H3>
+insert</H3>
+<PRE>
+public abstract boolean <B>insert</B>(javax.sql.DataSource&nbsp;ds)
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes an insert statement for this object
+ (irregardless of if it's already in the database)
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="update(javax.sql.DataSource)"><!-- --></A><H3>
+update</H3>
+<PRE>
+public abstract boolean <B>update</B>(javax.sql.DataSource&nbsp;ds)
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes an update statement for this object
+ (irregardless of if it's already in the database)
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="delete(javax.sql.DataSource)"><!-- --></A><H3>
+delete</H3>
+<PRE>
+public abstract boolean <B>delete</B>(javax.sql.DataSource&nbsp;ds)
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes a delete statement for this object
+ (irregardless of if it's already in the database)
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="save(javax.sql.DataSource)"><!-- --></A><H3>
+save</H3>
+<PRE>
+public abstract boolean <B>save</B>(javax.sql.DataSource&nbsp;ds)
+                      throws java.sql.SQLException</PRE>
+<DL>
+<DD>Creates and executes an insert or update statement for this object
+ based on if the object came from the database or not.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="exists(javax.sql.DataSource)"><!-- --></A><H3>
+exists</H3>
+<PRE>
+public abstract boolean <B>exists</B>(javax.sql.DataSource&nbsp;ds)
+                        throws java.sql.SQLException</PRE>
+<DL>
+<DD>Returns if this object exists in the database. &nbsp;
+ Executes SQL looking for the PK values, or all columns if no PK.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>success
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="hashCode()"><!-- --></A><H3>
+hashCode</H3>
+<PRE>
+public int <B>hashCode</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Overrides:</B><DD><CODE>hashCode</CODE> in class <CODE>java.lang.Object</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="equals(java.lang.Object)"><!-- --></A><H3>
+equals</H3>
+<PRE>
+public boolean <B>equals</B>(java.lang.Object&nbsp;other)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Overrides:</B><DD><CODE>equals</CODE> in class <CODE>java.lang.Object</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_PRIVATE_mapType(java.lang.Object)"><!-- --></A><H3>
+__NOSCO_PRIVATE_mapType</H3>
+<PRE>
+protected abstract java.lang.Object <B>__NOSCO_PRIVATE_mapType</B>(java.lang.Object&nbsp;o)</PRE>
+<DL>
+<DD>Internal function - please don't use. &nbsp; Subject to change.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>o</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="toStringDetailed()"><!-- --></A><H3>
+toStringDetailed</H3>
+<PRE>
+public java.lang.String <B>toStringDetailed</B>()</PRE>
+<DL>
+<DD>The <code>toString()</code> methods generated by nosco print out PK values. &nbsp;
+ <code>toStringDetailed()</code> will print out all the fields.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_PRIVATE_preExecute(org.kered.dko.SqlContext, java.sql.Connection)"><!-- --></A><H3>
+__NOSCO_PRIVATE_preExecute</H3>
+<PRE>
+protected void <B>__NOSCO_PRIVATE_preExecute</B>(org.kered.dko.SqlContext&nbsp;context,
+                                          java.sql.Connection&nbsp;conn)
+                                   throws java.sql.SQLException</PRE>
+<DL>
+<DD>Internal function - please don't use. &nbsp; Subject to change.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>context</CODE> - <DD><CODE>conn</CODE> - 
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_PRIVATE_postExecute(org.kered.dko.SqlContext, java.sql.Connection)"><!-- --></A><H3>
+__NOSCO_PRIVATE_postExecute</H3>
+<PRE>
+protected void <B>__NOSCO_PRIVATE_postExecute</B>(org.kered.dko.SqlContext&nbsp;context,
+                                           java.sql.Connection&nbsp;conn)
+                                    throws java.sql.SQLException</PRE>
+<DL>
+<DD>Internal function - please don't use. &nbsp; Subject to change.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>conn</CODE> - 
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_PRIVATE_accessedFkCallback(org.kered.dko.Table, org.kered.dko.Field.FK)"><!-- --></A><H3>
+__NOSCO_PRIVATE_accessedFkCallback</H3>
+<PRE>
+protected void <B>__NOSCO_PRIVATE_accessedFkCallback</B>(<A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&nbsp;table,
+                                                  <A HREF="../../../org/kered/dko/Field.FK.html" title="class in org.kered.dko">Field.FK</A>&lt;? extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;&nbsp;fk)</PRE>
+<DL>
+<DD>Internal function - please don't use. &nbsp; Subject to change.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>conn</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="__NOSCO_PRIVATE_accessedColumnCallback(org.kered.dko.Table, org.kered.dko.Field)"><!-- --></A><H3>
+__NOSCO_PRIVATE_accessedColumnCallback</H3>
+<PRE>
+protected void <B>__NOSCO_PRIVATE_accessedColumnCallback</B>(<A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&nbsp;table,
+                                                      <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;field)</PRE>
+<DL>
+<DD>Internal function - please don't use. &nbsp; Subject to change.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>conn</CODE> - </DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Table.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../org/kered/dko/QueryFactory.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Table.__Alias.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/Table.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Table.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>
+</BODY>
+</HTML>

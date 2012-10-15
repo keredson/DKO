@@ -1,0 +1,408 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+org.kered.dko (Nosco API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="org.kered.dko (Nosco API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Package</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <FONT CLASS="NavBarFont1">Class</FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-use.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;PREV PACKAGE&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/ant/package-summary.html"><B>NEXT PACKAGE</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/package-summary.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="package-summary.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<H2>
+Package org.kered.dko
+</H2>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Interface Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A></B></TD>
+<TD>A callback interface for bulk load operations.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query&lt;T extends Table&gt;</A></B></TD>
+<TD>The Query interface is the center of the Nosco API.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Table.__PrimaryKey.html" title="interface in org.kered.dko">Table.__PrimaryKey&lt;S extends Table&gt;</A></B></TD>
+<TD>Represents a primary key of a row.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Table.__SimplePrimaryKey.html" title="interface in org.kered.dko">Table.__SimplePrimaryKey&lt;S extends Table,V&gt;</A></B></TD>
+<TD>Represents a simple (ie: non-compound) primary key of a row.</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/AbstractQuery.html" title="class in org.kered.dko">AbstractQuery&lt;T extends Table&gt;</A></B></TD>
+<TD>shared methods between query implementations</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Bulk.html" title="class in org.kered.dko">Bulk</A></B></TD>
+<TD>Provides optimized methods for CRUD operations on collections.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></B></TD>
+<TD>This class represents a SQL conditional statement.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Condition.Literal.html" title="class in org.kered.dko">Condition.Literal</A></B></TD>
+<TD>Use this class to add custom SQL code to your where clause.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Constants.html" title="class in org.kered.dko">Constants</A></B></TD>
+<TD>Defines constants for use in this API.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Context.html" title="class in org.kered.dko">Context</A></B></TD>
+<TD>This class is used for tweaking query executions.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Context.Undoer.html" title="class in org.kered.dko">Context.Undoer</A></B></TD>
+<TD>Allows you to undo any context change.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/CSV.html" title="class in org.kered.dko">CSV</A></B></TD>
+<TD>Reads and writes DKO objects to CSV files (or any writer, such as System.out)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Diff.html" title="class in org.kered.dko">Diff</A></B></TD>
+<TD>This class offers diff logic.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Diff.FieldChange.html" title="class in org.kered.dko">Diff.FieldChange&lt;T extends Table,S&gt;</A></B></TD>
+<TD>Represents a changed field between two versions of a row.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Diff.RowChange.html" title="class in org.kered.dko">Diff.RowChange&lt;T extends Table&gt;</A></B></TD>
+<TD>Represents a change in a row.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field&lt;T&gt;</A></B></TD>
+<TD>This class represents a column in a table.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Field.FK.html" title="class in org.kered.dko">Field.FK&lt;S extends Table&gt;</A></B></TD>
+<TD>Represents a foreign key constraint.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Field.PK.html" title="class in org.kered.dko">Field.PK&lt;S extends Table&gt;</A></B></TD>
+<TD>Represents a primary key constraint.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function&lt;T&gt;</A></B></TD>
+<TD>A collection of SQL functions.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Function.Custom.html" title="class in org.kered.dko">Function.Custom&lt;T&gt;</A></B></TD>
+<TD>The list of built-in functions is far from comprehensive.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.html" title="class in org.kered.dko">Join</A></B></TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J10.html" title="class in org.kered.dko">Join.J10&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 10 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J11.html" title="class in org.kered.dko">Join.J11&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 11 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J12.html" title="class in org.kered.dko">Join.J12&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 12 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J13.html" title="class in org.kered.dko">Join.J13&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 13 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J14.html" title="class in org.kered.dko">Join.J14&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 14 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J15.html" title="class in org.kered.dko">Join.J15&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 15 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J16.html" title="class in org.kered.dko">Join.J16&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 16 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J17.html" title="class in org.kered.dko">Join.J17&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 17 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J18.html" title="class in org.kered.dko">Join.J18&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 18 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J19.html" title="class in org.kered.dko">Join.J19&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 19 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J2.html" title="class in org.kered.dko">Join.J2&lt;T1 extends Table,T2 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 2 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J20.html" title="class in org.kered.dko">Join.J20&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 20 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J21.html" title="class in org.kered.dko">Join.J21&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 21 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J22.html" title="class in org.kered.dko">Join.J22&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 22 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J23.html" title="class in org.kered.dko">Join.J23&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 23 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J24.html" title="class in org.kered.dko">Join.J24&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 24 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J25.html" title="class in org.kered.dko">Join.J25&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 25 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J26.html" title="class in org.kered.dko">Join.J26&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 26 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J27.html" title="class in org.kered.dko">Join.J27&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table,T27 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 27 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J28.html" title="class in org.kered.dko">Join.J28&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table,T27 extends Table,T28 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 28 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J29.html" title="class in org.kered.dko">Join.J29&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table,T27 extends Table,T28 extends Table,T29 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 29 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J3.html" title="class in org.kered.dko">Join.J3&lt;T1 extends Table,T2 extends Table,T3 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 3 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J30.html" title="class in org.kered.dko">Join.J30&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table,T27 extends Table,T28 extends Table,T29 extends Table,T30 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 30 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J31.html" title="class in org.kered.dko">Join.J31&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table,T27 extends Table,T28 extends Table,T29 extends Table,T30 extends Table,T31 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 31 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J32.html" title="class in org.kered.dko">Join.J32&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table,T10 extends Table,T11 extends Table,T12 extends Table,T13 extends Table,T14 extends Table,T15 extends Table,T16 extends Table,T17 extends Table,T18 extends Table,T19 extends Table,T20 extends Table,T21 extends Table,T22 extends Table,T23 extends Table,T24 extends Table,T25 extends Table,T26 extends Table,T27 extends Table,T28 extends Table,T29 extends Table,T30 extends Table,T31 extends Table,T32 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 32 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J4.html" title="class in org.kered.dko">Join.J4&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 4 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J5.html" title="class in org.kered.dko">Join.J5&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 5 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J6.html" title="class in org.kered.dko">Join.J6&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 6 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J7.html" title="class in org.kered.dko">Join.J7&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 7 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J8.html" title="class in org.kered.dko">Join.J8&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 8 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Join.J9.html" title="class in org.kered.dko">Join.J9&lt;T1 extends Table,T2 extends Table,T3 extends Table,T4 extends Table,T5 extends Table,T6 extends Table,T7 extends Table,T8 extends Table,T9 extends Table&gt;</A></B></TD>
+<TD>This class represents a join across 9 tables.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/QueryFactory.html" title="class in org.kered.dko">QueryFactory</A></B></TD>
+<TD>This is a relatively uninteresting factory class that you will likely
+ never use.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A></B></TD>
+<TD>This is the base class of all classes generated by this API.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Table.__Alias.html" title="class in org.kered.dko">Table.__Alias&lt;S extends Table&gt;</A></B></TD>
+<TD>This is used for conditional statements where the fields are ambiguous.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/ThreadContext.html" title="class in org.kered.dko">ThreadContext</A></B></TD>
+<TD><B>Deprecated.</B>&nbsp;<I>please use Context.getThreadContext()</I></TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Enum Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Constants.CALENDAR.html" title="enum in org.kered.dko">Constants.CALENDAR</A></B></TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Constants.DB_TYPE.html" title="enum in org.kered.dko">Constants.DB_TYPE</A></B></TD>
+<TD>Used for tweaking generated SQL by database type.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../org/kered/dko/Constants.DIRECTION.html" title="enum in org.kered.dko">Constants.DIRECTION</A></B></TD>
+<TD>&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>
+<DL>
+</DL>
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Package</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <FONT CLASS="NavBarFont1">Class</FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-use.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;PREV PACKAGE&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/ant/package-summary.html"><B>NEXT PACKAGE</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/package-summary.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="package-summary.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>
+</BODY>
+</HTML>

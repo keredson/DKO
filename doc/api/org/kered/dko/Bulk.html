@@ -1,0 +1,635 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+Bulk (Nosco API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Bulk (Nosco API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Bulk.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/Bulk.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Bulk.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+org.kered.dko</FONT>
+<BR>
+Class Bulk</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.kered.dko.Bulk</B>
+</PRE>
+<HR>
+<DL>
+<DT><PRE>public class <B>Bulk</B><DT>extends java.lang.Object</DL>
+</PRE>
+
+<P>
+Provides optimized methods for CRUD operations on collections. &nbsp;
+ Note that if you find yourself doing the following:
+ <pre>   <code>List&lt;MyObject&gt; toDelete = MyObject.ALL.where(conditions...).asList();
+   new Bulk(ds).deleteAll(toDelete);</code></pre>
+ It's much more efficient to do this:
+ <pre>   <code>List&lt;MyObject&gt; toDelete = MyObject.ALL.where(conditions...).deleteAll();</code></pre>
+ The latter deletes them from the database without transferring everything over the network.
+ <p>
+ Note that all these functions are streaming enabled. &nbsp; That means the following:
+ <pre>   <code>DataSource from = new DataSource(from_db...);
+   DataSource to new DataSource(to_db...);
+   new Bulk(to).insertAll(MyObject.ALL.use(from).where(conditions...));</code></pre>
+ Will move all data from the "from" to the "to" database without having to load the entire
+ result list into memory at one time.
+ <p>
+ Note: If a transaction is desired, use <code>ThreadContext.startTransaction(ds)</code> before
+ and <code>ThreadContext.commitTransaction(ds)</code> after any of these calls.
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>Derek Anderson</DD>
+</DL>
+<HR>
+
+<P>
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+
+<A NAME="nested_class_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Nested Class Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;interface</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A callback interface for bulk load operations.</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#Bulk(javax.sql.DataSource)">Bulk</A></B>(javax.sql.DataSource&nbsp;ds)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specify the target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#Bulk(javax.sql.DataSource, int)">Bulk</A></B>(javax.sql.DataSource&nbsp;ds,
+     int&nbsp;batchSize)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specify the target DataSource.</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#commitDiff(java.lang.Iterable)">commitDiff</A></B>(java.lang.Iterable&lt;<A HREF="../../../org/kered/dko/Diff.RowChange.html" title="class in org.kered.dko">Diff.RowChange</A>&lt;T&gt;&gt;&nbsp;diff)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#deleteAll(java.lang.Iterable)">deleteAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deletes from the supplied DataSource all the elements in this Iterable.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#deleteAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)">deleteAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deletes from the supplied DataSource all the elements in this Iterable.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#insertAll(java.lang.Iterable)">insertAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#insertAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)">insertAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#insertOrUpdateAll(java.lang.Iterable)">insertOrUpdateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#insertOrUpdateAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)">insertOrUpdateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                  <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+                  double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inserts all objects from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#updateAll(java.lang.Iterable)">updateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
+long</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Bulk.html#updateAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)">updateAll</A></B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+          <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+          double&nbsp;frequency)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource.</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="Bulk(javax.sql.DataSource)"><!-- --></A><H3>
+Bulk</H3>
+<PRE>
+public <B>Bulk</B>(javax.sql.DataSource&nbsp;ds)</PRE>
+<DL>
+<DD>Specify the target DataSource.
+ Note that you can get the default DataSource from any <code>MyObject.ALL.getDataSource()</code>.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>ds</CODE> - </DL>
+</DL>
+<HR>
+
+<A NAME="Bulk(javax.sql.DataSource, int)"><!-- --></A><H3>
+Bulk</H3>
+<PRE>
+public <B>Bulk</B>(javax.sql.DataSource&nbsp;ds,
+            int&nbsp;batchSize)</PRE>
+<DL>
+<DD>Specify the target DataSource.
+ Note that you can get the default DataSource from any <code>MyObject.ALL.getDataSource()</code>.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>ds</CODE> - <DD><CODE>batchSize</CODE> - the JDBCX batch size to use</DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="insertAll(java.lang.Iterable)"><!-- --></A><H3>
+insertAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>insertAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Inserts all objects from the source iterable into the target DataSource. &nbsp;
+ On error aborts. &nbsp;
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="insertAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)"><!-- --></A><H3>
+insertAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>insertAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                        <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+                                        double&nbsp;frequency)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Inserts all objects from the source iterable into the target DataSource. &nbsp;
+ On error aborts. &nbsp; Callback called every <code>frequency</code> seconds with the
+ number of rows already inserted. &nbsp;
+ If thread is interrupted returns the number of rows inserted before the interruption.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - <DD><CODE>callback</CODE> - <DD><CODE>frequency</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateAll(java.lang.Iterable)"><!-- --></A><H3>
+updateAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>updateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource. &nbsp; On error aborts. &nbsp;
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)"><!-- --></A><H3>
+updateAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>updateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                        <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+                                        double&nbsp;frequency)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Updates all objects (based on their primary keys) from the source iterable into the
+ target DataSource. &nbsp; On error aborts. &nbsp;
+ If thread is interrupted returns the number of rows inserted before the interruption. &nbsp;
+ <p>Note that classes without primary keys are not supported at this time.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="insertOrUpdateAll(java.lang.Iterable)"><!-- --></A><H3>
+insertOrUpdateAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>insertOrUpdateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+                       throws java.sql.SQLException</PRE>
+<DL>
+<DD>Inserts all objects from the source iterable into the
+ target DataSource. &nbsp; On error attempts to update (based on their primary keys). &nbsp;
+ On update error aborts.
+ <p>Note that classes without primary keys are not supported at this time.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="insertOrUpdateAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)"><!-- --></A><H3>
+insertOrUpdateAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>insertOrUpdateAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                                <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+                                                double&nbsp;frequency)
+                       throws java.sql.SQLException</PRE>
+<DL>
+<DD>Inserts all objects from the source iterable into the
+ target DataSource. &nbsp; On error attempts to update (based on their primary keys). &nbsp;
+ On update error aborts.
+ <p>Note that classes without primary keys are not supported at this time.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - <DD><CODE>callback</CODE> - <DD><CODE>frequency</CODE> - 
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deleteAll(java.lang.Iterable)"><!-- --></A><H3>
+deleteAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>deleteAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Deletes from the supplied DataSource all the elements in this Iterable.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - 
+<DT><B>Returns:</B><DD>the number of elements deleted
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deleteAll(java.lang.Iterable, org.kered.dko.Bulk.StatusCallback, double)"><!-- --></A><H3>
+deleteAll</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>deleteAll</B>(java.lang.Iterable&lt;T&gt;&nbsp;iterable,
+                                        <A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko">Bulk.StatusCallback</A>&nbsp;callback,
+                                        double&nbsp;frequency)
+               throws java.sql.SQLException</PRE>
+<DL>
+<DD>Deletes from the supplied DataSource all the elements in this Iterable.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>iterable</CODE> - <DD><CODE>callback</CODE> - <DD><CODE>frequency</CODE> - 
+<DT><B>Returns:</B><DD>the number of elements deleted
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="commitDiff(java.lang.Iterable)"><!-- --></A><H3>
+commitDiff</H3>
+<PRE>
+public &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; long <B>commitDiff</B>(java.lang.Iterable&lt;<A HREF="../../../org/kered/dko/Diff.RowChange.html" title="class in org.kered.dko">Diff.RowChange</A>&lt;T&gt;&gt;&nbsp;diff)
+                throws java.sql.SQLException</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Bulk.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Bulk.StatusCallback.html" title="interface in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/Bulk.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Bulk.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;<A HREF="#nested_class_summary">NESTED</A>&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>
+</BODY>
+</HTML>

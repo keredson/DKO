@@ -1,0 +1,961 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+AbstractQuery (Nosco API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="AbstractQuery (Nosco API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/AbstractQuery.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Bulk.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/AbstractQuery.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="AbstractQuery.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+org.kered.dko</FONT>
+<BR>
+Class AbstractQuery&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.kered.dko.AbstractQuery&lt;T&gt;</B>
+</PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD>java.lang.Iterable&lt;T&gt;, <A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;T&gt;</DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public abstract class <B>AbstractQuery&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</B><DT>extends java.lang.Object<DT>implements <A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;T&gt;</DL>
+</PRE>
+
+<P>
+shared methods between query implementations
+<P>
+
+<P>
+<HR>
+
+<P>
+
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.Iterable&lt;java.util.Map&lt;<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;,java.lang.Object&gt;&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#asIterableOfMaps()">asIterableOfMaps</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.Iterable&lt;java.lang.Object[]&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#asIterableOfObjectArrays()">asIterableOfObjectArrays</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.util.List&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#asList()">asList</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Runs the query, populating a list with all the values returned.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.util.List&lt;S&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#asList(org.kered.dko.Field)">asList</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Runs the query, populating a list of the values only in the given field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.util.Set&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#asSet()">asSet</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same as asList(), but puts them into a HashSet.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.util.Set&lt;S&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#asSet(org.kered.dko.Field)">asSet</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Runs the query (with distinct), populating a set of the values only in the given field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.util.Map&lt;S,java.util.Collection&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#collectBy(org.kered.dko.Field)">collectBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Evaluates your query into a map, keyed by whatever field you specify.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S,U&gt; java.util.Map&lt;S,java.util.Map&lt;U,java.util.Collection&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#collectBy(org.kered.dko.Field, org.kered.dko.Field)">collectBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField1,
+          <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;U&gt;&nbsp;byField2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Evaluates your query into a map, keyed by whatever field you specify.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;long</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#count()">count</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the database-calculated count of the query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#deleteAll()">deleteAll</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#first()">first</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gets the first item in the query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#get(org.kered.dko.Condition...)">get</A></B>(<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A>...&nbsp;conditions)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the only element that matches the conditions.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#get(org.kered.dko.Table.__PrimaryKey)">get</A></B>(<A HREF="../../../org/kered/dko/Table.__PrimaryKey.html" title="interface in org.kered.dko">Table.__PrimaryKey</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&nbsp;pk)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the only element that matches the conditions.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#getTheOnly()">getTheOnly</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the only object returned by this query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.Class&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#getType()">getType</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the base type of this query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#in(T...)">in</A></B>(<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>...&nbsp;ts)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Filters the returned results by the specified values.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#isEmpty()">isEmpty</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns whether the SQL returned any rows or not.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#latest(org.kered.dko.Field)">latest</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the last value that would be returned by the query.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.util.Map&lt;S,<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#mapBy(org.kered.dko.Field)">mapBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Evaluates your query into a map, keyed by whatever field you specify.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S,U&gt; java.util.Map&lt;S,java.util.Map&lt;U,<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#mapBy(org.kered.dko.Field, org.kered.dko.Field)">mapBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField1,
+      <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;U&gt;&nbsp;byField2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Evaluates your query into a map, keyed by whatever fields you specify.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.util.Map&lt;S,java.util.Collection&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#multiMapBy(org.kered.dko.Field)">multiMapBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>Use <CODE>#collectBy(Field<S>)</CODE> instead</I></TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.Iterable&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#none()">none</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns an always-empty Iterable.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;long</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#size()">size</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same as .count()</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/AbstractQuery.html#top(long)">top</A></B>(long&nbsp;i)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the first n rows of the query.</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_org.kered.dko.Query"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from interface org.kered.dko.<A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="../../../org/kered/dko/Query.html#all()">all</A>, <A HREF="../../../org/kered/dko/Query.html#countBy(org.kered.dko.Field)">countBy</A>, <A HREF="../../../org/kered/dko/Query.html#cross(java.lang.Class)">cross</A>, <A HREF="../../../org/kered/dko/Query.html#cross(org.kered.dko.Table.__Alias)">cross</A>, <A HREF="../../../org/kered/dko/Query.html#crossJoin(java.lang.Class)">crossJoin</A>, <A HREF="../../../org/kered/dko/Query.html#crossJoin(org.kered.dko.Table.__Alias)">crossJoin</A>, <A HREF="../../../org/kered/dko/Query.html#deferFields(java.util.Collection)">deferFields</A>, <A HREF="../../../org/kered/dko/Query.html#deferFields(org.kered.dko.Field...)">deferFields</A>, <A HREF="../../../org/kered/dko/Query.html#delete()">delete</A>, <A HREF="../../../org/kered/dko/Query.html#distinct()">distinct</A>, <A HREF="../../../org/kered/dko/Query.html#exclude(org.kered.dko.Condition...)">exclude</A>, <A HREF="../../../org/kered/dko/Query.html#exists()">exists</A>, <A HREF="../../../org/kered/dko/Query.html#getDataSource()">getDataSource</A>, <A HREF="../../../org/kered/dko/Query.html#getSelectFields()">getSelectFields</A>, <A HREF="../../../org/kered/dko/Query.html#in(java.util.Collection)">in</A>, <A HREF="../../../org/kered/dko/Query.html#innerJoin(java.lang.Class, org.kered.dko.Condition)">innerJoin</A>, <A HREF="../../../org/kered/dko/Query.html#innerJoin(org.kered.dko.Table.__Alias, org.kered.dko.Condition)">innerJoin</A>, <A HREF="../../../org/kered/dko/Query.html#insert()">insert</A>, <A HREF="../../../org/kered/dko/Query.html#leftJoin(java.lang.Class, org.kered.dko.Condition)">leftJoin</A>, <A HREF="../../../org/kered/dko/Query.html#leftJoin(org.kered.dko.Table.__Alias, org.kered.dko.Condition)">leftJoin</A>, <A HREF="../../../org/kered/dko/Query.html#limit(long)">limit</A>, <A HREF="../../../org/kered/dko/Query.html#max()">max</A>, <A HREF="../../../org/kered/dko/Query.html#min()">min</A>, <A HREF="../../../org/kered/dko/Query.html#onlyFields(java.util.Collection)">onlyFields</A>, <A HREF="../../../org/kered/dko/Query.html#onlyFields(org.kered.dko.Field...)">onlyFields</A>, <A HREF="../../../org/kered/dko/Query.html#orderBy(org.kered.dko.Constants.DIRECTION, org.kered.dko.Field...)">orderBy</A>, <A HREF="../../../org/kered/dko/Query.html#orderBy(org.kered.dko.Field...)">orderBy</A>, <A HREF="../../../org/kered/dko/Query.html#outerJoin(java.lang.Class, org.kered.dko.Condition)">outerJoin</A>, <A HREF="../../../org/kered/dko/Query.html#outerJoin(org.kered.dko.Table.__Alias, org.kered.dko.Condition)">outerJoin</A>, <A HREF="../../../org/kered/dko/Query.html#rightJoin(java.lang.Class, org.kered.dko.Condition)">rightJoin</A>, <A HREF="../../../org/kered/dko/Query.html#rightJoin(org.kered.dko.Table.__Alias, org.kered.dko.Condition)">rightJoin</A>, <A HREF="../../../org/kered/dko/Query.html#select(org.kered.dko.Field)">select</A>, <A HREF="../../../org/kered/dko/Query.html#set(org.kered.dko.Field, java.lang.Object)">set</A>, <A HREF="../../../org/kered/dko/Query.html#set(java.util.Map)">set</A>, <A HREF="../../../org/kered/dko/Query.html#sum(org.kered.dko.Field)">sum</A>, <A HREF="../../../org/kered/dko/Query.html#sumBy(org.kered.dko.Field, org.kered.dko.Field)">sumBy</A>, <A HREF="../../../org/kered/dko/Query.html#toMemory()">toMemory</A>, <A HREF="../../../org/kered/dko/Query.html#update()">update</A>, <A HREF="../../../org/kered/dko/Query.html#use(java.sql.Connection)">use</A>, <A HREF="../../../org/kered/dko/Query.html#use(org.kered.dko.Constants.DB_TYPE)">use</A>, <A HREF="../../../org/kered/dko/Query.html#use(javax.sql.DataSource)">use</A>, <A HREF="../../../org/kered/dko/Query.html#where(org.kered.dko.Condition...)">where</A>, <A HREF="../../../org/kered/dko/Query.html#with(org.kered.dko.Field.FK...)">with</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Iterable"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from interface java.lang.Iterable</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>iterator</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="getType()"><!-- --></A><H3>
+getType</H3>
+<PRE>
+public java.lang.Class&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>getType</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#getType()">Query</A></CODE></B></DD>
+<DD>Returns the base type of this query.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#getType()">getType</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="get(org.kered.dko.Condition...)"><!-- --></A><H3>
+get</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> <B>get</B>(<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A>...&nbsp;conditions)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#get(org.kered.dko.Condition...)">Query</A></CODE></B></DD>
+<DD>Returns the only element that matches the conditions.  If more than one match, throws a RuntimeException.
+ Equivalent to .where(conditions).getTheOnly()
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#get(org.kered.dko.Condition...)">get</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="get(org.kered.dko.Table.__PrimaryKey)"><!-- --></A><H3>
+get</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> <B>get</B>(<A HREF="../../../org/kered/dko/Table.__PrimaryKey.html" title="interface in org.kered.dko">Table.__PrimaryKey</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&nbsp;pk)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#get(org.kered.dko.Table.__PrimaryKey)">Query</A></CODE></B></DD>
+<DD>Returns the only element that matches the conditions.  If more than one match, throws a RuntimeException.
+ Equivalent to .where(conditions).getTheOnly()
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#get(org.kered.dko.Table.__PrimaryKey)">get</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="none()"><!-- --></A><H3>
+none</H3>
+<PRE>
+public java.lang.Iterable&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>none</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#none()">Query</A></CODE></B></DD>
+<DD>Returns an always-empty Iterable.  I'm not sure this has any practical use,
+ but it seemed to be a good corollary to: .all()
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#none()">none</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="count()"><!-- --></A><H3>
+count</H3>
+<PRE>
+public long <B>count</B>()
+           throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#count()">Query</A></CODE></B></DD>
+<DD>Returns the database-calculated count of the query.
+ Does not download the objects into the JVM.
+ Much faster than .asList().size() or counting the objects yourself.
+ WARNING: Joins can inflate this number and cause a apparent discrepancy with .asList().size().
+ For example, if table A has a FK to table B and you do a query like <code>B.ALL.with(A.B_FK)</code>
+ the size counted by the database likely will be different from the size counted by you counting
+ objects.  This is because the database does not merge objects into sets for you like DKOs do.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#count()">count</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="top(long)"><!-- --></A><H3>
+top</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>top</B>(long&nbsp;i)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#top(long)">Query</A></CODE></B></DD>
+<DD>Returns the first n rows of the query.
+ Same as .limit(n)
+ Note: If any to-many joins are in this query, this is computed on the java side.
+ (with the result set terminated mid-stream)
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#top(long)">top</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="first()"><!-- --></A><H3>
+first</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> <B>first</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#first()">Query</A></CODE></B></DD>
+<DD>Gets the first item in the query.
+ Same as: .top(1).getTheOnly()
+ Note: If any to-many joins are in this query, this is computed on the java side.
+ (with the result set terminated mid-stream)
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#first()">first</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="latest(org.kered.dko.Field)"><!-- --></A><H3>
+latest</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> <B>latest</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;&nbsp;field)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#latest(org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Returns the last value that would be returned by the query.
+ Same as: .orderBy(DESCENDING, field).top(1).getTheOnly()
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#latest(org.kered.dko.Field)">latest</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isEmpty()"><!-- --></A><H3>
+isEmpty</H3>
+<PRE>
+public boolean <B>isEmpty</B>()
+                throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#isEmpty()">Query</A></CODE></B></DD>
+<DD>Returns whether the SQL returned any rows or not.
+ Same as: .count() == 0
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#isEmpty()">isEmpty</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getTheOnly()"><!-- --></A><H3>
+getTheOnly</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> <B>getTheOnly</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#getTheOnly()">Query</A></CODE></B></DD>
+<DD>Returns the only object returned by this query.  If multiple rows are returned,
+ throws a RuntimeException.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#getTheOnly()">getTheOnly</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="size()"><!-- --></A><H3>
+size</H3>
+<PRE>
+public long <B>size</B>()
+          throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#size()">Query</A></CODE></B></DD>
+<DD>Same as .count()
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#size()">size</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mapBy(org.kered.dko.Field)"><!-- --></A><H3>
+mapBy</H3>
+<PRE>
+public &lt;S&gt; java.util.Map&lt;S,<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>mapBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)
+                                       throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#mapBy(org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Evaluates your query into a map, keyed by whatever field you specify.
+ If more than one instance has the same key value, the last instance
+ read will be what the map contains.  (use orderBy() to control ordering)<br>
+ Note: this reads your entire query into memory.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#mapBy(org.kered.dko.Field)">mapBy</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="mapBy(org.kered.dko.Field, org.kered.dko.Field)"><!-- --></A><H3>
+mapBy</H3>
+<PRE>
+public &lt;S,U&gt; java.util.Map&lt;S,java.util.Map&lt;U,<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt; <B>mapBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField1,
+                                                       <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;U&gt;&nbsp;byField2)
+                                                        throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#mapBy(org.kered.dko.Field, org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Evaluates your query into a map, keyed by whatever fields you specify.
+ If more than one instance has the same key value, the last instance
+ read will be what the map contains.  (use orderBy() to control ordering)<br>
+ Note: this reads your entire query into memory.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#mapBy(org.kered.dko.Field, org.kered.dko.Field)">mapBy</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="multiMapBy(org.kered.dko.Field)"><!-- --></A><H3>
+multiMapBy</H3>
+<PRE>
+public &lt;S&gt; java.util.Map&lt;S,java.util.Collection&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt; <B>multiMapBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)
+                                                                  throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Deprecated.</B>&nbsp;<I>Use <CODE>#collectBy(Field<S>)</CODE> instead</I>
+<P>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#multiMapBy(org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Evaluates your query into a map, keyed by whatever field you specify.
+ Multiple instances having the same key value are grouped into one collection.<br>
+ Note: this reads your entire query into memory.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#multiMapBy(org.kered.dko.Field)">multiMapBy</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="collectBy(org.kered.dko.Field)"><!-- --></A><H3>
+collectBy</H3>
+<PRE>
+public &lt;S&gt; java.util.Map&lt;S,java.util.Collection&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt; <B>collectBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)
+                                                                 throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#collectBy(org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Evaluates your query into a map, keyed by whatever field you specify.
+ Multiple instances having the same key value are grouped into one collection.<br>
+ Note: this reads your entire query into memory.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#collectBy(org.kered.dko.Field)">collectBy</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="collectBy(org.kered.dko.Field, org.kered.dko.Field)"><!-- --></A><H3>
+collectBy</H3>
+<PRE>
+public &lt;S,U&gt; java.util.Map&lt;S,java.util.Map&lt;U,java.util.Collection&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt;&gt;&gt; <B>collectBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField1,
+                                                                                 <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;U&gt;&nbsp;byField2)
+                                                                                  throws java.sql.SQLException</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#collectBy(org.kered.dko.Field, org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Evaluates your query into a map, keyed by whatever field you specify.
+ Multiple instances having the same key value are grouped into one collection.<br>
+ Note: this reads your entire query into memory.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#collectBy(org.kered.dko.Field, org.kered.dko.Field)">collectBy</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asList()"><!-- --></A><H3>
+asList</H3>
+<PRE>
+public java.util.List&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>asList</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#asList()">Query</A></CODE></B></DD>
+<DD>Runs the query, populating a list with all the values returned.
+ Useful if you need non-linear access to your objects, but take note all
+ objects must be able to fit into memory at the same time.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#asList()">asList</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asList(org.kered.dko.Field)"><!-- --></A><H3>
+asList</H3>
+<PRE>
+public &lt;S&gt; java.util.List&lt;S&gt; <B>asList</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#asList(org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Runs the query, populating a list of the values only in the given field. &nbsp;
+ If you want an list of more than one field type, you should use
+ <code>onlyFields(field1, field2, ...).asList()</code>. &nbsp; This will return you an
+ list of T instances, with only those fields populated. &nbsp;
+ If Java adds typed tuple support at some point this method may be extended.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#asList(org.kered.dko.Field)">asList</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asSet()"><!-- --></A><H3>
+asSet</H3>
+<PRE>
+public java.util.Set&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>asSet</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#asSet()">Query</A></CODE></B></DD>
+<DD>Same as asList(), but puts them into a HashSet.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#asSet()">asSet</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asSet(org.kered.dko.Field)"><!-- --></A><H3>
+asSet</H3>
+<PRE>
+public &lt;S&gt; java.util.Set&lt;S&gt; <B>asSet</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#asSet(org.kered.dko.Field)">Query</A></CODE></B></DD>
+<DD>Runs the query (with distinct), populating a set of the values only in the given field.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#asSet(org.kered.dko.Field)">asSet</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asIterableOfObjectArrays()"><!-- --></A><H3>
+asIterableOfObjectArrays</H3>
+<PRE>
+public java.lang.Iterable&lt;java.lang.Object[]&gt; <B>asIterableOfObjectArrays</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#asIterableOfObjectArrays()">Query</A></CODE></B></DD>
+<DD>Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s. &nbsp;
+ Usually used with <code>cross()</code> and <code>getSelectFields()</code>. (the latter to know
+ which array elements are from what fields) &nbsp;
+ Use sparingly. &nbsp;
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#asIterableOfObjectArrays()">asIterableOfObjectArrays</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asIterableOfMaps()"><!-- --></A><H3>
+asIterableOfMaps</H3>
+<PRE>
+public java.lang.Iterable&lt;java.util.Map&lt;<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;,java.lang.Object&gt;&gt; <B>asIterableOfMaps</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#asIterableOfMaps()">asIterableOfMaps</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="in(org.kered.dko.Table[])"><!-- --></A><A NAME="in(T...)"><!-- --></A><H3>
+in</H3>
+<PRE>
+public <A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>&gt; <B>in</B>(<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A>...&nbsp;ts)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../org/kered/dko/Query.html#in(T...)">Query</A></CODE></B></DD>
+<DD>Filters the returned results by the specified values.  If the type has a primary key,
+ this is used for the comparison.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#in(T...)">in</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="deleteAll()"><!-- --></A><H3>
+deleteAll</H3>
+<PRE>
+public int <B>deleteAll</B>()
+              throws java.sql.SQLException</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../org/kered/dko/Query.html#deleteAll()">deleteAll</A></CODE> in interface <CODE><A HREF="../../../org/kered/dko/Query.html" title="interface in org.kered.dko">Query</A>&lt;<A HREF="../../../org/kered/dko/AbstractQuery.html" title="type parameter in AbstractQuery">T</A> extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt;</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Throws:</B>
+<DD><CODE>java.sql.SQLException</CODE></DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/AbstractQuery.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Bulk.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/kered/dko/AbstractQuery.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="AbstractQuery.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>
+</BODY>
+</HTML>

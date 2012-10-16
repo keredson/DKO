@@ -392,6 +392,10 @@ class ClassGenerator {
 				br.write("\t\tpublic "+ pkType +" value() {\n");
 				br.write("\t\t\treturn "+ getFieldName(pk)+ ";\n");
 				br.write("\t\t}\n\n");
+				br.write("\t\t@Override\n");
+				br.write("\t\tpublic String toString() {\n");
+				br.write("\t\t\treturn _NAME;\n");
+				br.write("\t\t}\n\n");
 				br.write("\t\tpublic static PKS lookup("+ pkType +" v) {\n");
 				br.write("\t\t\tfor (final PKS x : PKS.values()) {\n");
 				br.write("\t\t\t\tif (x."+ getFieldName(pk) +" == null ? v == null : x."+ getFieldName(pk) +".equals(v)) {\n");

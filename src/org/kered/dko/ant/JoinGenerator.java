@@ -5,21 +5,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
 
-import org.kered.dko.Query;
-import org.kered.dko.Table;
-import org.kered.dko.Join.J2;
-import org.kered.dko.Join.J3;
-
-public class JoinGenerator {
+class JoinGenerator {
 
 	/**
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(final String[] args) throws IOException {
-		genJoinsFile(new File("Join.java"), 32);
+		genJoinsFile(new File("Join.java"), 9);
 	}
 
 	private static void genJoinsFile(final File file, final int n) throws IOException {

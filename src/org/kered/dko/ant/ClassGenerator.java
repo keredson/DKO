@@ -23,6 +23,7 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.kered.dko.Constants;
+import org.kered.dko.Field;
 import org.kered.dko.json.JSONArray;
 import org.kered.dko.json.JSONException;
 import org.kered.dko.json.JSONObject;
@@ -349,7 +350,7 @@ class ClassGenerator {
 		}
 		br.write("\n");
 
-		// write enums
+		// write pk enums
 		for (final String column : columns.keySet()) {
 			final String enumKey = pkgName +"."+ table +"."+ column;
 			if (!enums.has(enumKey)) continue;
@@ -377,6 +378,12 @@ class ClassGenerator {
 				br.write("\t\t}\n");
 				br.write("\t\tpublic "+ pkType +" get"+ getInstanceMethodName(pk) +"() {\n");
 				br.write("\t\t\treturn "+ getFieldName(pk) +";\n");
+				br.write("\t\t}\n");
+				br.write("\t\t@Override\n");
+				br.write("\t\tpublic java.util.List<Field<?>> FIELDS() {\n");
+				br.write("\t\t\tjava.util.List<Field<?>> ret = new java.util.ArrayList<Field<?>>();\n");
+				br.write("\t\t\tret.add("+ className +"."+ getFieldName(pk) +");\n");
+				br.write("\t\t\treturn ret;\n");
 				br.write("\t\t}\n");
 				br.write("\t\t@SuppressWarnings(\"unchecked\")\n");
 				br.write("\t\t@Override\n");

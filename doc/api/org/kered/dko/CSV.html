@@ -161,6 +161,24 @@ java.lang.Iterable&lt;T&gt;</CODE></FONT></TD>
 <TD NOWRAP><FONT SIZE="-1">
 <CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
 <BR>
+java.lang.Iterable&lt;T&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/CSV.html#read(java.lang.Class, java.io.Reader)">read</A></B>(java.lang.Class&lt;T&gt;&nbsp;cls,
+     java.io.Reader&nbsp;r)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates an iterable of objects of type cls from a CSV file.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; 
+<BR>
 long</CODE></FONT></TD>
 </TR>
 </TABLE>
@@ -263,6 +281,22 @@ public static &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="c
 <DT><B>Returns:</B><DD>the number of objects written
 <DT><B>Throws:</B>
 <DD><CODE>java.io.IOException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="read(java.lang.Class, java.io.Reader)"><!-- --></A><H3>
+read</H3>
+<PRE>
+public static &lt;T extends <A HREF="../../../org/kered/dko/Table.html" title="class in org.kered.dko">Table</A>&gt; java.lang.Iterable&lt;T&gt; <B>read</B>(java.lang.Class&lt;T&gt;&nbsp;cls,
+                                                           java.io.Reader&nbsp;r)</PRE>
+<DL>
+<DD>Creates an iterable of objects of type cls from a CSV file.
+ Note that this iterable will always try to read from the reader.  (no caching)
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>cls</CODE> - <DD><CODE>f</CODE> - 
+<DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
 <HR>

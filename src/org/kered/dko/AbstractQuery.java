@@ -17,7 +17,7 @@ import java.util.Set;
 import org.kered.dko.Table.__PrimaryKey;
 
 /**
- * shared methods between query implementations
+ * This class contains default implementations of some of the methods required of Query.
  */
 public abstract class AbstractQuery<T extends Table> implements Query<T> {
 

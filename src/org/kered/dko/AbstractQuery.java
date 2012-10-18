@@ -27,7 +27,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		type = q.getType();
 	}
 
-	AbstractQuery(final Class<? extends Table> type) {
+	public AbstractQuery(final Class<? extends Table> type) {
 		this.type = (Class<T>) type;
 	}
 

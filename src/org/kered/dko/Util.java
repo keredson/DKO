@@ -207,6 +207,7 @@ class Util {
 	}
 
 	static boolean notAllNull(final Object[] fieldValues, final int start, final int end) {
+		if (start == end) return true;
 		for (int i=start; i<end; ++i) {
 			if (fieldValues[i] != null) return true;
 		}

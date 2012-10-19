@@ -330,8 +330,10 @@ class Select<T extends Table> implements Iterator<T> {
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
 					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
-					final Method fkSetMethod = fkToOneSetMethods.get(reffingObject.getClass());
-					fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
+					final Method fkSetMethod = fkToOneSetMethods.get(join.reffingTableInfo.tableClass);
+					if (reffingObject != null) {
+						fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
+					}
 				}
 				for(final JoinInfo<?,?> join : query.joinsToMany) {
 					final Object reffedObject = objects[join.reffedTableInfo.position];
@@ -339,9 +341,11 @@ class Select<T extends Table> implements Iterator<T> {
 					final Method fkSetSetMethod = fkToManySetMethods.get(join.fk);
 					InMemoryQuery tmpQuery = ttbMap.get(join);
 					if (tmpQuery == null || newObjectThisRow[join.reffedTableInfo.position]) {
-						tmpQuery = new InMemoryQuery(join.fk.referencing);
-						fkSetSetMethod.invoke(reffedObject, join.fk, tmpQuery);
-						ttbMap.put(join, tmpQuery);
+						if (reffedObject != null) {
+							tmpQuery = new InMemoryQuery(join.fk.referencing);
+							fkSetSetMethod.invoke(reffedObject, join.fk, tmpQuery);
+							ttbMap.put(join, tmpQuery);
+						}
 					}
 					if (reffingObject != null) {
 						tmpQuery.cache.add(reffingObject);

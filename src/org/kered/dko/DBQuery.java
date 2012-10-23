@@ -1261,6 +1261,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
+	public Iterable<Map<Field<?>, Object>> asIterableOfMaps() {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.onlySelectFromFirstTableAndJoins  = false;
+		return new SelectAsMapIterable<T>(q);
+	}
+
+	@Override
 	public Iterable<Object[]> asIterableOfObjectArrays() {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySelectFromFirstTableAndJoins  = false;

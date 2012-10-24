@@ -1216,7 +1216,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public <S> Iterable<S> select(final Field<S> field) {
+	public <S> Iterable<S> asIterableOf(final Field<S> field) {
 		return new SelectSingleColumn<S>(this, field);
 	}
 

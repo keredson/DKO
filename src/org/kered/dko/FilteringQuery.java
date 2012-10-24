@@ -137,15 +137,13 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 		return null;
 	}
 
-	@Override
-	public <S> Map<S, Double> sumBy(final Field<? extends Number> sumField,
-			final Field<S> byField) throws SQLException {
+	public <R, S extends Number> Map<R, S> sumBy(final Field<S> sumField, final Field<R> byField)
+			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public Double sum(final Field<? extends Number> f) throws SQLException {
+	public <S extends Number> S sum(final Field<S> f) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -193,7 +191,7 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	}
 
 	@Override
-	public <S> Iterable<S> select(final Field<S> field) {
+	public <S> Iterable<S> asIterableOf(final Field<S> field) {
 		// TODO Auto-generated method stub
 		return null;
 	}

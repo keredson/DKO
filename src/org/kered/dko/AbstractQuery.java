@@ -27,6 +27,14 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		type = q.getType();
 	}
 
+	/**
+	 * @deprecated Use {@link #asIterableOf(Field<S>)} instead
+	 */
+	@Override
+	public <S> Iterable<S> select(final Field<S> field) {
+		return this.asIterableOf(field);
+	}
+
 	@Override
 	public Query<T> toMemory() {
 		return new InMemoryQuery<T>(this);
@@ -191,7 +199,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S> List<S> asList(final Field<S> field) {
 		final List<S> ret = new ArrayList<S>();
-		for (final S s : select(field)) {
+		for (final S s : asIterableOf(field)) {
 			ret.add(s);
 		}
 		return ret;
@@ -207,7 +215,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S> Set<S> asSet(final Field<S> field) {
 		final Set<S> ret = new HashSet<S>();
-		for (final S s : this.distinct().select(field)) {
+		for (final S s : this.distinct().asIterableOf(field)) {
 			ret.add(s);
 		}
 		return ret;

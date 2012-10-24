@@ -491,8 +491,19 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * iterable of T instances, with only those fields populated. &nbsp;
 	 * If Java adds typed tuple support at some point this method may be extended.
 	 * @return
+	 * @deprecated Use {@link #asIterableOf(Field<S>)} instead
 	 */
 	public <S> Iterable<S> select(Field<S> field);
+
+	/**
+	 * Returns you an iterable of the values only in the given field. &nbsp;
+	 * If you want an iterable of more than one field type, you should use
+	 * {@code onlyFields(field1, field2, ...)}. &nbsp; This will return you an
+	 * iterable of T instances, with only those fields populated. &nbsp;
+	 * If Java adds typed tuple support at some point this method may be extended.
+	 * @return
+	 */
+	public <S> Iterable<S> asIterableOf(Field<S> field);
 
 	/**
 	 * Evaluates the given query into memory and returns to you a new query backed by
@@ -525,7 +536,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public List<Field<?>> getSelectFields();
 
 	/**
-	 * Returns the results of the query as a {@code Iterator} of {@code Object[]}s. &nbsp;
+	 * Returns the results of the query as a {@code Iterable} of {@code Object[]}s. &nbsp;
 	 * Usually used with {@code cross()} and {@code getSelectFields()}. (the latter to know
 	 * which array elements are from what fields) &nbsp;
 	 * Use sparingly. &nbsp;
@@ -533,6 +544,12 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Iterable<Object[]> asIterableOfObjectArrays();
 
+	/**
+	 * Returns the results of the query as a {@code Iterable} of {@code Map<Field<?>,Object>}s. &nbsp;
+	 * Usually used with {@code cross()} and {@code onlyFields()}
+	 * (the latter to specify which fields to populate). &nbsp;
+	 * @return
+	 */
 	public Iterable<Map<Field<?>,Object>> asIterableOfMaps();
 
 	/**

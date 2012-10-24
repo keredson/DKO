@@ -245,7 +245,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public <S> Iterable<S> select(final Field<S> field) {
+	public <S> Iterable<S> asIterableOf(final Field<S> field) {
 		final List<S> ret = new ArrayList<S>();
 		for (final T t : this) ret.add(t.get(field));
 		return ret;

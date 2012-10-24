@@ -1,6 +1,7 @@
 package test.db;
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -421,6 +422,12 @@ public class SharedDBTests extends TestCase {
     	Item.ALL.where(Item.ATTR1.between(Item.ATTR1, Item.ATTR2)).asList();
     }
 
+    public void testBetweenFieldsInMemory() throws Exception {
+    	final List<Item> orig = Item.ALL.where(Item.ATTR1.between(Item.ATTR1, Item.ATTR2)).asList();
+    	final List<Item> inMem = Item.ALL.toMemory().where(Item.ATTR1.between(Item.ATTR1, Item.ATTR2)).asList();
+    	assertEquals(orig.size(), inMem.size());
+    }
+
     public void testMapBy2() throws Exception {
     	final Map<String, Map<String, Item>> x = Item.ALL.mapBy(Item.ATTR2, Item.ATTR1);
     	for (final Entry<String, Map<String, Item>> e : x.entrySet()) {
@@ -649,5 +656,30 @@ public class SharedDBTests extends TestCase {
 //    		j.t3.getCatid();
 //    	}
 //    }
+
+    public void testNewBetween() throws SQLException {
+    	final Query<Item> q = Item.ALL.where(Field.between(15.0, Item.UNITCOST, Item.LISTPRICE));
+    	for (final Item j : q) {
+    		System.err.println(j.toStringDetailed());
+    	}
+    	assertEquals(18, q.count());
+    }
+
+    public void testNewBetweenWithFunctions() throws SQLException {
+    	final Query<Item> q = Item.ALL.where(Field.between(15.0, Item.UNITCOST.add(1.0), Item.LISTPRICE.sub(8.0)));
+    	for (final Item j : q) {
+    		System.err.println(j.toStringDetailed());
+    	}
+    	assertEquals(4, q.count());
+    }
+
+    public void testBadColumnNames() throws SQLException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
+    	final Field f = new Field(0, null, "K%", null, null, null);
+    	final Method m = Field.class.getDeclaredMethod("getSQL", StringBuffer.class, Constants.DB_TYPE.class);
+    	m.setAccessible(true);
+    	final StringBuffer sb = new StringBuffer();
+    	m.invoke(f, sb, Constants.DB_TYPE.SQLSERVER);
+    	assertEquals("[K%]", sb.toString());
+    }
 
 }

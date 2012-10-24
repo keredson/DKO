@@ -68,11 +68,11 @@ public class Field<T> implements Cloneable {
 		final Set<String> kws = null;
 		String name = NAME;
 		if (dbType == Constants.DB_TYPE.SQLSERVER) {
-			name = Constants.KEYWORDS_SQLSERVER.contains(NAME.toLowerCase()) ? "["+NAME+"]" : NAME;
+			name = Constants.KEYWORDS_SQLSERVER.contains(NAME.toLowerCase()) || NAME.matches(".*\\W+.*") ? "["+NAME+"]" : NAME;
 		} else if (dbType == Constants.DB_TYPE.MYSQL) {
-			name = Constants.KEYWORDS_MYSQL.contains(NAME.toLowerCase()) ? "`"+NAME+"`" : NAME;
+			name = Constants.KEYWORDS_MYSQL.contains(NAME.toLowerCase()) || NAME.matches(".*\\W+.*") ? "`"+NAME+"`" : NAME;
 		} else if (dbType == Constants.DB_TYPE.SQL92) {
-			name = Constants.KEYWORDS_SQL92.contains(NAME.toLowerCase()) ? "\""+NAME+"\"" : NAME;
+			name = Constants.KEYWORDS_SQL92.contains(NAME.toLowerCase()) || NAME.matches(".*\\W+.*") ? "\""+NAME+"\"" : NAME;
 		}
 		if (boundTable != null) {
 			sb.append(boundTable).append(".");
@@ -398,6 +398,50 @@ public class Field<T> implements Cloneable {
 	 */
 	public Condition between(final T v1, final Field v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
+	}
+
+	/**
+	 * Creates a condition representing a value between two fields.  Example:
+	 * {@code select * from car where 25 between city_mpg and highway_mpg}
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static <T> Condition between(final T v1, final Field<T> f1, final Field<T> f2) {
+		return new Ternary(v1, " between ", f1, " and ",  f2);
+	}
+
+	/**
+	 * Creates a condition representing a value between two fields.  Example:
+	 * {@code select * from car where 25 between city_mpg and highway_mpg}
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static <T> Condition between(final T v1, final Function f1, final Field<T> f2) {
+		return new Ternary(v1, " between ", f1, " and ",  f2);
+	}
+
+	/**
+	 * Creates a condition representing a value between two fields.  Example:
+	 * {@code select * from car where 25 between city_mpg and highway_mpg}
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static <T> Condition between(final T v1, final Field<T> f1, final Function f2) {
+		return new Ternary(v1, " between ", f1, " and ",  f2);
+	}
+
+	/**
+	 * Creates a condition representing a value between two fields.  Example:
+	 * {@code select * from car where 25 between city_mpg and highway_mpg}
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public static <T> Condition between(final T v1, final Function f1, final Function f2) {
+		return new Ternary(v1, " between ", f1, " and ",  f2);
 	}
 
 	/**

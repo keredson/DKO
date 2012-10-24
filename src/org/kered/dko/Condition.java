@@ -434,26 +434,24 @@ public abstract class Condition {
 
 	static class Ternary extends Condition {
 
-		private final Field<?> field;
-		private final String cmp1;
-		private final String cmp2;
 		private final Object v1;
+		private final String cmp1;
 		private final Object v2;
+		private final String cmp2;
+		private final Object v3;
 
-		public Ternary(final Field<?> field, final String cmp1, final Object v1, final String cmp2, final Object v2) {
-			this.field = field;
-			this.cmp1 = cmp1;
-			this.cmp2 = cmp2;
+		public Ternary(final Object v1, final String cmp1, final Object v2, final String cmp2, final Object v3) {
 			this.v1 = v1;
+			this.cmp1 = cmp1;
 			this.v2 = v2;
+			this.cmp2 = cmp2;
+			this.v3 = v3;
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
-			sb.append(Util.derefField(field, context));
-			sb.append(cmp1);
 			if (v1 instanceof Function) {
 				((Function)v1).getSQL(sb, bindings, context);
 			} else if (v1 instanceof Field) {
@@ -462,18 +460,27 @@ public abstract class Condition {
 				sb.append("?");
 				bindings.add(v1);
 			}
-			sb.append(cmp2);
+			sb.append(cmp1);
 			if (v2 instanceof Function) {
 				((Function)v2).getSQL(sb, bindings, context);
-			} else if (v1 instanceof Field) {
+			} else if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v2, context));
 			} else {
 				sb.append("?");
 				bindings.add(v2);
 			}
+			sb.append(cmp2);
+			if (v3 instanceof Function) {
+				((Function)v3).getSQL(sb, bindings, context);
+			} else if (v2 instanceof Field) {
+				sb.append(Util.derefField((Field)v3, context));
+			} else {
+				sb.append("?");
+				bindings.add(v3);
+			}
 		}
 
-		@SuppressWarnings("rawtypes")
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		boolean matches(final Table t) {
 			if (!cmp1.trim().equalsIgnoreCase("between")) {
@@ -484,11 +491,17 @@ public abstract class Condition {
 				throw new IllegalStateException("unknown comparision function '"+ cmp2
 						+"' for in-memory conditional check");
 			}
-			final Comparable o1 = (Comparable) v1;
-			final Comparable o2 = (Comparable) v2;
-			final Comparable v = (Comparable) t.get(field);
-			if (o1 != null && o1.compareTo(v) > 0) return false;
-			if (o2 != null && o2.compareTo(v) <= 0) return false;
+			Comparable o1 = null;
+			if (v1 instanceof Field) o1 = (Comparable) t.get((Field<?>) v1);
+			else if (v1 instanceof Comparable) o1 = (Comparable) v1;
+			Comparable o2 = null;
+			if (v2 instanceof Field) o2 = (Comparable) t.get((Field<?>) v2);
+			else if (v2 instanceof Comparable) o2 = (Comparable) v2;
+			Comparable o3 = null;
+			if (v3 instanceof Field) o3 = (Comparable) t.get((Field<?>) v3);
+			else if (v3 instanceof Comparable) o3 = (Comparable) v3;
+			if (o2 != null && o2.compareTo(o1) > 0) return false;
+			if (o3 != null && o3.compareTo(o1) <= 0) return false;
 			return true;
 		}
 

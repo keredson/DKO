@@ -3,7 +3,9 @@ package org.kered.dko.datasource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -19,6 +21,7 @@ public class MirroredDataSource implements DataSource {
 
 	private final DataSource primary;
 	private DataSource[] mirrors;
+	private static final Logger log = Logger.getLogger("org.kered.dko.datasource.MirroredDataSource");
 
 	/**
      * This class usually passes
@@ -84,7 +87,22 @@ public class MirroredDataSource implements DataSource {
 		if (mirrors.length == 0) return getConnection();
 		final Random random = new Random();
 		final int i = random.nextInt(mirrors.length);
-		return mirrors[i].getConnection();
+		for (int j=0; j<mirrors.length; ++j) {
+			final DataSource mirror = mirrors[(i+j)%mirrors.length];
+			try {
+				return mirror.getConnection();
+			} catch (final SQLException e) {
+				// db down - try another
+				log.warning("could not connect to "+ mirror +": "+ e.toString());
+			}
+		}
+		try {
+			return primary.getConnection();
+		} catch (final SQLException e) {
+			log.warning("could not connect to "+ primary +": "+ e.toString());
+		}
+		throw new SQLException("could not connect to any mirror: "
+				+ Arrays.asList(mirrors) +" or the primary: "+ primary);
 	}
 
 	@Override

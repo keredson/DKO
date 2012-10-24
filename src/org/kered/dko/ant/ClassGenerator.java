@@ -543,32 +543,51 @@ class ClassGenerator {
 
 		// write toString
 		br.write("\t public String toString() {\n");
-		br.write("\t\treturn \"["+ className);
-		for (int i=0; i<pks.length(); ++i) {
-			final String pk = pks.getString(i);
-			br.write(" "+ pk+":");
-			br.write("\"+"+ getInstanceFieldName(pk));
-			br.write("+\"");
+		br.write("\t\tif (__NOSCO_CALLBACK_TOSTRING!=null) {\n");
+		br.write("\t\t\ttry { return (String) __NOSCO_CALLBACK_TOSTRING.invoke(null, this); }\n");
+		br.write("\t\t\tcatch (Throwable e) { __NOSCO_LOGGER.warning(e.toString()); }\n");
+		br.write("\t\t}\n");
+		br.write("\t\treturn this.toStringSimple();\n");
+		br.write("\t}\n");
+
+		// write toStringShort
+		br.write("\t public String toStringSimple() {\n");
+		br.write("\t\tStringBuffer _sb = new StringBuffer();\n");
+		br.write("\t\t_sb.append(\"["+ className +"\");");
+		for (final String column : pkSet) {
+			writeToStringPart(br, column);
 		}
+		boolean foundNameColumn = false;
 		for (final String column : columns.keySet()) {
+			if (pkSet.contains(column)) continue;
 			if (!"name".equalsIgnoreCase(column)) continue;
-			// if "name" exists but isn't a PK, we should still use it for toString()
-			br.write(" "+ column +":");
-			br.write("\"+"+ getInstanceFieldName(column));
-			br.write("+\"");
+			foundNameColumn = true;
+			writeToStringPart(br, column);
 		}
-		br.write("]\";\n");
+		if (!foundNameColumn) {
+			for (final String column : columns.keySet()) {
+				if (pkSet.contains(column)) continue;
+				if (!column.toLowerCase().contains("name")) continue;
+				writeToStringPart(br, column);
+			}
+		}
+		br.write("\t\t_sb.append(\"]\");\n");
+		br.write("\t\treturn _sb.toString();\n");
 		br.write("\t}\n\n");
 
-		// write toString
+		// write toStringDetailed
 		br.write("\t public String toStringDetailed() {\n");
-		br.write("\t\treturn \"["+ className);
-		for (final String column : columns.keySet()) {
-			br.write(" "+ column +":");
-			br.write("\"+"+ getInstanceFieldName(column));
-			br.write("+\"");
+		br.write("\t\tStringBuffer _sb = new StringBuffer();\n");
+		br.write("\t\t_sb.append(\"["+ className +"\");");
+		for (final String column : pkSet) {
+			writeToStringPart(br, column);
 		}
-		br.write("]\";\n");
+		for (final String column : columns.keySet()) {
+			if (pkSet.contains(column)) continue;
+			writeToStringPart(br, column);
+		}
+		br.write("\t\t_sb.append(\"]\");\n");
+		br.write("\t\treturn _sb.toString();\n");
 		br.write("\t}\n\n");
 
 		// write getters and setters
@@ -948,6 +967,7 @@ class ClassGenerator {
 
 
 		// write callbacks
+		br.write("\tprivate static Method __NOSCO_CALLBACK_TOSTRING = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_PRE = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_INSERT_POST = null;\n");
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_PRE = null;\n");
@@ -963,6 +983,12 @@ class ClassGenerator {
 		br.write("\tprivate static Method __NOSCO_CALLBACK_UPDATE_POST_OLD = null;\n");
 		if (callbackPackage != null) {
 			br.write("\tstatic {\n");
+			br.write("\t\ttry {\n");
+			br.write("\t\t\t __NOSCO_CALLBACK_TOSTRING = Class.forName(\""+ callbackPackage
+					+"."+ pkgName +"."+ className +"CB\").getMethod(\"toString\", "
+					+ className +".class);\n");
+			br.write("\t\t\t__NOSCO_LOGGER.fine(\"found toString callback \"+ __NOSCO_CALLBACK_TOSTRING);\n");
+			br.write("\t\t} catch (final Exception e) { /* ignore */ }\n");
 			br.write("\t\ttry {\n");
 			br.write("\t\t\t __NOSCO_CALLBACK_INSERT_PRE = Class.forName(\""+ callbackPackage
 					+"."+ pkgName +"."+ className +"CB\").getMethod(\"preInsert\", "
@@ -1160,6 +1186,18 @@ class ClassGenerator {
 		// end class
 		br.write("}\n");
 		br.close();
+	}
+
+	private void writeToStringPart(final BufferedWriter br, final String column)
+			throws IOException {
+		br.write("\t\tif (__NOSCO_FETCHED_VALUES.get("+ getFieldName(column) +".INDEX)) {\n");
+		br.write("\t\t\t_sb.append(\" "+ column +":\");\n");
+		br.write("\t\t\tString _tmp = "+ getInstanceFieldName(column) +"==null ? \"null\" : "+ getInstanceFieldName(column) +".toString();\n");
+		br.write("\t\t\tboolean _quote = _tmp.contains(\" \");\n");
+		br.write("\t\t\tif (_quote) _sb.append('\"');\n");
+		br.write("\t\t\t_sb.append(_tmp.replace(\"\\\"\", \"\\\\\\\"\"));\n");
+		br.write("\t\t\tif (_quote) _sb.append('\"');\n");
+		br.write("\t\t}\n");
 	}
 
 	private static String getInstanceFieldName(String column) {

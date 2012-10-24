@@ -682,4 +682,25 @@ public class SharedDBTests extends TestCase {
     	assertEquals("[K%]", sb.toString());
     }
 
+    public void testToStrings() {
+    	for (final Account a : Account.ALL) {
+    		System.err.println(a);
+    		System.err.println(a.toStringDetailed());
+    		assertTrue(a.toString().contains("name"));
+    		assertTrue(a.toStringDetailed().contains("name"));
+    		assertFalse(a.toString().contains("addr1"));
+    	}
+    	for (final Category a : Category.ALL) {
+    		System.err.println(a);
+    		System.err.println(a.toStringDetailed());
+    		assertTrue(a.toString().contains("name"));
+    		assertTrue(a.toStringDetailed().contains("name"));
+    		assertFalse(a.toString().contains("descn"));
+    	}
+    }
+
+    public void testToStringCB() {
+    	assertTrue(Item.ALL.first().toString().endsWith("/CB"));
+    }
+
 }

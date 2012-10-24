@@ -1061,7 +1061,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> Map<S, Double> sumBy(final Field<? extends Number> sumField, final Field<S> byField)
+	public <R, S extends Number> Map<R, S> sumBy(final Field<S> sumField, final Field<R> byField)
 			throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
@@ -1075,13 +1075,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		setBindings(ps);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
-		final Map<Object, Double> result = new LinkedHashMap<Object, Double>();
+		final Map<R,S> result = new LinkedHashMap<R,S>();
 		while (rs.next()) {
-			Object key = null;
-			if (byField.TYPE == Long.class) key = rs.getLong(1); else
-			if (byField.TYPE == Double.class) key = rs.getDouble(1); else
-			key = rs.getObject(1);
-			final Double value = rs.getDouble(2);
+			final R key = Util.getTypedValueFromRS(rs, 1, byField);
+			final S value = Util.getTypedValueFromRS(rs, 2, sumField);
 			result.put(key, value);
 		}
 		rs.close();
@@ -1089,11 +1086,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (connInfo.b) {
 			conn.close();
 		}
-		return (Map<S, Double>) result;
+		return result;
 	}
 
 	@Override
-	public Double sum(final Field<? extends Number> sumField) throws SQLException {
+	public <S extends Number> S sum(final Field<S> sumField) throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
 		sql = "select sum("+ Util.derefField(sumField, context) +")"+ sql;
@@ -1106,7 +1103,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
 		rs.next();
-		final Double ret = rs.getDouble(1);
+		final S ret = Util.getTypedValueFromRS(rs, 1, sumField);
 		rs.close();
 		ps.close();
 		_postExecute(context, conn);

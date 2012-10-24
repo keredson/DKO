@@ -201,42 +201,6 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public <S> Map<S, Double> sumBy(final Field<? extends Number> sumField,
-			final Field<S> byField) throws SQLException {
-		final Map<S, Double> ret = new HashMap<S, Double>();
-		for (final T t : this) {
-			final S key = t.get(byField);
-			Double value = ret.get(key);
-			if (value == null) value = 0.0;
-			value += t.get(sumField).doubleValue();
-			ret.put(key, value);
-		}
-		return ret;
-	}
-
-	@Override
-	public Double sum(final Field<? extends Number> f) throws SQLException {
-		double sum = 0;
-		for (final T t : this) {
-			sum += t.get(f).doubleValue();
-		}
-		return sum;
-	}
-
-	@Override
-	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
-		final Map<S, Integer> ret = new HashMap<S, Integer>();
-		for (final T t : this) {
-			final S key = t.get(byField);
-			Integer value = ret.get(key);
-			if (value == null) value = 0;
-			value += 1;
-			ret.put(key, value);
-		}
-		return ret;
-	}
-
-	@Override
 	public Query<T> use(final DataSource ds) {
 		throw new UnsupportedOperationException("can't specify a DataSource " +
 				"for an in-memory query");
@@ -284,15 +248,6 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	public <S> Iterable<S> select(final Field<S> field) {
 		final List<S> ret = new ArrayList<S>();
 		for (final T t : this) ret.add(t.get(field));
-		return ret;
-	}
-
-	@Override
-	public <S> List<S> asList(final Field<S> field) {
-		final List<S> ret = new ArrayList<S>();
-		for (final S s : select(field)) {
-			ret.add(s);
-		}
 		return ret;
 	}
 

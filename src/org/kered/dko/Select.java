@@ -260,7 +260,7 @@ class Select<T extends Table> implements Iterator<T> {
 			++c;
 			final Object[] nextRow = new Object[selectedFields.length];
 			for (int i=0; i<selectedFields.length; ++i) {
-				nextRow[i] = Util.fixObjectType(rs, selectedFields[i].TYPE, i+1);
+				nextRow[i] = Util.getTypedValueFromRS(rs, i+1, selectedFields[i]);
 			}
 			nextRows.add(nextRow);
 		}

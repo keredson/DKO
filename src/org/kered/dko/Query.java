@@ -339,7 +339,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <S> Map<S, Double> sumBy(Field<? extends Number> sumField, Field<S> byField)
+	public <R, S extends Number> Map<R, S> sumBy(Field<S> sumField, Field<R> byField)
 			throws SQLException;
 
 	/**
@@ -349,7 +349,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Double sum(Field<? extends Number> f) throws SQLException;
+	public <S extends Number> S sum(Field<S> f) throws SQLException;
 
 	/**
 	 * Evaluates your query into a map, keyed by whatever field you specify.

@@ -52,27 +52,41 @@ class Util {
 		}
 	}
 
-	/**
-	 * @param rs
-	 * @param type
-	 * @param i
-	 * @return
-	 * @throws SQLException
-	 */
-	static Object fixObjectType(final ResultSet rs, final Class<?> type, final int i) throws SQLException {
-		if (type == Long.class) return rs.getLong(i);
+	@SuppressWarnings("unchecked")
+	static <S> S getTypedValueFromRS(final ResultSet rs, final int i, final Field<S> field) throws SQLException {
+		final Class<S> type = field.TYPE;
+		if (type == Byte.class) {
+			final Byte v = Byte.valueOf(rs.getByte(i));
+			return (S) (rs.wasNull() ? null : v);
+		}
 		if (type == Double.class) {
-			final double v = rs.getDouble(i);
-			return rs.wasNull() ? null : v;
+			final Double v = Double.valueOf(rs.getDouble(i));
+			return (S) (rs.wasNull() ? null : v);
+		}
+		if (type == Float.class) {
+			final Float v = Float.valueOf(rs.getFloat(i));
+			return (S) (rs.wasNull() ? null : v);
+		}
+		if (type == Integer.class) {
+			final Integer v = Integer.valueOf(rs.getInt(i));
+			return (S) (rs.wasNull() ? null : v);
+		}
+		if (type == Long.class) {
+			final Long v = Long.valueOf(rs.getLong(i));
+			return (S) (rs.wasNull() ? null : v);
+		}
+		if (type == Short.class) {
+			final Short v = Short.valueOf(rs.getShort(i));
+			return (S) (rs.wasNull() ? null : v);
 		}
 		if (type == Character.class) {
 			final String s = rs.getString(i);
-			if (s != null && s.length() > 0) return s.charAt(0);
+			if (s != null && s.length() > 0) return (S) Character.valueOf(s.charAt(0));
 			else return null;
 		}
 		Object o = rs.getObject(i);
 		if (o instanceof Short) o = ((Short)o).intValue();
-		return o;
+		return (S) o;
 	}
 
 	/**

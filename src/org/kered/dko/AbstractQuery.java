@@ -27,6 +27,11 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		type = q.getType();
 	}
 
+	@Override
+	public Query<T> toMemory() {
+		return new InMemoryQuery<T>(this);
+	}
+
 	public AbstractQuery(final Class<? extends Table> type) {
 		this.type = (Class<T>) type;
 	}
@@ -243,12 +248,12 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public Iterable<Map<Field<?>, Object>> asIterableOfMaps() {
 		final Query<T> q = this;
+		final List<Field<?>> fields = q.getSelectFields();
 		return new Iterable<Map<Field<?>, Object>>() {
 			@Override
 			public Iterator<Map<Field<?>, Object>> iterator() {
 				final Iterator<T> it = q.iterator();
 				return new Iterator<Map<Field<?>, Object>>() {
-					List<Field<?>> fields = null;
 					@Override
 					public boolean hasNext() {
 						return it.hasNext();
@@ -256,7 +261,6 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 					@Override
 					public Map<Field<?>, Object> next() {
 						final T t = it.next();
-						if (fields == null) fields = t.FIELDS();
 						final Map<Field<?>, Object> ret = new HashMap<Field<?>, Object>();
 						for (final Field<?> field : fields) {
 							ret.put(field, t.get(field));
@@ -287,6 +291,104 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public int deleteAll() throws SQLException {
 		return this.delete();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <S extends Number> S sum(final Field<S> f) throws SQLException {
+		if (Byte.class.equals(f.TYPE)) {
+			byte sum = 0;
+			for (final T t : this) {
+				sum += t.get(f).byteValue();
+			}
+			return (S) Byte.valueOf(sum);
+		}
+		if (Double.class.equals(f.TYPE)) {
+			double sum = 0;
+			for (final T t : this) {
+				sum += t.get(f).doubleValue();
+			}
+			return (S) Double.valueOf(sum);
+		}
+		if (Float.class.equals(f.TYPE)) {
+			float sum = 0;
+			for (final T t : this) {
+				sum += t.get(f).floatValue();
+			}
+			return (S) Float.valueOf(sum);
+		}
+		if (Integer.class.equals(f.TYPE)) {
+			int sum = 0;
+			for (final T t : this) {
+				sum += t.get(f).intValue();
+			}
+			return (S) Integer.valueOf(sum);
+		}
+		if (Long.class.equals(f.TYPE)) {
+			long sum = 0;
+			for (final T t : this) {
+				sum += t.get(f).longValue();
+			}
+			return (S) Long.valueOf(sum);
+		}
+		if (Short.class.equals(f.TYPE)) {
+			short sum = 0;
+			for (final T t : this) {
+				sum += t.get(f).shortValue();
+			}
+			return (S) Short.valueOf(sum);
+		}
+		throw new IllegalArgumentException("unsupported number type: "+ f.TYPE);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <R, S extends Number> Map<R, S> sumBy(final Field<S> sumField, final Field<R> byField)
+			throws SQLException {
+		final Map<R,S> ret = new HashMap<R,S>();
+		for (final T t : this) {
+			final R key = t.get(byField);
+			S value = ret.get(key);
+			if (Byte.class.equals(sumField.TYPE)) {
+				if (value == null) value = (S) Byte.valueOf((byte) 0);
+				value = (S) Byte.valueOf((byte) ((Byte)value + (Byte)t.get(sumField)));
+			}
+			if (Double.class.equals(sumField.TYPE)) {
+				if (value == null) value = (S) Double.valueOf(0);
+				value = (S) Double.valueOf(((Double)value + (Double)t.get(sumField)));
+			}
+			if (Float.class.equals(sumField.TYPE)) {
+				if (value == null) value = (S) Float.valueOf(0);
+				value = (S) Float.valueOf(((Float)value + (Float)t.get(sumField)));
+			}
+			if (Integer.class.equals(sumField.TYPE)) {
+				if (value == null) value = (S) Integer.valueOf(0);
+				value = (S) Integer.valueOf(((Integer)value + (Integer)t.get(sumField)));
+			}
+			if (Long.class.equals(sumField.TYPE)) {
+				if (value == null) value = (S) Long.valueOf(0);
+				value = (S) Long.valueOf(((Long)value + (Long)t.get(sumField)));
+			}
+			if (Short.class.equals(sumField.TYPE)) {
+				if (value == null) value = (S) Short.valueOf((short) 0);
+				value = (S) Short.valueOf((short) ((Short)value + (Short)t.get(sumField)));
+			}
+			ret.put(key, value);
+		}
+		return ret;
+	}
+
+	@Override
+	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
+		final Map<S, Integer> ret = new HashMap<S, Integer>();
+		for (final T t : this) {
+			final S key = t.get(byField);
+			Integer value = ret.get(key);
+			if (value == null) value = 0;
+			value += 1;
+			ret.put(key, value);
+		}
+		return ret;
 	}
 
 }

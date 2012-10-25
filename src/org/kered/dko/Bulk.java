@@ -471,7 +471,7 @@ public class Bulk {
 			sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME())
 					+sep+ table.TABLE_NAME());
 			sb.append(" where ");
-			sb.append(Util.join("=? and ", fields));
+			sb.append(Util.joinFields(dbType, "=? and ", fields));
 			sb.append("=?;");
 			final String sql = sb.toString();
 			Util.log(sql, null);

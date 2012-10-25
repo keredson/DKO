@@ -50,7 +50,8 @@ public class Field<T> implements Cloneable {
 
 	@Override
 	public String toString() {
-		if (boundTable == null) return NAME;
+		//throw new RuntimeException("don't use this to gen sql - use Field.getSQL(...)");
+		if (boundTable == null) return TABLE.getSimpleName() +"."+ JAVA_NAME;
 		return boundTable +"."+ NAME;
 	}
 

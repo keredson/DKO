@@ -54,7 +54,7 @@ public class CSV {
 						}
 					}
 				}
-				w.write(Util.join(",", fields));
+				w.write(Util.joinFields(Constants.DB_TYPE.SQL92, ",", fields));
 				w.write('\n');
 				first = false;
 			}

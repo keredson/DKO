@@ -26,4 +26,21 @@ class Util {
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
 	}
 
+	static boolean truthy(String s) {
+		if (s == null) return false;
+		s = s.trim().toLowerCase();
+		if ("true".equals(s)) return true;
+		if ("false".equals(s)) return false;
+		if ("t".equals(s)) return true;
+		if ("f".equals(s)) return false;
+		if ("yes".equals(s)) return true;
+		if ("no".equals(s)) return false;
+		if ("y".equals(s)) return true;
+		if ("n".equals(s)) return false;
+		try { return Integer.valueOf(s) != 0; }
+		catch (final NumberFormatException e) { /* ignore */ }
+		throw new RuntimeException("I don't know the truthiness of '"+ s
+				+"'.  Accepted values are: true/false/t/f/yes/no/y/n/[0-9]+");
+	}
+
 }

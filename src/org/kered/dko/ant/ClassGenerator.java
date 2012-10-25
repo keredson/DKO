@@ -63,7 +63,7 @@ class ClassGenerator {
 
 	public static void go(final String dir, final String pkg, final String[] stripPrefixes,
 		final String[] stripSuffixes, final String metadataFile, final Map<String, String> schemaAliases, final File fakeFKsFile,
-		final String typeMappingsFile, final String dataSource, final String callbackPackage, final JSONObject enums)
+		final String typeMappingsFile, final String dataSource, final String callbackPackage, final JSONObject enums, final boolean useDetailedToString)
 				throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
@@ -146,7 +146,7 @@ class ClassGenerator {
 				}
 
 				generator.generate(schema, pkgName, table, columns, pks, fks, fksIn, dataSourceName,
-						callbackPackage, enums);
+						callbackPackage, enums, useDetailedToString);
 			}
 
 		}
@@ -257,7 +257,7 @@ class ClassGenerator {
 
 	private void generate(final String schema, final String pkgName, final String table, final JSONObject columns, JSONArray pks,
 			final List<FK> fks, final List<FK> fksIn, final String dataSourceName, final String callbackPackage,
-			final JSONObject enums)
+			final JSONObject enums, final boolean useDetailedToString)
 	throws IOException, JSONException {
 		final String className = genTableClassName(table);
 		final Set<String> pkSet = new HashSet<String>();
@@ -547,7 +547,11 @@ class ClassGenerator {
 		br.write("\t\t\ttry { return (String) __NOSCO_CALLBACK_TOSTRING.invoke(null, this); }\n");
 		br.write("\t\t\tcatch (Throwable e) { __NOSCO_LOGGER.warning(e.toString()); }\n");
 		br.write("\t\t}\n");
-		br.write("\t\treturn this.toStringSimple();\n");
+		if (useDetailedToString) {
+			br.write("\t\treturn this.toStringDetailed();\n");
+		} else {
+			br.write("\t\treturn this.toStringSimple();\n");
+		}
 		br.write("\t}\n");
 
 		// write toStringShort

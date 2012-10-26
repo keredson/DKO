@@ -710,10 +710,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	List<TableInfo> getAllTableInfos() {
 		final List<TableInfo> all = new ArrayList<TableInfo>();
 		int position = 0;
-		for (final TableInfo ti : tableInfos) {
-			all.add(ti);
-			ti.position = position++;
-		}
+		final Iterator<TableInfo> it = tableInfos.iterator();
+		final TableInfo base = it.next();
+		all.add(base);
+		base.position = position++;
 		for (final JoinInfo join : joins) {
 			all.add(join.reffedTableInfo);
 			join.reffedTableInfo.position = position++;
@@ -725,6 +725,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		for (final JoinInfo join : joinsToMany) {
 			all.add(join.reffingTableInfo);
 			join.reffingTableInfo.position = position++;
+		}
+		while (it.hasNext()) {
+			final TableInfo ti = it.next();
+			all.add(ti);
+			ti.position = position++;
 		}
 		return all;
 	}
@@ -748,10 +753,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			final List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
 			if(onlySet!=null) {
-				for (final Field<?> other : onlySet) {
-					for (final TableInfo ti : allTableInfos) {
-						ti.start = c;
-						final String tableName = bind ? ti.tableName : null;
+				for (final TableInfo ti : allTableInfos) {
+					ti.start = c;
+					final String tableName = bind ? ti.tableName : null;
+					for (final Field<?> other : onlySet) {
 						for (final Field<?> field : ti.table.FIELDS()) {
 							if (field == other && ti.nameAutogenned) {
 								fields.add(bind ? field.from(tableName) : field);
@@ -765,8 +770,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 								continue;
 							}
 						}
-						ti.end = c;
 					}
+					ti.end = c;
 				}
 			} else {
 				for (final TableInfo ti : allTableInfos) {

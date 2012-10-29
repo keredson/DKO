@@ -109,7 +109,7 @@ class JoinGenerator {
 			w.write("\t */\n");
 			w.write("\tpublic static class J"+ i +" <"+ tExtendsTable +"> extends J {\n");
 
-			w.write("\t\tprivate List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;\n");
+			//w.write("\t\tprivate List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;\n");
 			for (int j=1; j<=i; ++j) {
 				w.write("\t\tpublic final T"+ j +" t"+ j +";\n");
 			}
@@ -153,15 +153,13 @@ class JoinGenerator {
 			w.write("\t\t}\n");
 
 			w.write("\t\t@Override\n");
-			w.write("\t\tpublic List<Field<?>> FIELDS() {\n");
-			w.write("\t\t\tif (__NOSCO_PRIVATE_FIELDS == null) {\n");
-			w.write("\t\t\t\t__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();\n");
+			w.write("\t\tpublic List<Field<?>> fields() {\n");
+			w.write("\t\t\tList<Field<?>> fields = new ArrayList<Field<?>>();\n");
 			for (int j=1; j<=i; ++j) {
-				w.write("\t\t\t\t__NOSCO_PRIVATE_FIELDS.addAll(t"+ j +".FIELDS());\n");
+				w.write("\t\t\tfields.addAll(t"+ j +".fields());\n");
 			}
-			w.write("\t\t\t\t__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);\n");
-			w.write("\t\t\t}\n");
-			w.write("\t\t\treturn __NOSCO_PRIVATE_FIELDS;\n");
+			w.write("\t\t\tfields = Collections.unmodifiableList(fields);\n");
+			w.write("\t\t\treturn fields;\n");
 			w.write("\t\t}\n");
 
 			w.write("\t\t@SuppressWarnings(\"rawtypes\")\n");

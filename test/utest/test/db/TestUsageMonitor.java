@@ -87,7 +87,7 @@ public class TestUsageMonitor extends TestCase {
 //				}
 				final BitSet fv = (BitSet) tfvf.get(item);
 				if (i==0) {
-					assertEquals(item.FIELDS().size(), fv.cardinality());
+					assertEquals(Item.FIELDS.size(), fv.cardinality());
 					assertTrue(fv.get(Item.ATTR1.INDEX));
 				}
 				if (i==1) {

@@ -229,7 +229,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 			public Iterator<Object[]> iterator() {
 				final Iterator<T> it = q.iterator();
 				return new Iterator<Object[]>() {
-					List<Field<?>> fields = null;
+					List<Field<?>> fields = q.getSelectFields();
 					@Override
 					public boolean hasNext() {
 						return it.hasNext();
@@ -237,7 +237,6 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 					@Override
 					public Object[] next() {
 						final T t = it.next();
-						if (fields == null) fields = t.FIELDS();
 						final Object[] oa = new Object[fields.size()];
 						for (int i=0; i<oa.length; ++i) {
 							oa[i] = t.get(fields.get(i));

@@ -202,6 +202,12 @@ public class Constants {
 		for (final String kw : kws) add(kw.toLowerCase());
 	}});
 
+	@SuppressWarnings("serial")
+	final public static Set<String> INVALID_FIELD_NAMES = Collections.unmodifiableSet(new HashSet<String>() {{
+		final String[] kws = {"ALL", "FIELDS", "PK", "PKS", "FKS"};
+		for (final String kw : kws) add(kw.toUpperCase());
+	}});
+
 
 	/**
 	 * Writes the generated SQL to stderr.  Now all SQL is logged by default

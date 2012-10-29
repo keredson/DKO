@@ -336,7 +336,7 @@ public class Bulk {
 
 		protected void init(final Table table) throws SQLException {
 			super.init(table);
-			final List<Field<?>> allFields = table.FIELDS();
+			final List<Field<?>> allFields = Util.getFIELDS(table.getClass());
 			fields = new Field[table.__NOSCO_FETCHED_VALUES.cardinality()];
 			for (int i=0, j=0; i<allFields.size(); ++i) {
 				if (table.__NOSCO_FETCHED_VALUES.get(i)) {
@@ -397,7 +397,7 @@ public class Bulk {
 			for (final Field<?> pk : pks) {
 				values.clear(pk.INDEX);
 			}
-			final List<Field<?>> allFields = table.FIELDS();
+			final List<Field<?>> allFields = Util.getFIELDS(table.getClass());
 			fields = new Field[values.cardinality() + pks.size()];
 			for (int i=0, j=0; i<allFields.size(); ++i) {
 				if (values.get(i)) {

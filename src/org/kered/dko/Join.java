@@ -272,7 +272,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J2 <T1 extends Table, T2 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public J2(final T1 t1, final T2 t2) {
@@ -293,14 +292,12 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -475,7 +472,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J3 <T1 extends Table, T2 extends Table, T3 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -499,15 +495,13 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -686,7 +680,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J4 <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -713,16 +706,14 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME())+" + "+(t4==null ? null : t4.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t4.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields.addAll(t4.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -905,7 +896,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J5 <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -935,17 +925,15 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME())+" + "+(t4==null ? null : t4.TABLE_NAME())+" + "+(t5==null ? null : t5.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t4.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t5.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields.addAll(t4.fields());
+			fields.addAll(t5.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -1132,7 +1120,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J6 <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -1165,18 +1152,16 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME())+" + "+(t4==null ? null : t4.TABLE_NAME())+" + "+(t5==null ? null : t5.TABLE_NAME())+" + "+(t6==null ? null : t6.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t4.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t5.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t6.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields.addAll(t4.fields());
+			fields.addAll(t5.fields());
+			fields.addAll(t6.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -1367,7 +1352,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J7 <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -1403,19 +1387,17 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME())+" + "+(t4==null ? null : t4.TABLE_NAME())+" + "+(t5==null ? null : t5.TABLE_NAME())+" + "+(t6==null ? null : t6.TABLE_NAME())+" + "+(t7==null ? null : t7.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t4.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t5.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t6.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t7.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields.addAll(t4.fields());
+			fields.addAll(t5.fields());
+			fields.addAll(t6.fields());
+			fields.addAll(t7.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -1610,7 +1592,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J8 <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -1649,20 +1630,18 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME())+" + "+(t4==null ? null : t4.TABLE_NAME())+" + "+(t5==null ? null : t5.TABLE_NAME())+" + "+(t6==null ? null : t6.TABLE_NAME())+" + "+(t7==null ? null : t7.TABLE_NAME())+" + "+(t8==null ? null : t8.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t4.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t5.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t6.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t7.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t8.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields.addAll(t4.fields());
+			fields.addAll(t5.fields());
+			fields.addAll(t6.fields());
+			fields.addAll(t7.fields());
+			fields.addAll(t8.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override
@@ -1861,7 +1840,6 @@ public class Join {
 	 * (each of them containing all the columns they contributed to the join)
 	 */
 	public static class J9 <T1 extends Table, T2 extends Table, T3 extends Table, T4 extends Table, T5 extends Table, T6 extends Table, T7 extends Table, T8 extends Table, T9 extends Table> extends J {
-		private List<Field<?>> __NOSCO_PRIVATE_FIELDS = null;
 		public final T1 t1;
 		public final T2 t2;
 		public final T3 t3;
@@ -1903,21 +1881,19 @@ public class Join {
 			return (t1==null ? null : t1.TABLE_NAME())+" + "+(t2==null ? null : t2.TABLE_NAME())+" + "+(t3==null ? null : t3.TABLE_NAME())+" + "+(t4==null ? null : t4.TABLE_NAME())+" + "+(t5==null ? null : t5.TABLE_NAME())+" + "+(t6==null ? null : t6.TABLE_NAME())+" + "+(t7==null ? null : t7.TABLE_NAME())+" + "+(t8==null ? null : t8.TABLE_NAME())+" + "+(t9==null ? null : t9.TABLE_NAME());
 		}
 		@Override
-		public List<Field<?>> FIELDS() {
-			if (__NOSCO_PRIVATE_FIELDS == null) {
-				__NOSCO_PRIVATE_FIELDS = new ArrayList<Field<?>>();
-				__NOSCO_PRIVATE_FIELDS.addAll(t1.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t2.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t3.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t4.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t5.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t6.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t7.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t8.FIELDS());
-				__NOSCO_PRIVATE_FIELDS.addAll(t9.FIELDS());
-				__NOSCO_PRIVATE_FIELDS = Collections.unmodifiableList(__NOSCO_PRIVATE_FIELDS);
-			}
-			return __NOSCO_PRIVATE_FIELDS;
+		public List<Field<?>> fields() {
+			List<Field<?>> fields = new ArrayList<Field<?>>();
+			fields.addAll(t1.fields());
+			fields.addAll(t2.fields());
+			fields.addAll(t3.fields());
+			fields.addAll(t4.fields());
+			fields.addAll(t5.fields());
+			fields.addAll(t6.fields());
+			fields.addAll(t7.fields());
+			fields.addAll(t8.fields());
+			fields.addAll(t9.fields());
+			fields = Collections.unmodifiableList(fields);
+			return fields;
 		}
 		@SuppressWarnings("rawtypes")
 		@Override

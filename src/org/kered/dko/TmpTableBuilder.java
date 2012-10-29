@@ -120,7 +120,7 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		public List<Field<?>> FIELDS() {
+		public List<Field<?>> fields() {
 			return fields;
 		}
 

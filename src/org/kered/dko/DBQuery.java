@@ -758,7 +758,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
 					for (final Field<?> other : onlySet) {
-						for (final Field<?> field : ti.table.FIELDS()) {
+						for (final Field<?> field : Util.getFIELDS(ti.tableClass)) {
 							if (field == other && ti.nameAutogenned) {
 								fields.add(bind ? field.from(tableName) : field);
 								++c;
@@ -778,7 +778,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				for (final TableInfo ti : allTableInfos) {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
-					for (final Field<?> field : ti.table.FIELDS()) {
+					for (final Field<?> field : Util.getFIELDS(ti.tableClass)) {
 						if(deferSet==null || !deferSet.contains(field)) {
 							fields.add(bind ? field.from(tableName) : field);
 							++c;
@@ -932,8 +932,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				final Field.FK field = fkFields[i];
 				final Field[] refingFields = field.REFERENCING_FIELDS();
 				final Field[] reffedFields = field.REFERENCED_FIELDS();
-				final Table refingTable = (Table) refingFields[0].TABLE.newInstance();
-				final Table reffedTable = (Table) reffedFields[0].TABLE.newInstance();
+				final Class reffingClass = refingFields[0].TABLE;
+				final Class reffedClass = reffedFields[0].TABLE;
+				final Table refingTable = (Table) reffingClass.newInstance();
+				final Table reffedTable = (Table) reffedClass.newInstance();
 				final FK[] prevPath = new FK[i];
 				System.arraycopy(fkFields, 0, prevPath, 0, i);
 				final FK[] path = new FK[i+1];
@@ -996,7 +998,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						q.orderByFields = new ArrayList<Field<?>>();
 					}
 					final PK pk = Util.getPK(reffedTable);
-					final List<Field<?>> fields = pk==null ? reffedTable.FIELDS() : pk.GET_FIELDS();
+					final List<Field<?>> fields = pk==null ? Util.getFIELDS(reffedClass) : pk.GET_FIELDS();
 					for (final Field<?> f : fields) {
 						if (q.orderByFields.contains(f)) continue;
 						q.orderByFields.add(f);

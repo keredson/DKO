@@ -51,7 +51,7 @@ class TemporaryTableFactory {
 		}
 
 		@Override
-		public List<Field<?>> FIELDS() {
+		public List<Field<?>> fields() {
 			// TODO Auto-generated method stub
 			return null;
 		}

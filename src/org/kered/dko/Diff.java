@@ -215,20 +215,14 @@ public class Diff {
 						fields = fieldsForClass.get(a.getClass());
 						if (fields == null) {
 							fields = new LinkedHashSet<Field<?>>();
-							for (final Field<?> field : a.FIELDS()) {
-								fields.add(field);
-							}
+							fields.addAll(Util.getFIELDS(a.getClass()));
 							fieldsForClass.put(a.getClass(), fields);
 						}
 
 					} else {
 						fields = new LinkedHashSet<Field<?>>();
-						for (final Field<?> field : a.FIELDS()) {
-							fields.add(field);
-						}
-						for (final Field<?> field : b.FIELDS()) {
-							fields.add(field);
-						}
+						fields.addAll(Util.getFIELDS(a.getClass()));
+						fields.addAll(Util.getFIELDS(b.getClass()));
 					}
 					final Collection<FieldChange<T, ?>> diffs = new ArrayList<FieldChange<T, ?>>();
 					for (final Field<?> field : fields) {
@@ -401,7 +395,7 @@ public class Diff {
 				if (t==null) continue;
 				final List<FieldChange<T,?>> changes = new ArrayList<FieldChange<T,?>>();
 				CHANGE_TYPE changeType = CHANGE_TYPE.UNCHANGED;
-				for (final Field field : t.FIELDS()) {
+				for (final Field field : Util.getFIELDS(t.getClass())) {
 					if (t.__NOSCO_UPDATED_VALUES!=null && t.__NOSCO_UPDATED_VALUES.get(field.INDEX)) {
 						changes.add(new FieldChange(field, null, t.get(field)));
 					}

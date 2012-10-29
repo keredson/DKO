@@ -114,7 +114,15 @@ class Util {
 		try {
 			return (PK<T>) t.getField("PK").get(null);
 		} catch (final Exception e) {
-			//e.printStackTrace();
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	static <T extends Table> List<Field<?>> getFIELDS(final Class<T> t) {
+		try {
+			return (List<Field<?>>) t.getField("FIELDS").get(null);
+		} catch (final Exception e) {
 			return null;
 		}
 	}

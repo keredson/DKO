@@ -17,7 +17,7 @@ class JoinGenerator {
 		if (args.length == 1) {
 			n = Integer.valueOf(args[0]);
 		}
-		final File file = new File("bin/src/org/kered/dko/Join.java");
+		final File file = new File("gen/joinsrc/org/kered/dko/Join.java");
 		System.err.println("writing (to J"+n+"): "+ file.getPath());
 		genJoinsFile(file, n);
 	}

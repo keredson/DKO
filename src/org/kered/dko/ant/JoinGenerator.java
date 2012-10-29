@@ -13,10 +13,20 @@ class JoinGenerator {
 	 * @throws IOException
 	 */
 	public static void main(final String[] args) throws IOException {
-		genJoinsFile(new File("Join.java"), 9);
+		int n = 9;
+		if (args.length == 1) {
+			n = Integer.valueOf(args[0]);
+		}
+		final File file = new File("bin/src/org/kered/dko/Join.java");
+		System.err.println("writing (to J"+n+"): "+ file.getPath());
+		genJoinsFile(file, n);
 	}
 
 	private static void genJoinsFile(final File file, final int n) throws IOException {
+		final File dir = file.getParentFile();
+		if(!dir.exists()) {
+			dir.mkdirs();
+		}
 		final BufferedWriter w = new BufferedWriter(new FileWriter(file));
 		genJoins(w, n);
 		w.close();

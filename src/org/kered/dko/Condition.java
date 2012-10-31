@@ -452,8 +452,8 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
-			if (v1 instanceof Function) {
-				((Function)v1).getSQL(sb, bindings, context);
+			if (v1 instanceof SQLFunction) {
+				((SQLFunction)v1).getSQL(sb, bindings, context);
 			} else if (v1 instanceof Field) {
 				sb.append(Util.derefField((Field)v1, context));
 			} else {
@@ -461,8 +461,8 @@ public abstract class Condition {
 				bindings.add(v1);
 			}
 			sb.append(cmp1);
-			if (v2 instanceof Function) {
-				((Function)v2).getSQL(sb, bindings, context);
+			if (v2 instanceof SQLFunction) {
+				((SQLFunction)v2).getSQL(sb, bindings, context);
 			} else if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v2, context));
 			} else {
@@ -470,8 +470,8 @@ public abstract class Condition {
 				bindings.add(v2);
 			}
 			sb.append(cmp2);
-			if (v3 instanceof Function) {
-				((Function)v3).getSQL(sb, bindings, context);
+			if (v3 instanceof SQLFunction) {
+				((SQLFunction)v3).getSQL(sb, bindings, context);
 			} else if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v3, context));
 			} else {
@@ -546,7 +546,7 @@ public abstract class Condition {
 		private Field<?> field2;
 		private final String cmp;
 		private Select<?> s;
-		private Function function;
+		private SQLFunction function;
 
 		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
 			// note "v" should be of type T here - set to object to work around
@@ -568,7 +568,7 @@ public abstract class Condition {
 			this.s = new Select<S>(q);
 		}
 
-		public <T> Binary(final Field<T> field, final String cmp, final Function f) {
+		public <T> Binary(final Field<T> field, final String cmp, final SQLFunction f) {
 			this.field = field;
 			this.cmp = cmp;
 			this.function  = f;
@@ -661,7 +661,7 @@ public abstract class Condition {
 
 		@Override
 		boolean matches(final Table t) {
-			if ((o1 instanceof Function) || (o2 instanceof Function)) {
+			if ((o1 instanceof SQLFunction) || (o2 instanceof SQLFunction)) {
 				throw new RuntimeException("Condition checking of functions cached queries not yet supported.");
 			}
 			// TODO Auto-generated method stub
@@ -671,8 +671,8 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
-			if (o1 instanceof Function) {
-				final Function<?> f = (Function<?>) o1;
+			if (o1 instanceof SQLFunction) {
+				final SQLFunction<?> f = (SQLFunction<?>) o1;
 				f.getSQL(sb, bindings, context);
 			} else if (o1 instanceof Field) {
 				final Field<?> f = (Field<?>) o1;
@@ -682,8 +682,8 @@ public abstract class Condition {
 				bindings.add(o1);
 			}
 			sb.append(cmp);
-			if (o2 instanceof Function) {
-				final Function<?> f = (Function<?>) o2;
+			if (o2 instanceof SQLFunction) {
+				final SQLFunction<?> f = (SQLFunction<?>) o2;
 				f.getSQL(sb, bindings, context);
 			} else if (o2 instanceof Field) {
 				final Field<?> f = (Field<?>) o2;

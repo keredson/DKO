@@ -123,7 +123,7 @@ class Util {
 		try {
 			return (List<Field<?>>) t.getField("FIELDS").get(null);
 		} catch (final Exception e) {
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -38,4 +38,26 @@ public class QueryFactory {
 		return new DBQuery<T>(cls, ds);
 	}
 
+	/**
+	 * Creates a new query based the given query, but adds a constant field to the resulting list of tables.
+	 * @param cls
+	 * @return
+	 */
+	public <S, T extends Table> Query<Table> addField(final Query<T> q, final Field<S> field, final S value) {
+		return new QueryAddField(q, field, value);
+	}
+
+	/**
+	 * Creates a new query based the given query, but adds a function-defined field to the resulting list of tables.
+	 * @param cls
+	 * @return
+	 */
+	public <S, T extends Table> Query<Table> addField(final Query<T> q, final Field<S> field, final Function<Table,S> func) {
+		return new QueryAddField(q, field, func);
+	}
+
+	public static interface Function<A,B> {
+		public B apply(A a);
+	}
+
 }

@@ -108,6 +108,20 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Use this constructor when defining one-off fields unrelated to an actual database.
+	 * @param name
+	 * @param type
+	 */
+	public Field(final String name, final Class<T> type) {
+		INDEX = (int) (Math.random() * Integer.MAX_VALUE);
+		TABLE = Table.class;
+		NAME = name;
+		TYPE = type;
+		SQL_TYPE = type.getSimpleName();
+		JAVA_NAME = name;
+	}
+
+	/**
 	 * Creates a condition representing this field equal to the literal value of the parameter.
 	 * @param v
 	 * @return
@@ -134,7 +148,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition eq(final Function v) {
+	public Condition eq(final SQLFunction v) {
 		return new Binary(this, "=", v);
 	}
 
@@ -161,7 +175,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition neq(final Function v) {
+	public Condition neq(final SQLFunction v) {
 		return new Binary(this, "!=", v);
 	}
 
@@ -210,7 +224,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lt(final Function v) {
+	public Condition lt(final SQLFunction v) {
 		return new Binary(this, "<", v);
 	}
 
@@ -237,7 +251,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition lte(final Function v) {
+	public Condition lte(final SQLFunction v) {
 		return new Binary(this, "<=", v);
 	}
 
@@ -264,7 +278,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gt(final Function v) {
+	public Condition gt(final SQLFunction v) {
 		return new Binary(this, ">", v);
 	}
 
@@ -291,7 +305,7 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Condition gte(final Function v) {
+	public Condition gte(final SQLFunction v) {
 		return new Binary(this, ">=", v);
 	}
 
@@ -327,7 +341,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final T v1, final Function v2) {
+	public Condition between(final T v1, final SQLFunction v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -337,7 +351,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final Function v1, final T v2) {
+	public Condition between(final SQLFunction v1, final T v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -347,7 +361,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final Function v1, final Function v2) {
+	public Condition between(final SQLFunction v1, final SQLFunction v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -367,7 +381,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final Field v1, final Function v2) {
+	public Condition between(final Field v1, final SQLFunction v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -377,7 +391,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final Function v1, final Field v2) {
+	public Condition between(final SQLFunction v1, final Field v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -419,7 +433,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public static <T> Condition between(final T v1, final Function f1, final Field<T> f2) {
+	public static <T> Condition between(final T v1, final SQLFunction f1, final Field<T> f2) {
 		return new Ternary(v1, " between ", f1, " and ",  f2);
 	}
 
@@ -430,7 +444,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public static <T> Condition between(final T v1, final Field<T> f1, final Function f2) {
+	public static <T> Condition between(final T v1, final Field<T> f1, final SQLFunction f2) {
 		return new Ternary(v1, " between ", f1, " and ",  f2);
 	}
 
@@ -441,7 +455,7 @@ public class Field<T> implements Cloneable {
 	 * @param v2
 	 * @return
 	 */
-	public static <T> Condition between(final T v1, final Function f1, final Function f2) {
+	public static <T> Condition between(final T v1, final SQLFunction f1, final SQLFunction f2) {
 		return new Ternary(v1, " between ", f1, " and ",  f2);
 	}
 
@@ -481,8 +495,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> add(final T v) {
-		return new Function.Custom<T>(this, "+", v);
+	public SQLFunction<T> add(final T v) {
+		return new SQLFunction.Custom<T>(this, "+", v);
 	}
 
 	/**
@@ -490,8 +504,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> add(final Field<T> v) {
-		return new Function.Custom<T>(this, "+", v);
+	public SQLFunction<T> add(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "+", v);
 	}
 
 	/**
@@ -499,8 +513,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> add(final Function v) {
-		return new Function.Custom<T>(this, "+", v);
+	public SQLFunction<T> add(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "+", v);
 	}
 
 	/**
@@ -508,8 +522,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> sub(final T v) {
-		return new Function.Custom<T>(this, "-", v);
+	public SQLFunction<T> sub(final T v) {
+		return new SQLFunction.Custom<T>(this, "-", v);
 	}
 
 	/**
@@ -517,8 +531,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> sub(final Field<T> v) {
-		return new Function.Custom<T>(this, "-", v);
+	public SQLFunction<T> sub(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "-", v);
 	}
 
 	/**
@@ -526,8 +540,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> sub(final Function v) {
-		return new Function.Custom<T>(this, "-", v);
+	public SQLFunction<T> sub(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "-", v);
 	}
 
 	/**
@@ -535,8 +549,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> mul(final T v) {
-		return new Function.Custom<T>(this, "*", v);
+	public SQLFunction<T> mul(final T v) {
+		return new SQLFunction.Custom<T>(this, "*", v);
 	}
 
 	/**
@@ -544,8 +558,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> mul(final Field<T> v) {
-		return new Function.Custom<T>(this, "*", v);
+	public SQLFunction<T> mul(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "*", v);
 	}
 
 	/**
@@ -553,8 +567,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> mul(final Function v) {
-		return new Function.Custom<T>(this, "*", v);
+	public SQLFunction<T> mul(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "*", v);
 	}
 
 	/**
@@ -562,8 +576,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> div(final T v) {
-		return new Function.Custom<T>(this, "/", v);
+	public SQLFunction<T> div(final T v) {
+		return new SQLFunction.Custom<T>(this, "/", v);
 	}
 
 	/**
@@ -571,8 +585,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> div(final Field<T> v) {
-		return new Function.Custom<T>(this, "/", v);
+	public SQLFunction<T> div(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "/", v);
 	}
 
 	/**
@@ -580,8 +594,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> div(final Function v) {
-		return new Function.Custom<T>(this, "/", v);
+	public SQLFunction<T> div(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "/", v);
 	}
 
 	/**
@@ -589,8 +603,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> mod(final T v) {
-		return new Function.Custom<T>(this, "%", v);
+	public SQLFunction<T> mod(final T v) {
+		return new SQLFunction.Custom<T>(this, "%", v);
 	}
 
 	/**
@@ -598,8 +612,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> mod(final Field<T> v) {
-		return new Function.Custom<T>(this, "%", v);
+	public SQLFunction<T> mod(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "%", v);
 	}
 
 	/**
@@ -607,18 +621,8 @@ public class Field<T> implements Cloneable {
 	 * @param v
 	 * @return
 	 */
-	public Function<T> mod(final Function v) {
-		return new Function.Custom<T>(this, "%", v);
-	}
-
-	/**
-	 * Performs a mathematical function on this field.
-	 * @param v
-	 * @return
-	 * @deprecated use sub()
-	 */
-	public Function<T> subtract(final T v) {
-		return new Function.Custom<T>(this, "-", v);
+	public SQLFunction<T> mod(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "%", v);
 	}
 
 	/**
@@ -627,8 +631,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use sub()
 	 */
-	public Function<T> subtract(final Field<T> v) {
-		return new Function.Custom<T>(this, "-", v);
+	public SQLFunction<T> subtract(final T v) {
+		return new SQLFunction.Custom<T>(this, "-", v);
 	}
 
 	/**
@@ -637,8 +641,18 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use sub()
 	 */
-	public Function<T> subtract(final Function v) {
-		return new Function.Custom<T>(this, "-", v);
+	public SQLFunction<T> subtract(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "-", v);
+	}
+
+	/**
+	 * Performs a mathematical function on this field.
+	 * @param v
+	 * @return
+	 * @deprecated use sub()
+	 */
+	public SQLFunction<T> subtract(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "-", v);
 	}
 
 	/**
@@ -647,8 +661,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mul()
 	 */
-	public Function<T> multiply(final T v) {
-		return new Function.Custom<T>(this, "*", v);
+	public SQLFunction<T> multiply(final T v) {
+		return new SQLFunction.Custom<T>(this, "*", v);
 	}
 
 	/**
@@ -657,8 +671,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mul()
 	 */
-	public Function<T> multiply(final Field<T> v) {
-		return new Function.Custom<T>(this, "*", v);
+	public SQLFunction<T> multiply(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "*", v);
 	}
 
 	/**
@@ -667,8 +681,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mul()
 	 */
-	public Function<T> multiply(final Function v) {
-		return new Function.Custom<T>(this, "*", v);
+	public SQLFunction<T> multiply(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "*", v);
 	}
 
 	/**
@@ -677,8 +691,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use div()
 	 */
-	public Function<T> divide(final T v) {
-		return new Function.Custom<T>(this, "/", v);
+	public SQLFunction<T> divide(final T v) {
+		return new SQLFunction.Custom<T>(this, "/", v);
 	}
 
 	/**
@@ -687,8 +701,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use div()
 	 */
-	public Function<T> divide(final Field<T> v) {
-		return new Function.Custom<T>(this, "/", v);
+	public SQLFunction<T> divide(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "/", v);
 	}
 
 	/**
@@ -697,8 +711,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use div()
 	 */
-	public Function<T> divide(final Function v) {
-		return new Function.Custom<T>(this, "/", v);
+	public SQLFunction<T> divide(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "/", v);
 	}
 
 	/**
@@ -707,8 +721,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mod()
 	 */
-	public Function<T> modulus(final T v) {
-		return new Function.Custom<T>(this, "%", v);
+	public SQLFunction<T> modulus(final T v) {
+		return new SQLFunction.Custom<T>(this, "%", v);
 	}
 
 	/**
@@ -717,8 +731,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mod()
 	 */
-	public Function<T> modulus(final Field<T> v) {
-		return new Function.Custom<T>(this, "%", v);
+	public SQLFunction<T> modulus(final Field<T> v) {
+		return new SQLFunction.Custom<T>(this, "%", v);
 	}
 
 	/**
@@ -727,8 +741,8 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mod()
 	 */
-	public Function<T> modulus(final Function v) {
-		return new Function.Custom<T>(this, "%", v);
+	public SQLFunction<T> modulus(final SQLFunction v) {
+		return new SQLFunction.Custom<T>(this, "%", v);
 	}
 
 	/**

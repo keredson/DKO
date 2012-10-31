@@ -39,7 +39,7 @@ public abstract class Table {
 	 * @deprecated please use the static FIELDS class attribute (on the generated classes)
 	 */
 	@Deprecated
-	public final List<Field<?>> FIELDS() {
+	public List<Field<?>> FIELDS() {
 		return Util.getFIELDS(this.getClass());
 	}
 

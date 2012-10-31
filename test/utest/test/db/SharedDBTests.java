@@ -28,6 +28,7 @@ import org.kered.dko.Diff;
 import org.kered.dko.Field;
 import org.kered.dko.Join;
 import org.kered.dko.Query;
+import org.kered.dko.QueryFactory;
 import org.kered.dko.Table;
 import org.kered.dko.Constants.CALENDAR;
 import org.kered.dko.Context.Undoer;
@@ -44,7 +45,8 @@ import org.kered.dko.unittest.nosco_test_jpetstore.Orderstatus;
 import org.kered.dko.unittest.nosco_test_jpetstore.Product;
 import org.kered.dko.unittest.nosco_test_jpetstore.Supplier;
 
-import static org.kered.dko.Function.*;
+//import static org.kered.dko.Function.*;
+import static org.kered.dko.SQLFunction.*;
 
 import test.db.callback.nosco_test_jpetstore.ItemCB;
 
@@ -707,6 +709,29 @@ public class SharedDBTests extends TestCase {
     	for (final Item item : Item.ALL.onlyFields(Item.ITEMID, Item.UNITCOST)) {
     		assertEquals(2, item.fields().size());
     	}
+    }
+
+    public void testExtend() {
+    	final Field<Integer> f42 = new Field<Integer>("forty_two", Integer.class);
+		final Query<Table> q = QueryFactory.IT.addField(Item.ALL, f42, 42);
+		for (final Table t : q) {
+			assertNotNull(t.get(Item.ITEMID));
+			assertEquals(42, t.get(f42).intValue());
+		}
+    }
+
+    public void testExtendFunction() {
+    	final Field<Integer> f42 = new Field<Integer>("forty_two", Integer.class);
+		final Query<Table> q = QueryFactory.IT.addField(Item.ALL, f42, new QueryFactory.Function<Table, Integer>() {
+			@Override
+			public Integer apply(final Table a) {
+				return 42;
+			}
+		});
+		for (final Table t : q) {
+			assertNotNull(t.get(Item.ITEMID));
+			assertEquals(42, t.get(f42).intValue());
+		}
     }
 
 }

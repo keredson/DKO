@@ -398,4 +398,9 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return ret;
 	}
 
+	@Override
+	public Iterable<T> all() {
+		return this;
+	}
+
 }

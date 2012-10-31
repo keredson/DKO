@@ -14,15 +14,14 @@ import javax.sql.DataSource;
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Field.FK;
-import org.kered.dko.QueryFactory.Function;
-import org.kered.dko.Table.__Alias;
+import org.kered.dko.QueryFactory.Callback;
 
-public class QueryAddField extends AbstractQuery<Table> implements MatryoshkaQuery<Table> {
+public class QueryAddField extends InMemoryQuery<Table> implements MatryoshkaQuery<Table> {
 
 	private final Query<? extends Table> underlying;
 	private final Field<?> field;
 	private final Object value;
-	private final Function<Table, ?> func;
+	private final Callback<Table, ?> func;
 
 	<S> QueryAddField(final Query<? extends Table> underlying, final Field<S> field, final S value) {
 		super(Table.class);
@@ -32,174 +31,12 @@ public class QueryAddField extends AbstractQuery<Table> implements MatryoshkaQue
 		this.func = null;
 	}
 
-	<S> QueryAddField(final Query<? extends Table> underlying, final Field<S> field, final QueryFactory.Function<Table, S> func) {
+	<S> QueryAddField(final Query<? extends Table> underlying, final Field<S> field, final QueryFactory.Callback<Table, S> func) {
 		super(Table.class);
 		this.underlying = underlying;
 		this.field = field;
 		this.value = null;
 		this.func = func;
-	}
-
-	@Override
-	public Query<Table> where(final Condition... conditions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> exclude(final Condition... conditions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> orderBy(final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> limit(final long n) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> distinct() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> max() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> min() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> with(final FK... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> deferFields(final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> deferFields(final Collection<Field<?>> fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> onlyFields(final Collection<Field<?>> fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> onlyFields(final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int update() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int delete() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Query<Table> orderBy(final DIRECTION direction, final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> set(final Field<?> key, final Object value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> set(final Map<Field<?>, Object> values) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object insert() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> use(final DataSource ds) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> use(final Connection conn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> use(final DB_TYPE type) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> cross(final __Alias<? extends Table> t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> cross(final Class<? extends Table> t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<Table> in(final Collection<Table> set) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S> Iterable<S> asIterableOf(final Field<S> field) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Condition exists() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DataSource getDataSource() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -209,70 +46,6 @@ public class QueryAddField extends AbstractQuery<Table> implements MatryoshkaQue
 		ret.addAll(selectFields);
 		ret.add(field);
 		return Collections.unmodifiableList(ret);
-	}
-
-	@Override
-	public <S extends Table> Query<Table> crossJoin(final Class<S> table) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> crossJoin(final __Alias<S> table) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> leftJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> leftJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> rightJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> rightJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> outerJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> outerJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> innerJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Table> innerJoin(final __Alias<S> table,
-			final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -52,11 +52,11 @@ public class QueryFactory {
 	 * @param cls
 	 * @return
 	 */
-	public <S, T extends Table> Query<Table> addField(final Query<T> q, final Field<S> field, final Function<Table,S> func) {
+	public <S, T extends Table> Query<Table> addFieldFromCallback(final Query<T> q, final Field<S> field, final Callback<Table,S> func) {
 		return new QueryAddField(q, field, func);
 	}
 
-	public static interface Function<A,B> {
+	public static interface Callback<A,B> {
 		public B apply(A a);
 	}
 

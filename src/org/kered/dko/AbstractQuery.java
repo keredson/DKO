@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.event.ListSelectionEvent;
+
+import org.kered.dko.Table.__Alias;
 import org.kered.dko.Table.__PrimaryKey;
 
 /**
@@ -22,9 +25,15 @@ import org.kered.dko.Table.__PrimaryKey;
 public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
 	final Class<T> type;
+	private boolean applyGlobalMaxFunction = false;
 
 	AbstractQuery(final Query<T> q) {
 		type = q.getType();
+	}
+
+	AbstractQuery(final AbstractQuery<T> q) {
+		type = q.type;
+		applyGlobalMaxFunction = q.applyGlobalMaxFunction;
 	}
 
 	/**
@@ -401,6 +410,81 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public Iterable<T> all() {
 		return this;
+	}
+
+	@Override
+	public Object insert() throws SQLException {
+		throw new UnsupportedOperationException("writes on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public int update() throws SQLException {
+		throw new UnsupportedOperationException("writes on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public int delete() throws SQLException {
+		throw new UnsupportedOperationException("writes on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public Query<T> cross(final __Alias<? extends Table> t) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public Query<T> cross(final Class<? extends Table> t) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> crossJoin(final Class<S> table) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> crossJoin(final __Alias<S> table) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> leftJoin(final Class<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> leftJoin(final __Alias<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> rightJoin(final Class<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> rightJoin(final __Alias<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> outerJoin(final Class<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> outerJoin(final __Alias<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> innerJoin(final Class<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public <S extends Table> Query<T> innerJoin(final __Alias<S> table, final Condition on) {
+		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
 	}
 
 }

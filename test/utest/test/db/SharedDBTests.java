@@ -722,7 +722,7 @@ public class SharedDBTests extends TestCase {
 
     public void testExtendFunction() {
     	final Field<Integer> f42 = new Field<Integer>("forty_two", Integer.class);
-		final Query<Table> q = QueryFactory.IT.addField(Item.ALL, f42, new QueryFactory.Function<Table, Integer>() {
+		final Query<Table> q = QueryFactory.IT.addFieldFromCallback(Item.ALL, f42, new QueryFactory.Callback<Table, Integer>() {
 			@Override
 			public Integer apply(final Table a) {
 				return 42;

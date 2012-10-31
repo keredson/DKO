@@ -2,6 +2,7 @@ package org.kered.dko;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,15 +14,14 @@ import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Field.FK;
 import org.kered.dko.Table.__Alias;
-import org.kered.dko.Table.__PrimaryKey;
 
 class FilteringQuery<T extends Table> extends AbstractQuery<T> implements MatryoshkaQuery<T> {
 
-	private final Query<T> q;
+	private final List<Query<? extends Table>> q = new ArrayList<Query<? extends Table>>();
 
 	FilteringQuery(final Query<T> q, final Condition... conditions) {
 		super(q);
-		this.q = q;
+		this.q.add(q);
 	}
 
 	@Override
@@ -227,7 +227,7 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	}
 
 	@Override
-	public Query<T> getUnderlying() {
+	public List<Query<? extends Table>> getUnderlying() {
 		return q;
 	}
 

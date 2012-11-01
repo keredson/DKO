@@ -123,7 +123,14 @@ class Util {
 		try {
 			return (List<Field<?>>) t.getField("FIELDS").get(null);
 		} catch (final Exception e) {
-			throw new RuntimeException(e);
+			log.warning(e.toString() +" --- DKO class "+ t.getSimpleName()
+					+" was generated prior to DKO v2.2.0.  falling back to FIELDS()...");
+			try {
+				return (List<Field<?>>) t.getMethod("FIELDS").invoke(t.newInstance());
+			} catch (final Exception e1) {
+				throw new RuntimeException(e1);
+				//e1.printStackTrace();
+			}
 		}
 	}
 
@@ -172,6 +179,7 @@ class Util {
 	}
 
 	private static final Logger logSql = Logger.getLogger("org.kered.dko.sql");
+	private static final Logger log = Logger.getLogger("org.kered.dko.Util");
 
 	static void log(final String sql, final List<Object> bindings) {
 		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ join("|", bindings) +"]" : "");

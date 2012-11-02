@@ -885,7 +885,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (final TableInfo ti : tableInfos) {
 			if (ti.dummyTable != null) {
-				names.add(ti.dummyTable.name +" "+ ti.tableName);
+				names.add((dbType==DB_TYPE.SQLSERVER ? "#" : "") + ti.dummyTable.name +" "+ ti.tableName);
 			} else {
 				final String fullTableName = context==null ? Util.getSCHEMA_NAME(ti.tableClass)+"."+Util.getTABLE_NAME(ti.tableClass) : context.getFullTableName(ti);
 				names.add(fullTableName +" "+ ti.tableName);

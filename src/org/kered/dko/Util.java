@@ -27,8 +27,8 @@ class Util {
 		SqlContext tmp = context;
 		while (tmp != null) {
 			for (final TableInfo info : tmp.tableInfos) {
-				selectedTables.add(Util.getSCHEMA_NAME(info.tableClass) +"."+ info.table.TABLE_NAME());
-				if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
+				selectedTables.add(getSCHEMA_NAME(info.tableClass) +"."+ getTABLE_NAME(info.tableClass));
+				if (info.nameAutogenned && sameTable(field.TABLE, info.tableClass)) {
 					unboundTables.add(info);
 				}
 			}
@@ -41,13 +41,13 @@ class Util {
 		} else if (unboundTables.size() > 1) {
 			final List<String> x = new ArrayList<String>();
 			for (final TableInfo info : unboundTables) {
-				x.add(Util.getSCHEMA_NAME(info.tableClass) +"."+ info.table.TABLE_NAME());
+				x.add(Util.getSCHEMA_NAME(info.tableClass) +"."+ getTABLE_NAME(info.tableClass));
 			}
 			throw new RuntimeException("field "+ field +
 					" is ambigious over the tables {"+ join(",", x) +"}");
 		} else {
 			final TableInfo theOne = unboundTables.iterator().next();
-			return (theOne.tableName == null ? theOne.table.TABLE_NAME() : theOne.tableName)
+			return (theOne.tableName == null ? getTABLE_NAME(theOne.tableClass) : theOne.tableName)
 					+ "."+ field.getSQL(context);
 		}
 	}
@@ -93,10 +93,11 @@ class Util {
 	 * Please do not use.
 	 * @return
 	 */
-	static boolean sameTable(final Table t1, final Table t2) {
+	static boolean sameTable(final Class<? extends Table> t1, final Class<? extends Table> t2) {
 		if (t1 == null && t2 == null) return true;
 		if (t1 == null || t2 == null) return false;
-		return Util.getSCHEMA_NAME(t1.getClass()).equals(Util.getSCHEMA_NAME(t2.getClass())) && t1.TABLE_NAME() == t2.TABLE_NAME();
+		if (t1 == t2) return true;
+		return getSCHEMA_NAME(t1).equals(getSCHEMA_NAME(t2)) && getTABLE_NAME(t1) == getTABLE_NAME(t2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -298,6 +299,20 @@ class Util {
 			} catch (final Exception e1) {
 				throw new RuntimeException(e1);
 				//e1.printStackTrace();
+			}
+		}
+	}
+
+	static String getTABLE_NAME(final Class<? extends Table> t) {
+		try {
+			return (String) t.getField("_TABLE_NAME").get(null);
+		} catch (final Exception e) {
+			log.warning(e.toString() +" --- DKO class "+ t.getSimpleName()
+					+" was generated prior to DKO v2.2.0.  falling back to TABLE_NAME()...");
+			try {
+				return (String) t.getMethod("TABLE_NAME").invoke(t.newInstance());
+			} catch (final Exception e1) {
+				throw new RuntimeException(e1);
 			}
 		}
 	}

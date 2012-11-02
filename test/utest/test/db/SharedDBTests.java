@@ -600,6 +600,7 @@ public class SharedDBTests extends TestCase {
 	}
 
     public void testTableIn() throws SQLException {
+		System.err.println("testTableIn");
     	final List<Category> cats = new ArrayList<Category>();
     	cats.add(Category.ALL.get(Category.CATID.eq("FISH")));
     	cats.add(Category.ALL.get(Category.CATID.eq("DOGS")));

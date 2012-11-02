@@ -14,18 +14,11 @@ public class TableWrapper extends Table {
 	private final Field<?> field;
 	private Object value = null;
 	private final Table t;
-	String _SCHEMA_NAME;
 
 	public TableWrapper(final Table t, final Field<?> field, final Object value) {
 		this.t = t;
 		this.field = field;
 		this.value = value;
-		_SCHEMA_NAME = Util.getSCHEMA_NAME(t.getClass());
-	}
-
-	@Override
-	protected String TABLE_NAME() {
-		return t.TABLE_NAME()+"+"+field;
 	}
 
 	@Override

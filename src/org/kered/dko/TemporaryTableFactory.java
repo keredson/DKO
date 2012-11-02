@@ -15,10 +15,10 @@ import org.kered.dko.Field.PK;
 
 class TemporaryTableFactory {
 
-	private static class DummyTableWithName<T extends Table> extends Table {
+	static class DummyTableWithName<T extends Table> extends Table {
 
 		final String name = "NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
-		private Class<T> cls = null;
+		Class<T> cls = null;
 		private List<Field<?>> fields = null;
 		private Collection<T> set = null;
 
@@ -37,15 +37,6 @@ class TemporaryTableFactory {
 		}
 
 		public static String _SCHEMA_NAME = null;
-
-		String TABLE_NAME(final SqlContext sqlContext) {
-			return sqlContext.dbType==Constants.DB_TYPE.SQLSERVER ? "#"+name : name;
-		}
-
-		@Override
-		protected String TABLE_NAME() {
-			return name;
-		}
 
 		@Override
 		public List<Field<?>> fields() {
@@ -144,7 +135,8 @@ class TemporaryTableFactory {
 			try {
 				stmt = conn.createStatement();
 				final StringBuffer sqlSb = new StringBuffer();
-				sqlSb.append("CREATE "+ (context.dbType==Constants.DB_TYPE.SQLSERVER ? "" : "TEMPORARY ") +"TABLE "+ TABLE_NAME(context) + "(");
+				final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+				sqlSb.append("CREATE "+ (context.dbType==Constants.DB_TYPE.SQLSERVER ? "" : "TEMPORARY ") +"TABLE "+ tableName + "(");
 				final List<String> placeholders = new ArrayList<String>();
 				for (int i=0; i<fields.size(); ++i) {
 					final Field<?> field = fields.get(i);
@@ -161,7 +153,7 @@ class TemporaryTableFactory {
 				final String sql = sqlSb.toString();
 				Util.log(sql, null);
 				stmt.execute(sql);
-				ps = conn.prepareStatement("insert into "+ TABLE_NAME(context) +" values ("+ Util.join(",", placeholders) +")");
+				ps = conn.prepareStatement("insert into "+ tableName +" values ("+ Util.join(",", placeholders) +")");
 				int i = 0;
 				int added = 0;
 				for (final T t : set) {
@@ -200,7 +192,8 @@ class TemporaryTableFactory {
 			Statement stmt = null;
 			try {
 				stmt = conn.createStatement();
-				final String sql = "DROP TABLE "+ TABLE_NAME(context);
+				final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+				final String sql = "DROP TABLE "+ tableName;
 				Util.log(sql, null);
 				stmt.execute(sql);
 			} catch (final SQLException e) {
@@ -217,8 +210,8 @@ class TemporaryTableFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	static <T extends Table> T createTemporaryTable(final Class<T> cls, final List<Field<?>> fields, final Collection<T> set) {
-		return (T) new DummyTableWithName<T>(cls, fields, set);
+	static <T extends Table> DummyTableWithName createTemporaryTable(final Class<T> cls, final List<Field<?>> fields, final Collection<T> set) {
+		return new DummyTableWithName<T>(cls, fields, set);
 	}
 
 }

@@ -310,7 +310,7 @@ class Select<T extends Table> implements Iterator<T> {
 						newObjectThisRow[i] = false;
 					} else {
 						if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
-							final Table fkv = constructors.get(ti.table.getClass())
+							final Table fkv = constructors.get(ti.tableClass)
 									.newInstance(selectedFields, fieldValues, ti.start, ti.end);
 							fkv.__NOSCO_USAGE_MONITOR = usageMonitor;
 							fkv.__NOSCO_ORIGINAL_DATA_SOURCE = ds;

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.kered.dko.Field.PK;
+import org.kered.dko.TemporaryTableFactory.DummyTableWithName;
 
 
 /**
@@ -33,10 +34,13 @@ public abstract class Table {
 	}
 
 	/**
-	 * Please do not use.
-	 * @return
+	 * @return The database schema
+	 * @deprecated please use the static _TABLE_NAME class attribute (on the generated classes)
 	 */
-	protected abstract String TABLE_NAME();
+	protected String TABLE_NAME() {
+		throw new RuntimeException("fix me...");
+		//return Util.getTABLE_NAME(this.getClass());
+	}
 
 	/**
 	 * @return A list of the fields defined for this class.
@@ -218,16 +222,20 @@ public abstract class Table {
 	public static class __Alias<S extends Table> {
 
 		final Class<S> table;
-		final S instance;
+		final String schema_name;
+		final String table_name;
 		final String alias;
 		public final Query<S> ALL;
+		final DummyTableWithName dummyTable;
 
 		public __Alias(final Class<S> table, final String alias) {
 			this.table = table;
+			this.schema_name = Util.getSCHEMA_NAME(table);
+			this.table_name = Util.getTABLE_NAME(table);
 			this.alias = alias;
 			Query<S> all = null;
 			try {
-				instance = table.newInstance();
+				final S instance = table.newInstance();
 				all = new DBQuery<S>(this);
 				final java.lang.reflect.Field f = table.getDeclaredField("ALL");
 				f.setAccessible(true);
@@ -239,25 +247,16 @@ public abstract class Table {
 				throw new RuntimeException(e);
 			}
 			this.ALL = all;
+			this.dummyTable = null;
 		}
 
-		@SuppressWarnings("unchecked")
-		__Alias(final S tmp, final String alias) {
-			this.table = (Class<S>) tmp.getClass();
-			this.alias = alias;
-			this.instance = tmp;
-//			Query<S> all = new DBQuery<S>(this);
-//			try {
-//				final java.lang.reflect.Field f = table.getDeclaredField("ALL");
-//				f.setAccessible(true);
-//				@SuppressWarnings("unchecked")
-//				final
-//				DBQuery<S> q = (DBQuery<S>) f.get(null);
-//				all = all.use(q.ds);
-//			} catch (final Exception e) {
-//				throw new RuntimeException(e);
-//			}
+		public __Alias(final DummyTableWithName tmp, final String aliasName) {
+			this.table = tmp.cls;
+			this.schema_name = null;
+			this.table_name = null;
+			this.alias = aliasName;
 			this.ALL = null;
+			this.dummyTable = tmp;
 		}
 
 	}
@@ -381,7 +380,7 @@ public abstract class Table {
 	}
 
 	String TABLE_NAME(final SqlContext sqlContext) {
-		return TABLE_NAME();
+		return Util.getTABLE_NAME(this.getClass());
 	}
 
 }

@@ -363,7 +363,7 @@ public class Bulk {
 			final StringBuffer sb = new StringBuffer();
 			sb.append("insert into ");
 			sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()))
-					+sep+ table.TABLE_NAME());
+					+sep+ Util.getTABLE_NAME(table.getClass()));
 			sb.append(" (");
 			sb.append(Util.joinFields(dbType, ", ", fields));
 			sb.append(") values (");
@@ -427,7 +427,7 @@ public class Bulk {
 			final StringBuffer sb = new StringBuffer();
 			sb.append("update ");
 			sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()))
-					+sep+ table.TABLE_NAME());
+					+sep+ Util.getTABLE_NAME(table.getClass()));
 			sb.append(" set ");
 			for (int i=0; i<fields.length-pks.size(); ++i) {
 				sb.append(fields[i].getSQL(dbType));
@@ -469,7 +469,7 @@ public class Bulk {
 			final StringBuffer sb = new StringBuffer();
 			sb.append("delete from ");
 			sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()))
-					+sep+ table.TABLE_NAME());
+					+sep+ Util.getTABLE_NAME(table.getClass()));
 			sb.append(" where ");
 			sb.append(Util.joinFields(dbType, "=? and ", fields));
 			sb.append("=?;");

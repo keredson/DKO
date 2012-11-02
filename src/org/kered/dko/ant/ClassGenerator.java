@@ -480,9 +480,8 @@ class ClassGenerator {
 		br.write("\t\t}\n\t}\n\n");
 
 		// write abstract method impls
-		br.write("\tpublic final static String _SCHEMA_NAME = \""+ schema +"\";\n\n");
-
-		br.write("\tpublic String TABLE_NAME() {\n\t\treturn \""+ table +"\";\n\t}\n\n");
+		br.write("\tpublic final static String _SCHEMA_NAME = \""+ schema +"\";\n");
+		br.write("\tpublic final static String _TABLE_NAME= \""+ table +"\";\n\n");
 
 		br.write("\tpublic static java.util.List<Field<?>> _FIELDS;\n");
 		br.write("\tstatic {\n");

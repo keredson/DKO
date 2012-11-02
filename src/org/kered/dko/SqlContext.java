@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.DBQuery.JoinInfo;
+import org.kered.dko.TemporaryTableFactory.DummyTableWithName;
 
 class SqlContext {
 
@@ -42,15 +43,22 @@ class SqlContext {
 		return q;
 	}
 
-	String getFullTableName(final Table table) {
+	String getFullTableName(final TableInfo ti) {
+		if (ti.dummyTable != null) {
+			return dbType==Constants.DB_TYPE.SQLSERVER ? "#"+ti.dummyTable.name : ti.dummyTable.name;
+		}
+		return getFullTableName(ti.tableClass);
+	}
+
+	String getFullTableName(final Class<? extends Table> tableClass) {
 		final StringBuilder sb = new StringBuilder();
-		String schema = Util.getSCHEMA_NAME(table.getClass());
+		String schema = Util.getSCHEMA_NAME(tableClass);
 		if (schema != null) {
 			schema = Context.getSchemaToUse(getRootQuery().getDataSource(), schema);
 			sb.append(schema);
 			sb.append(dbType==Constants.DB_TYPE.SQLSERVER ? ".dbo." : ".");
 		}
-		sb.append(table.TABLE_NAME(this));
+		sb.append(Util.getTABLE_NAME(tableClass));
 		return sb.toString();
 	}
 

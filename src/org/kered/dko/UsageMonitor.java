@@ -158,24 +158,24 @@ class UsageMonitor<T extends Table> {
 
         // get pks for all tables
 
-		for (final Table table : query.tables) {
-			for (final Field<?> f : Util.getPK(table).GET_FIELDS()) {
+		for (final TableInfo table : query.tableInfos) {
+			for (final Field<?> f : Util.getPK(table.tableClass).GET_FIELDS()) {
 				pks.add(f);
 			}
 		}
 		for (final JoinInfo join : query.joinsToOne) {
-			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+			for (final Field<?> f : Util.getPK(join.reffedTableInfo.tableClass).GET_FIELDS()) {
 				pks.add(f);
 			}
-			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
+			for (final Field<?> f : Util.getPK(join.reffingTableInfo.tableClass).GET_FIELDS()) {
 				pks.add(f);
 			}
 		}
 		for (final JoinInfo join : query.joinsToMany) {
-			for (final Field<?> f : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+			for (final Field<?> f : Util.getPK(join.reffedTableInfo.tableClass).GET_FIELDS()) {
 				pks.add(f);
 			}
-			for (final Field<?> f : Util.getPK(join.reffingTableInfo.table).GET_FIELDS()) {
+			for (final Field<?> f : Util.getPK(join.reffingTableInfo.tableClass).GET_FIELDS()) {
 				pks.add(f);
 			}
 		}

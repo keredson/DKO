@@ -31,6 +31,7 @@ import org.kered.dko.Field.FK;
 import org.kered.dko.Field.PK;
 import org.kered.dko.Table.__Alias;
 import org.kered.dko.Table.__PrimaryKey;
+import org.kered.dko.TemporaryTableFactory.DummyTableWithName;
 import org.kered.dko.Tuple.Tuple2;
 import org.kered.dko.datasource.MirroredDataSource;
 import org.kered.dko.datasource.SingleConnectionDataSource;
@@ -51,7 +52,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	// these should be cloned
 	List<Condition> conditions = null;
-	List<Table> tables = new ArrayList<Table>();
 	Set<String> usedTableNames = new HashSet<String>();
 	List<TableInfo> tableInfos = new ArrayList<TableInfo>();
 	List<JoinInfo> joins = new ArrayList<JoinInfo>();
@@ -70,13 +70,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DB_TYPE dbType = null;
 	private boolean onlySelectFromFirstTableAndJoins = true;
 
-	DBQuery(final T table) {
-		super(table.getClass());
-		addTable(table);
-	}
-
-	private TableInfo addTable(final Table table) {
-		tables.add(table);
+	private TableInfo addTable(final Class<? extends Table> table) {
 		final String tableName = genTableName(table, usedTableNames);
 		usedTableNames.add(tableName);
 		final TableInfo info = new TableInfo(table, tableName, null);
@@ -95,7 +89,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			conditions = new ArrayList<Condition>();
 			conditions.addAll(q.conditions);
 		}
-		tables.addAll(q.tables);
 		usedTableNames.addAll(q.usedTableNames);
 		try {
 			for (final JoinInfo x : q.joins) joins.add((JoinInfo) x.clone());
@@ -145,22 +138,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	DBQuery(final Class<T> tableClass) {
 		super(tableClass);
-		try {
-			final Table table = tableClass.getConstructor().newInstance();
-			addTable(table);
-		} catch (final IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (final SecurityException e) {
-			e.printStackTrace();
-		} catch (final InstantiationException e) {
-			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (final InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (final NoSuchMethodException e) {
-			e.printStackTrace();
-		}
+		addTable(tableClass);
 	}
 
 	<S extends Table> DBQuery(final DBQuery<T> q, final String joinType, final Class<S> other, String alias, final Condition condition) {
@@ -170,13 +148,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		ji.rType = other;
 		ji.type = "inner join";
 		ji.condition = condition;
-		Table otherInstance;
 		try {
-			otherInstance = other.newInstance();
 			final boolean autogenName = alias == null;
-			if (autogenName) alias = genTableName(otherInstance, usedTableNames);
+			if (autogenName) alias = genTableName(other, usedTableNames);
 			usedTableNames.add(alias);
-			ji.reffedTableInfo = new TableInfo(otherInstance, alias, null);
+			ji.reffedTableInfo = new TableInfo(other, alias, null);
 			ji.reffedTableInfo.nameAutogenned = autogenName;
 			joins.add(ji);
 		} catch (final Exception e) {
@@ -217,10 +193,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public DBQuery(final __Alias<T> alias) {
 		super(alias.table);
 		try {
-			final Table table = alias.instance;
-			tables.add(table);
 			usedTableNames.add(alias.alias);
-			final TableInfo info = new TableInfo(table, alias.alias, null);
+			final TableInfo info = new TableInfo(alias.table, alias.alias, null);
 			info.nameAutogenned = false;
 			tableInfos.add(info);
 		} catch (final IllegalArgumentException e) {
@@ -247,11 +221,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		ji.type = joinType;
 		ji.condition = on;
 		try {
-			final Table otherInstance = other.newInstance();
 			final boolean autogenName = alias == null;
-			if (autogenName) alias = genTableName(otherInstance, usedTableNames);
+			if (autogenName) alias = genTableName(other, usedTableNames);
 			usedTableNames.add(alias);
-			ji.reffedTableInfo = new TableInfo(otherInstance, alias, null);
+			ji.reffedTableInfo = new TableInfo(other, alias, null);
 			ji.reffedTableInfo.nameAutogenned = autogenName;
 			joins.add(ji);
 		} catch (final Exception e) {
@@ -270,7 +243,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final List<Field<?>> selectFields = getSelectFields();
 		for (final JoinInfo join : this.joinsToMany) {
 			final List<Field<?>> missing = new ArrayList<Field<?>>();
-			for (final Field<?> f1 : Util.getPK(join.reffedTableInfo.table).GET_FIELDS()) {
+			for (final Field<?> f1 : Util.getPK(join.reffedTableInfo.tableClass).GET_FIELDS()) {
 				boolean found = false;
 				for (final Field<?> f2 : selectFields) {
 					if (f1.sameField(f2)) {
@@ -431,12 +404,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final SqlContext context = new SqlContext(this);
 		if (data==null || data.size()==0) return 0;
 		final DataSource ds = getDataSource();
-		final Table table = tables.get(0);
 		this.tableInfos.get(0).tableName = null;
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)) +sep+ table.TABLE_NAME());
+		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)) +sep+ Util.getTABLE_NAME(type));
 		sb.append(" set ");
 		final String[] fields = new String[data.size()];
 		final List<Object> bindings = new ArrayList<Object>();
@@ -476,12 +448,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);
 		final Connection conn = info.a;
 		if (q.getDBType()==DB_TYPE.MYSQL) {
-			if (q.tables.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
+			if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
-			final Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
 			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type))
-					+ "." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
+					+ "." + Util.getTABLE_NAME(type) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
@@ -495,12 +466,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			return count;
 
 		} else if (getDBType()==DB_TYPE.SQLSERVER) {
-			if (q.tables.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
+			if (q.tableInfos.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
 					"is not yet supported");
-			final Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
 			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type))
-					+ ".dbo." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
+					+ ".dbo." + Util.getTABLE_NAME(type) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
@@ -584,9 +554,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 			tableNameMap = new HashMap<String,Set<String>>();
 			for (final TableInfo ti : tableInfos) {
-				final String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ ti.table.TABLE_NAME();
+				final String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
 				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-				tableNameMap.get(id).add(bindTables ? ti.tableName : ti.table.TABLE_NAME());
+				tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
 			}
 
 			final SqlContext context = new SqlContext(this);
@@ -625,11 +595,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		// explicit joins
 		for (final JoinInfo join : joins) {
 			final TableInfo tableInfo = join.reffedTableInfo;
-			final Table table = tableInfo.table;
 			sb.append(" ");
 			sb.append(join.type);
 			sb.append(" ");
-			sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+			sb.append(context.getFullTableName(tableInfo) +" "+ tableInfo.tableName);
 			if (join.condition != null) {
 				sb.append(" on ");
 				sb.append(join.condition.getSQL(context));
@@ -648,11 +617,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				seen.add(join.reffedTableInfo.tableClass);
 				joinsToOne.remove(i--);
 				final TableInfo tableInfo = join.reffedTableInfo;
-				final Table table = tableInfo.table;
 				sb.append(" ");
 				sb.append(join.type);
 				sb.append(" ");
-				sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+				sb.append(context.getFullTableName(tableInfo) +" "+ tableInfo.tableName);
 				sb.append(" on ");
 				sb.append(join.condition.getSQL(context));
 			}
@@ -662,11 +630,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				seen.add(join.reffingTableInfo.tableClass);
 				joinsToMany.remove(i--);
 				final TableInfo tableInfo = join.reffingTableInfo;
-				final Table table = tableInfo.table;
 				sb.append(" ");
 				sb.append(join.type);
 				sb.append(" ");
-				sb.append(context.getFullTableName(table) +" "+ tableInfo.tableName);
+				sb.append(context.getFullTableName(tableInfo) +" "+ tableInfo.tableName);
 				sb.append(" on ");
 				sb.append(join.condition.getSQL(context));
 			}
@@ -698,8 +665,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return q;
 	}
 
-	private String genTableName(final Table table, final Collection<String> tableNames) {
-		final String name = table.TABLE_NAME();
+	private String genTableName(final Class<? extends Table> table, final Collection<String> tableNames) {
+		final String name = Util.getTABLE_NAME(table);
 		String base = "";
 		for (final String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
 		String proposed = null;
@@ -809,18 +776,25 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	public void setBindings(final PreparedStatement ps, final List<Object> bindings) throws SQLException {
-		final Table main = tables.get(0);
-		int i=1;
-		if (bindings!=null) {
-			for (Object o : bindings) {
-				o = main.__NOSCO_PRIVATE_mapType(o);
-				// hack for sql server which otherwise gives:
-				// com.microsoft.sqlserver.jdbc.SQLServerException:
-				// The conversion from UNKNOWN to UNKNOWN is unsupported.
-				if (o instanceof Character) ps.setString(i++, o.toString());
-				else ps.setObject(i++, o);
-				//System.err.print("\t"+ o +"");
+		Table main;
+		try {
+			main = tableInfos.get(0).tableClass.newInstance();
+			int i=1;
+			if (bindings!=null) {
+				for (Object o : bindings) {
+					o = main.__NOSCO_PRIVATE_mapType(o);
+					// hack for sql server which otherwise gives:
+					// com.microsoft.sqlserver.jdbc.SQLServerException:
+					// The conversion from UNKNOWN to UNKNOWN is unsupported.
+					if (o instanceof Character) ps.setString(i++, o.toString());
+					else ps.setObject(i++, o);
+					//System.err.print("\t"+ o +"");
+				}
 			}
+		} catch (final InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (final IllegalAccessException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -845,12 +819,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		final SqlContext context = new SqlContext(q);
 		final DataSource ds = getDataSource();
-		final Table table = q.tables.get(0);
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
 		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)));
-		sb.append(sep+ table.TABLE_NAME());
+		sb.append(sep+ Util.getTABLE_NAME(type));
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
 		final String[] bindStrings = new String[q.data.size()];
@@ -911,10 +884,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final List<String> names = new ArrayList<String>();
 		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (final TableInfo ti : tableInfos) {
-			final Table t = ti.table;
-			final String fullTableName = context==null ? Util.getSCHEMA_NAME(ti.tableClass)+"."+t.TABLE_NAME() : context.getFullTableName(t);
-			names.add(fullTableName +" "+ ti.tableName);
+			if (ti.dummyTable != null) {
+				names.add(ti.dummyTable.name +" "+ ti.tableName);
+			} else {
+				final String fullTableName = context==null ? Util.getSCHEMA_NAME(ti.tableClass)+"."+Util.getTABLE_NAME(ti.tableClass) : context.getFullTableName(ti);
+				names.add(fullTableName +" "+ ti.tableName);
+			}
 		}
+		System.err.println(names);
 		return names;
 	}
 
@@ -926,16 +903,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		//if (q.fks==null) q.fks = new Tree<Field.FK>();
 		try {
 
-			final Table[] baseTables = new Table[fkFields.length+1];
-			baseTables[0] = q.tables.get(0);
+			final Class<? extends Table>[] baseTables = new Class[fkFields.length+1];
+			baseTables[0] = q.tableInfos.get(0).tableClass;
 			for (int i=0; i<fkFields.length; ++i) {
 				final Field.FK field = fkFields[i];
 				final Field[] refingFields = field.REFERENCING_FIELDS();
 				final Field[] reffedFields = field.REFERENCED_FIELDS();
 				final Class reffingClass = refingFields[0].TABLE;
 				final Class reffedClass = reffedFields[0].TABLE;
-				final Table refingTable = (Table) reffingClass.newInstance();
-				final Table reffedTable = (Table) reffedClass.newInstance();
 				final FK[] prevPath = new FK[i];
 				System.arraycopy(fkFields, 0, prevPath, 0, i);
 				final FK[] path = new FK[i+1];
@@ -951,7 +926,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						// we've already added this FK
 						alreadyAdded = true;
 						// set this so our FK chain detection works
-						baseTables[i+1] = ti.table;
+						baseTables[i+1] = ti.tableClass;
 						break;
 					}
 				}
@@ -965,11 +940,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					else condition = condition.and(condition2);
 				}
 
-				if (Util.sameTable(refingTable, baseTables[i])) {
-					baseTables[i+1] = reffedTable;
-					final String tableName = genTableName(reffedTable, q.usedTableNames);
+				if (Util.sameTable(reffingClass, baseTables[i])) {
+					baseTables[i+1] = reffedClass;
+					final String tableName = genTableName(reffedClass, q.usedTableNames);
 					q.usedTableNames.add(tableName);
-					final TableInfo info = new TableInfo(reffedTable, tableName, path);
+					final TableInfo info = new TableInfo(reffedClass, tableName, path);
 					info.nameAutogenned = true;
 					final JoinInfo join = new JoinInfo();
 					join.condition = condition;
@@ -979,11 +954,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					join.type = "left outer join";
 					join.fk  = field;
 					q.joinsToOne.add(join);
-				} else if (Util.sameTable(reffedTable, baseTables[i])) {
-					baseTables[i+1] = refingTable;
-					final String tableName = genTableName(refingTable, q.usedTableNames);
+				} else if (Util.sameTable(reffedClass, baseTables[i])) {
+					baseTables[i+1] = reffingClass;
+					final String tableName = genTableName(reffingClass, q.usedTableNames);
 					q.usedTableNames.add(tableName);
-					final TableInfo info = new TableInfo(refingTable, tableName, path);
+					final TableInfo info = new TableInfo(reffingClass, tableName, path);
 					info.nameAutogenned = true;
 					final JoinInfo join = new JoinInfo();
 					join.condition = condition;
@@ -997,7 +972,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						q.orderByDirections = new ArrayList<DIRECTION>();
 						q.orderByFields = new ArrayList<Field<?>>();
 					}
-					final PK pk = Util.getPK(reffedTable);
+					final PK pk = Util.getPK(reffedClass);
 					final List<Field<?>> fields = pk==null ? Util.getFIELDS(reffedClass) : pk.GET_FIELDS();
 					for (final Field<?> f : fields) {
 						if (q.orderByFields.contains(f)) continue;
@@ -1010,10 +985,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			}
 
 		} catch (final SecurityException e) {
-			e.printStackTrace();
-		} catch (final InstantiationException e) {
-			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return q;
@@ -1029,7 +1000,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 		sb.append(Util.getSCHEMA_NAME(refingTable.getClass()));
 		sb.append(".");
-		sb.append(refingTable.TABLE_NAME());
+		sb.append(Util.getTABLE_NAME(refingTable.getClass()));
 		return sb.toString();
 	}
 
@@ -1167,7 +1138,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
 			final Table table = tableClass.getConstructor().newInstance();
-			q.addTable(table);
+			q.addTable(tableClass);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -1178,13 +1149,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Query<T> cross(final __Alias<? extends Table> tableAlias) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
-			q.tables.add(tableAlias.instance);
 			if (q.usedTableNames.contains(tableAlias.alias)) {
 				throw new RuntimeException("table alias "+ tableAlias.alias
 						+" already exists in this query");
 			}
 			q.usedTableNames.add(tableAlias.alias);
-			q.tableInfos.add(new TableInfo(tableAlias.instance, tableAlias.alias, null));
+			q.tableInfos.add(new TableInfo(tableAlias, null));
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -1239,7 +1209,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
-		for (final Table table : tables) {
+		for (final TableInfo table : tableInfos) {
 			table.__NOSCO_PRIVATE_preExecute(context, conn);
 		}
 		if (conditions != null) {
@@ -1255,7 +1225,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				c._postExecute(context, conn);
 			}
 		}
-		for (final Table table : tables) {
+		for (final TableInfo table : tableInfos) {
 			table.__NOSCO_PRIVATE_postExecute(context, conn);
 		}
 	}
@@ -1316,7 +1286,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				+ ((orderByFields == null) ? 0 : orderByFields.hashCode());
 		result = prime * result
 				+ ((tableInfos == null) ? 0 : tableInfos.hashCode());
-		result = prime * result + ((tables == null) ? 0 : tables.hashCode());
 		result = prime * result + (int)top;
 		result = prime * result
 				+ ((usedTableNames == null) ? 0 : usedTableNames.hashCode());
@@ -1391,11 +1360,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (other.tableInfos != null)
 				return false;
 		} else if (!tableInfos.equals(other.tableInfos))
-			return false;
-		if (tables == null) {
-			if (other.tables != null)
-				return false;
-		} else if (!tables.equals(other.tables))
 			return false;
 		if (top != other.top)
 			return false;
@@ -1478,7 +1442,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		//final String aliasName = "tmp_"+ Math.round(Math.random() * Integer.MAX_VALUE);
 		final String aliasName = tmpTableName.replace("#NOSCO_", "tmp_");
 		final PK<T> pk = Util.getPK(type);
-		final T tmp = TemporaryTableFactory.createTemporaryTable(type, pk.GET_FIELDS(), set);
+		final TemporaryTableFactory.DummyTableWithName<T> tmp = TemporaryTableFactory.createTemporaryTable(type, pk.GET_FIELDS(), set);
 		final Table.__Alias<T> alias = new Table.__Alias<T>(tmp, aliasName);
 		Query<T> q = cross(alias);
 		for (@SuppressWarnings("rawtypes") final Field field : pk.GET_FIELDS()) {

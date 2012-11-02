@@ -464,7 +464,8 @@ class UsageMonitor<T extends Table> {
 		    public void run() {
 		    	try {
 					Writer w = null;
-					for (final Entry<String, Map<Field<?>, Long>> e : qc.entrySet()) {
+					final Map<String,Map<Field<?>,Long>> qccp = new HashMap<String,Map<Field<?>,Long>>(qc);
+					for (final Entry<String, Map<Field<?>, Long>> e : qccp.entrySet()) {
 						final String stHash = e.getKey();
 						if (!stSeenThisRun.contains(stHash)) continue;
 						final JSONObject o = new JSONObject();

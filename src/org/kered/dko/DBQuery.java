@@ -436,7 +436,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME()) +sep+ table.TABLE_NAME());
+		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)) +sep+ table.TABLE_NAME());
 		sb.append(" set ");
 		final String[] fields = new String[data.size()];
 		final List<Object> bindings = new ArrayList<Object>();
@@ -480,7 +480,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					"is not yet supported");
 			final Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
+			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type))
 					+ "." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
@@ -499,7 +499,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					"is not yet supported");
 			final Table t = q.tables.get(0);
 			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ Context.getSchemaToUse(ds, t.SCHEMA_NAME())
+			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type))
 					+ ".dbo." + t.TABLE_NAME() + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
@@ -584,7 +584,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 			tableNameMap = new HashMap<String,Set<String>>();
 			for (final TableInfo ti : tableInfos) {
-				final String id = ti.table.SCHEMA_NAME() +"."+ ti.table.TABLE_NAME();
+				final String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ ti.table.TABLE_NAME();
 				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
 				tableNameMap.get(id).add(bindTables ? ti.tableName : ti.table.TABLE_NAME());
 			}
@@ -849,7 +849,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(Context.getSchemaToUse(ds, table.SCHEMA_NAME()));
+		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)));
 		sb.append(sep+ table.TABLE_NAME());
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
@@ -912,7 +912,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (final TableInfo ti : tableInfos) {
 			final Table t = ti.table;
-			final String fullTableName = context==null ? t.SCHEMA_NAME()+"."+t.TABLE_NAME() : context.getFullTableName(t);
+			final String fullTableName = context==null ? Util.getSCHEMA_NAME(ti.tableClass)+"."+t.TABLE_NAME() : context.getFullTableName(t);
 			names.add(fullTableName +" "+ ti.tableName);
 		}
 		return names;
@@ -1027,7 +1027,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			sb.append(fkField.toString());
 			sb.append("/");
 		}
-		sb.append(refingTable.SCHEMA_NAME());
+		sb.append(Util.getSCHEMA_NAME(refingTable.getClass()));
 		sb.append(".");
 		sb.append(refingTable.TABLE_NAME());
 		return sb.toString();

@@ -25,8 +25,12 @@ public abstract class Table {
 
 	/**
 	 * @return The database schema
+	 * @deprecated please use the static _SCHEMA_NAME class attribute (on the generated classes)
 	 */
-	protected abstract String SCHEMA_NAME();
+	@Deprecated
+	protected String SCHEMA_NAME() {
+		return Util.getSCHEMA_NAME(this.getClass());
+	}
 
 	/**
 	 * Please do not use.
@@ -36,7 +40,7 @@ public abstract class Table {
 
 	/**
 	 * @return A list of the fields defined for this class.
-	 * @deprecated please use the static FIELDS class attribute (on the generated classes)
+	 * @deprecated please use the static _FIELDS class attribute (on the generated classes)
 	 */
 	@Deprecated
 	public List<Field<?>> FIELDS() {

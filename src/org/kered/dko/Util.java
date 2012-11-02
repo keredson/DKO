@@ -27,7 +27,7 @@ class Util {
 		SqlContext tmp = context;
 		while (tmp != null) {
 			for (final TableInfo info : tmp.tableInfos) {
-				selectedTables.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
+				selectedTables.add(Util.getSCHEMA_NAME(info.tableClass) +"."+ info.table.TABLE_NAME());
 				if (info.nameAutogenned && field.TABLE.isInstance(info.table)) {
 					unboundTables.add(info);
 				}
@@ -41,7 +41,7 @@ class Util {
 		} else if (unboundTables.size() > 1) {
 			final List<String> x = new ArrayList<String>();
 			for (final TableInfo info : unboundTables) {
-				x.add(info.table.SCHEMA_NAME() +"."+ info.table.TABLE_NAME());
+				x.add(Util.getSCHEMA_NAME(info.tableClass) +"."+ info.table.TABLE_NAME());
 			}
 			throw new RuntimeException("field "+ field +
 					" is ambigious over the tables {"+ join(",", x) +"}");
@@ -96,7 +96,7 @@ class Util {
 	static boolean sameTable(final Table t1, final Table t2) {
 		if (t1 == null && t2 == null) return true;
 		if (t1 == null || t2 == null) return false;
-		return t1.SCHEMA_NAME() == t2.SCHEMA_NAME() && t1.TABLE_NAME() == t2.TABLE_NAME();
+		return Util.getSCHEMA_NAME(t1.getClass()).equals(Util.getSCHEMA_NAME(t2.getClass())) && t1.TABLE_NAME() == t2.TABLE_NAME();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -285,6 +285,21 @@ class Util {
 
 	public static String joinFields(final SqlContext context, final String s, final List<Field<?>> c) {
 		return joinFields(context.dbType, s, c);
+	}
+
+	static String getSCHEMA_NAME(final Class<? extends Table> t) {
+		try {
+			return (String) t.getField("_SCHEMA_NAME").get(null);
+		} catch (final Exception e) {
+			log.warning(e.toString() +" --- DKO class "+ t.getSimpleName()
+					+" was generated prior to DKO v2.2.0.  falling back to SCHEMA_NAME()...");
+			try {
+				return (String) t.getMethod("SCHEMA_NAME").invoke(t.newInstance());
+			} catch (final Exception e1) {
+				throw new RuntimeException(e1);
+				//e1.printStackTrace();
+			}
+		}
 	}
 
 

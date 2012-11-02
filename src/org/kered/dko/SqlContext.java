@@ -44,7 +44,7 @@ class SqlContext {
 
 	String getFullTableName(final Table table) {
 		final StringBuilder sb = new StringBuilder();
-		String schema = table.SCHEMA_NAME();
+		String schema = Util.getSCHEMA_NAME(table.getClass());
 		if (schema != null) {
 			schema = Context.getSchemaToUse(getRootQuery().getDataSource(), schema);
 			sb.append(schema);

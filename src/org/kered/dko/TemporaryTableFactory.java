@@ -36,10 +36,7 @@ class TemporaryTableFactory {
 			this.set = set;
 		}
 
-		@Override
-		protected String SCHEMA_NAME() {
-			return null;
-		}
+		public static String _SCHEMA_NAME = null;
 
 		String TABLE_NAME(final SqlContext sqlContext) {
 			return sqlContext.dbType==Constants.DB_TYPE.SQLSERVER ? "#"+name : name;

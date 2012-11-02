@@ -16,6 +16,8 @@
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>
   <property name="dep_mysql_jar"  location="/usr/share/java/mysql.jar"/>
+  <property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/>
+  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:${dep_gson_jar}"/>
 
   <!-- ========[ END PROPS ]======== -->
 
@@ -53,6 +55,15 @@
 			<pathelement path="${build}"/>
 		</classpath>
     </java>
+    <echo file="gen/joinsrc/org/kered/dko/BuildInfo.java">package org.kered.dko;
+public class BuildInfo {
+	public static final String HG_ID = "${hg_id}";
+	public static final String HG_BRANCH = "${hg_branch}";
+	public static final String HG_TAG = "${hg_tag}";
+	public static final String TODAY = "${TODAY}";
+	public static final String DESCRIPTION = "DKO "+ HG_TAG +" ("+ HG_ID +")";
+}
+</echo>
     <javac destdir="${build}" debug="on">
         <src path="${src}"/>
         <src path="gen/joinsrc"/>
@@ -151,15 +162,16 @@
       schemas="bin/unit_test_schema.json"
       callbackPackage="test.db.callback"
       aliases="public as nosco_test_jpetstore"
+      gson="true"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}"
    	/>
   </target>
 
   <target name="unit-test-hsql" depends="unit-test-gen-src-hsql">
     <javac srcdir="test/utest" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
@@ -219,15 +231,16 @@
       jarfile="bin/unittest.jar"
       schemas="bin/unit_test_mysql_schema.json"
       callbackPackage="test.db.callback"
+      gson="true"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}"
    	/>
   </target>
 
   <target name="unit-test-build-mysql" depends="unit-test-gen-src-mysql">
     <javac srcdir="test/utest" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
@@ -260,7 +273,7 @@
 
   <target name="performance-test-mysql" depends="unit-test-build-mysql">
     <javac srcdir="test/performance" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:bin_test"
+    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
    	/>
     <java fork="yes" classname="performance.PetStoreMysql">
       <classpath>

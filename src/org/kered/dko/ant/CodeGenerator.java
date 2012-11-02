@@ -48,6 +48,7 @@ public class CodeGenerator extends Task {
 	private File enumsFile = null;
 	private final Map<String,String> schemaAliases = new HashMap<String,String>();
 	private boolean useDetailedToString = false;
+	private boolean genGson = false;
 
 	public void setJarfile(final String s) {
 		this.jarfile = new File(s);
@@ -68,7 +69,7 @@ public class CodeGenerator extends Task {
 	}
 
 	public void setDebug(final String s) {
-		this.debug  = "true".equalsIgnoreCase(s) || "t".equalsIgnoreCase(s) || "1".equals(s);
+		this.debug = Util.truthy(s);
 	}
 
 	public void setPackage(final String s) {
@@ -89,6 +90,10 @@ public class CodeGenerator extends Task {
 
 	public void setUseDetailedToString(final String s) {
 		this.useDetailedToString  = Util.truthy(s);
+	}
+
+	public void setGson(final String s) {
+		this.genGson  = Util.truthy(s);
 	}
 
 	/**
@@ -185,7 +190,7 @@ public class CodeGenerator extends Task {
 			org.kered.dko.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(), schemaAliases,
 					fake_fks, typeMappings==null ? null : typeMappings.getAbsolutePath(),
-					dataSource, callbackPackage, enums, useDetailedToString);
+					dataSource, callbackPackage, enums, useDetailedToString, genGson);
 
 			if (dataSource != null) {
 				org.kered.dko.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,

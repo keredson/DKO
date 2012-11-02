@@ -1230,7 +1230,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public T get(final __PrimaryKey<T> pk) {
-		return get(Util.getPK((T)tables.get(0)).eq(pk));
+		return get(Util.getPK(type).eq(pk));
 	}
 
 	@Override

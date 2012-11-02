@@ -62,8 +62,10 @@ class ClassGenerator {
 	}
 
 	public static void go(final String dir, final String pkg, final String[] stripPrefixes,
-		final String[] stripSuffixes, final String metadataFile, final Map<String, String> schemaAliases, final File fakeFKsFile,
-		final String typeMappingsFile, final String dataSource, final String callbackPackage, final JSONObject enums, final boolean useDetailedToString)
+		final String[] stripSuffixes, final String metadataFile, final Map<String, String> schemaAliases,
+		final File fakeFKsFile, final String typeMappingsFile, final String dataSource,
+		final String callbackPackage, final JSONObject enums, final boolean useDetailedToString,
+		final boolean genGson)
 				throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
@@ -149,7 +151,12 @@ class ClassGenerator {
 						callbackPackage, enums, useDetailedToString);
 			}
 
+			if (genGson) {
+				org.kered.dko.ant.GsonGenerator.go(dir, pkg, pkgName, generator.tableToClassName);
+			}
+
 		}
+
 
 	}
 
@@ -257,9 +264,10 @@ class ClassGenerator {
 		return sb.toString();
 	}
 
-	private void generate(final String schema, final String pkgName, final String table, final JSONObject columns, JSONArray pks,
-			final List<FK> fks, final List<FK> fksIn, final String dataSourceName, final String callbackPackage,
-			final JSONObject enums, final boolean useDetailedToString)
+	private void generate(final String schema, final String pkgName, final String table,
+			final JSONObject columns, JSONArray pks, final List<FK> fks, final List<FK> fksIn,
+			final String dataSourceName, final String callbackPackage, final JSONObject enums,
+			final boolean useDetailedToString)
 	throws IOException, JSONException {
 		final String className = genTableClassName(table);
 		final Set<String> pkSet = new HashSet<String>();

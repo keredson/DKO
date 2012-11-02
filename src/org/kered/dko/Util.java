@@ -121,7 +121,7 @@ class Util {
 	@SuppressWarnings("unchecked")
 	static <T extends Table> List<Field<?>> getFIELDS(final Class<T> t) {
 		try {
-			return (List<Field<?>>) t.getField("FIELDS").get(null);
+			return (List<Field<?>>) t.getField("_FIELDS").get(null);
 		} catch (final Exception e) {
 			log.warning(e.toString() +" --- DKO class "+ t.getSimpleName()
 					+" was generated prior to DKO v2.2.0.  falling back to FIELDS()...");

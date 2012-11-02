@@ -484,18 +484,18 @@ class ClassGenerator {
 
 		br.write("\tpublic String TABLE_NAME() {\n\t\treturn \""+ table +"\";\n\t}\n\n");
 
-		br.write("\tpublic static java.util.List<Field<?>> FIELDS;\n");
+		br.write("\tpublic static java.util.List<Field<?>> _FIELDS;\n");
 		br.write("\tstatic {\n");
 		br.write("\t\tjava.util.List<Field<?>> fields = new java.util.ArrayList<Field<?>>();\n");
 		for (final String column : columns.keySet()) {
 			br.write("\t\tfields.add("+getFieldName(column)+");\n");
 		}
-		br.write("\t\tFIELDS = java.util.Collections.unmodifiableList(fields);\n");
+		br.write("\t\t_FIELDS = java.util.Collections.unmodifiableList(fields);\n");
 		br.write("\t}\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic java.util.List<Field<?>> fields() {\n");
 		br.write("\t\tjava.util.List<Field<?>> fields = new java.util.ArrayList<Field<?>>();\n");
-		br.write("\t\tfor (Field<?> field : FIELDS) {\n");
+		br.write("\t\tfor (Field<?> field : _FIELDS) {\n");
 		br.write("\t\t\tif (__NOSCO_FETCHED_VALUES.get(field.INDEX)) fields.add(field);\n");
 		br.write("\t\t}\n");
 		br.write("\t\treturn fields;\n\t}\n\n");

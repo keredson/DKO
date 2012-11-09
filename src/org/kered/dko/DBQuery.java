@@ -43,12 +43,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	static { UsageMonitor.doNothing(); }
 
 	// genned once and cached
-	private String sql;
-	private List<Field<?>> fields;
-	private List<Field<?>> boundFields;
-	List<Object> bindings = null;
-	Map<String,Set<String>> tableNameMap = null;
-	DB_TYPE detectedDbType = null;
+	transient private String sql;
+	transient private List<Field<?>> fields;
+	transient private List<Field<?>> boundFields;
+	transient List<Object> bindings = null;
+	transient Map<String,Set<String>> tableNameMap = null;
+	transient DB_TYPE detectedDbType = null;
 
 	// these should be cloned
 	List<Condition> conditions = null;
@@ -144,7 +144,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	<S extends Table> DBQuery(final DBQuery<T> q, final String joinType, final Class<S> other, String alias, final Condition condition) {
 		this(q);
 		final JoinInfo<T,S> ji = new JoinInfo<T,S>();
-		ji.lType = type;
+		ji.lType = ofType;
 		ji.rType = other;
 		ji.type = "inner join";
 		ji.condition = condition;
@@ -163,7 +163,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private DataSource getDefaultDS() {
 		try {
 			if (defaultDS != null) return defaultDS;
-			final java.lang.reflect.Field field = type.getDeclaredField("__DEFAULT_DATASOURCE");
+			final java.lang.reflect.Field field = ofType.getDeclaredField("__DEFAULT_DATASOURCE");
 			field.setAccessible(true);
 			defaultDS = (DataSource) field.get(null);
 			return defaultDS;
@@ -172,7 +172,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			e.printStackTrace();
 			return null;
 		} catch (final NoSuchFieldException e) {
-			final String msg = "No default datasource defined for "+ type +".  Please either call " +
+			final String msg = "No default datasource defined for "+ ofType +".  Please either call " +
 					"your query with .use(DataSource ds), or define the 'datasource' field " +
 					"in the org.kered.dko.ant.CodeGenerator ant task.";
 			throw new RuntimeException(msg, e);
@@ -204,15 +204,15 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends _Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
 		this(type, q, other, null, joinType, on);
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends _Join.J> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
 		this(type, q, other.table, other.alias, joinType, on);
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends _Join.J> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
 		super(type);
 		copy((DBQuery<T>) q);
 		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
@@ -408,7 +408,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)) +sep+ Util.getTABLE_NAME(type));
+		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType)) +sep+ Util.getTABLE_NAME(ofType));
 		sb.append(" set ");
 		final String[] fields = new String[data.size()];
 		final List<Object> bindings = new ArrayList<Object>();
@@ -451,8 +451,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
 			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type))
-					+ "." + Util.getTABLE_NAME(type) + q.getWhereClauseAndSetBindings();
+			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType))
+					+ "." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
@@ -469,8 +469,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (q.tableInfos.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
 					"is not yet supported");
 			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type))
-					+ ".dbo." + Util.getTABLE_NAME(type) + q.getWhereClauseAndSetBindings();
+			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType))
+					+ ".dbo." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
@@ -822,8 +822,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(type)));
-		sb.append(sep+ Util.getTABLE_NAME(type));
+		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType)));
+		sb.append(sep+ Util.getTABLE_NAME(ofType));
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
 		final String[] bindStrings = new String[q.data.size()];
@@ -1188,7 +1188,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public DataSource getDataSource() {
 		if (ds != null) return ds;
-		final DataSource ds = Context.getDataSource(type);
+		final DataSource ds = Context.getDataSource(ofType);
 		if (ds != null) return ds;
 		return getDefaultDS();
 	}
@@ -1200,7 +1200,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public T get(final __PrimaryKey<T> pk) {
-		return get(Util.getPK(type).eq(pk));
+		return get(Util.getPK(ofType).eq(pk));
 	}
 
 	@Override
@@ -1441,8 +1441,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
 		//final String aliasName = "tmp_"+ Math.round(Math.random() * Integer.MAX_VALUE);
 		final String aliasName = tmpTableName.replace("#NOSCO_", "tmp_");
-		final PK<T> pk = Util.getPK(type);
-		final TemporaryTableFactory.DummyTableWithName<T> tmp = TemporaryTableFactory.createTemporaryTable(type, pk.GET_FIELDS(), set);
+		final PK<T> pk = Util.getPK(ofType);
+		final TemporaryTableFactory.DummyTableWithName<T> tmp = TemporaryTableFactory.createTemporaryTable(ofType, pk.GET_FIELDS(), set);
 		final Table.__Alias<T> alias = new Table.__Alias<T>(tmp, aliasName);
 		Query<T> q = cross(alias);
 		for (@SuppressWarnings("rawtypes") final Field field : pk.GET_FIELDS()) {

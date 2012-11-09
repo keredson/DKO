@@ -16,7 +16,7 @@ import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Field.FK;
 import org.kered.dko.QueryFactory.Callback;
 
-public class QueryAddField extends InMemoryQuery<Table> implements MatryoshkaQuery<Table> {
+class QueryAddField extends InMemoryQuery<Table> implements MatryoshkaQuery<Table> {
 
 	private final Query<? extends Table> underlying;
 	private final Field<?> field;

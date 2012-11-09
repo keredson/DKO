@@ -24,15 +24,15 @@ import org.kered.dko.Table.__PrimaryKey;
  */
 public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
-	final Class<T> type;
+	final Class<T> ofType;
 	private boolean applyGlobalMaxFunction = false;
 
 	AbstractQuery(final Query<T> q) {
-		type = q.getType();
+		ofType = q.getType();
 	}
 
 	AbstractQuery(final AbstractQuery<T> q) {
-		type = q.type;
+		ofType = q.ofType;
 		applyGlobalMaxFunction = q.applyGlobalMaxFunction;
 	}
 
@@ -50,12 +50,12 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	public AbstractQuery(final Class<? extends Table> type) {
-		this.type = (Class<T>) type;
+		this.ofType = (Class<T>) type;
 	}
 
 	@Override
 	public Class<T> getType() {
-		return type;
+		return ofType;
 	}
 
 	@Override

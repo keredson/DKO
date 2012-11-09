@@ -229,6 +229,13 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#Field(java.lang.String, java.lang.Class)">Field</A></B>(java.lang.String&nbsp;name,
+      java.lang.Class&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;type)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use this constructor when defining one-off fields unrelated to an actual database.</TD>
+</TR>
 </TABLE>
 &nbsp;
 <!-- ========== METHOD SUMMARY =========== -->
@@ -241,7 +248,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#add(org.kered.dko.Field)">add</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -249,15 +256,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#add(org.kered.dko.Function)">add</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#add(org.kered.dko.SQLFunction)">add</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#add(T)">add</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -275,8 +282,8 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.Field, org.kered.dko.Function)">between</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&nbsp;v1,
-        <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v2)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.Field, org.kered.dko.SQLFunction)">between</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&nbsp;v1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v2)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field between the values of the parameters.</TD>
@@ -293,7 +300,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.Function, org.kered.dko.Field)">between</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v1,
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.SQLFunction, org.kered.dko.Field)">between</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v1,
         <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&nbsp;v2)</CODE>
 
 <BR>
@@ -302,8 +309,8 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.Function, org.kered.dko.Function)">between</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v1,
-        <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v2)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.SQLFunction, org.kered.dko.SQLFunction)">between</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v2)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field between the values of the parameters.</TD>
@@ -311,7 +318,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.Function, T)">between</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v1,
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(org.kered.dko.SQLFunction, T)">between</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v1,
         <A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v2)</CODE>
 
 <BR>
@@ -328,12 +335,80 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(T, org.kered.dko.Field, org.kered.dko.Field)">between</A></B>(T&nbsp;v1,
+        <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f1,
+        <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing a value between two fields.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(T, org.kered.dko.Field, org.kered.dko.SQLFunction)">between</A></B>(T&nbsp;v1,
+        <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing a value between two fields.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(T, org.kered.dko.Function)">between</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v1,
-        <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v2)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(T, org.kered.dko.SQLFunction)">between</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v2)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field between the values of the parameters.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(T, org.kered.dko.SQLFunction, org.kered.dko.Field)">between</A></B>(T&nbsp;v1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f1,
+        <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing a value between two fields.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#between(T, org.kered.dko.SQLFunction, org.kered.dko.SQLFunction)">between</A></B>(T&nbsp;v1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f1,
+        <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f2)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing a value between two fields.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -346,7 +421,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#div(org.kered.dko.Field)">div</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -354,15 +429,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#div(org.kered.dko.Function)">div</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#div(org.kered.dko.SQLFunction)">div</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#div(T)">div</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -370,7 +445,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#divide(org.kered.dko.Field)">divide</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -378,15 +453,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#divide(org.kered.dko.Function)">divide</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#divide(org.kered.dko.SQLFunction)">divide</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use div()</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#divide(T)">divide</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -403,7 +478,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#eq(org.kered.dko.Function)">eq</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#eq(org.kered.dko.SQLFunction)">eq</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field equal to some function.</TD>
@@ -477,7 +552,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#gt(org.kered.dko.Function)">gt</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#gt(org.kered.dko.SQLFunction)">gt</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field greater than some function.</TD>
@@ -501,7 +576,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#gte(org.kered.dko.Function)">gte</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#gte(org.kered.dko.SQLFunction)">gte</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field greater than or equal to some function.</TD>
@@ -581,7 +656,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#lt(org.kered.dko.Function)">lt</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#lt(org.kered.dko.SQLFunction)">lt</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field less than some function.</TD>
@@ -605,7 +680,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#lte(org.kered.dko.Function)">lte</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#lte(org.kered.dko.SQLFunction)">lte</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field less than or equal to some function.</TD>
@@ -620,7 +695,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mod(org.kered.dko.Field)">mod</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -628,15 +703,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mod(org.kered.dko.Function)">mod</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mod(org.kered.dko.SQLFunction)">mod</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mod(T)">mod</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -644,7 +719,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#modulus(org.kered.dko.Field)">modulus</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -652,15 +727,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#modulus(org.kered.dko.Function)">modulus</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#modulus(org.kered.dko.SQLFunction)">modulus</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mod()</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#modulus(T)">modulus</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -668,7 +743,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mul(org.kered.dko.Field)">mul</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -676,15 +751,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mul(org.kered.dko.Function)">mul</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mul(org.kered.dko.SQLFunction)">mul</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#mul(T)">mul</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -692,7 +767,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#multiply(org.kered.dko.Field)">multiply</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -700,15 +775,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#multiply(org.kered.dko.Function)">multiply</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#multiply(org.kered.dko.SQLFunction)">multiply</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use mul()</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#multiply(T)">multiply</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -725,7 +800,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#neq(org.kered.dko.Function)">neq</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#neq(org.kered.dko.SQLFunction)">neq</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a condition representing this field not equal to some function.</TD>
@@ -748,7 +823,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#sub(org.kered.dko.Field)">sub</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -756,15 +831,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#sub(org.kered.dko.Function)">sub</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#sub(org.kered.dko.SQLFunction)">sub</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Performs a mathematical function on this field.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#sub(T)">sub</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -772,7 +847,7 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#subtract(org.kered.dko.Field)">subtract</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</CODE>
 
 <BR>
@@ -780,15 +855,15 @@ This class represents a column in a table. &nbsp; It it typed to the type of the
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#subtract(org.kered.dko.Function)">subtract</A></B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</CODE>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#subtract(org.kered.dko.SQLFunction)">subtract</A></B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use sub()</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Field.html#subtract(T)">subtract</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</CODE>
 
 <BR>
@@ -884,6 +959,19 @@ public <B>Field</B>(int&nbsp;index,
              java.lang.Class&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;type,
              java.lang.String&nbsp;sqlType)</PRE>
 <DL>
+</DL>
+<HR>
+
+<A NAME="Field(java.lang.String, java.lang.Class)"><!-- --></A><H3>
+Field</H3>
+<PRE>
+public <B>Field</B>(java.lang.String&nbsp;name,
+             java.lang.Class&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;type)</PRE>
+<DL>
+<DD>Use this constructor when defining one-off fields unrelated to an actual database.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>name</CODE> - <DD><CODE>type</CODE> - </DL>
 </DL>
 
 <!-- ============ METHOD DETAIL ========== -->
@@ -1016,10 +1104,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="eq(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="eq(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 eq</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>eq</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>eq</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Creates a condition representing this field equal to some function.
 <P>
@@ -1067,10 +1155,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="neq(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="neq(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 neq</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>neq</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>neq</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Creates a condition representing this field not equal to some function.
 <P>
@@ -1136,10 +1224,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="lt(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="lt(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 lt</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lt</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lt</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Creates a condition representing this field less than some function.
 <P>
@@ -1187,10 +1275,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="lte(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="lte(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 lte</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lte</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>lte</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Creates a condition representing this field less than or equal to some function.
 <P>
@@ -1238,10 +1326,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="gt(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="gt(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 gt</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gt</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gt</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Creates a condition representing this field greater than some function.
 <P>
@@ -1289,10 +1377,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="gte(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="gte(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 gte</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gte</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>gte</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Creates a condition representing this field greater than or equal to some function.
 <P>
@@ -1358,11 +1446,11 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="between(java.lang.Object,org.kered.dko.Function)"><!-- --></A><A NAME="between(T, org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="between(java.lang.Object,org.kered.dko.SQLFunction)"><!-- --></A><A NAME="between(T, org.kered.dko.SQLFunction)"><!-- --></A><H3>
 between</H3>
 <PRE>
 public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v1,
-                         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v2)</PRE>
+                         <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v2)</PRE>
 <DL>
 <DD>Creates a condition representing this field between the values of the parameters.
 <P>
@@ -1376,10 +1464,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="between(org.kered.dko.Function,java.lang.Object)"><!-- --></A><A NAME="between(org.kered.dko.Function, T)"><!-- --></A><H3>
+<A NAME="between(org.kered.dko.SQLFunction,java.lang.Object)"><!-- --></A><A NAME="between(org.kered.dko.SQLFunction, T)"><!-- --></A><H3>
 between</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v1,
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v1,
                          <A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v2)</PRE>
 <DL>
 <DD>Creates a condition representing this field between the values of the parameters.
@@ -1394,11 +1482,11 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="between(org.kered.dko.Function, org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="between(org.kered.dko.SQLFunction, org.kered.dko.SQLFunction)"><!-- --></A><H3>
 between</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v1,
-                         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v2)</PRE>
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v1,
+                         <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v2)</PRE>
 <DL>
 <DD>Creates a condition representing this field between the values of the parameters.
 <P>
@@ -1430,11 +1518,11 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="between(org.kered.dko.Field, org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="between(org.kered.dko.Field, org.kered.dko.SQLFunction)"><!-- --></A><H3>
 between</H3>
 <PRE>
 public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&nbsp;v1,
-                         <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v2)</PRE>
+                         <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v2)</PRE>
 <DL>
 <DD>Creates a condition representing this field between the values of the parameters.
 <P>
@@ -1448,10 +1536,10 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 </DL>
 <HR>
 
-<A NAME="between(org.kered.dko.Function, org.kered.dko.Field)"><!-- --></A><H3>
+<A NAME="between(org.kered.dko.SQLFunction, org.kered.dko.Field)"><!-- --></A><H3>
 between</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v1,
+public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v1,
                          <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&nbsp;v2)</PRE>
 <DL>
 <DD>Creates a condition representing this field between the values of the parameters.
@@ -1491,6 +1579,86 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
                          <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&nbsp;v2)</PRE>
 <DL>
 <DD>Creates a condition representing this field between the values of the parameters.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v1</CODE> - <DD><CODE>v2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="between(java.lang.Object,org.kered.dko.Field,org.kered.dko.Field)"><!-- --></A><A NAME="between(T, org.kered.dko.Field, org.kered.dko.Field)"><!-- --></A><H3>
+between</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(T&nbsp;v1,
+                                    <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f1,
+                                    <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>Creates a condition representing a value between two fields.  Example:
+ <code>select * from car where 25 between city_mpg and highway_mpg</code>
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v1</CODE> - <DD><CODE>v2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="between(java.lang.Object,org.kered.dko.SQLFunction,org.kered.dko.Field)"><!-- --></A><A NAME="between(T, org.kered.dko.SQLFunction, org.kered.dko.Field)"><!-- --></A><H3>
+between</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(T&nbsp;v1,
+                                    <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f1,
+                                    <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f2)</PRE>
+<DL>
+<DD>Creates a condition representing a value between two fields.  Example:
+ <code>select * from car where 25 between city_mpg and highway_mpg</code>
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v1</CODE> - <DD><CODE>v2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="between(java.lang.Object,org.kered.dko.Field,org.kered.dko.SQLFunction)"><!-- --></A><A NAME="between(T, org.kered.dko.Field, org.kered.dko.SQLFunction)"><!-- --></A><H3>
+between</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(T&nbsp;v1,
+                                    <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;T&gt;&nbsp;f1,
+                                    <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f2)</PRE>
+<DL>
+<DD>Creates a condition representing a value between two fields.  Example:
+ <code>select * from car where 25 between city_mpg and highway_mpg</code>
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>v1</CODE> - <DD><CODE>v2</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="between(java.lang.Object,org.kered.dko.SQLFunction,org.kered.dko.SQLFunction)"><!-- --></A><A NAME="between(T, org.kered.dko.SQLFunction, org.kered.dko.SQLFunction)"><!-- --></A><H3>
+between</H3>
+<PRE>
+public static &lt;T&gt; <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered.dko">Condition</A> <B>between</B>(T&nbsp;v1,
+                                    <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f1,
+                                    <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;f2)</PRE>
+<DL>
+<DD>Creates a condition representing a value between two fields.  Example:
+ <code>select * from car where 25 between city_mpg and highway_mpg</code>
 <P>
 <DD><DL>
 </DL>
@@ -1556,7 +1724,7 @@ public <A HREF="../../../org/kered/dko/Condition.html" title="class in org.kered
 <A NAME="add(java.lang.Object)"><!-- --></A><A NAME="add(T)"><!-- --></A><H3>
 add</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1573,7 +1741,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="add(org.kered.dko.Field)"><!-- --></A><H3>
 add</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1587,10 +1755,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="add(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="add(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 add</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>add</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1607,7 +1775,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="sub(java.lang.Object)"><!-- --></A><A NAME="sub(T)"><!-- --></A><H3>
 sub</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1624,7 +1792,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="sub(org.kered.dko.Field)"><!-- --></A><H3>
 sub</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1638,10 +1806,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="sub(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="sub(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 sub</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>sub</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1658,7 +1826,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="mul(java.lang.Object)"><!-- --></A><A NAME="mul(T)"><!-- --></A><H3>
 mul</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1675,7 +1843,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="mul(org.kered.dko.Field)"><!-- --></A><H3>
 mul</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1689,10 +1857,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="mul(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="mul(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 mul</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mul</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1709,7 +1877,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="div(java.lang.Object)"><!-- --></A><A NAME="div(T)"><!-- --></A><H3>
 div</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1726,7 +1894,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="div(org.kered.dko.Field)"><!-- --></A><H3>
 div</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1740,10 +1908,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="div(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="div(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 div</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>div</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1760,7 +1928,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="mod(java.lang.Object)"><!-- --></A><A NAME="mod(T)"><!-- --></A><H3>
 mod</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1777,7 +1945,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="mod(org.kered.dko.Field)"><!-- --></A><H3>
 mod</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1791,10 +1959,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="mod(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="mod(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 mod</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>mod</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD>Performs a mathematical function on this field.
 <P>
@@ -1811,7 +1979,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="subtract(java.lang.Object)"><!-- --></A><A NAME="subtract(T)"><!-- --></A><H3>
 subtract</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <P>
@@ -1830,7 +1998,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="subtract(org.kered.dko.Field)"><!-- --></A><H3>
 subtract</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <P>
@@ -1846,10 +2014,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="subtract(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="subtract(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 subtract</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>subtract</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use sub()</I>
 <P>
@@ -1868,7 +2036,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="multiply(java.lang.Object)"><!-- --></A><A NAME="multiply(T)"><!-- --></A><H3>
 multiply</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <P>
@@ -1887,7 +2055,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="multiply(org.kered.dko.Field)"><!-- --></A><H3>
 multiply</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <P>
@@ -1903,10 +2071,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="multiply(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="multiply(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 multiply</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>multiply</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use mul()</I>
 <P>
@@ -1925,7 +2093,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="divide(java.lang.Object)"><!-- --></A><A NAME="divide(T)"><!-- --></A><H3>
 divide</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <P>
@@ -1944,7 +2112,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="divide(org.kered.dko.Field)"><!-- --></A><H3>
 divide</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <P>
@@ -1960,10 +2128,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="divide(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="divide(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 divide</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>divide</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use div()</I>
 <P>
@@ -1982,7 +2150,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="modulus(java.lang.Object)"><!-- --></A><A NAME="modulus(T)"><!-- --></A><H3>
 modulus</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <P>
@@ -2001,7 +2169,7 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 <A NAME="modulus(org.kered.dko.Field)"><!-- --></A><H3>
 modulus</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt;&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <P>
@@ -2017,10 +2185,10 @@ public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.
 </DL>
 <HR>
 
-<A NAME="modulus(org.kered.dko.Function)"><!-- --></A><H3>
+<A NAME="modulus(org.kered.dko.SQLFunction)"><!-- --></A><H3>
 modulus</H3>
 <PRE>
-public <A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/Function.html" title="class in org.kered.dko">Function</A>&nbsp;v)</PRE>
+public <A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&lt;<A HREF="../../../org/kered/dko/Field.html" title="type parameter in Field">T</A>&gt; <B>modulus</B>(<A HREF="../../../org/kered/dko/SQLFunction.html" title="class in org.kered.dko">SQLFunction</A>&nbsp;v)</PRE>
 <DL>
 <DD><B>Deprecated.</B>&nbsp;<I>use mod()</I>
 <P>

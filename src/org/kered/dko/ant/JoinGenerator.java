@@ -20,15 +20,23 @@ class JoinGenerator {
 		final File file = new File("gen/joinsrc/org/kered/dko/Join.java");
 		System.err.println("writing (to J"+n+"): "+ file.getPath());
 		genJoinsFile(file, n);
+		final File file2 = new File("gen/joinsrc/org/kered/dko/_Join.java");
+		gen_JoinsFile(file2, n);
 	}
 
 	private static void genJoinsFile(final File file, final int n) throws IOException {
 		final File dir = file.getParentFile();
-		if(!dir.exists()) {
-			dir.mkdirs();
-		}
+		if(!dir.exists()) dir.mkdirs();
 		final BufferedWriter w = new BufferedWriter(new FileWriter(file));
 		genJoins(w, n);
+		w.close();
+	}
+
+	private static void gen_JoinsFile(final File file, final int n) throws IOException {
+		final File dir = file.getParentFile();
+		if(!dir.exists()) dir.mkdirs();
+		final BufferedWriter w = new BufferedWriter(new FileWriter(file));
+		gen_Joins(w, n);
 		w.close();
 	}
 
@@ -43,15 +51,11 @@ class JoinGenerator {
 		w.write("import javax.sql.DataSource;\n");
 		w.write("import org.kered.dko.Field.FK;\n");
 		w.write("import org.kered.dko.Table.__Alias;\n");
+		w.write("import org.kered.dko._Join.*;\n");
 		w.write("\n");
 
 		w.write("public class Join {\n");
 		w.write("\n");
-
-		w.write("\tstatic abstract class J extends Table {\n");
-		w.write("\n");
-		w.write("\t\tList<Class<?>> types = null;\n");
-		w.write("\t}\n");
 
 		for (int i=2; i<=n; ++i) {
 			w.write("\n");
@@ -94,8 +98,40 @@ class JoinGenerator {
 				}
 			}
 			w.write("\n");
+		}
 
-			w.write("\tprivate static class Query"+ i +"<"+ tExtendsTable +"> extends DBQuery<J"+ i +"<"+ tTypes +">> {\n");
+		w.write("\n}\n");
+	}
+
+	private static void gen_Joins(final Writer w, final int n) throws IOException {
+		w.write("package org.kered.dko;\n\n");
+		w.write("import java.sql.SQLException;\n");
+		w.write("import java.util.ArrayList;\n");
+		w.write("import java.util.Collections;\n");
+		w.write("import java.util.List;\n");
+		w.write("import javax.sql.DataSource;\n");
+		w.write("import org.kered.dko.Field.FK;\n");
+		w.write("import org.kered.dko.Table.__Alias;\n");
+		w.write("\n");
+
+		w.write("public class _Join {\n");
+		w.write("\n");
+
+		w.write("\tstatic abstract class J extends Table {\n");
+		w.write("\t\tList<Class<?>> types = null;\n");
+		w.write("\t}\n");
+
+		for (int i=2; i<=n; ++i) {
+			w.write("\n");
+
+			final String tExtendsTable =genTExtendsTable(i);
+			final String tTypes =genTTypes(i);
+
+
+			final String[] joinTypes = {"left", "right", "inner", "outer", "cross"};
+			final String[] inputTypes = {"Class", "__Alias"};
+
+			w.write("\tpublic static class Query"+ i +"<"+ tExtendsTable +"> extends DBQuery<J"+ i +"<"+ tTypes +">> {\n");
 			w.write("\t\tfinal int SIZE = "+ i +";\n");
 			for (final String inputType : inputTypes) {
 				if (i == 2) {
@@ -254,9 +290,7 @@ class JoinGenerator {
 	private static void writeJoinJavadoc(final Writer w, final int i,
 			final String tTypes) throws IOException {
 		w.write("\t/** \n");
-		w.write("\t * Joins types "+ tTypes +" into one query.\n");
-		w.write("\t * The return is a private type (to avoid type erasure conflicts), but you should use\n");
-		w.write("\t * it as a {@code org.kered.dko.Query<Join.J"+ i +"<"+ tTypes +">>}\n");
+		w.write("\t * Joins types "+ tTypes +" into a {@code org.kered.dko.Query<Join.J"+ i +"<"+ tTypes +">>}\n");
 		w.write("\t */\n");
 	}
 

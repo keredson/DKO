@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 import org.kered.dko.Field.FK;
 
-public class TableWrapper extends Table {
+class TableWrapper extends Table {
 
 	private final Field<?> field;
 	private Object value = null;

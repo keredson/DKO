@@ -53,7 +53,7 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/kered/dko/Join.J9.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Join.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../../org/kered/dko/QueryFactory.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../index.html?org/kered/dko/Query.html" target="_top"><B>FRAMES</B></A>  &nbsp;
@@ -161,11 +161,26 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S&gt; java.lang.Iterable&lt;S&gt;</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#asIterableOf(org.kered.dko.Field)">asIterableOf</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns you an iterable of the values only in the given field.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.lang.Iterable&lt;java.util.Map&lt;<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;,java.lang.Object&gt;&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#asIterableOfMaps()">asIterableOfMaps</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the results of the query as a <code>Iterable</code> of <code>Map&lt;Field&lt;?&gt;,Object&gt;</code>s.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -173,7 +188,7 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 <TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#asIterableOfObjectArrays()">asIterableOfObjectArrays</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the results of the query as a <code>Iterable</code> of <code>Object[]</code>s.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -747,7 +762,7 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 <TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#select(org.kered.dko.Field)">select</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns you an iterable of the values only in the given field.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>Use <CODE>#asIterableOf(Field<S>)</CODE> instead</I></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -776,8 +791,17 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.Double</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#sum(org.kered.dko.Field)">sum</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends java.lang.Number&gt;&nbsp;f)</CODE>
+<CODE>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
+<TR ALIGN="right" VALIGN="">
+<TD NOWRAP><FONT SIZE="-1">
+<CODE>&lt;S extends java.lang.Number&gt; 
+<BR>
+S</CODE></FONT></TD>
+</TR>
+</TABLE>
+</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#sum(org.kered.dko.Field)">sum</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;f)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sums the value of a given field.</TD>
@@ -788,12 +812,14 @@ The Query interface is the center of the Nosco API. &nbsp; When you generate you
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" SUMMARY="">
 <TR ALIGN="right" VALIGN="">
 <TD NOWRAP><FONT SIZE="-1">
-<CODE>&lt;S&gt; java.util.Map&lt;S,java.lang.Double&gt;</CODE></FONT></TD>
+<CODE>&lt;R,S extends java.lang.Number&gt; 
+<BR>
+java.util.Map&lt;R,S&gt;</CODE></FONT></TD>
 </TR>
 </TABLE>
 </CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#sumBy(org.kered.dko.Field, org.kered.dko.Field)">sumBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends java.lang.Number&gt;&nbsp;sumField,
-      <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)</CODE>
+<TD><CODE><B><A HREF="../../../org/kered/dko/Query.html#sumBy(org.kered.dko.Field, org.kered.dko.Field)">sumBy</A></B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;sumField,
+      <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;R&gt;&nbsp;byField)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sums the value of a field grouped by another field.</TD>
@@ -1524,9 +1550,9 @@ java.util.Set&lt;<A HREF="../../../org/kered/dko/Query.html" title="type paramet
 <A NAME="sumBy(org.kered.dko.Field, org.kered.dko.Field)"><!-- --></A><H3>
 sumBy</H3>
 <PRE>
-&lt;S&gt; java.util.Map&lt;S,java.lang.Double&gt; <B>sumBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends java.lang.Number&gt;&nbsp;sumField,
-                                            <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;byField)
-                                        throws java.sql.SQLException</PRE>
+&lt;R,S extends java.lang.Number&gt; java.util.Map&lt;R,S&gt; <B>sumBy</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;sumField,
+                                                        <A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;R&gt;&nbsp;byField)
+                                                  throws java.sql.SQLException</PRE>
 <DL>
 <DD>Sums the value of a field grouped by another field.
  Sum is calculated by the database.  Objects are not transferred to the JVM.
@@ -1546,8 +1572,8 @@ sumBy</H3>
 <A NAME="sum(org.kered.dko.Field)"><!-- --></A><H3>
 sum</H3>
 <PRE>
-java.lang.Double <B>sum</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;? extends java.lang.Number&gt;&nbsp;f)
-                     throws java.sql.SQLException</PRE>
+&lt;S extends java.lang.Number&gt; S <B>sum</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;f)
+                               throws java.sql.SQLException</PRE>
 <DL>
 <DD>Sums the value of a given field.
  Sum is calculated by the database.  Objects are not transferred to the JVM.
@@ -1839,6 +1865,29 @@ select</H3>
 <PRE>
 &lt;S&gt; java.lang.Iterable&lt;S&gt; <B>select</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</PRE>
 <DL>
+<DD><B>Deprecated.</B>&nbsp;<I>Use <CODE>#asIterableOf(Field<S>)</CODE> instead</I>
+<P>
+<DD>Returns you an iterable of the values only in the given field. &nbsp;
+ If you want an iterable of more than one field type, you should use
+ <code>onlyFields(field1, field2, ...)</code>. &nbsp; This will return you an
+ iterable of T instances, with only those fields populated. &nbsp;
+ If Java adds typed tuple support at some point this method may be extended.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="asIterableOf(org.kered.dko.Field)"><!-- --></A><H3>
+asIterableOf</H3>
+<PRE>
+&lt;S&gt; java.lang.Iterable&lt;S&gt; <B>asIterableOf</B>(<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;S&gt;&nbsp;field)</PRE>
+<DL>
 <DD>Returns you an iterable of the values only in the given field. &nbsp;
  If you want an iterable of more than one field type, you should use
  <code>onlyFields(field1, field2, ...)</code>. &nbsp; This will return you an
@@ -1934,7 +1983,7 @@ asIterableOfObjectArrays</H3>
 <PRE>
 java.lang.Iterable&lt;java.lang.Object[]&gt; <B>asIterableOfObjectArrays</B>()</PRE>
 <DL>
-<DD>Returns the results of the query as a <code>Iterator</code> of <code>Object[]</code>s. &nbsp;
+<DD>Returns the results of the query as a <code>Iterable</code> of <code>Object[]</code>s. &nbsp;
  Usually used with <code>cross()</code> and <code>getSelectFields()</code>. (the latter to know
  which array elements are from what fields) &nbsp;
  Use sparingly. &nbsp;
@@ -1954,11 +2003,16 @@ asIterableOfMaps</H3>
 <PRE>
 java.lang.Iterable&lt;java.util.Map&lt;<A HREF="../../../org/kered/dko/Field.html" title="class in org.kered.dko">Field</A>&lt;?&gt;,java.lang.Object&gt;&gt; <B>asIterableOfMaps</B>()</PRE>
 <DL>
+<DD>Returns the results of the query as a <code>Iterable</code> of <code>Map&lt;Field&lt;?&gt;,Object&gt;</code>s. &nbsp;
+ Usually used with <code>cross()</code> and <code>onlyFields()</code>
+ (the latter to specify which fields to populate). &nbsp;
+<P>
 <DD><DL>
 </DL>
 </DD>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
 <HR>
@@ -2220,7 +2274,7 @@ java.lang.Class&lt;<A HREF="../../../org/kered/dko/Query.html" title="type param
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/kered/dko/Join.J9.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/kered/dko/Join.html" title="class in org.kered.dko"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../../org/kered/dko/QueryFactory.html" title="class in org.kered.dko"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../index.html?org/kered/dko/Query.html" target="_top"><B>FRAMES</B></A>  &nbsp;

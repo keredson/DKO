@@ -222,7 +222,7 @@ public abstract class Condition {
 
 	}
 
-	List<Object> bindings = null;
+	transient List<Object> bindings = null;
 
 	/**
 	 * Internal function.  Do not use.  Subject to change.

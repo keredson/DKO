@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class GsonGenerator {
+class GsonGenerator {
 
 	public static void go(final String dir, final String pkg, final String pkgName, final Map<String, String> tableToClassNames) throws IOException {
 		final String pkgDir = Util.join("/", pkg.split("[.]"));

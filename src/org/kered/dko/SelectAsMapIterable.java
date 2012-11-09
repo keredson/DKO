@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SelectAsMapIterable<T extends Table> implements Iterable<Map<Field<?>, Object>> {
+class SelectAsMapIterable<T extends Table> implements Iterable<Map<Field<?>, Object>> {
 
 	private final DBQuery<T> query;
 

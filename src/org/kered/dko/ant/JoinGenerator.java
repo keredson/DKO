@@ -17,32 +17,43 @@ class JoinGenerator {
 		if (args.length == 1) {
 			n = Integer.valueOf(args[0]);
 		}
+
+		final String r = ""; //genRandomString();
+
 		final File file = new File("gen/joinsrc/org/kered/dko/Join.java");
 		System.err.println("writing (to J"+n+"): "+ file.getPath());
-		genJoinsFile(file, n);
+		genJoinsFile(file, n, r);
 		final File file2 = new File("gen/joinsrc/org/kered/dko/_Join.java");
-		gen_JoinsFile(file2, n);
+		gen_JoinsFile(file2, n, r);
 	}
 
-	private static void genJoinsFile(final File file, final int n) throws IOException {
+	private static String genRandomString() {
+		final StringBuffer sb = new StringBuffer();
+		for (int i=0; i<3; ++i) {
+			sb.append((char)('A' + ((char)(Math.random()*26))));
+		}
+		return sb.toString();
+	}
+
+	private static void genJoinsFile(final File file, final int n, final String r) throws IOException {
 		final File dir = file.getParentFile();
 		if(!dir.exists()) dir.mkdirs();
 		final BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		genJoins(w, n);
+		genJoins(w, n, r);
 		w.close();
 	}
 
-	private static void gen_JoinsFile(final File file, final int n) throws IOException {
+	private static void gen_JoinsFile(final File file, final int n, final String r) throws IOException {
 		final File dir = file.getParentFile();
 		if(!dir.exists()) dir.mkdirs();
 		final BufferedWriter w = new BufferedWriter(new FileWriter(file));
-		gen_Joins(w, n);
+		gen_Joins(w, n, r);
 		w.close();
 	}
 
 	private static String[] ops = {"insert", "update", "delete", "save", "exists"};
 
-	private static void genJoins(final Writer w, final int n) throws IOException {
+	private static void genJoins(final Writer w, final int n, final String r) throws IOException {
 		w.write("package org.kered.dko;\n\n");
 		w.write("import java.sql.SQLException;\n");
 		w.write("import java.util.ArrayList;\n");
@@ -71,81 +82,33 @@ class JoinGenerator {
 					if (i == 2) {
 						for (final String inputType2 : inputTypes) {
 							writeJoinJavadoc(w, i, tTypes);
-							w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
+							w.write("\tpublic static <"+ tExtendsTable +"> _"+ r +"_Query"+ i +"<"+ tTypes);
 							w.write("> "+ joinType +"(final "+ inputType +"<T1> t1, "+ inputType2 +"<T2> t2");
 							if (!"cross".equals(joinType)) w.write(", Condition on");
 							w.write(") {\n");
-							w.write("\t\treturn new Query2<T1, T2>(new DBQuery<T1>(t1), t2, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+							w.write("\t\treturn new _"+ r +"_Query2<T1, T2>(new DBQuery<T1>(t1), t2, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
 							w.write("\t}\n");
 						}
 						writeJoinJavadoc(w, i, tTypes);
-						w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
+						w.write("\tpublic static <"+ tExtendsTable +"> _"+ r +"_Query"+ i +"<"+ tTypes);
 						w.write("> "+ joinType +"(final Query<T"+ (i-1) +"> q, "+ inputType +"<T"+ i +"> t");
 						if (!"cross".equals(joinType)) w.write(", Condition on");
 						w.write(") {\n");
-						w.write("\t\treturn new Query2<T1, T2>(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+						w.write("\t\treturn new _"+ r +"_Query2<T1, T2>(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
 						w.write("\t}\n");
 					} else {
 						writeJoinJavadoc(w, i, tTypes);
-						w.write("\tpublic static <"+ tExtendsTable +"> Query"+ i +"<"+ tTypes);
+						w.write("\tpublic static <"+ tExtendsTable +"> _"+ r +"_Query"+ i +"<"+ tTypes);
 						w.write("> "+ joinType +"(final Query<J"+ (i-1) +"<"+ genTTypes(i-1));
 						w.write(">> q, "+ inputType +"<T"+ i +"> t");
 						if (!"cross".equals(joinType)) w.write(", Condition on");
 						w.write(") {\n");
-						w.write("\t\treturn new Query"+ i +"<"+ tTypes +">(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+						w.write("\t\treturn new _"+ r +"_Query"+ i +"<"+ tTypes +">(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
 						w.write("\t}\n");
 					}
 				}
 			}
 			w.write("\n");
-		}
-
-		w.write("\n}\n");
-	}
-
-	private static void gen_Joins(final Writer w, final int n) throws IOException {
-		w.write("package org.kered.dko;\n\n");
-		w.write("import java.sql.SQLException;\n");
-		w.write("import java.util.ArrayList;\n");
-		w.write("import java.util.Collections;\n");
-		w.write("import java.util.List;\n");
-		w.write("import javax.sql.DataSource;\n");
-		w.write("import org.kered.dko.Field.FK;\n");
-		w.write("import org.kered.dko.Table.__Alias;\n");
-		w.write("\n");
-
-		w.write("public class _Join {\n");
-		w.write("\n");
-
-		w.write("\tstatic abstract class J extends Table {\n");
-		w.write("\t\tList<Class<?>> types = null;\n");
-		w.write("\t}\n");
-
-		for (int i=2; i<=n; ++i) {
-			w.write("\n");
-
-			final String tExtendsTable =genTExtendsTable(i);
-			final String tTypes =genTTypes(i);
-
-
-			final String[] joinTypes = {"left", "right", "inner", "outer", "cross"};
-			final String[] inputTypes = {"Class", "__Alias"};
-
-			w.write("\tpublic static class Query"+ i +"<"+ tExtendsTable +"> extends DBQuery<J"+ i +"<"+ tTypes +">> {\n");
-			w.write("\t\tfinal int SIZE = "+ i +";\n");
-			for (final String inputType : inputTypes) {
-				if (i == 2) {
-					w.write("\t\tpublic Query2(final Query<T1> q, final "+ inputType +"<T2> t, String joinType, Condition on) {\n");
-					w.write("\t\t\tsuper(J"+ i +".class, q, t, joinType, on);\n");
-					w.write("\t\t}\n");
-				} else {
-					w.write("\t\tQuery"+ i +"(final Query<J"+ (i-1) +"<"+ genTTypes(i-1) +">> q, final "+ inputType +"<T"+ i +"> t, String joinType, Condition on) {\n");
-					w.write("\t\t\tsuper(J"+ i +".class, q, t, joinType, on);\n");
-					w.write("\t\t}\n");
-				}
-			}
-			w.write("\t}\n");
-
 
 			w.write("\n");
 			w.write("\t/**\n");
@@ -281,6 +244,60 @@ class JoinGenerator {
 			w.write("\t\t}\n");
 
 			w.write("\t}\n");
+
+		}
+
+		w.write("\n}\n");
+	}
+
+	private static void gen_Joins(final Writer w, final int n, final String r) throws IOException {
+		w.write("package org.kered.dko;\n\n");
+		w.write("import java.sql.SQLException;\n");
+		w.write("import java.util.ArrayList;\n");
+		w.write("import java.util.Collections;\n");
+		w.write("import java.util.List;\n");
+		w.write("import javax.sql.DataSource;\n");
+		w.write("import org.kered.dko.Field.FK;\n");
+		w.write("import org.kered.dko.Table.__Alias;\n");
+		w.write("import org.kered.dko.Join.*;\n");
+		w.write("\n");
+
+		w.write("public class _Join {\n");
+		w.write("\n");
+
+		w.write("\tstatic abstract class J extends Table {\n");
+		w.write("\t\tList<Class<?>> types = null;\n");
+		w.write("\t}\n");
+
+		for (int i=2; i<=n; ++i) {
+			w.write("\n");
+
+			final String tExtendsTable =genTExtendsTable(i);
+			final String tTypes =genTTypes(i);
+
+
+			final String[] joinTypes = {"left", "right", "inner", "outer", "cross"};
+			final String[] inputTypes = {"Class", "__Alias"};
+
+			w.write("\t/** \n");
+			w.write("\t * Please don't reference this type directly.  Reference it as a {@code org.kered.dko.Query<Join.J"+ i +"<"+ tTypes +">>}\n");
+			w.write("\t */\n");
+			w.write("\tpublic static class _"+ r +"_Query"+ i +"<"+ tExtendsTable +"> extends DBQuery<J"+ i +"<"+ tTypes +">> {\n");
+			w.write("\t\tfinal int SIZE = "+ i +";\n");
+			for (final String inputType : inputTypes) {
+				if (i == 2) {
+					w.write("\t\t_"+ r +"_Query2(final Query<T1> q, final "+ inputType +"<T2> t, String joinType, Condition on) {\n");
+					w.write("\t\t\tsuper(J"+ i +".class, q, t, joinType, on);\n");
+					w.write("\t\t}\n");
+				} else {
+					w.write("\t\t_"+ r +"_Query"+ i +"(final Query<J"+ (i-1) +"<"+ genTTypes(i-1) +">> q, final "+ inputType +"<T"+ i +"> t, String joinType, Condition on) {\n");
+					w.write("\t\t\tsuper(J"+ i +".class, q, t, joinType, on);\n");
+					w.write("\t\t}\n");
+				}
+			}
+			w.write("\t}\n");
+
+
 
 		}
 

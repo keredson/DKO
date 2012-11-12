@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.kered.dko.Bulk;
 import org.kered.dko.CSV;
+import org.kered.dko.Condition;
 import org.kered.dko.Constants;
 import org.kered.dko.Context;
 import org.kered.dko.Diff;
@@ -618,6 +619,23 @@ public class SharedDBTests extends TestCase {
 		final long c2 = Product.ALL.count();
     	final Query<J2<Item, Product>> q = Join.cross(Item.ALL, Product.class);
 		assertEquals(c1 * c2,  q.count());
+    	for (final J2<Item, Product> j : q) {
+    		System.err.println(j);
+    		j.t1.getItemid();
+    		j.t2.getProductid();
+    	}
+    }
+
+    public void testJ2Inline() throws SQLException {
+    	for (final J2<Item, Product> j : Join.cross(Item.ALL, Product.class)) {
+    		System.err.println(j);
+    		j.t1.getItemid();
+    		j.t2.getProductid();
+    	}
+    }
+
+    public void testJ2Inline2() throws SQLException {
+    	final Query<J2<Item, Product>> q = Join.cross(Item.ALL, Product.class).where(Condition.TRUE);
     	for (final J2<Item, Product> j : q) {
     		System.err.println(j);
     		j.t1.getItemid();

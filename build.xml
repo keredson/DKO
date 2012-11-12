@@ -16,8 +16,8 @@
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>
   <property name="dep_mysql_jar"  location="/usr/share/java/mysql.jar"/>
-  <property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/>
-  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:${dep_gson_jar}"/>
+  <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
+  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"/>
 
   <!-- ========[ END PROPS ]======== -->
 
@@ -163,7 +163,6 @@ public class BuildInfo {
       schemas="bin/unit_test_schema.json"
       callbackPackage="test.db.callback"
       aliases="public as nosco_test_jpetstore"
-      gson="true"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}"
@@ -232,7 +231,6 @@ public class BuildInfo {
       jarfile="bin/unittest.jar"
       schemas="bin/unit_test_mysql_schema.json"
       callbackPackage="test.db.callback"
-      gson="true"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}"

@@ -470,6 +470,7 @@ public class Field<T> implements Cloneable {
 
 	/**
 	 * Creates a condition representing this field being a member of the given set.
+	 * If this collection is large a temporary table is created and joined against.
 	 * @param set
 	 * @return
 	 */
@@ -479,6 +480,7 @@ public class Field<T> implements Cloneable {
 
 	/**
 	 * Creates a condition representing this field being a member of the given set.
+	 * If this collection is large a temporary table is created and joined against.
 	 * @param set
 	 * @return
 	 */

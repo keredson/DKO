@@ -380,7 +380,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param byField
 	 * @return
 	 * @throws SQLException
-	 * @deprecated Use {@link #collectBy(Field<S>)} instead
+	 * @deprecated Use {@link #collectBy(Field&lt;S&gt;)} instead
 	 */
 	public <S> Map<S, Collection<T>> multiMapBy(Field<S> byField) throws SQLException;
 
@@ -462,7 +462,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Filters the returned results by the specified values.  If the type has a primary key,
-	 * this is used for the comparison.
+	 * this is used for the comparison.  If querying a database a temporary table is created and joined against.
 	 * @param set
 	 * @return
 	 */
@@ -470,7 +470,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Filters the returned results by the specified values.  If the type has a primary key,
-	 * this is used for the comparison.
+	 * this is used for the comparison.  If querying a database a temporary table is created and joined against.
 	 * @param set
 	 * @return
 	 */

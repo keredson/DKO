@@ -517,6 +517,11 @@ class ClassGenerator {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
 			br.write("return (S) get"+ getInstanceMethodName(column) +"();\n");
 		}
+		for (final FK fk : fks) {
+			final String fkOName = genFKCachedObjectName(fk);
+			br.write("\t\tif ("+fkOName+"!=null) try { return "+fkOName+".get(_field); }\n");
+			br.write("\t\tcatch (IllegalArgumentException e) { /* ignore */ }\n");
+		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
 
@@ -662,7 +667,7 @@ class ClassGenerator {
 				referencedTableClassName = pkg +"."+ relatedSchemaAlias +"."+ referencedTableClassName;
 			}
 			final String methodName = genFKMethodName(fk.columns.keySet(), referencedTable);
-			final String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
+			final String cachedObjectName = genFKCachedObjectName(fk);
 
 			br.write("\tprivate "+ referencedTableClassName +" "+ cachedObjectName +" = null;\n\n");
 
@@ -701,7 +706,7 @@ class ClassGenerator {
 		br.write("\tprotected void SET_FK(final Field.FK<?> field, final Object v) {\n");
 		br.write("\t\tif (false);\n");
 		for (final FK fk : fks) {
-			final String cachedObjectName = "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
+			final String cachedObjectName = genFKCachedObjectName(fk);
 			final String referencedTable = fk.reffed[1];
 			String relatedTableClassName = genTableClassName(referencedTable);
 			final String referencedSchema = fk.reffed[0];
@@ -1203,6 +1208,10 @@ class ClassGenerator {
 		// end class
 		br.write("}\n");
 		br.close();
+	}
+
+	private String genFKCachedObjectName(final FK fk) {
+		return "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
 	}
 
 	private void writeToStringPart(final BufferedWriter br, final String column)

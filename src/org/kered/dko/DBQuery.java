@@ -1042,10 +1042,26 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public <R, S extends Number> Map<R, S> sumBy(final Field<S> sumField, final Field<R> byField)
 			throws SQLException {
+		final Map<R, S> ret = new LinkedHashMap<R, S>();
+		for (final Entry<R, Map<Field<Number>, Number>> e : sumBy(byField, sumField).entrySet()) {
+			ret.put(e.getKey(), (S) e.getValue().get(sumField));
+		}
+		return ret;
+	}
+
+	// i'm not sure i'm ready to expose this yet
+	@SuppressWarnings("unchecked")
+	//@Override
+	public <R> Map<R, Map<Field<Number>,Number>> sumBy(final Field<R> byField, final Field<? extends Number>... sumFields)
+			throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
+		String sums = "";
+		for (final Field<? extends Number> sumField : sumFields) {
+			sums += ", sum("+ Util.derefField(sumField, context) +") ";
+		}
 		sql = "select "+ Util.derefField(byField, context)
-				+", sum("+ Util.derefField(sumField, context) +") "+ sql
+				+ sums + sql
 				+" group by "+ Util.derefField(byField, context);
 		Util.log(sql, null);
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
@@ -1054,10 +1070,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		setBindings(ps);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
-		final Map<R,S> result = new LinkedHashMap<R,S>();
+		final Map<R,Map<Field<Number>, Number>> result = new LinkedHashMap<R,Map<Field<Number>, Number>>();
 		while (rs.next()) {
 			final R key = Util.getTypedValueFromRS(rs, 1, byField);
-			final S value = Util.getTypedValueFromRS(rs, 2, sumField);
+			final Map<Field<Number>, Number> value = new LinkedHashMap<Field<Number>,Number>();
+			for (int i=0; i<sumFields.length; ++i) {
+				value.put((Field<Number>) sumFields[i], Util.getTypedValueFromRS(rs, 2+i, sumFields[i]));
+			}
 			result.put(key, value);
 		}
 		rs.close();

@@ -342,6 +342,10 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public <R, S extends Number> Map<R, S> sumBy(Field<S> sumField, Field<R> byField)
 			throws SQLException;
 
+	// i'm not sure i'm ready to expose this yet
+//	public <R> Map<R, Map<Field<Number>,Number>> sumBy(Field<R> byField, Field<? extends Number>... sumFields)
+//			throws SQLException;
+
 	/**
 	 * Sums the value of a given field.
 	 * Sum is calculated by the database.  Objects are not transferred to the JVM.

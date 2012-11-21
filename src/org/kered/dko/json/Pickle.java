@@ -1,5 +1,10 @@
 package org.kered.dko.json;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -153,6 +158,18 @@ public class Pickle {
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public <T> T deserialize(final File f) throws IOException {
+		final StringBuffer sb = new StringBuffer();
+		final BufferedReader r = new BufferedReader(new FileReader(f));
+		String s;
+		while ((s = r.readLine()) != null) {
+			sb.append(s);
+			sb.append('\n');
+		}
+		r.close();
+		return deserialize(sb.toString());
 	}
 
 	@SuppressWarnings("unchecked")

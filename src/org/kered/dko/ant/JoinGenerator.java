@@ -82,24 +82,24 @@ class JoinGenerator {
 					if (i == 2) {
 						for (final String inputType2 : inputTypes) {
 							writeJoinJavadoc(w, i, tTypes);
-							w.write("\tpublic static <"+ tExtendsTable +"> _"+ r +"_Query"+ i +"<"+ tTypes);
-							w.write("> "+ joinType +"(final "+ inputType +"<T1> t1, "+ inputType2 +"<T2> t2");
+							w.write("\tpublic static <"+ tExtendsTable +"> Query<J"+ i +"<"+ tTypes);
+							w.write(">> "+ joinType + i +"(final "+ inputType +"<T1> t1, "+ inputType2 +"<T2> t2");
 							if (!"cross".equals(joinType)) w.write(", Condition on");
 							w.write(") {\n");
 							w.write("\t\treturn new _"+ r +"_Query2<T1, T2>(new DBQuery<T1>(t1), t2, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
 							w.write("\t}\n");
 						}
 						writeJoinJavadoc(w, i, tTypes);
-						w.write("\tpublic static <"+ tExtendsTable +"> _"+ r +"_Query"+ i +"<"+ tTypes);
-						w.write("> "+ joinType +"(final Query<T"+ (i-1) +"> q, "+ inputType +"<T"+ i +"> t");
+						w.write("\tpublic static <"+ tExtendsTable +"> Query<J"+ i +"<"+ tTypes);
+						w.write(">> "+ joinType + i +"(final Query<T"+ (i-1) +"> q, "+ inputType +"<T"+ i +"> t");
 						if (!"cross".equals(joinType)) w.write(", Condition on");
 						w.write(") {\n");
 						w.write("\t\treturn new _"+ r +"_Query2<T1, T2>(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
 						w.write("\t}\n");
 					} else {
 						writeJoinJavadoc(w, i, tTypes);
-						w.write("\tpublic static <"+ tExtendsTable +"> _"+ r +"_Query"+ i +"<"+ tTypes);
-						w.write("> "+ joinType +"(final Query<J"+ (i-1) +"<"+ genTTypes(i-1));
+						w.write("\tpublic static <"+ tExtendsTable +"> Query<J"+ i +"<"+ tTypes);
+						w.write(">> "+ joinType + i +"(final Query<J"+ (i-1) +"<"+ genTTypes(i-1));
 						w.write(">> q, "+ inputType +"<T"+ i +"> t");
 						if (!"cross".equals(joinType)) w.write(", Condition on");
 						w.write(") {\n");

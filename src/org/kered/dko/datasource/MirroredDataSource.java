@@ -3,6 +3,7 @@ package org.kered.dko.datasource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -119,6 +120,11 @@ public class MirroredDataSource implements DataSource {
 
 	public DataSource getPrimaryDataSource() {
 		return primary;
+	}
+
+	@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new SQLFeatureNotSupportedException();
 	}
 
 }

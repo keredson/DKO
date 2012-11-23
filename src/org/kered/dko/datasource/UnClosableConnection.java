@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * This class wraps a connection, but intercepts calls to {@code close()}. &nbsp;
@@ -302,6 +303,31 @@ public class UnClosableConnection implements Connection {
 	public Struct createStruct(final String typeName, final Object[] attributes)
 			throws SQLException {
 		return conn.createStruct(typeName, attributes);
+	}
+
+	@Override
+	public void abort(Executor arg0) throws SQLException {
+		conn.abort(arg0);
+	}
+
+	@Override
+	public int getNetworkTimeout() throws SQLException {
+		return conn.getNetworkTimeout();
+	}
+
+	@Override
+	public String getSchema() throws SQLException {
+		return conn.getSchema();
+	}
+
+	@Override
+	public void setNetworkTimeout(Executor arg0, int arg1) throws SQLException {
+		conn.setNetworkTimeout(arg0, arg1);
+	}
+
+	@Override
+	public void setSchema(String arg0) throws SQLException {
+		conn.setSchema(arg0);
 	}
 
 }

@@ -16,6 +16,7 @@
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>
   <property name="dep_mysql_jar"  location="/usr/share/java/mysql.jar"/>
+  <property name="dep_sqlite_jar"  location="deps/sqlite-jdbc.jar"/>
   <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
   <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"/>
 

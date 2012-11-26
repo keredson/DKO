@@ -5,6 +5,7 @@ import static org.kered.dko.Constants.DIRECTION.DESCENDING;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -408,7 +409,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType)) +sep+ Util.getTABLE_NAME(ofType));
+		String schema = Util.getSCHEMA_NAME(ofType);
+		if (schema!=null && !"".equals(schema)) {
+			sb.append(Context.getSchemaToUse(ds, schema)).append(sep);
+		}
+		sb.append(Util.getTABLE_NAME(ofType));
 		sb.append(" set ");
 		final String[] fields = new String[data.size()];
 		final List<Object> bindings = new ArrayList<Object>();
@@ -447,12 +452,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final DataSource ds = getDataSource();
 		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);
 		final Connection conn = info.a;
+		String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+		String schemaWithDot = "".equals(schema) ? "" : schema + ".";
 		if (q.getDBType()==DB_TYPE.MYSQL) {
 			if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
 			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType))
-					+ "." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
+			final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
@@ -464,12 +470,27 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				conn.close();
 			}
 			return count;
-
+		} else if (getDBType()==DB_TYPE.SQLITE3) {
+			if (q.tableInfos.size() > 1) throw new RuntimeException("SQLITE3 multi-table delete " +
+					"is not yet supported");
+			q.tableInfos.get(0).tableName = null;
+			final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
+			Util.log(sql, null);
+			final PreparedStatement ps = conn.prepareStatement(sql);
+			q.setBindings(ps);
+			ps.execute();
+			final int count = ps.getUpdateCount();
+			ps.close();
+			if (info.b) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
+			}
+			return count;
 		} else if (getDBType()==DB_TYPE.SQLSERVER) {
 			if (q.tableInfos.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
 					"is not yet supported");
 			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType))
+			final String sql = "delete from "+ schema
 					+ ".dbo." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
 			Util.log(sql, null);
 			final PreparedStatement ps = conn.prepareStatement(sql);
@@ -787,6 +808,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					// com.microsoft.sqlserver.jdbc.SQLServerException:
 					// The conversion from UNKNOWN to UNKNOWN is unsupported.
 					if (o instanceof Character) ps.setString(i++, o.toString());
+					if (o instanceof Blob) ps.setBlob(i++, (Blob) o);
 					else ps.setObject(i++, o);
 					//System.err.print("\t"+ o +"");
 				}
@@ -822,8 +844,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType)));
-		sb.append(sep+ Util.getTABLE_NAME(ofType));
+		String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+		if (schema != null && !"".equals(schema)) sb.append(schema).append(sep);
+		sb.append(Util.getTABLE_NAME(ofType));
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
 		final String[] bindStrings = new String[q.data.size()];
@@ -863,6 +886,15 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					return pk;
 				}
 			}
+			if (getDBType()==DB_TYPE.SQLITE3) {
+				final Statement s = conn.createStatement();
+				s.execute("SELECT last_insert_rowid()");
+				final ResultSet rs = s.getResultSet();
+				if (rs.next()) {
+					final Integer pk = rs.getInt(1);
+					return pk;
+				}
+			}
 		}
 		if (info.b) {
 			if (!conn.getAutoCommit()) conn.commit();
@@ -882,12 +914,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = rootQuery.getDBType();
 		final List<String> names = new ArrayList<String>();
-		final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		for (final TableInfo ti : tableInfos) {
 			if (ti.dummyTable != null) {
 				names.add((dbType==DB_TYPE.SQLSERVER ? "#" : "") + ti.dummyTable.name +" "+ ti.tableName);
 			} else {
-				final String fullTableName = context==null ? Util.getSCHEMA_NAME(ti.tableClass)+"."+Util.getTABLE_NAME(ti.tableClass) : context.getFullTableName(ti);
+				String schema = Util.getSCHEMA_NAME(ti.tableClass);
+				String noContextTableName = "".equals(schema) ? Util.getTABLE_NAME(ti.tableClass) : schema+"."+Util.getTABLE_NAME(ti.tableClass);
+				final String fullTableName = context==null ? noContextTableName : context.getFullTableName(ti);
 				names.add(fullTableName +" "+ ti.tableName);
 			}
 		}

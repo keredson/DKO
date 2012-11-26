@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import org.kered.dko.datasource.ConnectionCountingDataSource;
 import org.kered.dko.datasource.MirroredDataSource;
 import org.kered.dko.datasource.ReflectedDataSource;
+import org.kered.dko.datasource.UnClosableConnection;
 
 /**
  * Defines constants for use in this API.
@@ -129,11 +130,15 @@ public class Constants {
 		}
 
 		static DB_TYPE detect(final Connection conn) throws SQLException {
+			
+			if (conn instanceof UnClosableConnection) {
+				return detect(((UnClosableConnection)conn).getUnderlyingConnection());
+			}
 
 			// try from the class name
 			final String className = conn.getClass().getName();
 			if (className.contains("SQLServer")) return SQLSERVER;
-			//System.err.println(className);
+			if (className.contains("SQLDroidConnection")) return SQLITE3;
 
 			// try from the jdbc metadata
 			final DatabaseMetaData metaData = conn.getMetaData();

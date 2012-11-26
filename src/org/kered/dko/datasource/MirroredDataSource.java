@@ -122,7 +122,7 @@ public class MirroredDataSource implements DataSource {
 		return primary;
 	}
 
-	@Override
+	//@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}

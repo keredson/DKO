@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.event.ListSelectionEvent;
-
 import org.kered.dko.Table.__Alias;
 import org.kered.dko.Table.__PrimaryKey;
 

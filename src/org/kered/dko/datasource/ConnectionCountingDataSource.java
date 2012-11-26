@@ -86,7 +86,7 @@ public class ConnectionCountingDataSource implements DataSource {
 		return "[ConnectionCountingDataSource count:"+ count +" for:"+ ds +"]";
 	}
 
-	@Override
+	//@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}

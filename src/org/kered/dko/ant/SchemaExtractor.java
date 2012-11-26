@@ -7,17 +7,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -85,6 +88,10 @@ public class SchemaExtractor extends Task {
 		if (url.startsWith("jdbc:hsqldb")) {
 			final Driver d = (Driver) Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
 			dbType = DB_TYPE.HSQL;
+		}
+		if (url.startsWith("jdbc:sqlite")) {
+			final Driver d = (Driver) Class.forName("org.sqlite.JDBC").newInstance();
+			dbType = DB_TYPE.SQLITE3;
 		}
 	}
 
@@ -241,7 +248,85 @@ public class SchemaExtractor extends Task {
 	private Map<String, Map<String, Map<String, String>>> getSchemas(
 			final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getSchemasMSSQL(conn);
+		if (dbType == DB_TYPE.SQLITE3) return getSchemasSQLITE3(conn);
 		else return getSchemasSQL92(conn);
+	}
+
+	private Map<String, Map<String, Map<String, String>>> getSchemasSQLITE3(
+			Connection conn) throws SQLException {
+		Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet tableRS = metadata.getTables(null, null, null, null);
+		while (tableRS.next()) {
+			String catalog = tableRS.getString("TABLE_CAT");
+			String schema = tableRS.getString("TABLE_SCHEM");
+			if (schema == null) schema = "";
+			String tableName = tableRS.getString("TABLE_NAME");
+			String tableType = tableRS.getString("TABLE_TYPE");
+			if (!"TABLE".equals(tableType)) continue;
+			Map<String, Map<String, String>> tables = schemas.get(schema);
+			if (tables == null) {
+				System.out.println("found schema: "+ schema);
+				tables = new LinkedHashMap<String, Map<String, String>>();
+				schemas.put(schema, tables);
+			}
+			Map<String, String> columns = tables.get(tableName);
+			if (columns == null) {
+				System.out.println("found table: "+ tableName);
+				columns = new LinkedHashMap<String, String>();
+				tables.put(tableName, columns);
+			}
+		}
+		Statement stmt = conn.createStatement();
+		for (Entry<String, Map<String, Map<String, String>>> e1 : schemas.entrySet()) {
+			Map<String, Map<String, String>> tables = e1.getValue();
+			for (Entry<String, Map<String, String>> e2 : tables.entrySet()) {
+				String tableName = e2.getKey();
+				Map<String, String> columns = e2.getValue();
+				ResultSet rs = stmt.executeQuery("pragma table_info("+ tableName +");");
+				while (rs.next()) {
+					String columnName = rs.getString(2);
+					String columnType = rs.getString(3).toLowerCase();
+					columns.put(columnName, columnType);
+				}
+			}
+		}
+		return schemas;
+	}
+
+	private Map<String, Map<String, Map<String, String>>> getSchemasJDBC(
+			Connection conn) throws SQLException {
+		final Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet columnRS = metadata.getColumns(null, null, null, null);
+		while (columnRS.next()) {
+			System.out.println("woot");
+			String catalog = columnRS.getString("TABLE_CAT");
+			String schema = columnRS.getString("TABLE_SCHEM");
+			if (schema == null) schema = "";
+			String tableName = columnRS.getString("TABLE_NAME");
+			String tableType = columnRS.getString("TABLE_TYPE");
+			String columnName = columnRS.getString("COLUMN_NAME");
+			String columnType = columnRS.getString("TYPE_NAME");
+			System.out.println("found column: "+ columnName +" "+ columnType);
+			if (!"TABLE".equals(tableType)) continue;
+			Map<String, Map<String, String>> tables = schemas.get(schema);
+			if (tables == null) {
+				System.out.println("found schema: "+ schema);
+				tables = new LinkedHashMap<String, Map<String, String>>();
+				schemas.put(schema, tables);
+			}
+			Map<String, String> columns = tables.get(tableName);
+			if (columns == null) {
+				System.out.println("found table: "+ tableName);
+				columns = new LinkedHashMap<String, String>();
+				tables.put(tableName, columns);
+			}
+			System.out.println("found column: "+ columnName +" "+ columnType);
+			columns.put(columnName, columnType);
+			
+		}
+		return schemas;
 	}
 
 	private Map<String, Map<String, Map<String, String>>> getSchemasSQL92(
@@ -387,7 +472,76 @@ public class SchemaExtractor extends Task {
 	private Map<String,Map<String,Set<String>>> getPrimaryKeys(final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getPrimaryKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getPrimaryKeysHSQL(conn);
+		if (dbType == DB_TYPE.SQLITE3) return getPrimaryKeysSQLITE3(conn);
 		return getPrimaryKeysMySQL(conn);
+	}
+
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysSQLITE3(
+			Connection conn) throws SQLException {
+		Map<String, Map<String, Set<String>>> pks = new LinkedHashMap<String, Map<String, Set<String>>>();
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet tableRS = metadata.getTables(null, null, null, null);
+		while (tableRS.next()) {
+			String catalog = tableRS.getString("TABLE_CAT");
+			String schema = tableRS.getString("TABLE_SCHEM");
+			if (schema == null) schema = "";
+			String tableName = tableRS.getString("TABLE_NAME");
+			String tableType = tableRS.getString("TABLE_TYPE");
+			if (!"TABLE".equals(tableType)) continue;
+			Map<String, Set<String>> tables = pks.get(schema);
+			if (tables == null) {
+				System.out.println("found schema: "+ schema);
+				tables = new LinkedHashMap<String, Set<String>>();
+				pks.put(schema, tables);
+			}
+			Set<String> pk = tables.get(tableName);
+			if (pk == null) {
+				System.out.println("found table: "+ tableName);
+				pk = new LinkedHashSet<String>();
+				tables.put(tableName, pk);
+			}
+		}
+		Statement stmt = conn.createStatement();
+		for (Entry<String, Map<String, Set<String>>> e1 : pks.entrySet()) {
+			Map<String, Set<String>> tables = e1.getValue();
+			for (Entry<String, Set<String>> e2 : tables.entrySet()) {
+				String tableName = e2.getKey();
+				Set<String> pk = e2.getValue();
+				ResultSet rs = stmt.executeQuery("pragma table_info("+ tableName +");");
+				while (rs.next()) {
+					if (rs.getInt(6) == 1) {
+						pk.add(rs.getString(2));
+					}
+				}
+			}
+		}
+		return pks;
+	}
+
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysJDBC(
+			Connection conn) throws SQLException {
+		Map<String, Map<String, Set<String>>> pks = new LinkedHashMap<String, Map<String, Set<String>>>();
+		DatabaseMetaData metadata = conn.getMetaData();
+		ResultSet rs = metadata.getPrimaryKeys(null, null, null);
+		while (rs.next()) {
+			String catalog = rs.getString("TABLE_CAT");
+			String schema = rs.getString("TABLE_SCHEM");
+			String tableName = rs.getString("TABLE_NAME");
+			String columnName = rs.getString("COLUMN_NAME");
+			String pkName = rs.getString("PK_NAME");
+			Map<String, Set<String>> tables = pks.get(schema);
+			if (tables == null) {
+				tables = new LinkedHashMap<String, Set<String>>();
+				pks.put(schema, tables);
+			}
+			Set<String> pk = tables.get(tableName);
+			if (pk == null) {
+				pk = new LinkedHashSet<String>();
+				tables.put(tableName, pk);
+			}
+			pk.add(columnName);
+		}
+		return pks;
 	}
 
 	private Map<String, Map<String, Set<String>>> getPrimaryKeysMSSQL(final Connection conn) throws SQLException {
@@ -578,7 +732,12 @@ public class SchemaExtractor extends Task {
 		final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getForeignKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getForeignKeysHSQL(conn);
+		if (dbType == DB_TYPE.SQLITE3) return getNoForeignKeys(conn);
 		return getForeignKeysMySQL(conn);
+	}
+
+	private Map<String, Map<String, Object>> getNoForeignKeys(Connection conn) {
+		return new LinkedHashMap<String, Map<String, Object>>();
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeysMSSQL(

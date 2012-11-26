@@ -1,5 +1,6 @@
 package org.kered.dko.datasource;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -19,6 +20,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import org.kered.dko.datasource.UnClosableConnection.CloseListener;
+
 /**
  * This class wraps a connection, but intercepts calls to {@code close()}. &nbsp;
  * User is responsible for eventually closing the underlying connection either by
@@ -27,11 +30,25 @@ import java.util.concurrent.Executor;
  * @author Derek Anderson
  */
 public class UnClosableConnection implements Connection {
+	
+	static interface CloseListener {
+		public void wasClosed(UnClosableConnection c);
+	}
 
 	private final Connection conn;
+	private CloseListener cb = null;
 
 	public UnClosableConnection(final Connection conn) {
 		this.conn = conn;
+	}
+	
+	public UnClosableConnection(final Connection conn, CloseListener cb) {
+		this.conn = conn;
+		this.cb  = cb;
+	}
+	
+	public Connection getUnderlyingConnection() {
+		return conn;
 	}
 
 	@Override
@@ -88,6 +105,7 @@ public class UnClosableConnection implements Connection {
 	@Override
 	public void close() throws SQLException {
 		// do nothing
+		if (cb!=null) cb.wasClosed(this);
 	}
 
 	/**
@@ -305,29 +323,55 @@ public class UnClosableConnection implements Connection {
 		return conn.createStruct(typeName, attributes);
 	}
 
-	@Override
+	//@Override
 	public void abort(Executor arg0) throws SQLException {
-		conn.abort(arg0);
+		try {
+			conn.getClass().getMethod("abort", Executor.class).invoke(conn, arg0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
+	//@Override
 	public int getNetworkTimeout() throws SQLException {
-		return conn.getNetworkTimeout();
+		try {
+			return (Integer) conn.getClass().getMethod("getNetworkTimeout").invoke(conn);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	@Override
+	//@Override
 	public String getSchema() throws SQLException {
-		return conn.getSchema();
+		try {
+			return (String) conn.getClass().getMethod("getSchema").invoke(conn);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	@Override
+	//@Override
 	public void setNetworkTimeout(Executor arg0, int arg1) throws SQLException {
-		conn.setNetworkTimeout(arg0, arg1);
+		try {
+			conn.getClass().getMethod("setNetworkTimeout", Executor.class, Integer.TYPE).invoke(conn, arg0, arg1);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	//@Override
+	public void setSchema(String arg0) throws SQLException {
+		try {
+			conn.getClass().getMethod("setSchema", String.class).invoke(conn, arg0);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public void setSchema(String arg0) throws SQLException {
-		conn.setSchema(arg0);
+	protected void finalize() throws Throwable {
+		if (cb!=null) cb.wasClosed(this);
+		super.finalize();
 	}
 
 }

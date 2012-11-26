@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -83,6 +86,10 @@ class Util {
 			final String s = rs.getString(i);
 			if (s != null && s.length() > 0) return (S) Character.valueOf(s.charAt(0));
 			else return null;
+		}
+		if (type == Blob.class) {
+			final Blob blob = rs.getBlob(i);
+			return (S) blob;
 		}
 		Object o = rs.getObject(i);
 		if (o instanceof Short) o = ((Short)o).intValue();
@@ -181,10 +188,33 @@ class Util {
 
 	private static final Logger logSql = Logger.getLogger("org.kered.dko.sql");
 	private static final Logger log = Logger.getLogger("org.kered.dko.Util");
+	
+	private static Method androidLoggerDebug = null;
+	static {
+		try {
+			androidLoggerDebug = Class.forName("android.util.Log")
+					.getMethod("d", String.class, String.class);
+		} catch (NoSuchMethodException e) {
+			/* ignore */
+		} catch (ClassNotFoundException e) {
+			/* ignore */
+		}
+	}
 
 	static void log(final String sql, final List<Object> bindings) {
 		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ join("|", bindings) +"]" : "");
 		logSql.fine(msg);
+		if (androidLoggerDebug != null) {
+			try {
+				androidLoggerDebug.invoke(null, "org.kered.dko.sql", msg);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
 
 		// legacy prop values
 		PrintStream log = null; // System.err || null;

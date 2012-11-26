@@ -119,7 +119,7 @@ public class ReflectedDataSource implements DataSource {
 		return ds;
 	}
 
-	@Override
+	//@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}

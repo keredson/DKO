@@ -1,10 +1,7 @@
 package org.kered.dko;
 
 import static org.kered.dko.Constants.DIRECTION.ASCENDING;
-import static org.kered.dko.Constants.DIRECTION.DESCENDING;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,7 +29,6 @@ import org.kered.dko.Field.FK;
 import org.kered.dko.Field.PK;
 import org.kered.dko.Table.__Alias;
 import org.kered.dko.Table.__PrimaryKey;
-import org.kered.dko.TemporaryTableFactory.DummyTableWithName;
 import org.kered.dko.Tuple.Tuple2;
 import org.kered.dko.datasource.MirroredDataSource;
 import org.kered.dko.datasource.SingleConnectionDataSource;
@@ -205,15 +201,15 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends _Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
 		this(type, q, other, null, joinType, on);
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends _Join.J> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
 		this(type, q, other.table, other.alias, joinType, on);
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends _Join.J> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
 		super(type);
 		copy((DBQuery<T>) q);
 		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
@@ -409,7 +405,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		String schema = Util.getSCHEMA_NAME(ofType);
+		final String schema = Util.getSCHEMA_NAME(ofType);
 		if (schema!=null && !"".equals(schema)) {
 			sb.append(Context.getSchemaToUse(ds, schema)).append(sep);
 		}
@@ -452,8 +448,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final DataSource ds = getDataSource();
 		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);
 		final Connection conn = info.a;
-		String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
-		String schemaWithDot = "".equals(schema) ? "" : schema + ".";
+		final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+		final String schemaWithDot = "".equals(schema) ? "" : schema + ".";
 		if (q.getDBType()==DB_TYPE.MYSQL) {
 			if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
 					"is not yet supported");
@@ -844,7 +840,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+		final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
 		if (schema != null && !"".equals(schema)) sb.append(schema).append(sep);
 		sb.append(Util.getTABLE_NAME(ofType));
 		sb.append(" (");
@@ -918,8 +914,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (ti.dummyTable != null) {
 				names.add((dbType==DB_TYPE.SQLSERVER ? "#" : "") + ti.dummyTable.name +" "+ ti.tableName);
 			} else {
-				String schema = Util.getSCHEMA_NAME(ti.tableClass);
-				String noContextTableName = "".equals(schema) ? Util.getTABLE_NAME(ti.tableClass) : schema+"."+Util.getTABLE_NAME(ti.tableClass);
+				final String schema = Util.getSCHEMA_NAME(ti.tableClass);
+				final String noContextTableName = "".equals(schema) ? Util.getTABLE_NAME(ti.tableClass) : schema+"."+Util.getTABLE_NAME(ti.tableClass);
 				final String fullTableName = context==null ? noContextTableName : context.getFullTableName(ti);
 				names.add(fullTableName +" "+ ti.tableName);
 			}

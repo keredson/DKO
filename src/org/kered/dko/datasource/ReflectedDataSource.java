@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -17,7 +19,7 @@ import javax.sql.DataSource;
  *
  * @author Derek Anderson
  */
-public class ReflectedDataSource implements DataSource {
+public class ReflectedDataSource implements MatryoshkaDataSource {
 
 	DataSource ds = null;
 	private final String cls;
@@ -122,6 +124,20 @@ public class ReflectedDataSource implements DataSource {
 	//@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
+	}
+
+	@Override
+	public DataSource getPrimaryUnderlying() {
+		checkDS();
+		return ds;
+	}
+
+	@Override
+	public Collection<DataSource> getAllUnderlying() {
+		checkDS();
+		final Collection<DataSource> ret = new ArrayList<DataSource>(1);
+		ret.add(ds);
+		return ret;
 	}
 
 }

@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -14,7 +16,7 @@ import javax.sql.DataSource;
  *
  * @author Derek Anderson
  */
-public class ConnectionCountingDataSource implements DataSource {
+public class ConnectionCountingDataSource implements MatryoshkaDataSource {
 
 	public int getCount() {
 		return count;
@@ -89,6 +91,18 @@ public class ConnectionCountingDataSource implements DataSource {
 	//@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
+	}
+
+	@Override
+	public DataSource getPrimaryUnderlying() {
+		return ds;
+	}
+
+	@Override
+	public Collection<DataSource> getAllUnderlying() {
+		final Collection<DataSource> ret = new ArrayList<DataSource>(1);
+		ret.add(ds);
+		return ret;
 	}
 
 }

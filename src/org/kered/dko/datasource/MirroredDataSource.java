@@ -4,7 +4,9 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -18,7 +20,7 @@ import javax.sql.DataSource;
  *
  * @author Derek Anderson
  */
-public class MirroredDataSource implements DataSource {
+public class MirroredDataSource implements MatryoshkaDataSource {
 
 	private final DataSource primary;
 	private DataSource[] mirrors;
@@ -127,4 +129,16 @@ public class MirroredDataSource implements DataSource {
 		throw new SQLFeatureNotSupportedException();
 	}
 
+	@Override
+	public DataSource getPrimaryUnderlying() {
+		return primary;
+	}
+
+	@Override
+	public Collection<DataSource> getAllUnderlying() {
+		final Collection<DataSource> ret = new ArrayList<DataSource>();
+		ret.add(primary);
+		for (final DataSource mirror : mirrors) ret.add(mirror);
+		return ret;
+	}
 }

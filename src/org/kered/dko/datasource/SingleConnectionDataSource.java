@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 /**
- * Fakes a {@code DataSource} to only ever use one connection. &nbsp;
+ * Fakes a {@code DataSource} to only ever use one (continuously open) connection. &nbsp;
  * Intercepts all calls to close the connection.
  * <p>
  * User is responsible for eventually closing the original connection.
@@ -22,14 +22,14 @@ import javax.sql.DataSource;
 public class SingleConnectionDataSource implements DataSource {
 
 	private final Connection conn;
-	private Lock lock = new ReentrantLock();
-	private int timeout = 10;
+	private final Lock lock = new ReentrantLock();
+	private final int timeout = 10;
 	private static final Logger log = Logger.getLogger("org.kered.dko.datasource.SingleConnectionDataSource");
 
 	public SingleConnectionDataSource(final Connection conn) {
 		this.conn = new UnClosableConnection(conn, new UnClosableConnection.CloseListener() {
 			@Override
-			public void wasClosed(UnClosableConnection c) {
+			public void wasClosed(final UnClosableConnection c) {
 				lock.unlock();
 			}
 		});
@@ -76,7 +76,7 @@ public class SingleConnectionDataSource implements DataSource {
 		try {
 			if (lock.tryLock(timeout, TimeUnit.SECONDS)) return conn;
 			log.warning("unable to aquire connection lock after "+ timeout +" seconds");
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -87,7 +87,7 @@ public class SingleConnectionDataSource implements DataSource {
 		try {
 			if (lock.tryLock(timeout, TimeUnit.SECONDS)) return conn;
 			log.warning("unable to aquire connection lock after "+ timeout +" seconds");
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 		return null;

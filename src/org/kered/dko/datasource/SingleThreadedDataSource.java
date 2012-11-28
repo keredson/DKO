@@ -3,6 +3,7 @@ package org.kered.dko.datasource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -127,6 +128,11 @@ public class SingleThreadedDataSource implements MatryoshkaDataSource {
 		final Collection<DataSource> ret = new ArrayList<DataSource>(1);
 		ret.add(ds);
 		return ret;
+	}
+
+	//@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new SQLFeatureNotSupportedException();
 	}
 
 }

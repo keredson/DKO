@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.sql.DataSource;
+
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Field.PK;
 import org.kered.dko.json.JSONException;
@@ -188,15 +190,15 @@ class Util {
 
 	private static final Logger logSql = Logger.getLogger("org.kered.dko.sql");
 	private static final Logger log = Logger.getLogger("org.kered.dko.Util");
-	
+
 	private static Method androidLoggerDebug = null;
 	static {
 		try {
 			androidLoggerDebug = Class.forName("android.util.Log")
 					.getMethod("d", String.class, String.class);
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			/* ignore */
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			/* ignore */
 		}
 	}
@@ -207,11 +209,11 @@ class Util {
 		if (androidLoggerDebug != null) {
 			try {
 				androidLoggerDebug.invoke(null, "org.kered.dko.sql", msg);
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (final IllegalAccessException e) {
 				e.printStackTrace();
-			} catch (InvocationTargetException e) {
+			} catch (final InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
@@ -347,5 +349,24 @@ class Util {
 		}
 	}
 
+	static DataSource getDefaultDataSource(final Class<?> type) {
+		java.lang.reflect.Field field;
+		try {
+			field = type.getDeclaredField("__DEFAULT_DATASOURCE");
+			field.setAccessible(true);
+			return (DataSource) field.get(null);
+		} catch (final SecurityException e) {
+			throw new RuntimeException(e);
+		} catch (final NoSuchFieldException e) {
+			final String msg = "No default datasource defined for "+ type +".  Please either call " +
+					"your query with .use(DataSource ds), or define the 'datasource' field " +
+					"in the org.kered.dko.ant.CodeGenerator ant task.";
+			throw new RuntimeException(msg);
+		} catch (final IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		} catch (final IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

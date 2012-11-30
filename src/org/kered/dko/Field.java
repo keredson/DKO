@@ -3,6 +3,7 @@ package org.kered.dko;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -97,6 +98,7 @@ public class Field<T> implements Cloneable {
 
 	String boundTable = null;
 	Field<T> unBound = null;
+	Set<Object> tags = null;
 
 	public Field(final int index, final Class<? extends Table> table, final String name, final String javaName, final Class<T> type, final String sqlType) {
 		INDEX = index;
@@ -900,6 +902,35 @@ public class Field<T> implements Cloneable {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * Returns a clone of this field tagged with the given object.
+	 * @param tag
+	 * @return
+	 */
+	public Field<T> tag(final Object tag) {
+		try {
+			@SuppressWarnings("unchecked")
+			final Field<T> f = (Field<T>) this.clone();
+			if (f.tags == null) f.tags = new HashSet<Object>();
+			else f.tags = new HashSet<Object>(f.tags);
+			tags.add(tag);
+			return f;
+		} catch (final CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Returns true if this field has been tagged by this object;
+	 * @param tag
+	 * @return
+	 */
+	public boolean hasTag(final Object tag) {
+		if (tags==null) return false;
+		return tags.contains(tag);
 	}
 
 	boolean isBound() {

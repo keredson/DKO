@@ -295,7 +295,10 @@ class Select<T extends Table> implements Iterator<T> {
 
 				final Object[] fieldValues = getNextRow();
 				this.lastFieldValues = fieldValues;
-				if (fieldValues == null) return false;
+				if (fieldValues == null) {
+					cleanUp();
+					return false;
+				}
 				final int objectSize = allTableInfos.size();
 				final Table[] objects = new Table[objectSize];
 				final boolean[] newObjectThisRow = new boolean[objectSize];
@@ -357,21 +360,27 @@ class Select<T extends Table> implements Iterator<T> {
 
 		} catch (final SQLException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final InvocationTargetException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final InstantiationException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		}
 		final boolean hasNext = next != null;
+		if (!hasNext) cleanUp();
 		return hasNext;
 	}
 

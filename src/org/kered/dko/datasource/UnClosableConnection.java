@@ -42,13 +42,13 @@ public class UnClosableConnection implements Connection {
 
 	public UnClosableConnection(final Connection conn) {
 		this.conn = conn;
-		//this.st = Thread.currentThread().getStackTrace();
+		this.st = Thread.currentThread().getStackTrace();
 	}
 	
 	public UnClosableConnection(final Connection conn, CloseListener cb) {
 		this.conn = conn;
 		this.cb  = cb;
-		//this.st = Thread.currentThread().getStackTrace();
+		this.st = Thread.currentThread().getStackTrace();
 	}
 	
 	public Connection getUnderlyingConnection() {
@@ -378,8 +378,10 @@ public class UnClosableConnection implements Connection {
 		super.finalize();
 		if (!wasClosed) {
 			System.err.println("this was not closed!");
-			for (StackTraceElement ste : st) {
-				System.err.println(ste);
+			if (st!=null) {
+				for (StackTraceElement ste : st) {
+					System.err.println(ste);
+				}
 			}
 		}
 	}

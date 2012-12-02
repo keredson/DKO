@@ -47,7 +47,7 @@ public class SingleThreadedDataSource implements MatryoshkaDataSource {
 		long stopBy = System.currentTimeMillis() + timeout;
 		try {
 			while (System.currentTimeMillis() < stopBy) {
-				if (lock.tryLock(500, TimeUnit.MILLISECONDS)) {
+				if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {
 					if (!connOk(conn)) conn = ds.getConnection();
 					return new UnClosableConnection(conn, new UnClosableConnection.CloseListener() {
 						@Override

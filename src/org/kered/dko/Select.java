@@ -330,9 +330,9 @@ class Select<T extends Table> implements Iterator<T> {
 					}
 				}
 				for(final JoinInfo<?,?> join : query.joinsToOne) {
+					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
-					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
 					final Method fkSetMethod = fkToOneSetMethods.get(join.reffingTableInfo.tableClass);
 					if (reffingObject != null) {
 						fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
@@ -350,7 +350,7 @@ class Select<T extends Table> implements Iterator<T> {
 							ttbMap.put(join, tmpQuery);
 						}
 					}
-					if (reffingObject != null) {
+					if (newObjectThisRow[join.reffingTableInfo.position] && reffingObject != null) {
 						tmpQuery.cache.add(reffingObject);
 					}
 				}

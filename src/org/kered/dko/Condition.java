@@ -628,7 +628,9 @@ public abstract class Condition {
 		@Override
 		boolean matches(final Table t) {
 			if (v!=null) {
-				return v.equals(t.get(field));
+				if ("=".equals(cmp)) return v.equals(t.get(field));
+				if ("!=".equals(cmp)) return !v.equals(t.get(field));
+				throw new RuntimeException("operator "+ cmp +" unsupported in in-memory comparisons");
 			} else if (field2!=null) {
 				final Object a = t.get(field);
 				final Object b = t.get(field2);

@@ -352,6 +352,8 @@ class Select<T extends Table> implements Iterator<T> {
 					}
 					if (newObjectThisRow[join.reffingTableInfo.position] && reffingObject != null) {
 						tmpQuery.cache.add(reffingObject);
+						final Method fkSetMethod = fkToOneSetMethods.get(join.reffingTableInfo.tableClass);
+						fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
 					}
 				}
 				prevFieldValues = fieldValues;

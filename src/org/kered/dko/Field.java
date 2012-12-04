@@ -915,7 +915,26 @@ public class Field<T> implements Cloneable {
 			final Field<T> f = (Field<T>) this.clone();
 			if (f.tags == null) f.tags = new HashSet<Object>();
 			else f.tags = new HashSet<Object>(f.tags);
-			tags.add(tag);
+			f.tags.add(tag);
+			return f;
+		} catch (final CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Returns a clone of this field with the given tag object removed.
+	 * @param tag
+	 * @return
+	 */
+	public Field<T> untag(final Object tag) {
+		try {
+			@SuppressWarnings("unchecked")
+			final Field<T> f = (Field<T>) this.clone();
+			if (f.tags == null) f.tags = new HashSet<Object>();
+			else f.tags = new HashSet<Object>(f.tags);
+			f.tags.remove(tag);
 			return f;
 		} catch (final CloneNotSupportedException e) {
 			e.printStackTrace();

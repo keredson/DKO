@@ -65,7 +65,7 @@ public class BuildInfo {
 	public static final String DESCRIPTION = "DKO "+ HG_TAG +" ("+ HG_ID +")";
 }
 </echo>
-    <javac destdir="${build}" debug="on">
+    <javac destdir="${build}" debug="on" target="1.6" source="1.6">
         <src path="${src}"/>
         <src path="gen/joinsrc"/>
     </javac>

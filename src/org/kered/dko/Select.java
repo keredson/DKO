@@ -117,7 +117,7 @@ class Select<T extends Table> implements Iterator<T> {
 				/* ignore */
 			}
 
-			returnJoin = _Join.J.class.isAssignableFrom(query.ofType);
+			returnJoin = Join.J.class.isAssignableFrom(query.ofType);
 			if (returnJoin) {
 				joinConstructor = query.ofType.getDeclaredConstructor(new Object[0].getClass(), Integer.TYPE);
 				joinConstructor.setAccessible(true);

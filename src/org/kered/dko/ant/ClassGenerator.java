@@ -582,14 +582,14 @@ class ClassGenerator {
 		boolean foundNameColumn = false;
 		for (final String column : columns.keySet()) {
 			if (pkSet.contains(column)) continue;
-			if (!"name".equalsIgnoreCase(column)) continue;
+			if (!"name".equalsIgnoreCase(column) && !"title".equalsIgnoreCase(column)) continue;
 			foundNameColumn = true;
 			writeToStringPart(br, column);
 		}
 		if (!foundNameColumn) {
 			for (final String column : columns.keySet()) {
 				if (pkSet.contains(column)) continue;
-				if (!column.toLowerCase().contains("name")) continue;
+				if (!column.toLowerCase().contains("name") && !column.toLowerCase().contains("title")) continue;
 				writeToStringPart(br, column);
 			}
 		}
@@ -638,6 +638,7 @@ class ClassGenerator {
 			br.write("\t */\n");
 			br.write("\tpublic "+ className +" set"+ getInstanceMethodName(column));
 			br.write("(final "+ cls +" v) {\n");
+			br.write("\t\tif ("+ getInstanceFieldName(column) +"==null ? v==null : "+ getInstanceFieldName(column) +".equals(v)) return this;\n");
 			br.write("\t\t"+ getInstanceFieldName(column) +" = v;\n");
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(column) +".INDEX);\n");

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN">
+
+<book>
+  <title>DKOs - The Book</title>
+  
+  <chapter>
+    <title>Introduction</title>
+    <section>
+      <title>Should You Read This?</title>
+      <para>target audience</para>
+    </section>
+    <section>
+      <title>Problems with Traditional ORMs</title>
+      <para>string concat == bad</para>
+      <para>leads to db code isolation</para>
+      <para>“isolated” code grows to be large part of your project</para>
+      <para>or people use getAll() methods</para>
+      <para>always select * from...</para>
+      <para>xml configuration nightmare</para>
+      <para>live objects are bad</para>
+    </section>
+    <section>
+      <title>Principles Behind DKOs</title>
+      <para>embrace sql</para>
+      <para>all compile-time checked</para>
+      <para>ORM mappings always 1-to-1</para>
+    </section>
+    <section>
+      <title>Precursors to DKOs</title>
+      <para>django query api</para>
+      <para>apache torque</para>
+    </section>
+  </chapter>  
+
+  <chapter>
+    <title>Setting Up DKOs</title>
+    <section>
+      <title>Overview</title>
+      <para>ant-only</para>
+    </section>
+    <section>
+      <title>Extracting Your Database Schema</title>
+      <para>enums.json</para>
+    </section>
+    <section>
+      <title>Generating Classes</title>
+      <para>type_mappings.json</para>
+      <para>fake_fks.json</para>
+      <para>default datasource</para>
+      <para>callbacks</para>
+      <para>code generation overview</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Table Models</title>
+    <section>
+      <title>Overview</title>
+    </section>
+    <section>
+      <title>Fields</title>
+    </section>
+    <section>
+      <title>Instances</title>
+    </section>
+    <section>
+      <title>Foreign Keys</title>
+      <para>lazy loading</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Queries</title>
+    <section>
+      <title>Overview</title>
+    </section>
+    <section>
+      <title>Hello World</title>
+      <para>.get()</para>
+    </section>
+    <section>
+      <title>Conditions</title>
+    </section>
+    <section>
+      <title>Aggregation Function</title>
+    </section>
+    <section>
+      <title>Terminal vs. Non-terminal Methods</title>
+      <para>immutable</para>
+      <para>when is query run?</para>
+    </section>
+    <section>
+      <title>Performance</title>
+      <para>Streaming</para>
+    </section>
+    <section>
+      <title>Inner Queries</title>
+    </section>
+    <section>
+      <title>Temporary Tables</title>
+    </section>
+    <section>
+      <title>Table Aliases</title>
+    </section>
+  </chapter>
+
+</book> 

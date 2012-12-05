@@ -103,6 +103,24 @@ public class BuildInfo {
     <delete dir="bin_test"/>
     <delete dir="reports"/>
   </target>
+
+
+  <target name="doc" description="generate documentation" depends="javadoc, docbook">
+  </target>
+
+  
+  <target name="docbook" description="generate docbook">
+    <exec executable="db2html">
+      <arg value="-o"/>
+      <arg value="doc/dkos-the-book"/>
+      <arg value="docsrc/thebook/dkos-the-book.xml"/>
+    </exec>
+    <!-- -o doesn't work... -->
+    <move todir="doc/dkos-the-book">
+      <fileset dir="docsrc/thebook/dkos-the-book"/>
+    </move>
+  </target>
+
   
   <target name="javadoc" description="generate javadoc" >
     <delete includeemptydirs="true">

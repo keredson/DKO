@@ -157,30 +157,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	private DataSource getDefaultDS() {
-		try {
-			if (defaultDS != null) return defaultDS;
-			final java.lang.reflect.Field field = ofType.getDeclaredField("__DEFAULT_DATASOURCE");
-			field.setAccessible(true);
-			defaultDS = (DataSource) field.get(null);
-			return defaultDS;
-		} catch (final SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (final NoSuchFieldException e) {
-			final String msg = "No default datasource defined for "+ ofType +".  Please either call " +
-					"your query with .use(DataSource ds), or define the 'datasource' field " +
-					"in the org.kered.dko.ant.CodeGenerator ant task.";
-			throw new RuntimeException(msg, e);
-		} catch (final IllegalArgumentException e) {
-			e.printStackTrace();
-			return null;
-		} catch (final IllegalAccessException e) {
-			e.printStackTrace();
-			return null;
-		}
+	DataSource getDefaultDataSource() {
+		if (defaultDS != null) return defaultDS;
+		defaultDS = Util.getDefaultDataSource(ofType);
+		return defaultDS;
 	}
+
 
 	DBQuery(final Class<T> tableClass, final DataSource ds) {
 		this(tableClass);
@@ -1234,7 +1216,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (ds != null) return ds;
 		final DataSource ds = Context.getDataSource(ofType);
 		if (ds != null) return ds;
-		return getDefaultDS();
+		return getDefaultDataSource();
 	}
 
 	@Override

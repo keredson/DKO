@@ -37,14 +37,18 @@ public class UnClosableConnection implements Connection {
 
 	private final Connection conn;
 	private CloseListener cb = null;
+	private boolean wasClosed = false;
+	private StackTraceElement[] st = null;
 
 	public UnClosableConnection(final Connection conn) {
 		this.conn = conn;
+		this.st = Thread.currentThread().getStackTrace();
 	}
 	
 	public UnClosableConnection(final Connection conn, CloseListener cb) {
 		this.conn = conn;
 		this.cb  = cb;
+		this.st = Thread.currentThread().getStackTrace();
 	}
 	
 	public Connection getUnderlyingConnection() {
@@ -106,6 +110,7 @@ public class UnClosableConnection implements Connection {
 	public void close() throws SQLException {
 		// do nothing
 		if (cb!=null) cb.wasClosed(this);
+		wasClosed  = true;
 	}
 
 	/**
@@ -370,8 +375,15 @@ public class UnClosableConnection implements Connection {
 
 	@Override
 	protected void finalize() throws Throwable {
-		if (cb!=null) cb.wasClosed(this);
 		super.finalize();
+		if (!wasClosed) {
+			System.err.println("this was not closed!");
+			if (st!=null) {
+				for (StackTraceElement ste : st) {
+					System.err.println(ste);
+				}
+			}
+		}
 	}
 
 }

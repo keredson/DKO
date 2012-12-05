@@ -409,19 +409,21 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, bindings);
 		final Tuple2<Connection,Boolean> info = getConnRW(ds);
 		final Connection conn = info.a;
-		final PreparedStatement ps = conn.prepareStatement(sql);
-		setBindings(ps, bindings);
-		_preExecute(context, conn);
-		ps.execute();
-		final int count = ps.getUpdateCount();
-		ps.close();
-		_postExecute(context, conn);
-		if (info.b) {
-			if (!conn.getAutoCommit()) conn.commit();
-			conn.close();
+		try {
+			final PreparedStatement ps = conn.prepareStatement(sql);
+			setBindings(ps, bindings);
+			_preExecute(context, conn);
+			ps.execute();
+			final int count = ps.getUpdateCount();
+			ps.close();
+			_postExecute(context, conn);
+			return count;
+		} finally {
+			if (info.b) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
+			}
 		}
-
-		return count;
 	}
 
 	@Override
@@ -430,71 +432,62 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final DataSource ds = getDataSource();
 		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);
 		final Connection conn = info.a;
-		final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
-		final String schemaWithDot = "".equals(schema) ? "" : schema + ".";
-		if (q.getDBType()==DB_TYPE.MYSQL) {
-			if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
-					"is not yet supported");
-			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-			Util.log(sql, null);
-			final PreparedStatement ps = conn.prepareStatement(sql);
-			q.setBindings(ps);
-			ps.execute();
-			final int count = ps.getUpdateCount();
-			ps.close();
-			if (info.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
-			}
-			return count;
-		} else if (getDBType()==DB_TYPE.SQLITE3) {
-			if (q.tableInfos.size() > 1) throw new RuntimeException("SQLITE3 multi-table delete " +
-					"is not yet supported");
-			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-			Util.log(sql, null);
-			final PreparedStatement ps = conn.prepareStatement(sql);
-			q.setBindings(ps);
-			ps.execute();
-			final int count = ps.getUpdateCount();
-			ps.close();
-			if (info.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
-			}
-			return count;
-		} else if (getDBType()==DB_TYPE.SQLSERVER) {
-			if (q.tableInfos.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
-					"is not yet supported");
-			q.tableInfos.get(0).tableName = null;
-			final String sql = "delete from "+ schema
-					+ ".dbo." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-			Util.log(sql, null);
-			final PreparedStatement ps = conn.prepareStatement(sql);
-			q.setBindings(ps);
-			ps.execute();
-			final int count = ps.getUpdateCount();
-			ps.close();
-			if (info.b) {
-				if (!conn.getAutoCommit()) conn.commit();
-				conn.close();
-			}
-			return count;
+		try {
+			final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+			final String schemaWithDot = "".equals(schema) ? "" : schema + ".";
+			if (q.getDBType()==DB_TYPE.MYSQL) {
+				if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
+						"is not yet supported");
+				q.tableInfos.get(0).tableName = null;
+				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
+				Util.log(sql, null);
+				final PreparedStatement ps = conn.prepareStatement(sql);
+				q.setBindings(ps);
+				ps.execute();
+				final int count = ps.getUpdateCount();
+				ps.close();
+				return count;
+			} else if (getDBType()==DB_TYPE.SQLITE3) {
+				if (q.tableInfos.size() > 1) throw new RuntimeException("SQLITE3 multi-table delete " +
+						"is not yet supported");
+				q.tableInfos.get(0).tableName = null;
+				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
+				Util.log(sql, null);
+				final PreparedStatement ps = conn.prepareStatement(sql);
+				q.setBindings(ps);
+				ps.execute();
+				final int count = ps.getUpdateCount();
+				ps.close();
+				return count;
+			} else if (getDBType()==DB_TYPE.SQLSERVER) {
+				if (q.tableInfos.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
+						"is not yet supported");
+				q.tableInfos.get(0).tableName = null;
+				final String sql = "delete from "+ schema
+						+ ".dbo." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
+				Util.log(sql, null);
+				final PreparedStatement ps = conn.prepareStatement(sql);
+				q.setBindings(ps);
+				ps.execute();
+				final int count = ps.getUpdateCount();
+				ps.close();
+				return count;
 
-		} else {
-			final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
-			Util.log(sql, null);
-			final PreparedStatement ps = conn.prepareStatement(sql);
-			q.setBindings(ps);
-			ps.execute();
-			final int count = ps.getUpdateCount();
-			ps.close();
+			} else {
+				final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
+				Util.log(sql, null);
+				final PreparedStatement ps = conn.prepareStatement(sql);
+				q.setBindings(ps);
+				ps.execute();
+				final int count = ps.getUpdateCount();
+				ps.close();
+				return count;
+			}
+		} finally {
 			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();
 			}
-			return count;
 		}
 	}
 
@@ -845,38 +838,41 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, q.bindings);
 		final Tuple2<Connection,Boolean> info = getConnRW(ds);
 		final Connection conn = info.a;
-		final PreparedStatement ps = conn.prepareStatement(sql);
-		q.setBindings(ps);
-		_preExecute(context, conn);
-		ps.execute();
-		final int count = ps.getUpdateCount();
-		ps.close();
-		_postExecute(context, conn);
+		try {
+			final PreparedStatement ps = conn.prepareStatement(sql);
+			q.setBindings(ps);
+			_preExecute(context, conn);
+			ps.execute();
+			final int count = ps.getUpdateCount();
+			ps.close();
+			_postExecute(context, conn);
 
-		if (count==1) {
-			if (getDBType()==DB_TYPE.MYSQL) {
-				final Statement s = conn.createStatement();
+			if (count==1) {
+				if (getDBType()==DB_TYPE.MYSQL) {
+					final Statement s = conn.createStatement();
 
-				s.execute("SELECT LAST_INSERT_ID()");
-				final ResultSet rs = s.getResultSet();
-				if (rs.next()) {
-					final Integer pk = rs.getInt(1);
-					return pk;
+					s.execute("SELECT LAST_INSERT_ID()");
+					final ResultSet rs = s.getResultSet();
+					if (rs.next()) {
+						final Integer pk = rs.getInt(1);
+						return pk;
+					}
+				}
+				if (getDBType()==DB_TYPE.SQLITE3) {
+					final Statement s = conn.createStatement();
+					s.execute("SELECT last_insert_rowid()");
+					final ResultSet rs = s.getResultSet();
+					if (rs.next()) {
+						final Integer pk = rs.getInt(1);
+						return pk;
+					}
 				}
 			}
-			if (getDBType()==DB_TYPE.SQLITE3) {
-				final Statement s = conn.createStatement();
-				s.execute("SELECT last_insert_rowid()");
-				final ResultSet rs = s.getResultSet();
-				if (rs.next()) {
-					final Integer pk = rs.getInt(1);
-					return pk;
-				}
+		} finally {
+			if (info.b) {
+				if (!conn.getAutoCommit()) conn.commit();
+				conn.close();
 			}
-		}
-		if (info.b) {
-			if (!conn.getAutoCommit()) conn.commit();
-			conn.close();
 		}
 
 		return null;

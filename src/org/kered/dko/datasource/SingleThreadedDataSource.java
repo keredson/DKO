@@ -2,8 +2,10 @@ package org.kered.dko.datasource;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -28,64 +30,80 @@ public class SingleThreadedDataSource implements MatryoshkaDataSource {
 	private final Lock lock = new ReentrantLock();
 	private final DataSource ds;
 	private final long timeout;
+	private Connection conn = null;
 	private static final Logger log = Logger.getLogger("org.kered.dko.datasource.SingleThreadedDataSource");
 
 	/**
 	 * @param ds
 	 * @param timeout (in millis)
 	 */
-	public SingleThreadedDataSource(final DataSource ds, final long timeout) {
+	public SingleThreadedDataSource(final DataSource ds, final long timeout, boolean reuse) {
 		this.ds = ds;
 		this.timeout = timeout;
 	}
 
 	@Override
 	public synchronized Connection getConnection() throws SQLException {
+		long stopBy = System.currentTimeMillis() + timeout;
 		try {
-			if (lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
-				final Connection conn = ds.getConnection();
-				return new UnClosableConnection(conn, new UnClosableConnection.CloseListener() {
-					@Override
-					public void wasClosed(final UnClosableConnection c) {
-						try {
-							conn.close();
-						} catch (final SQLException e) {
-							e.printStackTrace();
+			while (System.currentTimeMillis() < stopBy) {
+				if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {
+					if (!connOk(conn)) conn = ds.getConnection();
+					return new UnClosableConnection(conn, new UnClosableConnection.CloseListener() {
+						@Override
+						public void wasClosed(final UnClosableConnection c) {
+							lock.unlock();
 						}
-						lock.unlock();
-					}
-				});
+					});
+				}
 			}
-			log.warning("unable to aquire connection lock after "+ timeout +" seconds");
+			throw new RuntimeException("unable to aquire connection lock after "+ timeout +"ms");
 		} catch (final InterruptedException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
+	}
+
+	private static boolean connOk(Connection conn) {
+		if (conn==null) return false;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select 1");
+			rs.next();
+			rs.getInt(1);
+			stmt.close();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				conn.close();
+			} catch (SQLException e1) {
+				e.printStackTrace();
+			}
+			conn = null;
+			return false;
+		}
 	}
 
 	@Override
 	public Connection getConnection(final String username, final String password)
 			throws SQLException {
+		long stopBy = System.currentTimeMillis() + timeout;
 		try {
-			if (lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
-				final Connection conn = ds.getConnection(username, password);
-				return new UnClosableConnection(conn, new UnClosableConnection.CloseListener() {
-					@Override
-					public void wasClosed(final UnClosableConnection c) {
-						try {
-							conn.close();
-						} catch (final SQLException e) {
-							e.printStackTrace();
+			while (System.currentTimeMillis() < stopBy) {
+				if (lock.tryLock(500, TimeUnit.MILLISECONDS)) {
+					if (!connOk(conn)) conn = ds.getConnection(username, password);
+					return new UnClosableConnection(conn, new UnClosableConnection.CloseListener() {
+						@Override
+						public void wasClosed(final UnClosableConnection c) {
+							lock.unlock();
 						}
-						lock.unlock();
-					}
-				});
+					});
+				}
 			}
-			log.warning("unable to aquire connection lock after "+ timeout +" seconds");
+			throw new RuntimeException("unable to aquire connection lock after "+ timeout +"ms");
 		} catch (final InterruptedException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	@Override

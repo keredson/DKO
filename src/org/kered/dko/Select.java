@@ -295,7 +295,10 @@ class Select<T extends Table> implements Iterator<T> {
 
 				final Object[] fieldValues = getNextRow();
 				this.lastFieldValues = fieldValues;
-				if (fieldValues == null) return false;
+				if (fieldValues == null) {
+					cleanUp();
+					return false;
+				}
 				final int objectSize = allTableInfos.size();
 				final Table[] objects = new Table[objectSize];
 				final boolean[] newObjectThisRow = new boolean[objectSize];
@@ -327,9 +330,9 @@ class Select<T extends Table> implements Iterator<T> {
 					}
 				}
 				for(final JoinInfo<?,?> join : query.joinsToOne) {
+					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
 					final Object reffedObject = objects[join.reffedTableInfo.position];
 					final Object reffingObject = objects[join.reffingTableInfo.position];
-					if (!newObjectThisRow[join.reffingTableInfo.position]) continue;
 					final Method fkSetMethod = fkToOneSetMethods.get(join.reffingTableInfo.tableClass);
 					if (reffingObject != null) {
 						fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
@@ -347,8 +350,10 @@ class Select<T extends Table> implements Iterator<T> {
 							ttbMap.put(join, tmpQuery);
 						}
 					}
-					if (reffingObject != null) {
+					if (newObjectThisRow[join.reffingTableInfo.position] && reffingObject != null) {
 						tmpQuery.cache.add(reffingObject);
+						final Method fkSetMethod = fkToOneSetMethods.get(join.reffingTableInfo.tableClass);
+						fkSetMethod.invoke(reffingObject, join.fk, reffedObject);
 					}
 				}
 				prevFieldValues = fieldValues;
@@ -357,21 +362,27 @@ class Select<T extends Table> implements Iterator<T> {
 
 		} catch (final SQLException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final InvocationTargetException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		} catch (final InstantiationException e) {
 			e.printStackTrace();
+			cleanUp();
 			throw new RuntimeException(e);
 		}
 		final boolean hasNext = next != null;
+		if (!hasNext) cleanUp();
 		return hasNext;
 	}
 

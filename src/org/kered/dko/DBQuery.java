@@ -289,20 +289,26 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
 		Util.log(sql, bindings);
-		final PreparedStatement ps = conn.prepareStatement(sql);
-		setBindings(ps);
-		_preExecute(context, conn);
-		ps.execute();
-		final ResultSet rs = ps.getResultSet();
-		rs.next();
-		final long count = rs.getLong(1);
-		rs.close();
-		ps.close();
-		_postExecute(context, conn);
-		if (connInfo.b) {
-			conn.close();
+		PreparedStatement ps;
+		try {
+			ps = conn.prepareStatement(sql);
+			setBindings(ps);
+			_preExecute(context, conn);
+			ps.execute();
+			final ResultSet rs = ps.getResultSet();
+			rs.next();
+			final long count = rs.getLong(1);
+			rs.close();
+			ps.close();
+			_postExecute(context, conn);
+			return count;
+		} catch (final SQLException e) {
+			throw e;
+		} finally {
+			if (connInfo.b) {
+				conn.close();
+			}
 		}
-		return count;
 	}
 
 	@Override
@@ -1153,6 +1159,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return (Map<S, Integer>) result;
 	}
 
+	@Override
 	public Query<T> use(final DataSource ds) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.ds = ds;

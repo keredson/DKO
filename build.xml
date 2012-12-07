@@ -20,11 +20,22 @@
   <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
   <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"/>
 
+
   <!-- ========[ END PROPS ]======== -->
 
 
 
   <!-- ========[ BEGIN BASIC DEVELOPMENT TASKS ]======== -->
+
+  <target name="extract-persistence-schema" depends="init">
+    <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_sqlite_jar}"/>
+    <noscoextractschema
+    	url="jdbc:sqlite:src/db/persistence.db"
+    	username="sa"
+    	password=""
+    	out="src/db/persistence_schema.json"
+    />
+  </target>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -49,7 +60,9 @@
   <target name="compile" depends="init"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" includes="org/kered/dko/ant/JoinGenerator.java" destdir="${build}" debug="on"/>
+    <javac srcdir="${src}" 
+    	includes="org/kered/dko/ant/JoinGenerator.java,org/kered/dko/ant/CodeGenerator.java,org/kered/dko/ant/ClassGenerator.java,org/kered/dko/ant/SchemaExtractor.java" 
+		destdir="${build}" debug="on" target="1.6" source="1.6"/>
     <java classname="org.kered.dko.ant.JoinGenerator" fork="yes">
         <arg value="9"/>
 		<classpath>
@@ -64,7 +77,13 @@ public class BuildInfo {
 	public static final String TODAY = "${TODAY}";
 	public static final String DESCRIPTION = "DKO "+ HG_TAG +" ("+ HG_ID +")";
 }
-</echo>
+    </echo>
+    <taskdef name="noscogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${build}"/>
+    <noscogen package="org.kered.dko.persistence" 
+      debug="true"
+      javaoutputdir="gen/joinsrc"
+      schemas="src/db/persistence_schema.json"
+    /><!-- datasource="ds = org.kered.dko.persistence.Util.getDS();" -->
     <javac destdir="${build}" debug="on" target="1.6" source="1.6">
         <src path="${src}"/>
         <src path="gen/joinsrc"/>

@@ -1,0 +1,16 @@
+{
+    "version": [
+        0,
+        2,
+        0
+    ],
+    "schemas": {"": {"query_size": {
+        "schema_name": "text",
+        "table_name": "text",
+        "id": "integer",
+        "hash_code": "int",
+        "row_count": "bigint"
+    }}},
+    "primary_keys": {"": {"query_size": ["id"]}},
+    "foreign_keys": {}
+}

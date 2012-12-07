@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.datasource.ConnectionCountingDataSource;
+import org.kered.dko.datasource.JDBCDriverDataSource;
+import org.kered.dko.datasource.MatryoshkaDataSource;
 import org.kered.dko.datasource.MirroredDataSource;
 import org.kered.dko.datasource.ReflectedDataSource;
 import org.kered.dko.datasource.UnClosableConnection;
@@ -72,20 +74,18 @@ public class Constants {
 			// unwrap known datasource layers
 			DataSource underlying = ds;
 			while (true) {
-				if (underlying instanceof MirroredDataSource) {
-					underlying = ((MirroredDataSource)underlying).getPrimaryDataSource();
-					continue;
-				}
-				if (underlying instanceof ReflectedDataSource) {
-					underlying = ((ReflectedDataSource)underlying).getUnderlyingDataSource();
-					continue;
-				}
-				if (underlying instanceof ConnectionCountingDataSource) {
-					underlying = ((ConnectionCountingDataSource)underlying).getUnderlyingDataSource();
+				if (underlying instanceof MatryoshkaDataSource) {
+					underlying = ((MatryoshkaDataSource)underlying).getPrimaryUnderlying();
 					continue;
 				}
 				if (underlying == null) return null;
 				break;
+			}
+
+			// known cases
+			if (underlying instanceof JDBCDriverDataSource) {
+			    final JDBCDriverDataSource jds = (JDBCDriverDataSource) underlying;
+			    if (jds.getDBType()!=null) return jds.getDBType();
 			}
 
 			// is the class recognizable?
@@ -130,7 +130,7 @@ public class Constants {
 		}
 
 		static DB_TYPE detect(final Connection conn) throws SQLException {
-			
+
 			if (conn instanceof UnClosableConnection) {
 				return detect(((UnClosableConnection)conn).getUnderlyingConnection());
 			}
@@ -139,6 +139,7 @@ public class Constants {
 			final String className = conn.getClass().getName();
 			if (className.contains("SQLServer")) return SQLSERVER;
 			if (className.contains("SQLDroidConnection")) return SQLITE3;
+			if (className.contains("SQLiteJDBC")) return SQLITE3;
 
 			// try from the jdbc metadata
 			final DatabaseMetaData metaData = conn.getMetaData();
@@ -249,11 +250,35 @@ public class Constants {
 
 	/**
 	 * A Java property that controls where Nosco keeps cached performance metrics.
-	 * By default: ~/.nosco_optimizations
+	 * By default: ~/.dko_optimizations
 	 */
 	public static final String PROPERTY_CACHE_DIR = "org.kered.dko.cache_dir";
 	@Deprecated
 	static final String PROPERTY_CACHE_DIR_OLD = "org.nosco.cache_dir";
+
+	/**
+	 * A Java property (a filename) that controls where DKO persists performance metrics.
+	 * By default: ~/.dko_persistence_db
+	 */
+	public static final String PROPERTY_PERSISTENCE_DB = "org.kered.dko.persistence_db";
+
+	static enum JOIN_TYPE {
+
+		LEFT("left join"),
+		RIGHT("right join"),
+		INNER("inner join"),
+		OUTER("outer join"),
+		CROSS("cross join");
+
+		private final String s;
+		JOIN_TYPE(final String s) {
+		    this.s = s;
+		}
+		@Override
+		public String toString() {
+		    return s;
+		}
+	}
 
 }
 

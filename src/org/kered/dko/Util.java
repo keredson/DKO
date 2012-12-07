@@ -19,6 +19,8 @@ import javax.sql.DataSource;
 
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Field.PK;
+import org.kered.dko.Table.__Alias;
+import org.kered.dko.datasource.MatryoshkaDataSource;
 import org.kered.dko.json.JSONException;
 import org.kered.dko.json.JSONObject;
 
@@ -40,7 +42,7 @@ class Util {
 			tmp = tmp.parentContext;
 		}
 		if (unboundTables.size() < 1) {
-			throw new RuntimeException("field "+ field.TABLE.getSimpleName() +"."+ field +
+			throw new FieldNotPartOfSelectableTableSet("field "+ field.TABLE.getSimpleName() +"."+ field +
 					" is not from one of the selected tables {"+
 					join(",", selectedTables) +"}");
 		} else if (unboundTables.size() > 1) {
@@ -55,6 +57,13 @@ class Util {
 			return (theOne.tableName == null ? getTABLE_NAME(theOne.tableClass) : theOne.tableName)
 					+ "."+ field.getSQL(context);
 		}
+	}
+
+	static class FieldNotPartOfSelectableTableSet extends RuntimeException {
+	    private static final long serialVersionUID = -5394174545009751301L;
+	    FieldNotPartOfSelectableTableSet(final String s) {
+		super(s);
+	    }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -367,6 +376,42 @@ class Util {
 		} catch (final IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	static boolean sameDataSource(final Class t1, final Class t2) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(t1));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t2));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
+	static boolean sameDataSource(final Class t1, final __Alias t2) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(t1));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t2));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
+	static boolean sameDataSource(final __Alias t1, final Class t2) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(t1));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t2));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
+	static boolean sameDataSource(final __Alias t1, final __Alias t2) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(t1));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t2));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
+	private static DataSource getDefaultDataSource(final __Alias<?> t2) {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+
+	private static DataSource getBaseDataSource(DataSource ds) {
+	    while (ds instanceof MatryoshkaDataSource) {
+		ds = ((MatryoshkaDataSource)ds).getPrimaryUnderlying();
+	    }
+	    return ds;
 	}
 
 }

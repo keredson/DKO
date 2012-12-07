@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -16,18 +19,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
+
+import javax.sql.DataSource;
 
 import org.kered.dko.DBQuery.JoinInfo;
 import org.kered.dko.Field.FK;
+import org.kered.dko.Tuple.Tuple2;
 import org.kered.dko.Tuple.Tuple3;
+import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.dko.json.JSONException;
 import org.kered.dko.json.JSONObject;
+import org.kered.dko.persistence.QuerySize;
 
 class UsageMonitor<T extends Table> {
 
@@ -44,7 +57,7 @@ class UsageMonitor<T extends Table> {
 	Map<StackTraceKey,M.Long> counter = new HashMap<StackTraceKey,M.Long>();
 
 	private static final Logger log = Logger.getLogger("org.kered.dko.recommendations");
-	long count = 0;
+	long objectCount = 0;
 	private final StackTraceElement[] st;
 	private final BitSet accessedField = new BitSet();
 	private Field<?>[] selectedFields;
@@ -54,6 +67,9 @@ class UsageMonitor<T extends Table> {
 	private DBQuery<T> query;
 	private boolean selectOptimized = false;
 	private Set<Field<?>> pks = new HashSet<Field<?>>();
+	public long rowCount = 0;
+	private final int queryHashCode;
+	private final Class<T> queryType;
 	private static long warnBadFKUsageCount = 0;
 
 	@Override
@@ -109,7 +125,7 @@ class UsageMonitor<T extends Table> {
 		for (final Field<?> field : unusedColumns) {
 			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
 		}
-		if (!selectOptimized && !unusedColumnDescs.isEmpty() && count > MIN_WARN_COUNT) {
+		if (!selectOptimized && !unusedColumnDescs.isEmpty() && objectCount > MIN_WARN_COUNT) {
 			final String msg = "The following columns were never accessed:\n\t"
 					+ Util.join(", ", unusedColumnDescs) + "\nin the query created here:\n\t"
 					+ Util.join("\n\t", (Object[]) st) + "\n"
@@ -129,6 +145,8 @@ class UsageMonitor<T extends Table> {
 			}
 		}
 		this.query = query;
+		this.queryHashCode = query.hashCode();
+		this.queryType = query.getType();
 		// grab the current stack trace
 		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
 		st = new StackTraceElement[tmp.length-4];
@@ -194,10 +212,10 @@ class UsageMonitor<T extends Table> {
 	}
 
 	private void warnBadFKUsage() {
-		if (count > MIN_WARN_COUNT) {
+		if (objectCount > MIN_WARN_COUNT) {
 			for (final Entry<StackTraceKey, M.Long> e : counter.entrySet()) {
 				final M.Long v = e.getValue();
-				final long percent = v.i*100/count;
+				final long percent = v.i*100/objectCount;
 				if (percent > 50) {
 					final StackTraceKey k = e.getKey();
 					final String msg = "This code has lazily accessed a foreign key relationship "+ percent
@@ -461,6 +479,7 @@ class UsageMonitor<T extends Table> {
 
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    @Override
 		    public void run() {
 		    	try {
 					Writer w = null;
@@ -548,6 +567,66 @@ class UsageMonitor<T extends Table> {
 			}
 
 		}
+	}
+
+	public void iteratorIsDone() {
+	    saveSizeOfQuery();
+	}
+
+	private final static BlockingQueue<UsageMonitor> querySizes = new LinkedBlockingQueue<UsageMonitor>();
+	private void saveSizeOfQuery() {
+	    if (this.queryType.getPackage().getName().startsWith("org.kered.dko")) return;
+	    querySizes.add(this);
+	    System.err.println("saveSizeOfQuery");
+	}
+
+	static Thread saveQuerySizes = new Thread() {
+	    DataSource ds = org.kered.dko.persistence.Util.getDS();
+	    @Override
+	    public void run() {
+		while (true) {
+		    System.err.println("saveQuerySizes");
+		    try {
+			final UsageMonitor um = querySizes.take();
+			System.err.println("found one!!!");
+			//final int id = Math.abs(um.queryHashCode);
+			final int id = um.queryHashCode;
+			final QuerySize qs = QuerySize.ALL.use(ds).get(QuerySize.ID.eq(id));
+			//if (qs!=null && qs.getHashCode()!=hash) {
+			//    qs = QuerySize.ALL.get(QuerySize.HASH_CODE.eq(hash));
+			//}
+			if (qs==null) {
+			    new QuerySize()
+			    	.setId(id)
+			    	.setHashCode(um.queryHashCode)
+			    	.setSchemaName(Util.getSCHEMA_NAME(um.queryType))
+			    	.setTableName(Util.getTABLE_NAME(um.queryType))
+			    	.setRowCount(um.rowCount)
+			    	.insert(ds);
+			} else {
+			    qs.setRowCount(ma(um.rowCount, qs.getRowCount()));
+			    qs.update(ds);
+			}
+			System.err.println(".. done w/ it");
+		    } catch (final InterruptedException e) {
+			e.printStackTrace();
+		    } catch (final SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		    }
+		    System.err.println("saveQuerySizes done");
+		}
+	    }
+	    private long ma(Long a, Long b) {
+		final int MA = 5;
+		if (a==null) a = 0l;
+		if (b==null) b = 0l;
+		return (a + (MA-1)*b)/MA;
+	    }
+	};
+	static {
+	    saveQuerySizes.setDaemon(true);
+	    saveQuerySizes.start();
 	}
 
 }

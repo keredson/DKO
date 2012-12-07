@@ -98,4 +98,32 @@ public class SingleConnectionDataSource implements DataSource {
 		throw new SQLFeatureNotSupportedException();
 	}
 
+	@Override
+	public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((conn == null) ? 0 : conn.hashCode());
+	    result = prime * result + timeout;
+	    return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj)
+		return true;
+	    if (obj == null)
+		return false;
+	    if (getClass() != obj.getClass())
+		return false;
+	    SingleConnectionDataSource other = (SingleConnectionDataSource) obj;
+	    if (conn == null) {
+		if (other.conn != null)
+		    return false;
+	    } else if (!conn.equals(other.conn))
+		return false;
+	    if (timeout != other.timeout)
+		return false;
+	    return true;
+	}
+
 }

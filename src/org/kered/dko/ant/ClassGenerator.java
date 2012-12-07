@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -23,7 +22,6 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.kered.dko.Constants;
-import org.kered.dko.Field;
 import org.kered.dko.json.JSONArray;
 import org.kered.dko.json.JSONException;
 import org.kered.dko.json.JSONObject;
@@ -808,7 +806,7 @@ class ClassGenerator {
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
 		br.write("\tpublic boolean save(final DataSource _ds) throws SQLException {\n");
 		br.write("\t\tif (!dirty()) return false;\n");
-		
+
 		if (pkSet != null || !pkSet.isEmpty()) {
 			br.write("\t\tif (false");
 			for (final String pk : pkSet) {
@@ -816,7 +814,7 @@ class ClassGenerator {
 			}
 			br.write(") return this.insert(_ds);\n");
 		}
-		
+
 		br.write("\t\tfinal Query<"+ className +"> query = ALL.use(_ds)");
 		for (final String pk : pkSet) {
 			br.write(".where("+ getFieldName(pk) +".eq("+ getInstanceFieldName(pk) +"))");
@@ -960,8 +958,8 @@ class ClassGenerator {
 		br.write("\t\tquery = query.set(updates);\n");
 		br.write("\t\tObject _pk = query.insert();\n");
 		if (pkSet.size() == 1) {
-			String column = pkSet.iterator().next();
-			String type = getFieldType(pkgName, table, column, columns.getString(column));
+			final String column = pkSet.iterator().next();
+			final String type = getFieldType(pkgName, table, column, columns.getString(column));
 			br.write("\t\t"+ getInstanceFieldName(column) +" = ("+ type +")_pk;\n");
 		}
 		br.write("\t\tif (__NOSCO_CALLBACK_INSERT_POST!=null) "
@@ -999,7 +997,7 @@ class ClassGenerator {
 
 
 		// write the logger
-		String pkgAndClassName = "".equals(pkgName) ? className : pkgName +"."+ className;
+		final String pkgAndClassName = "".equals(pkgName) ? className : pkgName +"."+ className;
 		br.write("\tprivate static final java.util.logging.Logger __NOSCO_LOGGER = " + "java.util.logging.Logger.getLogger(\"" + pkgAndClassName + "\");\n");
 
 

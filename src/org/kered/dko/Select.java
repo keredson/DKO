@@ -35,6 +35,7 @@ class Select<T extends Table> implements Iterator<T> {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
+		cleanUp();
 		if (rs != null && !rs.isClosed()) rs.close();
 		if (ps != null && !ps.isClosed()) ps.close();
 	}
@@ -263,6 +264,7 @@ class Select<T extends Table> implements Iterator<T> {
 				nextRow[i] = Util.getTypedValueFromRS(rs, i+1, selectedFields[i]);
 			}
 			nextRows.add(nextRow);
+			if (usageMonitor!=null) ++usageMonitor.rowCount;
 		}
 		//preFetchOtherJoins();
 		return c;
@@ -409,14 +411,14 @@ class Select<T extends Table> implements Iterator<T> {
 				e.printStackTrace();
 			}
 		}
-		this.done = true;
+		if (usageMonitor!=null) usageMonitor.iteratorIsDone();
+		done = true;
 	}
 
 	@Override
 	public T next() {
 		final T t = next;
 		next = null;
-		if (usageMonitor!=null) ++usageMonitor.count;
 		++count;
 		return t;
 	}

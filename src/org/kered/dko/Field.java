@@ -63,7 +63,7 @@ public class Field<T> implements Cloneable {
 	}
 
 	protected void getSQL(final StringBuffer sb, final SqlContext context) {
-		getSQL(sb, context.dbType);
+		getSQL(sb, context==null ? Constants.DB_TYPE.SQL92 : context.dbType);
 	}
 
 	protected void getSQL(final StringBuffer sb, final Constants.DB_TYPE dbType) {
@@ -635,6 +635,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use sub()
 	 */
+	@Deprecated
 	public SQLFunction<T> subtract(final T v) {
 		return new SQLFunction.Custom<T>(this, "-", v);
 	}
@@ -645,6 +646,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use sub()
 	 */
+	@Deprecated
 	public SQLFunction<T> subtract(final Field<T> v) {
 		return new SQLFunction.Custom<T>(this, "-", v);
 	}
@@ -655,6 +657,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use sub()
 	 */
+	@Deprecated
 	public SQLFunction<T> subtract(final SQLFunction v) {
 		return new SQLFunction.Custom<T>(this, "-", v);
 	}
@@ -665,6 +668,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mul()
 	 */
+	@Deprecated
 	public SQLFunction<T> multiply(final T v) {
 		return new SQLFunction.Custom<T>(this, "*", v);
 	}
@@ -675,6 +679,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mul()
 	 */
+	@Deprecated
 	public SQLFunction<T> multiply(final Field<T> v) {
 		return new SQLFunction.Custom<T>(this, "*", v);
 	}
@@ -685,6 +690,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mul()
 	 */
+	@Deprecated
 	public SQLFunction<T> multiply(final SQLFunction v) {
 		return new SQLFunction.Custom<T>(this, "*", v);
 	}
@@ -695,6 +701,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use div()
 	 */
+	@Deprecated
 	public SQLFunction<T> divide(final T v) {
 		return new SQLFunction.Custom<T>(this, "/", v);
 	}
@@ -705,6 +712,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use div()
 	 */
+	@Deprecated
 	public SQLFunction<T> divide(final Field<T> v) {
 		return new SQLFunction.Custom<T>(this, "/", v);
 	}
@@ -715,6 +723,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use div()
 	 */
+	@Deprecated
 	public SQLFunction<T> divide(final SQLFunction v) {
 		return new SQLFunction.Custom<T>(this, "/", v);
 	}
@@ -725,6 +734,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mod()
 	 */
+	@Deprecated
 	public SQLFunction<T> modulus(final T v) {
 		return new SQLFunction.Custom<T>(this, "%", v);
 	}
@@ -735,6 +745,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mod()
 	 */
+	@Deprecated
 	public SQLFunction<T> modulus(final Field<T> v) {
 		return new SQLFunction.Custom<T>(this, "%", v);
 	}
@@ -745,6 +756,7 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 * @deprecated use mod()
 	 */
+	@Deprecated
 	public SQLFunction<T> modulus(final SQLFunction v) {
 		return new SQLFunction.Custom<T>(this, "%", v);
 	}

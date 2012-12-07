@@ -102,7 +102,11 @@ class JoinGenerator {
 						w.write(">> "+ joinType + i +"(final "+ inputType +"<T1> t1, "+ inputType2 +"<T2> t2");
 						if (!"cross".equals(joinType)) w.write(", Condition on");
 						w.write(") {\n");
-						w.write("\t\treturn new _"+ r +"_Query2<T1, T2>(new DBQuery<T1>(t1), t2, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+						w.write("\t\tif (Util.sameDataSource(t1, t2)) {\n");
+						w.write("\t\t\treturn new _"+ r +"_Query2<T1, T2>(new DBQuery<T1>(t1), t2, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+						w.write("\t\t} else {\n");
+						w.write("\t\t\treturn new SoftJoin("+ joinTypeToConstant(joinType) +", J2.class, t1, t2, "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+						w.write("\t\t}\n");
 						w.write("\t}\n");
 					}
 					writeJoinJavadoc(w, i, tTypes);
@@ -124,6 +128,10 @@ class JoinGenerator {
 				}
 			}
 		}
+	}
+
+	private static String joinTypeToConstant(final String joinType) {
+	    return "Constants.JOIN_TYPE."+joinType.toUpperCase();
 	}
 
 	private static void writeInnerJClass(final Writer w, final int i,

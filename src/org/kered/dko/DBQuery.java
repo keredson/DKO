@@ -1153,6 +1153,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return (Map<S, Integer>) result;
 	}
 
+	@Override
 	public Query<T> use(final DataSource ds) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.ds = ds;
@@ -1207,21 +1208,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Condition exists() {
-		return new Condition.Exists(this);
-	}
-
-	@Override
 	public DataSource getDataSource() {
 		if (ds != null) return ds;
 		final DataSource ds = Context.getDataSource(ofType);
 		if (ds != null) return ds;
 		return getDefaultDataSource();
-	}
-
-	@Override
-	public <S> Iterable<S> asIterableOf(final Field<S> field) {
-		return new SelectSingleColumn<S>(this, field);
 	}
 
 	@Override
@@ -1290,8 +1281,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				+ ((conditions == null) ? 0 : conditions.hashCode());
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((dbType == null) ? 0 : dbType.hashCode());
-		result = prime * result
-				+ ((defaultDS == null) ? 0 : defaultDS.hashCode());
+//		result = prime * result
+//				+ ((defaultDS == null) ? 0 : defaultDS.hashCode());
 		result = prime * result
 				+ ((deferSet == null) ? 0 : deferSet.hashCode());
 		result = prime * result + (distinct ? 1231 : 1237);

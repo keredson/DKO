@@ -981,17 +981,18 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					join.type = "left outer join";
 					join.fk  = field;
 					q.joinsToMany.add(join);
-					if (q.orderByFields == null) {
-						q.orderByDirections = new ArrayList<DIRECTION>();
-						q.orderByFields = new ArrayList<Field<?>>();
-					}
-					final PK pk = Util.getPK(reffedClass);
-					final List<Field<?>> fields = pk==null ? Util.getFIELDS(reffedClass) : pk.GET_FIELDS();
-					for (final Field<?> f : fields) {
-						if (q.orderByFields.contains(f)) continue;
-						q.orderByFields.add(f);
-						q.orderByDirections.add(ASCENDING);
-					}
+					// i don't think this ordering is necessary...
+//					if (q.orderByFields == null) {
+//						q.orderByDirections = new ArrayList<DIRECTION>();
+//						q.orderByFields = new ArrayList<Field<?>>();
+//					}
+//					final PK pk = Util.getPK(reffedClass);
+//					final List<Field<?>> fields = pk==null ? Util.getFIELDS(reffedClass) : pk.GET_FIELDS();
+//					for (final Field<?> f : fields) {
+//						if (q.orderByFields.contains(f)) continue;
+//						q.orderByFields.add(f);
+//						q.orderByDirections.add(ASCENDING);
+//					}
 				} else {
 					throw new IllegalArgumentException("you have a break in your FK chain");
 				}

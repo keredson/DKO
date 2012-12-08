@@ -411,7 +411,7 @@ class Select<T extends Table> implements Iterator<T> {
 		}
 		if (shouldCloseConnection) {
 			try {
-				conn.close();
+				if (conn!=null && !conn.isClosed()) conn.close();
 			} catch (final SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

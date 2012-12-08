@@ -8,9 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -19,15 +17,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
@@ -35,9 +29,7 @@ import javax.sql.DataSource;
 
 import org.kered.dko.DBQuery.JoinInfo;
 import org.kered.dko.Field.FK;
-import org.kered.dko.Tuple.Tuple2;
 import org.kered.dko.Tuple.Tuple3;
-import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.dko.json.JSONException;
 import org.kered.dko.json.JSONObject;
 import org.kered.dko.persistence.QuerySize;
@@ -570,63 +562,69 @@ class UsageMonitor<T extends Table> {
 	}
 
 	public void iteratorIsDone() {
-	    saveSizeOfQuery();
+		saveSizeOfQuery();
 	}
 
 	private final static BlockingQueue<UsageMonitor> querySizes = new LinkedBlockingQueue<UsageMonitor>();
+
 	private void saveSizeOfQuery() {
-	    if (this.queryType.getPackage().getName().startsWith("org.kered.dko")) return;
-	    querySizes.add(this);
-	    System.err.println("saveSizeOfQuery");
+		if (this.queryType.getPackage().getName().startsWith("org.kered.dko"))
+			return;
+		querySizes.add(this);
 	}
 
 	static Thread saveQuerySizes = new Thread() {
-	    DataSource ds = org.kered.dko.persistence.Util.getDS();
-	    @Override
-	    public void run() {
-		while (true) {
-		    System.err.println("saveQuerySizes");
-		    try {
-			final UsageMonitor um = querySizes.take();
-			System.err.println("found one!!!");
-			//final int id = Math.abs(um.queryHashCode);
-			final int id = um.queryHashCode;
-			final QuerySize qs = QuerySize.ALL.use(ds).get(QuerySize.ID.eq(id));
-			//if (qs!=null && qs.getHashCode()!=hash) {
-			//    qs = QuerySize.ALL.get(QuerySize.HASH_CODE.eq(hash));
-			//}
-			if (qs==null) {
-			    new QuerySize()
-			    	.setId(id)
-			    	.setHashCode(um.queryHashCode)
-			    	.setSchemaName(Util.getSCHEMA_NAME(um.queryType))
-			    	.setTableName(Util.getTABLE_NAME(um.queryType))
-			    	.setRowCount(um.rowCount)
-			    	.insert(ds);
-			} else {
-			    qs.setRowCount(ma(um.rowCount, qs.getRowCount()));
-			    qs.update(ds);
+		DataSource ds = org.kered.dko.persistence.Util.getDS();
+
+		@Override
+		public void run() {
+			if (ds==null) {
+				log.warning("could not load usage monitor datasource - not collection perf info");
+				return;
 			}
-			System.err.println(".. done w/ it");
-		    } catch (final InterruptedException e) {
-			e.printStackTrace();
-		    } catch (final SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-		    System.err.println("saveQuerySizes done");
+			while (true) {
+				try {
+					final UsageMonitor um = querySizes.take();
+					// final int id = Math.abs(um.queryHashCode);
+					final int id = um.queryHashCode;
+					final QuerySize qs = QuerySize.ALL.use(ds).get(
+							QuerySize.ID.eq(id));
+					// if (qs!=null && qs.getHashCode()!=hash) {
+					// qs = QuerySize.ALL.get(QuerySize.HASH_CODE.eq(hash));
+					// }
+					if (qs == null) {
+						new QuerySize()
+								.setId(id)
+								.setHashCode(um.queryHashCode)
+								.setSchemaName(
+										Util.getSCHEMA_NAME(um.queryType))
+								.setTableName(Util.getTABLE_NAME(um.queryType))
+								.setRowCount(um.rowCount).insert(ds);
+					} else {
+						qs.setRowCount(ma(um.rowCount, qs.getRowCount()));
+						qs.update(ds);
+					}
+				} catch (final InterruptedException e) {
+					e.printStackTrace();
+				} catch (final SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
-	    }
-	    private long ma(Long a, Long b) {
-		final int MA = 5;
-		if (a==null) a = 0l;
-		if (b==null) b = 0l;
-		return (a + (MA-1)*b)/MA;
-	    }
+
+		private long ma(Long a, Long b) {
+			final int MA = 5;
+			if (a == null)
+				a = 0l;
+			if (b == null)
+				b = 0l;
+			return (a + (MA - 1) * b) / MA;
+		}
 	};
 	static {
-	    saveQuerySizes.setDaemon(true);
-	    saveQuerySizes.start();
+		saveQuerySizes.setDaemon(true);
+		saveQuerySizes.start();
 	}
 
 }

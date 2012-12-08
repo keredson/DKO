@@ -154,6 +154,12 @@ class Select<T extends Table> implements Iterator<T> {
 		} catch (final SQLException e) {
 			log.severe(sql + "\n => " + e.getMessage());
 			e.printStackTrace();
+			try {
+				if (conn!=null && !conn.isClosed()) conn.close();
+			} catch (final SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new RuntimeException(e);
 		} catch (final SecurityException e) {
 			e.printStackTrace();

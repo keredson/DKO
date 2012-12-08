@@ -37,6 +37,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	/**
 	 * @deprecated Use {@link #asIterableOf(Field<S>)} instead
 	 */
+	@Deprecated
 	@Override
 	public <S> Iterable<S> select(final Field<S> field) {
 		return this.asIterableOf(field);
@@ -153,6 +154,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	/**
 	 * @deprecated Use {@link #collectBy(Field<S>)} instead
 	 */
+	@Deprecated
 	@Override
 	public <S> Map<S, Collection<T>> multiMapBy(final Field<S> byField)
 			throws SQLException {
@@ -294,6 +296,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 //		return intersection(set);
 //	}
 
+	@Override
 	public Query<T> in(final T... ts) {
 		final List<T> set = new ArrayList<T>();
 		for (final T t : ts) {
@@ -483,6 +486,23 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S extends Table> Query<T> innerJoin(final __Alias<S> table, final Condition on) {
 		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+	}
+
+	@Override
+	public Query<T> exclude(final Condition... conditions) {
+	    final Condition[] where = new Condition[conditions.length];
+	    for (int i=0; i<conditions.length; ++i) where[i] = conditions[i].not();
+	    return this.where(where);
+	}
+
+	@Override
+	public <S> Iterable<S> asIterableOf(final Field<S> field) {
+		return new SelectSingleColumn<S>(this, field);
+	}
+
+	@Override
+	public Condition exists() {
+		return new Condition.Exists(this);
 	}
 
 }

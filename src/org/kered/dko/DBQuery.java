@@ -724,14 +724,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					final String tableName = bind ? ti.tableName : null;
 					for (final Field<?> other : onlySet) {
 						for (final Field<?> field : Util.getFIELDS(ti.tableClass)) {
-							if (field == other && ti.nameAutogenned) {
-								fields.add(bind ? field.from(tableName) : field);
+							if (field.sameField(other) && ti.nameAutogenned) {
+								fields.add(bind ? other.from(tableName) : other);
 								++c;
 								continue;
 							}
 							if (other.isBound() && other.boundTable.equals(ti.tableName)
 									&& field.sameField(other)) {
-								fields.add(bind ? field.from(tableName) : field);
+								fields.add(bind ? other.from(tableName) : other);
 								++c;
 								continue;
 							}
@@ -1215,21 +1215,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Condition exists() {
-		return new Condition.Exists(this);
-	}
-
-	@Override
 	public DataSource getDataSource() {
 		if (ds != null) return ds;
 		final DataSource ds = Context.getDataSource(ofType);
 		if (ds != null) return ds;
 		return getDefaultDataSource();
-	}
-
-	@Override
-	public <S> Iterable<S> asIterableOf(final Field<S> field) {
-		return new SelectSingleColumn<S>(this, field);
 	}
 
 	@Override
@@ -1298,8 +1288,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				+ ((conditions == null) ? 0 : conditions.hashCode());
 		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + ((dbType == null) ? 0 : dbType.hashCode());
-		result = prime * result
-				+ ((defaultDS == null) ? 0 : defaultDS.hashCode());
+//		result = prime * result
+//				+ ((defaultDS == null) ? 0 : defaultDS.hashCode());
 		result = prime * result
 				+ ((deferSet == null) ? 0 : deferSet.hashCode());
 		result = prime * result + (distinct ? 1231 : 1237);

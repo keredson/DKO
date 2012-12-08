@@ -170,6 +170,7 @@ public abstract class Condition {
 	 * always true
 	 */
 	public static final Condition TRUE = new Condition() {
+		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" 1=1");
 		}
@@ -183,6 +184,7 @@ public abstract class Condition {
 	 * always false
 	 */
 	public static final Condition FALSE = new Condition() {
+		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(" 1=0");
 		}
@@ -772,9 +774,10 @@ public abstract class Condition {
 		private final Query<? extends Table> q;
 		private final Select<?> s;
 
-		<T extends Table> Exists(final DBQuery<T> q) {
+		<T extends Table> Exists(final Query<T> q) {
 			this.q = q;
-			this.s = new Select<T>(q);
+			if (q instanceof DBQuery) this.s = new Select<T>((DBQuery<T>) q);
+			else s = null;
 		}
 
 		@Override
@@ -794,13 +797,14 @@ public abstract class Condition {
 
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
-			sb.append(" exists (");
-			final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
-			innerContext.dbType = context==null ? null : context.dbType;
-			final Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
-			sb.append(ret.a);
-			bindings.addAll(ret.b);
-			sb.append(")");
+		    if (s==null) throw new RuntimeException("Qsing a non-db query as a subquery of a db-query is not supported.");
+		    sb.append(" exists (");
+		    final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
+		    innerContext.dbType = context==null ? null : context.dbType;
+		    final Tuple2<String, List<Object>> ret = s.getSQL(innerContext);
+		    sb.append(ret.a);
+		    bindings.addAll(ret.b);
+		    sb.append(")");
 		}
 
 	}

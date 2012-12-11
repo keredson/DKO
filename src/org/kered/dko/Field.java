@@ -1,6 +1,7 @@
 package org.kered.dko;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -853,6 +854,56 @@ public class Field<T> implements Cloneable {
 			return ret;
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + INDEX;
+			result = prime * result + Arrays.hashCode(REFERENCED_FIELDS);
+			result = prime * result + Arrays.hashCode(REFERENCING_FIELDS);
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result
+					+ ((referenced == null) ? 0 : referenced.getName().hashCode());
+			result = prime * result
+					+ ((referencing == null) ? 0 : referencing.getName().hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(final Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final FK other = (FK) obj;
+			if (INDEX != other.INDEX)
+				return false;
+			if (!Arrays.equals(REFERENCED_FIELDS, other.REFERENCED_FIELDS))
+				return false;
+			if (!Arrays.equals(REFERENCING_FIELDS, other.REFERENCING_FIELDS))
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			if (referenced == null) {
+				if (other.referenced != null)
+					return false;
+			} else if (!referenced.equals(other.referenced))
+				return false;
+			if (referencing == null) {
+				if (other.referencing != null)
+					return false;
+			} else if (!referencing.equals(other.referencing))
+				return false;
+			return true;
+		}
+
+
+
 	}
 
 	/**
@@ -994,5 +1045,80 @@ public class Field<T> implements Cloneable {
 			return false;
 		return true;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + INDEX;
+		result = prime * result
+				+ ((JAVA_NAME == null) ? 0 : JAVA_NAME.hashCode());
+		result = prime * result + ((NAME == null) ? 0 : NAME.hashCode());
+		result = prime * result
+				+ ((SQL_TYPE == null) ? 0 : SQL_TYPE.hashCode());
+		result = prime * result + ((TABLE == null) ? 0 : TABLE.getName().hashCode());
+		result = prime * result + ((TYPE == null) ? 0 : TYPE.getName().hashCode());
+		result = prime * result
+				+ ((boundTable == null) ? 0 : boundTable.hashCode());
+		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
+		result = prime * result + ((unBound == null) ? 0 : unBound.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Field other = (Field) obj;
+		if (INDEX != other.INDEX)
+			return false;
+		if (JAVA_NAME == null) {
+			if (other.JAVA_NAME != null)
+				return false;
+		} else if (!JAVA_NAME.equals(other.JAVA_NAME))
+			return false;
+		if (NAME == null) {
+			if (other.NAME != null)
+				return false;
+		} else if (!NAME.equals(other.NAME))
+			return false;
+		if (SQL_TYPE == null) {
+			if (other.SQL_TYPE != null)
+				return false;
+		} else if (!SQL_TYPE.equals(other.SQL_TYPE))
+			return false;
+		if (TABLE == null) {
+			if (other.TABLE != null)
+				return false;
+		} else if (!TABLE.equals(other.TABLE))
+			return false;
+		if (TYPE == null) {
+			if (other.TYPE != null)
+				return false;
+		} else if (!TYPE.equals(other.TYPE))
+			return false;
+		if (boundTable == null) {
+			if (other.boundTable != null)
+				return false;
+		} else if (!boundTable.equals(other.boundTable))
+			return false;
+		if (tags == null) {
+			if (other.tags != null)
+				return false;
+		} else if (!tags.equals(other.tags))
+			return false;
+		if (unBound == null) {
+			if (other.unBound != null)
+				return false;
+		} else if (!unBound.equals(other.unBound))
+			return false;
+		return true;
+	}
+
+
 
 }

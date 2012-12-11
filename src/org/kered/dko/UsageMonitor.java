@@ -516,6 +516,15 @@ class UsageMonitor<T extends Table> {
 					log.warning("Could not write the performace cache file '"+ PERF_CACHE.getPath()
 							+"':"+ e.getMessage());
 				}
+		    	while (querySizes.size() > 0) {
+		    		System.out.println("waiting for querySizes.size()==0: "+ querySizes.size());
+		    		try {
+						Thread.sleep(200);
+					} catch (final InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
 		    }
 		});
 	}
@@ -577,7 +586,6 @@ class UsageMonitor<T extends Table> {
 	private void saveSizeOfQuery() {
 	    if (this.queryType.getPackage().getName().startsWith("org.kered.dko")) return;
 	    querySizes.add(this);
-	    System.err.println("saveSizeOfQuery");
 	}
 
 	static Thread saveQuerySizes = new Thread() {
@@ -585,10 +593,9 @@ class UsageMonitor<T extends Table> {
 	    @Override
 	    public void run() {
 		while (true) {
-		    System.err.println("saveQuerySizes");
 		    try {
 			final UsageMonitor um = querySizes.take();
-			System.err.println("found one!!!");
+			System.err.println("found one!!! "+ um.queryHashCode);
 			//final int id = Math.abs(um.queryHashCode);
 			final int id = um.queryHashCode;
 			final QuerySize qs = QuerySize.ALL.use(ds).get(QuerySize.ID.eq(id));
@@ -602,19 +609,20 @@ class UsageMonitor<T extends Table> {
 			    	.setSchemaName(Util.getSCHEMA_NAME(um.queryType))
 			    	.setTableName(Util.getTABLE_NAME(um.queryType))
 			    	.setRowCount(um.rowCount)
+			    	.setLastSeen(System.currentTimeMillis())
 			    	.insert(ds);
 			} else {
 			    qs.setRowCount(ma(um.rowCount, qs.getRowCount()));
+			    qs.setLastSeen(System.currentTimeMillis());
 			    qs.update(ds);
 			}
-			System.err.println(".. done w/ it");
+			System.err.println(".. done w/ it "+ um.queryHashCode);
 		    } catch (final InterruptedException e) {
 			e.printStackTrace();
 		    } catch (final SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		    }
-		    System.err.println("saveQuerySizes done");
 		}
 	    }
 	    private long ma(Long a, Long b) {

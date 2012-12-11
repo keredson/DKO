@@ -402,9 +402,24 @@ class Util {
 	    return d1==null ? d2==null : d1.equals(d2);
 	}
 
-	private static DataSource getDefaultDataSource(final __Alias<?> t2) {
-	    // TODO Auto-generated method stub
-	    return null;
+	static boolean sameDataSource(final Query q, final Class t) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(q));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
+	static boolean sameDataSource(final Query q, final __Alias t) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(q));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
+	private static DataSource getDefaultDataSource(final Query q) {
+		return q.getDataSource();
+	}
+
+	private static DataSource getDefaultDataSource(final __Alias<?> alias) {
+	    return getDefaultDataSource(alias.table);
 	}
 
 	private static DataSource getBaseDataSource(DataSource ds) {

@@ -15,7 +15,7 @@ import org.kered.dko.datasource.SingleThreadedDataSource;
 
 public class Util {
 
-    static final String CREATE = "CREATE TABLE query_size (schema_name TEXT, table_name TEXT, id INTEGER PRIMARY KEY, hash_code int, row_count bigint)";
+    static final String CREATE = "CREATE TABLE query_size (last_seen BIGINT, schema_name TEXT, table_name TEXT, id INTEGER PRIMARY KEY, hash_code int, row_count bigint);";
 
     static DataSource ds = null;
     public static DataSource getDS() {

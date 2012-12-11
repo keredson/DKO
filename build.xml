@@ -43,6 +43,7 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
     <mkdir dir="bin_test"/>
+    <mkdir dir="gen/joinsrc"/>
     <exec executable="hg" outputproperty="hg_id">
         <arg value="id"/>
         <arg value="-i"/>
@@ -83,6 +84,7 @@ public class BuildInfo {
       debug="true"
       javaoutputdir="gen/joinsrc"
       schemas="src/db/persistence_schema.json"
+      datasource="ds = org.kered.dko.persistence.Util.getDS();"
     /><!-- datasource="ds = org.kered.dko.persistence.Util.getDS();" -->
     <javac destdir="${build}" debug="on" target="1.6" source="1.6">
         <src path="${src}"/>

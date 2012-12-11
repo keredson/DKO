@@ -57,6 +57,7 @@ class JoinGenerator {
 		w.write("package org.kered.dko;\n\n");
 		w.write("import java.sql.SQLException;\n");
 		w.write("import java.util.ArrayList;\n");
+		w.write("import java.util.Collection;\n");
 		w.write("import java.util.Collections;\n");
 		w.write("import java.util.List;\n");
 		w.write("import javax.sql.DataSource;\n");
@@ -70,6 +71,8 @@ class JoinGenerator {
 
 		w.write("\tstatic abstract class J extends Table {\n");
 		w.write("\t\tList<Class<?>> types = null;\n");
+		w.write("\t\tCollection<Field<?>> fields = null;\n");
+		w.write("\t\tabstract void populateObjectArray(Object[] oa, int i);\n");
 		w.write("\t}\n");
 
 		for (int i=2; i<=n; ++i) {
@@ -114,7 +117,11 @@ class JoinGenerator {
 					w.write(">> "+ joinType + i +"(final Query<T"+ (i-1) +"> q, "+ inputType +"<T"+ i +"> t");
 					if (!"cross".equals(joinType)) w.write(", Condition on");
 					w.write(") {\n");
-					w.write("\t\treturn new _"+ r +"_Query2<T1, T2>(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+					w.write("\t\tif (Util.sameDataSource(q, t)) {\n");
+					w.write("\t\t\treturn new _"+ r +"_Query2<T1, T2>(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+					w.write("\t\t} else {\n");
+					w.write("\t\t\treturn new SoftJoin("+ joinTypeToConstant(joinType) +", J2.class, q, t, "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+					w.write("\t\t}\n");
 					w.write("\t}\n");
 				} else {
 					writeJoinJavadoc(w, i, tTypes);
@@ -123,7 +130,11 @@ class JoinGenerator {
 					w.write(">> q, "+ inputType +"<T"+ i +"> t");
 					if (!"cross".equals(joinType)) w.write(", Condition on");
 					w.write(") {\n");
-					w.write("\t\treturn new _"+ r +"_Query"+ i +"<"+ tTypes +">(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+					w.write("\t\tif (Util.sameDataSource(q, t)) {\n");
+					w.write("\t\t\treturn new _"+ r +"_Query"+ i +"<"+ tTypes +">(q, t, \""+ joinType +" join\", "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+					w.write("\t\t} else {\n");
+					w.write("\t\t\treturn new SoftJoin("+ joinTypeToConstant(joinType) +", J"+ i +".class, q, t, "+ ("cross".equals(joinType) ? "null" : "on") +");\n");
+					w.write("\t\t}\n");
 					w.write("\t}\n");
 				}
 			}
@@ -165,6 +176,21 @@ class JoinGenerator {
 		for (int j=1; j<=i; ++j) {
 			w.write("\t\t\tt"+ j +" = (T"+ j +") oa[offset+"+ (j-1) +"];\n");
 		}
+		w.write("\t\t\tthis.fields = null;\n");
+		w.write("\t\t}\n");
+
+		w.write("\t\t@SuppressWarnings(\"unchecked\")\n");
+		w.write("\t\tJ"+ i +"(final Object[] oa, final int offset, Collection<Field<?>> fields) {\n");
+		for (int j=1; j<=i; ++j) {
+			w.write("\t\t\tt"+ j +" = (T"+ j +") oa[offset+"+ (j-1) +"];\n");
+		}
+		w.write("\t\t\tthis.fields = fields;\n");
+		w.write("\t\t}\n");
+
+		w.write("\t\tvoid populateObjectArray(Object[] oa, int i){\n");
+		for (int j=1; j<=i; ++j) {
+			w.write("\t\t\toa[i+"+ (j-1) +"] = t"+ j +";\n");
+		}
 		w.write("\t\t}\n");
 
 		w.write("\t\t@Override\n");
@@ -191,7 +217,7 @@ class JoinGenerator {
 		w.write("\t\tpublic List<Field<?>> fields() {\n");
 		w.write("\t\t\tList<Field<?>> fields = new ArrayList<Field<?>>();\n");
 		for (int j=1; j<=i; ++j) {
-			w.write("\t\t\tfields.addAll(t"+ j +".fields());\n");
+			w.write("\t\t\tif (t"+ j +"!=null) fields.addAll(t"+ j +".fields());\n");
 		}
 		w.write("\t\t\tfields = Collections.unmodifiableList(fields);\n");
 		w.write("\t\t\treturn fields;\n");
@@ -207,9 +233,12 @@ class JoinGenerator {
 		w.write("\t\t@Override\n");
 		w.write("\t\tpublic <S> S get(final Field<S> field) {\n");
 		for (int j=1; j<=i; ++j) {
-			w.write("\t\t\ttry { return t"+ j +".get(field); }\n");
-			w.write("\t\t\tcatch (final IllegalArgumentException e) { /* ignore */ }\n");
+			w.write("\t\t\tif (t"+ j +"!=null) {\n");
+			w.write("\t\t\t\ttry { return t"+ j +".get(field); }\n");
+			w.write("\t\t\t\tcatch (final IllegalArgumentException e) { /* ignore */ }\n");
+			w.write("\t\t\t}\n");
 		}
+		w.write("\t\t\tif (fields.contains(field)) return null;\n");
 		w.write("\t\t\tthrow new IllegalArgumentException(\"unknown field \"+ field);\n");
 		w.write("\t\t}\n");
 
@@ -219,6 +248,7 @@ class JoinGenerator {
 			w.write("\t\t\ttry { t"+ j +".set(field, value); return; }\n");
 			w.write("\t\t\tcatch (final IllegalArgumentException e) { /* ignore */ }\n");
 		}
+		w.write("\t\t\tif (fields!=null && fields.contains(field)) throw new RuntimeException(\"you can't set this field because the joined object is null (some join types can return nulls from the database): \"+ field);;\n");
 		w.write("\t\t\tthrow new IllegalArgumentException(\"unknown field \"+ field);\n");
 		w.write("\t\t}\n");
 

@@ -904,7 +904,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				names.add(fullTableName +" "+ ti.tableName);
 			}
 		}
-		System.err.println(names);
+		//System.err.println(names);
 		return names;
 	}
 

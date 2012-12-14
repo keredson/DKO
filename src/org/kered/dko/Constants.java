@@ -103,6 +103,11 @@ public class Constants {
 				return MYSQL;
 			}
 
+			if (className.contains("org.sqlite")) {
+				cache.put(ds, SQLITE3);
+				return SQLITE3;
+			}
+
 			// attempt to detect from a connection
 			Connection conn = null;
 			try {

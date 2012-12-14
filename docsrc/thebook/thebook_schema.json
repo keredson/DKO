@@ -1,0 +1,50 @@
+{
+    "version": [
+        0,
+        2,
+        0
+    ],
+    "schemas": {"": {
+        "patient": {
+            "id": "integer",
+            "since": "date",
+            "person_id": "integer",
+            "primary_doctor_id": "integer"
+        },
+        "person": {
+            "id": "integer",
+            "first_name": "text",
+            "last_name": "text",
+            "birth_date": "date",
+            "ssn": "text"
+        },
+        "doctor": {
+            "id": "integer",
+            "primary_office_id": "integer"
+        },
+        "office": {
+            "id": "integer",
+            "address1": "text",
+            "address2": "text",
+            "city": "text",
+            "state": "text",
+            "postal_code": "text"
+        },
+        "appointment": {
+            "id": "integer",
+            "patient_id": "integer",
+            "doctor_id": "integer",
+            "office_id": "integer",
+            "start": "datetime",
+            "end": "datetime"
+        }
+    }},
+    "primary_keys": {"": {
+        "patient": ["id"],
+        "person": ["id"],
+        "doctor": ["id"],
+        "office": ["id"],
+        "appointment": ["id"]
+    }},
+    "foreign_keys": {}
+}

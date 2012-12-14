@@ -8,6 +8,7 @@
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
   <property name="build" location="bin"/>
+  <property name="gen" location="gen"/>
   <property name="dist"  location="dist"/>
   <property name="reports"  location="reports"/>
 
@@ -43,7 +44,9 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
     <mkdir dir="bin_test"/>
-    <mkdir dir="gen/joinsrc"/>
+    <mkdir dir="${gen}/joinsrc"/>
+    <mkdir dir="${gen}/docbook"/>
+    <mkdir dir="${reports}"/>
     <exec executable="hg" outputproperty="hg_id">
         <arg value="id"/>
         <arg value="-i"/>
@@ -79,8 +82,8 @@ public class BuildInfo {
 	public static final String DESCRIPTION = "DKO "+ HG_TAG +" ("+ HG_ID +")";
 }
     </echo>
-    <taskdef name="noscogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${build}"/>
-    <noscogen package="org.kered.dko.persistence" 
+    <taskdef name="dkogenbootstrap" classname="org.kered.dko.ant.CodeGenerator" classpath="${build}"/>
+    <dkogenbootstrap package="org.kered.dko.persistence" 
       debug="true"
       javaoutputdir="gen/joinsrc"
       schemas="src/db/persistence_schema.json"
@@ -120,17 +123,74 @@ public class BuildInfo {
     <delete dir="lib"/>
     <delete dir="${dist}"/>
     <delete dir="gensrc"/>
-    <delete dir="gen"/>
+    <delete dir="${gen}"/>
     <delete dir="bin_test"/>
     <delete dir="reports"/>
   </target>
 
 
+  <!-- ========[ END BASIC DEVELOPMENT TASKS ]======== -->
+
+
+  <!-- ========[ BEGIN DOCUMENTATION TASKS ]======== -->
+
+
   <target name="doc" description="generate documentation" depends="javadoc, docbook">
   </target>
 
-  
-  <target name="docbook" description="generate docbook">
+
+  <target name="extract-thebook-schema" depends="init">
+    <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_sqlite_jar}"/>
+    <noscoextractschema
+    	url="jdbc:sqlite:docsrc/thebook/thebook.db"
+    	username="sa"
+    	password=""
+    	out="docsrc/thebook/thebook_schema.json"
+    />
+  </target>
+
+
+  <target name="docbook" description="generate docbook" depends="init">
+    <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <dkogen package="org.kered.docbook" 
+      debug="true"
+      javaoutputdir="${gen}/docbook"
+      schemas="docsrc/thebook/thebook_schema.json"
+      datasource="ds = test.DefaultDataSource.get();"
+    />
+    <javac srcdir="test/docbook:gen/docbook" destdir="bin" debug="on" 
+    	classpath="${lib_nosco_jar}:${dep_sqlite_jar}"
+   	/>
+    <copy todir="bin">
+      <fileset file="docsrc/thebook/thebook.db"/>
+    </copy>
+    <junit printsummary="yes" haltonfailure="yes" fork="yes">
+      <classpath>
+        <pathelement location="bin"/>
+        <pathelement location="${lib_nosco_jar}"/>
+        <pathelement location="${dep_junit_jar}"/>
+        <pathelement location="${dep_sqlite_jar}"/>
+      </classpath>
+      <!--jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/-->
+      <jvmarg value="-Dorg.nosco.log_sql=true"/>
+      <jvmarg value="-Djava.util.logging.config.file=test/logging.properties"/>
+      <formatter type="plain"/>
+      <batchtest fork="yes" todir="${reports}">
+        <fileset dir="test/docbook">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <exec executable="python">
+      <arg value="docsrc/thebook/extract_examples.py"/>
+    </exec>
+    <exec executable="db2html">
+      <arg value="-u"/>
+      <arg value="-o"/>
+      <arg value="doc/dkos-the-book"/>
+      <arg value="docsrc/thebook/dkos-the-book.xml"/>
+    </exec>
     <exec executable="db2html">
       <arg value="-o"/>
       <arg value="doc/dkos-the-book"/>
@@ -140,7 +200,13 @@ public class BuildInfo {
     <move todir="doc/dkos-the-book">
       <fileset dir="docsrc/thebook/dkos-the-book"/>
     </move>
+    <copy todir="doc/dkos-the-book">
+      <fileset file="docsrc/thebook/*.png"/>
+      <fileset file="docsrc/thebook/*.svg"/>
+    </copy>
   </target>
+
+
 
   
   <target name="javadoc" description="generate javadoc" >
@@ -168,7 +234,7 @@ public class BuildInfo {
     </javadoc>
   </target>
 
-  <!-- ========[ END BASIC DEVELOPMENT TASKS ]======== -->
+  <!-- ========[ END DOCUMENTATION TASKS ]======== -->
 
 
   
@@ -195,8 +261,8 @@ public class BuildInfo {
   </target>
 
   <target name="unit-test-gen-src-hsql" depends="unit-test-extract-schema-hsql">
-    <taskdef name="noscogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
-    <noscogen package="org.nosco.unittest" 
+    <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <dkogen package="org.nosco.unittest" 
       debug="true"
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"
@@ -205,17 +271,16 @@ public class BuildInfo {
       aliases="public as nosco_test_jpetstore"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}"
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}"
    	/>
   </target>
 
   <target name="unit-test-hsql" depends="unit-test-gen-src-hsql">
     <javac srcdir="test/utest" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
-    <mkdir dir="${reports}"/>
     <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>
         <pathelement location="lib/test.jar"/>
@@ -264,8 +329,8 @@ public class BuildInfo {
   </target>
   
   <target name="unit-test-gen-src-mysql" depends="unit-test-extract-schema-mysql">
-    <taskdef name="noscogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
-    <noscogen package="org.kered.dko.unittest" 
+    <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <dkogen package="org.kered.dko.unittest" 
       debug="true"
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"
@@ -273,20 +338,19 @@ public class BuildInfo {
       callbackPackage="test.db.callback"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}"
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}"
    	/>
   </target>
 
   <target name="unit-test-build-mysql" depends="unit-test-gen-src-mysql">
     <javac srcdir="test/utest" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
   </target>
 
   <target name="unit-test-mysql" depends="unit-test-build-mysql">
-    <mkdir dir="${reports}"/>
     <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>
         <pathelement location="lib/test.jar"/>
@@ -312,7 +376,7 @@ public class BuildInfo {
 
   <target name="performance-test-mysql" depends="unit-test-build-mysql">
     <javac srcdir="test/performance" destdir="bin_test" debug="on" 
-    	classpath="examples/bugzilla/lib/noscogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
    	/>
     <java fork="yes" classname="performance.PetStoreMysql">
       <classpath>
@@ -330,7 +394,6 @@ public class BuildInfo {
     	classpath="${lib_nosco_jar}:${all_deps}"
     	includes="test/nosco/json/*.java"
    	/>
-    <mkdir dir="${reports}"/>
     <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>
         <pathelement path="bin_test"/>

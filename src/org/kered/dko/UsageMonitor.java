@@ -595,7 +595,7 @@ class UsageMonitor<T extends Table> {
 		while (true) {
 		    try {
 			final UsageMonitor um = querySizes.take();
-			System.err.println("found one!!! "+ um.queryHashCode);
+			//System.err.println("found one!!! "+ um.queryHashCode);
 			//final int id = Math.abs(um.queryHashCode);
 			final int id = um.queryHashCode;
 			final QuerySize qs = QuerySize.ALL.use(ds).get(QuerySize.ID.eq(id));
@@ -616,7 +616,7 @@ class UsageMonitor<T extends Table> {
 			    qs.setLastSeen(System.currentTimeMillis());
 			    qs.update(ds);
 			}
-			System.err.println(".. done w/ it "+ um.queryHashCode);
+			//System.err.println(".. done w/ it "+ um.queryHashCode);
 		    } catch (final InterruptedException e) {
 			e.printStackTrace();
 		    } catch (final SQLException e) {

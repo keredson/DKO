@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" [
+  <!ENTITY example1jva SYSTEM "../../gen/docbook/example1.jva">
+  <!ENTITY example1out SYSTEM "../../gen/docbook/example1.out">
+]>
 
 <book>
   <title>DKOs - The Book</title>
@@ -8,13 +11,15 @@
     <title>Introduction</title>
     <section>
       <title>Should You Read This?</title>
+      <para>TODO: STUB</para>
       <para>target audience</para>
     </section>
     <section>
       <title>Problems with Traditional ORMs</title>
+      <para>TODO: STUB</para>
       <para>string concat == bad</para>
       <para>leads to db code isolation</para>
-      <para>“isolated” code grows to be large part of your project</para>
+      <para>"isolated" code grows to be large part of your project</para>
       <para>or people use getAll() methods</para>
       <para>always select * from...</para>
       <para>xml configuration nightmare</para>
@@ -22,12 +27,14 @@
     </section>
     <section>
       <title>Principles Behind DKOs</title>
+      <para>TODO: STUB</para>
       <para>embrace sql</para>
       <para>all compile-time checked</para>
       <para>ORM mappings always 1-to-1</para>
     </section>
     <section>
       <title>Precursors to DKOs</title>
+      <para>TODO: STUB</para>
       <para>django query api</para>
       <para>apache torque</para>
     </section>
@@ -37,14 +44,17 @@
     <title>Setting Up DKOs</title>
     <section>
       <title>Overview</title>
+      <para>TODO: STUB</para>
       <para>ant-only</para>
     </section>
     <section>
       <title>Extracting Your Database Schema</title>
+      <para>TODO: STUB</para>
       <para>enums.json</para>
     </section>
     <section>
       <title>Generating Classes</title>
+      <para>TODO: STUB</para>
       <para>type_mappings.json</para>
       <para>fake_fks.json</para>
       <para>default datasource</para>
@@ -57,16 +67,261 @@
     <title>Table Models</title>
     <section>
       <title>Overview</title>
+      <para>Table classes serve two purposes in DKOs.  First they model the database table itself.  And second they model the rows in the table.  This may seem odd at first.  Why would we not use two different classes to model the table and the row?  (In fact this is done in every other ORM I've seen)  But I think this adds unnecessary complexity to the framework when you consider that tables and their rows are in reality so closely intertwined as to be nearly inseparable.  And when you consider than another method of bifurcating is available:  The "static" modifier.</para>
+      <para>In a generated table class (by convention) everything that is a static method or variable is applicable to the database table, where everything that is not static applies to the row.  Let's take a look at an example:</para>
+      <programlisting language="java"><![CDATA[public class Person extends Table {
+
+	public static final Query<Person> ALL = [...];
+
+	public static final Field<Integer> ID = [...];
+	public static final Field<String>  FIRST_NAME = [...];
+	public static final Field<String>  LAST_NAME = [...];
+	public static final Field<Date>    BIRTH_DATE = [...];
+	public static final Field<String>  SSN = [...];
+
+	public Integer getId() {}
+	public String getFirstName() {}
+	public String getLastName() {}
+	public Date getBirthDate() {}
+	public java.lang.String getSsn() {}
+
+}]]></programlisting>
+      <para>You can clearly see the columns of the table are all static constants (useful for building database queries), where an instance of the class Person would have getter methods for the values in a specific row.</para>
+      <para></para>
+      <programlisting language="java"><![CDATA[]]></programlisting>
+      <para></para>
     </section>
     <section>
       <title>Fields</title>
+      <para>Fields represent database columns.  All table classes have at least one public static field instance.  They are immutable and contain basic information about the database column they reflect (such as their type in SQL, their type in Java, the column name, what table they're a part of, etc.)  You will likely never construct one but they are one of the most important parts of the DKO library.  This is because fields are how you construct conditionals.  For instance, let's assume the following SQL query:</para>
+      <programlisting language="sql"><![CDATA[select * from PERSON where FIRST_NAME='Derek';]]></programlisting>
+      <para>The where clause of this query is a simple equality condition.  To create a DKO representation of this condition you would use the following:</para>
+      <programlisting language="sql"><![CDATA[Condition condition = Person.FIRST_NAME.eq("Derek");]]></programlisting>
+      <para>This condition object could then be passed into the where method on a query.  For Example:</para>
+      <programlisting language="sql"><![CDATA[Query<Person> q = Person.ALL.where(condition);]]></programlisting>
+      <para>Of course this is such a small example you would probably do it all on one line:</para>
+      <programlisting language="sql"><![CDATA[Query<Person> q = Person.ALL.where(Person.FIRST_NAME.eq("Derek"));]]></programlisting>
+      <para>All normal SQL conditional statements have direct corollaries in DKO.  Here is a table of SQL to field method names:</para>
+      <table>
+      	<title>Field Methods vs. SQL Comparisons</title>
+      	<tgroup cols='3' align='left' colsep='2' rowsep='1'>
+          <thead>
+            <row>
+              <entry>Operation</entry>
+              <entry>SQL</entry>
+              <entry>Field Method</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Equal to</entry>
+              <entry>field = x</entry>
+              <entry>FIELD.eq(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Greater than</entry>
+              <entry>field &gt; x</entry>
+              <entry>FIELD.gt(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Less than</entry>
+              <entry>field &lt; x</entry>
+              <entry>FIELD.lt(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Greater than or equal to</entry>
+              <entry>field &gt;= x</entry>
+              <entry>FIELD.gte(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Less than or equal to</entry>
+              <entry>field &lt;= x</entry>
+              <entry>FIELD.lte(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Not equal to</entry>
+              <entry>field &lt;&gt; x</entry>
+              <entry>FIELD.neq(<emphasis>x</emphasis>)</entry>
+            </row>
+            <!--row>
+              <entry>And</entry>
+              <entry>field1=x and field2=y</entry>
+              <entry>FIELD1.eq(<emphasis>x</emphasis>).and(FIELD2.eq(<emphasis>y</emphasis>))</entry>
+            </row>
+            <row>
+              <entry>Or</entry>
+              <entry>field1=x or field2=y</entry>
+              <entry>FIELD1.eq(<emphasis>x</emphasis>).or(FIELD2.eq(<emphasis>y</emphasis>))</entry>
+            </row-->
+            <row>
+              <entry>Between</entry>
+              <entry>field between x and y</entry>
+              <entry>FIELD.between(<emphasis>x</emphasis>, <emphasis>y</emphasis>)</entry>
+            </row>
+          </tbody>
+		</tgroup>
+      </table>
+      <para>Math operations are also supported:</para>
+      <table>
+      	<title>Field Methods vs. SQL Math Operations</title>
+      	<tgroup cols='3' align='left' colsep='2' rowsep='1'>
+          <thead>
+            <row>
+              <entry>Operation</entry>
+              <entry>SQL</entry>
+              <entry>Field Method</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Addition</entry>
+              <entry>field + x</entry>
+              <entry>FIELD.add(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Subtraction</entry>
+              <entry>field - x</entry>
+              <entry>FIELD.sub(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Multiplication</entry>
+              <entry>field * x</entry>
+              <entry>FIELD.mul(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Division</entry>
+              <entry>field / x</entry>
+              <entry>FIELD.div(<emphasis>x</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>Modulus</entry>
+              <entry>field % x</entry>
+              <entry>FIELD.mod(<emphasis>x</emphasis>)</entry>
+            </row>
+          </tbody>
+		</tgroup>
+      </table>
+      <para>All of these field operations are not limited to constants of their type (such as Field&lt;String>.eq(String)).  They all also take other fields of compatible types (ie: Field&lt;String>.eq(Field&lt;String>)) or SQL function objects (which we'll discuss later).</para>
+      <para>All generated table classes also have a "public static List&lt;Field&lt;?>> _FIELDS" object that is an immutable list of all fields in the table.</para>
+      <para></para>
+      <para></para>
     </section>
     <section>
       <title>Instances</title>
+      <para>Instances of classes that extend Table represent the rows in that table.  For example, if I wanted to create a new row in the person table in our example schema, I would do something like this:</para>
+      <programlisting language="java"><![CDATA[Person person = new Person();
+person.setFirstName("Derek");
+person.setLastName("Anderson");
+boolean success = person.insert();]]></programlisting>
+      <para>Since all generated table objects follow a builder pattern, this would also be valid:</para>
+      <programlisting language="java"><![CDATA[boolean success = new Person()
+	.setFirstName("Derek")
+	.setLastName("Anderson")
+	.insert();]]></programlisting>
+      <para>Both of these statements would insert into the default DataSource defined when generating these classes.  If none provided, you would need to provide one when calling insert.  (This is also how you would change at run-time which database the insert went to, assuming you have multiple databases)</para>
+      <programlisting language="java"><![CDATA[DataSource ds = getSomeDataSource();
+boolean success = new Person()
+	.setFirstName("Derek")
+	.setLastName("Anderson")
+	.insert(ds);]]></programlisting>
+      <para>Since our example is hitting a SQLite3 database and this table has a auto-generated primary key "id", we can access the value by subsequently calling "person.getId()".</para>
+      <para>All of your normal database operations are available:</para>
+      <table>
+      	<title>Table Instance SQL Methods</title>
+      	<tgroup cols='3' align='left' colsep='2' rowsep='1'>
+          <thead>
+            <row>
+              <entry>SQL Operation</entry>
+              <entry>Instance Method</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>INSERT</entry>
+              <entry>person.insert();</entry>
+              <entry>Inserts the given row into the database.  All fields that have been set are inserted.  (None of the fields that haven't been set are, allowing for database defaults)  Throws a SQLException if the row already exists.</entry>
+            </row>
+            <row>
+              <entry>UPDATE</entry>
+              <entry>person.update();</entry>
+              <entry>Updates the row in the database.  (Throws a SQLException if it doesn't exist)  Only the fields that have changed are updated (ie: it doesn't clobber any other fields that might have changed in the database in the interim)</entry>
+            </row>
+            <row>
+              <entry>DELETE</entry>
+              <entry>person.delete();</entry>
+              <entry>Deletes the row in the database.  Throws a SQLException if it doesn't exist.</entry>
+            </row>
+            <row>
+              <entry>EXISTS</entry>
+              <entry>person.exists();</entry>
+              <entry>Returns true if this row already exists in the database.  If the table has a primary key defined, this is used for the check.  Otherwise all columns are used.</entry>
+            </row>
+            <row>
+              <entry>INSERT or UPDATE</entry>
+              <entry>person.save();</entry>
+              <entry>Automatically performs an insert or an update based on whether this row exists in the database already.</entry>
+            </row>
+          </tbody>
+		</tgroup>
+      </table>
+      <para>All of the above methods also have versions that take a specific DataSource.</para>
+      <para>All generated Table classes also have a generic "public &lt;T> get(Field&lt;T>)" method that will return the value associated with a given field.  Also they all have a "public List&lt;Field&lt;?>> fields()" that returns all the fields set or fetched for this specific instance.</para>
+      <para></para>
     </section>
     <section>
       <title>Foreign Keys</title>
-      <para>lazy loading</para>
+      <para>Foreign key relationships are a critical part of any database design and are automatically extracted and modeled in DKO-generated classes.  Let's look at our example schema:</para>
+      <mediaobject id="example_schema">
+        <imageobject>
+          <imagedata fileref="db.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Now let's look at the code generated for the appointment table:</para>
+      <programlisting language="java"><![CDATA[public class Appointment extends Table {
+
+	public static final Query<Appointment> ALL = [...];
+
+	public static final Field<Integer> ID = [...];
+	public static final Field<Integer> PATIENT_ID = [...];
+	public static final Field<Integer> DOCTOR_ID = [...];
+	public static final Field<Integer> OFFICE_ID = [...];
+	public static final Field<Date>    START = [...];
+	public static final Field<Date>    END = [...];
+	
+	public static final Field.FK<Patient> FK_PATIENT = [...];
+	public static final Field.FK<Doctor>  FK_DOCTOR = [...];
+	public static final Field.FK<Office>  FK_OFFICE = [...];
+
+	public Integer getId() {}
+	public Integer getPatientId() {}
+	public Integer getDoctorId() {}
+	public Integer getOfficeId() {}
+	public Date    getStart() {}
+	public Date    getEnd() {}
+
+	public Patient getPatientIdFK() {}
+	public Doctor  getDoctorIdFK() {}
+	public Office  getOfficeIdFK() {}
+	
+}]]></programlisting>
+      <para>You should recognize the static Field objects, but you'll also notice the static Field.FK objects.  These obviously represent the foreign key relationships extracted from the database.</para>
+      <para>You'll also note that for every foreign key defined, a "get*FK()" method is also created.  If you call "getDoctorId()" you will receive the integer value in the column.  But if you call "getDoctorIdFK()" you will receive a full-fledged Doctor object (itself containing all the values in a row of the doctor table).</para>
+      <para>If you're at the other end of the relationship you can still traverse the foreign key.  For example, look at this subset of the generated office class:</para>
+      <programlisting language="java"><![CDATA[public class Office extends Table {
+
+	public static final Query<Office> ALL = [...];
+
+	public static final Field<Integer> ID = [...];
+	public static final Field<String> ADDRESS1 = [...];
+	// etc
+	
+	public Query<Doctor>      getDoctorSet() {}
+	public Query<Appointment> getAppointmentSet() {}
+	
+}]]></programlisting>
+      <para>Two methods are added to let you retrieve the set of all doctors (or appointments) that reference this office instance.  These methods return full-fledged query objects that can be filtered or joined with other tables as needed.  (or simply turned into a list with "asList()")</para>
+      <para></para>
     </section>
   </chapter>
 
@@ -74,34 +329,70 @@
     <title>Queries</title>
     <section>
       <title>Overview</title>
+      <para>DKO Query objects are the primary entry point for almost all uses of DKO objects.  It's name is somewhat misleading because the Query interface covers not just SQL select statements but all normal CRUD operations.  Combining both read and write operations into one interface was done intentionally however, as they are also intricately linked in SQL.  (recall that one of the goals of DKO is to embrace SQL, not hide it)  And naming it a "Query" intentionally reflects the almost universal disproportionate weighting of reads over writes in most programming applications.</para>
+      <para>There are two important aspects of DKO queries I want to make special note of here:</para>
+      <para>The first is that queries are immutable.  They follow a builder pattern, but at every step they return a new object.  This allows you to mix and match queries in different sections of code without worry.  It's very common to save off a commonly used query somewhere and have multiple other sections of your application further refine it with additional conditionals, joins, etc.</para>
+      <para>The second is that they are all implementers of java.lang.Iterable.  This means they can be used in the new Java for-each loops, which is by far the most common way to access the rows in a table.  It also means that's it's easy to run a query more often than you intended.  Every time Query.iterator() is called a new connection to the database is made.  (recall that Iterables can be iterated over multiple times, where Iterators can only be iterated over once)  It is very difficult (some would say impossible) to write good "should I cache this?" code without making performance (and run-time results) unpredictable.  When designing DKOs I intentionally left caching up to the discretion of the programmer.  (And attempted to make it dead-simple, such as with the "Query.asList()" method)</para>
     </section>
     <section>
       <title>Hello World</title>
-      <para>.get()</para>
+      <para>Given our example schema and generated code defined so far, let's look at some simple examples.  For instance, printing out all the people in our database:</para>
+      <programlisting language="java">&example1jva;</programlisting>
+      <para>Will print the following:</para>
+      <programlisting language="java">&example1out;</programlisting>
+      <para>Take a look at the static constant "Person.ALL".  This is of type Query&lt;Person>, which is of type Iterable&lt;Person> (which is why you can use it in a for-each loop).  All generated DKO objects have this special (immutable) query object and it serves as the root source of all access to the person table in our database.</para>
+      <para>Note the line starting with "==>":  This is debug information (optionally) printed to stderr whenever the DKO library runs a query against the database.  For all of the examples in this book I will include these lines to help demonstrate when the DKO library is hitting the database and when it is not.</para>
+      <para>The default toString() method of a DKO object is the class name, the primary key of the table and any "important" fields.  Here "important" is defined by a heuristic that may change as the DKO library evolves, but currently is simply whether the field name contains the strings "name" or "title".  If you want all the fields of a DKO object there is a similar toStringDetailed() method on each class.</para>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
     </section>
     <section>
       <title>Conditions</title>
+      <para>TODO: STUB</para>
+      <para></para>
+    </section>
+    <section>
+      <title>The With Method</title>
+      <para>TODO: STUB</para>
+      <para>lazy loading</para>
+      <section>
+        <title>Lazy Loading vs. Pre-Fetching</title>
+        <para>TODO: STUB</para>
+        <para>lazy loading</para>
+      </section>
     </section>
     <section>
       <title>Aggregation Function</title>
+      <para>TODO: STUB</para>
+      <para></para>
     </section>
     <section>
       <title>Terminal vs. Non-terminal Methods</title>
+      <para>TODO: STUB</para>
       <para>immutable</para>
       <para>when is query run?</para>
     </section>
     <section>
       <title>Performance</title>
+      <para>TODO: STUB</para>
       <para>Streaming</para>
     </section>
     <section>
       <title>Inner Queries</title>
+      <para>TODO: STUB</para>
+      <para></para>
     </section>
     <section>
       <title>Temporary Tables</title>
+      <para>TODO: STUB</para>
+      <para></para>
     </section>
     <section>
       <title>Table Aliases</title>
+      <para>TODO: STUB</para>
+      <para></para>
     </section>
   </chapter>
 

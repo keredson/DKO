@@ -10,13 +10,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -28,7 +32,7 @@ import org.kered.dko.Field.FK;
 import org.kered.dko.Tuple.Tuple2;
 
 
-class Select<T extends Table> implements Iterator<T> {
+class Select<T extends Table> implements CleanableIterator<T> {
 
 	private static final int BATCH_SIZE = 2048;
 
@@ -120,7 +124,7 @@ class Select<T extends Table> implements Iterator<T> {
 
 			returnJoin = Join.J.class.isAssignableFrom(query.ofType);
 			if (returnJoin) {
-				joinConstructor = query.ofType.getDeclaredConstructor(new Object[0].getClass(), Integer.TYPE);
+				joinConstructor = query.ofType.getDeclaredConstructor(Object[].class, Integer.TYPE, Collection.class);
 				joinConstructor.setAccessible(true);
 			}
 
@@ -178,7 +182,8 @@ class Select<T extends Table> implements Iterator<T> {
 	}
 
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
-		selectedFields = toArray(query.getSelectFields(false));
+		final List<Field<?>> selectFieldsList = query.getSelectFields(false);
+		selectedFields = toArray(selectFieldsList);
 		if (this.usageMonitor!=null) {
 			this.usageMonitor.setSelectedFields(selectedFields);
 		}
@@ -402,7 +407,8 @@ class Select<T extends Table> implements Iterator<T> {
 //		return sb.toString();
 //	}
 
-	private void cleanUp() {
+	@Override
+	public synchronized void cleanUp() {
 		if (done) return;
 		try {
 			query._postExecute(context, conn);

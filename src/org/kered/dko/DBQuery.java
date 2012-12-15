@@ -904,7 +904,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				names.add(fullTableName +" "+ ti.tableName);
 			}
 		}
-		System.err.println(names);
+		//System.err.println(names);
 		return names;
 	}
 
@@ -1038,6 +1038,73 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			j.rType = rType;
 			return j;
 		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((condition == null) ? 0 : condition.hashCode());
+			result = prime * result + ((fk == null) ? 0 : fk.hashCode());
+			result = prime * result + ((lType == null) ? 0 : lType.getName().hashCode());
+			result = prime * result + ((rType == null) ? 0 : rType.getName().hashCode());
+			result = prime
+					* result
+					+ ((reffedTableInfo == null) ? 0 : reffedTableInfo
+							.hashCode());
+			result = prime
+					* result
+					+ ((reffingTableInfo == null) ? 0 : reffingTableInfo
+							.hashCode());
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(final Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			final JoinInfo other = (JoinInfo) obj;
+			if (condition == null) {
+				if (other.condition != null)
+					return false;
+			} else if (!condition.equals(other.condition))
+				return false;
+			if (fk == null) {
+				if (other.fk != null)
+					return false;
+			} else if (!fk.equals(other.fk))
+				return false;
+			if (lType == null) {
+				if (other.lType != null)
+					return false;
+			} else if (!lType.equals(other.lType))
+				return false;
+			if (rType == null) {
+				if (other.rType != null)
+					return false;
+			} else if (!rType.equals(other.rType))
+				return false;
+			if (reffedTableInfo == null) {
+				if (other.reffedTableInfo != null)
+					return false;
+			} else if (!reffedTableInfo.equals(other.reffedTableInfo))
+				return false;
+			if (reffingTableInfo == null) {
+				if (other.reffingTableInfo != null)
+					return false;
+			} else if (!reffingTableInfo.equals(other.reffingTableInfo))
+				return false;
+			if (type == null) {
+				if (other.type != null)
+					return false;
+			} else if (!type.equals(other.type))
+				return false;
+			return true;
+		}
+
 	}
 
 	String getFromClause(final SqlContext context) {

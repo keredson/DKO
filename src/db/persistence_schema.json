@@ -5,6 +5,7 @@
         0
     ],
     "schemas": {"": {"query_size": {
+        "last_seen": "bigint",
         "schema_name": "text",
         "table_name": "text",
         "id": "integer",

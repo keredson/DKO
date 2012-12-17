@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Foreign Keys</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Table Models"
+HREF="c48.html"><LINK
+REL="PREVIOUS"
+TITLE="Instances"
+HREF="x154.html"><LINK
+REL="NEXT"
+TITLE="Queries"
+HREF="c210.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x154.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Table Models</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="c210.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN196"
+>3.4. Foreign Keys</A
+></H1
+><P
+>Foreign key relationships are a critical part of any database design and are automatically extracted and modeled in DKO-generated classes.  Let's look at our example schema:</P
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="db.png"></P
+></DIV
+><P
+>Now let's look at the code generated for the appointment table:</P
+><PRE
+CLASS="programlisting"
+>public class Appointment extends Table {
+
+	public static final Query&#60;Appointment&#62; ALL = [...];
+
+	public static final Field&#60;Integer&#62; ID = [...];
+	public static final Field&#60;Integer&#62; PATIENT_ID = [...];
+	public static final Field&#60;Integer&#62; DOCTOR_ID = [...];
+	public static final Field&#60;Integer&#62; OFFICE_ID = [...];
+	public static final Field&#60;Date&#62;    START = [...];
+	public static final Field&#60;Date&#62;    END = [...];
+	
+	public static final Field.FK&#60;Patient&#62; FK_PATIENT = [...];
+	public static final Field.FK&#60;Doctor&#62;  FK_DOCTOR = [...];
+	public static final Field.FK&#60;Office&#62;  FK_OFFICE = [...];
+
+	public Integer getId() {}
+	public Integer getPatientId() {}
+	public Integer getDoctorId() {}
+	public Integer getOfficeId() {}
+	public Date    getStart() {}
+	public Date    getEnd() {}
+
+	public Patient getPatientIdFK() {}
+	public Doctor  getDoctorIdFK() {}
+	public Office  getOfficeIdFK() {}
+	
+}</PRE
+><P
+>You should recognize the static Field objects, but you'll also notice the static Field.FK objects.  These obviously represent the foreign key relationships extracted from the database.</P
+><P
+>You'll also note that for every foreign key defined, a "get*FK()" method is also created.  If you call "getDoctorId()" you will receive the integer value in the column.  But if you call "getDoctorIdFK()" you will receive a full-fledged Doctor object (itself containing all the values in a row of the doctor table).</P
+><P
+>If you're at the other end of the relationship you can still traverse the foreign key.  For example, look at this subset of the generated office class:</P
+><PRE
+CLASS="programlisting"
+>public class Office extends Table {
+
+	public static final Query&#60;Office&#62; ALL = [...];
+
+	public static final Field&#60;Integer&#62; ID = [...];
+	public static final Field&#60;String&#62; ADDRESS1 = [...];
+	// etc
+	
+	public Query&#60;Doctor&#62;      getDoctorSet() {}
+	public Query&#60;Appointment&#62; getAppointmentSet() {}
+	
+}</PRE
+><P
+>Two methods are added to let you retrieve the set of all doctors (or appointments) that reference this office instance.  These methods return full-fledged query objects that can be filtered or joined with other tables as needed.  (or simply turned into a list with "asList()")</P
+><P
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x154.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="c210.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Instances</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c48.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Queries</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

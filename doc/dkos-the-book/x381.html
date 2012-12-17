@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Inner Queries</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Queries"
+HREF="c210.html"><LINK
+REL="PREVIOUS"
+TITLE="Performance"
+HREF="x371.html"><LINK
+REL="NEXT"
+TITLE="Temporary Tables"
+HREF="x392.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x371.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Queries</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x392.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN381"
+>4.12. Inner Queries</A
+></H1
+><P
+>Previously we looked at an example for calculating cost averages by item types sold:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
+Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
+    Integer itemId = e.getKey();
+    Double average = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("The average "+ item +" purchase was $"+ average);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i 
+==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
+The average [Item id:1 name:"Eye Exam"] purchase was $100.0
+The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+><P
+>This works, but is inefficient because it pulls from the database more items than it needs.  This is fine in this example but could be a huge bottleneck if you have millions of available products for sale.  A better implementation would use an inner query.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.where(Item.ID.in(
+        Purchase.ALL.onlyFields(Purchase.ITEM_ID).distinct()
+)).mapBy(Item.ID);
+Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
+    Integer itemId = e.getKey();
+    Double average = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("The average "+ item +" purchase was $"+ average);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i  where i.id in (select distinct p.item_id from purchase p )
+==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
+The average [Item id:1 name:"Eye Exam"] purchase was $100.0
+The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+><P
+>In SQL, queries used as inner queries can only return one column.  To select which column we use the ".onlyFields()" method you see in the example above.</P
+><P
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x371.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x392.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Performance</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c210.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Temporary Tables</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

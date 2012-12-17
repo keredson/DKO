@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Hello World</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Queries"
+HREF="c210.html"><LINK
+REL="PREVIOUS"
+TITLE="Queries"
+HREF="c210.html"><LINK
+REL="NEXT"
+TITLE="Conditions"
+HREF="x227.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c210.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Queries</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x227.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN218"
+>4.2. Hello World</A
+></H1
+><P
+>Given our example schema and generated code defined so far, let's look at some simple examples.  For instance, printing out all the people in our database:</P
+><PRE
+CLASS="programlisting"
+>for (final Patient patient : Patient.ALL) {
+    System.out.println(patient);
+}
+</PRE
+><P
+>Will print the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>Take a look at the static constant "Person.ALL".  This is of type Query&#60;Person&#62;, which is of type Iterable&#60;Person&#62; (which is why you can use it in a for-each loop).  When iterated over it runs the query (basically a "select *") and streams the results from the database into your loop.  All generated DKO objects have this special (immutable) query object and it serves as the root source of all access to the person table in our database.</P
+><P
+>Note the line starting with "==&#62;":  This is debug information (optionally) printed to stderr whenever the DKO library runs a query against the database.  For all of the examples in this book I will include these lines to help demonstrate when the DKO library is hitting the database and when it is not.</P
+><P
+>The default toString() method of a DKO object is the class name, the primary key of the table and any "important" fields.  Here "important" is defined by a heuristic that may change as the DKO library evolves, but currently is simply whether the field name contains the strings "name" or "title".  If you want all the fields of a DKO object there is a similar toStringDetailed() method on each class.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c210.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x227.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Queries</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c210.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Conditions</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

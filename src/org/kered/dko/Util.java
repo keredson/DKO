@@ -213,6 +213,7 @@ class Util {
 	}
 
 	static void log(final String sql, final List<Object> bindings) {
+		if (sql.startsWith("insert into query_size") || sql.contains("from query_size")) return;
 		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ join("|", bindings) +"]" : "");
 		logSql.fine(msg);
 		if (androidLoggerDebug != null) {

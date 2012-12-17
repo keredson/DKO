@@ -1,0 +1,485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DKOs - The Book</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="NEXT"
+TITLE="Introduction"
+HREF="c3.html"></HEAD
+><BODY
+CLASS="book"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="BOOK"
+><A
+NAME="AEN1"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="title"
+><A
+NAME="AEN1"
+>DKOs - The Book</A
+></H1
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="c3.html"
+>Introduction</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="c3.html#AEN5"
+>Should You Read This?</A
+></DT
+><DT
+>1.2. <A
+HREF="x9.html"
+>Problems with Traditional ORMs</A
+></DT
+><DT
+>1.3. <A
+HREF="x19.html"
+>Principles Behind DKOs</A
+></DT
+><DT
+>1.4. <A
+HREF="x25.html"
+>Precursors to DKOs</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="c30.html"
+>Setting Up DKOs</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="c30.html#AEN32"
+>Overview</A
+></DT
+><DT
+>2.2. <A
+HREF="x36.html"
+>Extracting Your Database Schema</A
+></DT
+><DT
+>2.3. <A
+HREF="x40.html"
+>Generating Classes</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="c48.html"
+>Table Models</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="c48.html#AEN50"
+>Overview</A
+></DT
+><DT
+>3.2. <A
+HREF="x59.html"
+>Fields</A
+></DT
+><DT
+>3.3. <A
+HREF="x154.html"
+>Instances</A
+></DT
+><DT
+>3.4. <A
+HREF="x196.html"
+>Foreign Keys</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="c210.html"
+>Queries</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="c210.html#AEN212"
+>Overview</A
+></DT
+><DT
+>4.2. <A
+HREF="x218.html"
+>Hello World</A
+></DT
+><DT
+>4.3. <A
+HREF="x227.html"
+>Conditions</A
+></DT
+><DT
+>4.4. <A
+HREF="x269.html"
+>The With Method</A
+></DT
+><DD
+><DL
+><DT
+>4.4.1. <A
+HREF="x269.html#AEN275"
+>Many to One Joins</A
+></DT
+><DT
+>4.4.2. <A
+HREF="x269.html#AEN299"
+>One to Many Joins</A
+></DT
+></DL
+></DD
+><DT
+>4.5. <A
+HREF="x311.html"
+>Aggregation Functions</A
+></DT
+><DD
+><DL
+><DT
+>4.5.1. <A
+HREF="x311.html#AEN314"
+>Query.count()</A
+></DT
+><DT
+>4.5.2. <A
+HREF="x311.html#AEN319"
+>Query.countBy(Field)</A
+></DT
+><DT
+>4.5.3. <A
+HREF="x311.html#AEN324"
+>Query.mapBy(Field)</A
+></DT
+><DT
+>4.5.4. <A
+HREF="x311.html#AEN329"
+>Query.collectBy(Field)</A
+></DT
+><DT
+>4.5.5. <A
+HREF="x311.html#AEN334"
+>Query.sum(Field)</A
+></DT
+><DT
+>4.5.6. <A
+HREF="x311.html#AEN339"
+>Query.sumBy(Field, Field)</A
+></DT
+><DT
+>4.5.7. <A
+HREF="x311.html#AEN344"
+>Query.average(Field)</A
+></DT
+><DT
+>4.5.8. <A
+HREF="x311.html#AEN349"
+>Query.averageBy(Field, Field)</A
+></DT
+></DL
+></DD
+><DT
+>4.6. <A
+HREF="x354.html"
+>Terminal vs. Non-terminal Methods</A
+></DT
+><DT
+>4.7. <A
+HREF="x359.html"
+>Order By</A
+></DT
+><DT
+>4.8. <A
+HREF="x362.html"
+>Distinct</A
+></DT
+><DT
+>4.9. <A
+HREF="x365.html"
+>Limit Operations</A
+></DT
+><DT
+>4.10. <A
+HREF="x368.html"
+>Selecting Only Specific Fields</A
+></DT
+><DT
+>4.11. <A
+HREF="x371.html"
+>Performance</A
+></DT
+><DD
+><DL
+><DT
+>4.11.1. <A
+HREF="x371.html#AEN375"
+>Automatic Query Optimizations</A
+></DT
+><DT
+>4.11.2. <A
+HREF="x371.html#AEN378"
+>Automatic Performance Warnings</A
+></DT
+></DL
+></DD
+><DT
+>4.12. <A
+HREF="x381.html"
+>Inner Queries</A
+></DT
+><DT
+>4.13. <A
+HREF="x392.html"
+>Temporary Tables</A
+></DT
+><DT
+>4.14. <A
+HREF="x402.html"
+>Table Aliases</A
+></DT
+><DT
+>4.15. <A
+HREF="x414.html"
+>SQL Functions</A
+></DT
+><DT
+>4.16. <A
+HREF="x417.html"
+>Joins</A
+></DT
+><DT
+>4.17. <A
+HREF="x420.html"
+>as*() Transformations</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="c423.html"
+>Write Operations</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="c423.html#AEN425"
+>Insert</A
+></DT
+><DT
+>5.2. <A
+HREF="x428.html"
+>Update</A
+></DT
+><DT
+>5.3. <A
+HREF="x431.html"
+>Delete</A
+></DT
+><DT
+>5.4. <A
+HREF="x434.html"
+>Transactions</A
+></DT
+></DL
+></DD
+><DT
+>6. <A
+HREF="c446.html"
+>Data Sources</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="c446.html#AEN449"
+>MatryoshkaDataSource</A
+></DT
+><DT
+>6.2. <A
+HREF="x452.html"
+>ConnectionCountingDataSource</A
+></DT
+><DT
+>6.3. <A
+HREF="x455.html"
+>MirroredDataSource</A
+></DT
+><DT
+>6.4. <A
+HREF="x458.html"
+>ReflectedDataSource</A
+></DT
+><DT
+>6.5. <A
+HREF="x461.html"
+>SingleConnectionDataSource</A
+></DT
+><DT
+>6.6. <A
+HREF="x464.html"
+>SingleThreadedDataSource</A
+></DT
+><DT
+>6.7. <A
+HREF="x467.html"
+>UnclosableConnection</A
+></DT
+></DL
+></DD
+><DT
+>7. <A
+HREF="c470.html"
+>Miscellaneous</A
+></DT
+><DD
+><DL
+><DT
+>7.1. <A
+HREF="c470.html#AEN472"
+>Contexts</A
+></DT
+><DT
+>7.2. <A
+HREF="x475.html"
+>Bulk Operations</A
+></DT
+><DT
+>7.3. <A
+HREF="x478.html"
+>Supported Databases</A
+></DT
+><DT
+>7.4. <A
+HREF="x481.html"
+>Diffs</A
+></DT
+><DT
+>7.5. <A
+HREF="x484.html"
+>CSV</A
+></DT
+><DT
+>7.6. <A
+HREF="x487.html"
+>FAQs</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><DIV
+CLASS="LOT"
+><DL
+CLASS="LOT"
+><DT
+><B
+>List of Tables</B
+></DT
+><DT
+>3-1. <A
+HREF="x59.html#AEN70"
+>Field Methods vs. SQL Comparisons</A
+></DT
+><DT
+>3-2. <A
+HREF="x59.html#AEN116"
+>Field Methods vs. SQL Math Operations</A
+></DT
+><DT
+>3-3. <A
+HREF="x154.html#AEN164"
+>Table Instance SQL Methods</A
+></DT
+><DT
+>4-1. <A
+HREF="x227.html#AEN242"
+>Condition Methods vs. SQL Conditions</A
+></DT
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="c3.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Introduction</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

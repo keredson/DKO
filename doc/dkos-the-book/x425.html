@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Transactions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Write Operations"
+HREF="c414.html"><LINK
+REL="PREVIOUS"
+TITLE="Delete"
+HREF="x422.html"><LINK
+REL="NEXT"
+TITLE="Miscellaneous"
+HREF="c437.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x422.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Write Operations</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="c437.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN425"
+>5.4. Transactions</A
+></H1
+><P
+>DKOs support transactions.  (They would be of little use if they didn't!)  But first we must introduce Context objects.  Let's first look at some example code:</P
+><PRE
+CLASS="programlisting"
+>System.out.println("I see " +Patient.ALL.count() +" patients.");
+DataSource ds = Patient.ALL.getDataSource();
+Context context = Context.getVMContext();
+context.startTransaction(ds);
+new Patient().setFirstName("John").setLastName("Doe").insert(ds);
+System.out.println("Now I see " +Patient.ALL.count() +" patients.");
+context.rollbackTransaction(ds);
+System.out.println("Finally I see " +Patient.ALL.count() +" patients.");
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select count(1) from patient p 
+I see 2 patients.
+==&#62; begin transaction
+==&#62; insert into patient (birth_date, social_security_number, since, last_name, id, primary_doctor_id, first_name) values (?, ?, ?, ?, ?, ?, ?) -- [null|null|null|Doe|null|null|John]
+==&#62; select count(1) from patient p 
+Now I see 3 patients.
+==&#62; rollback
+==&#62; select count(1) from patient p 
+Finally I see 2 patients.&#13;</PRE
+><P
+>The first thing we do here is get a reference to the javax.sql.DataSource configured as the default for our Patient.ALL query.  All query objects have this getDataSource() method.  We need this because transactions are handled per-datasource.</P
+><P
+>The next thing we do is get a reference to our context.  For this example we're using the VM context which means that transactions we start here will apply to all future queries (in all threads) that use this datasource (until we commit or it back).</P
+><P
+>The third thing we do it start a transaction on the given datasource.  Internally the DKO library keeps the connection open and reuses it for all future queries until the transaction is committed or rolled back.  The method context.startTransaction() returns a boolean value indicating success.</P
+><P
+>The rest of the example should be familiar to you by now, until you context.rollbackTransaction().</P
+><P
+></P
+><P
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x422.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="c437.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Delete</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c414.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Miscellaneous</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

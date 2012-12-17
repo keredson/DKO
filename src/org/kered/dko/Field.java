@@ -80,6 +80,9 @@ public class Field<T> implements Cloneable {
 		if (boundTable != null) {
 			sb.append(boundTable).append(".");
 		}
+		if (boundTableInfo != null) {
+			sb.append(boundTableInfo.tableName).append(".");
+		}
 		sb.append(name);
 	}
 
@@ -100,6 +103,7 @@ public class Field<T> implements Cloneable {
 	String boundTable = null;
 	Field<T> unBound = null;
 	Set<Object> tags = null;
+	private TableInfo boundTableInfo = null;
 
 	public Field(final int index, final Class<? extends Table> table, final String name, final String javaName, final Class<T> type, final String sqlType) {
 		INDEX = index;
@@ -967,6 +971,20 @@ public class Field<T> implements Cloneable {
 		}
 	}
 
+	Field<T>  from(TableInfo tableInfo) {
+		try {
+			@SuppressWarnings("unchecked")
+			final
+			Field<T> f = (Field<T>) this.clone();
+			f.boundTableInfo = tableInfo;
+			f.unBound  = isBound() ? this.unBound : this;
+			return f;
+		} catch (final CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	/**
 	 * Returns a clone of this field tagged with the given object.
 	 * @param tag
@@ -1016,7 +1034,7 @@ public class Field<T> implements Cloneable {
 	}
 
 	boolean isBound() {
-		return this.boundTable != null;
+		return this.boundTable!=null || this.boundTableInfo!=null;
 	}
 
 	public boolean sameField(final Field<?> other) {

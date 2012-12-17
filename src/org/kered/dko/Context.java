@@ -2,6 +2,7 @@ package org.kered.dko;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -182,14 +183,26 @@ public class Context {
 	/**
 	 * Starts a new transaction.
 	 * @param ds
-	 * @return
+	 * @return success
 	 * @throws SQLException
 	 */
 	public boolean startTransaction(final DataSource ds) throws SQLException {
 		Connection c = transactionConnections.get(ds);
 		if (c != null) return false;
 		c = ds.getConnection();
-		c.setAutoCommit(false);
+		if (Constants.DB_TYPE.detect(ds)==Constants.DB_TYPE.SQLITE3) {
+			Statement stmt = c.createStatement();
+			try {
+				String sql = "begin transaction";
+				Util.log(sql, null);
+				stmt.execute(sql);
+			} finally {
+				stmt.close();
+			}
+		} else {
+			Util.log("connection.setAutoCommit(false)", null);
+			c.setAutoCommit(false);
+		}
 		transactionConnections.put(ds, c);
 		return true;
 	}
@@ -203,7 +216,19 @@ public class Context {
 	public boolean commitTransaction(final DataSource ds) throws SQLException {
 		final Connection c = transactionConnections.remove(ds);
 		if (c == null) return false;
-		c.commit();
+		if (Constants.DB_TYPE.detect(ds)==Constants.DB_TYPE.SQLITE3) {
+			Statement stmt = c.createStatement();
+			try {
+				String sql = "commit";
+				Util.log(sql, null);
+				stmt.execute(sql);
+			} finally {
+				stmt.close();
+			}
+		} else {
+			Util.log("connection.commit()", null);
+			c.commit();
+		}
 		c.close();
 		return true;
 	}
@@ -219,7 +244,25 @@ public class Context {
 		transactionConnections.remove(ds);
 		if (c == null) return false;
 		try {
-			c.rollback();
+			if (Constants.DB_TYPE.detect(ds)==Constants.DB_TYPE.SQLITE3) {
+				Statement stmt = c.createStatement();
+				try {
+					String sql = "rollback";
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					Util.log(sql, null);
+					stmt.execute(sql);
+				} finally {
+					stmt.close();
+				}
+			} else {
+				Util.log("connection.rollback()", null);
+				c.rollback();
+			}
 		} catch (final SQLException e) {
 			e.printStackTrace();
 			try {

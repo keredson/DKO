@@ -332,6 +332,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Set<T> asSet();
 
 	/**
+	 * Sums the value of a given field.
+	 * Sum is calculated by the database.  Objects are not transferred to the JVM.
+	 * @param f
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S extends Number> S sum(Field<S> f) throws SQLException;
+
+	/**
 	 * Sums the value of a field grouped by another field.
 	 * Sum is calculated by the database.  Objects are not transferred to the JVM.
 	 * @param sumField
@@ -347,13 +356,24 @@ public interface Query<T extends Table> extends Iterable<T> {
 //			throws SQLException;
 
 	/**
-	 * Sums the value of a given field.
-	 * Sum is calculated by the database.  Objects are not transferred to the JVM.
+	 * Averages the values of a given field.
+	 * Average is calculated by the database.  Objects are not transferred to the JVM.
 	 * @param f
 	 * @return
 	 * @throws SQLException
 	 */
-	public <S extends Number> S sum(Field<S> f) throws SQLException;
+	public <S extends Number> S average(Field<S> f) throws SQLException;
+
+	/**
+	 * Averages the values of a field grouped by another field.
+	 * Average is calculated by the database.  Objects are not transferred to the JVM.
+	 * @param sumField
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <R, S extends Number> Map<R, S> averageBy(Field<S> sumField, Field<R> byField)
+			throws SQLException;
 
 	/**
 	 * Evaluates your query into a map, keyed by whatever field you specify.

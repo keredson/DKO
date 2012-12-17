@@ -550,12 +550,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			final StringBuffer sb = new StringBuffer();
 			bindings = new ArrayList<Object>();
 
-			tableNameMap = new HashMap<String,Set<String>>();
-			for (final TableInfo ti : tableInfos) {
-				final String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
-				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-				tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
-			}
+			initTableNameMap(bindTables);
 
 			final SqlContext context = new SqlContext(this);
 
@@ -574,6 +569,25 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (bindings!=null) bindings = Collections.unmodifiableList(bindings);
 		}
 		return sql;
+	}
+
+	private void initTableNameMap(final boolean bindTables) {
+		tableNameMap = new HashMap<String,Set<String>>();
+		for (final TableInfo ti : tableInfos) {
+			final String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
+			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+		}
+		for (JoinInfo join : joins) {
+			TableInfo ti = join.reffingTableInfo;
+			String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
+			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+			ti = join.reffedTableInfo;
+			id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
+			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+		}
 	}
 
 	List<Object> getSQLBindings() {
@@ -856,7 +870,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (count==1) {
 				if (getDBType()==DB_TYPE.MYSQL) {
 					final Statement s = conn.createStatement();
-
 					s.execute("SELECT LAST_INSERT_ID()");
 					final ResultSet rs = s.getResultSet();
 					if (rs.next()) {
@@ -866,11 +879,19 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				}
 				if (getDBType()==DB_TYPE.SQLITE3) {
 					final Statement s = conn.createStatement();
-					s.execute("SELECT last_insert_rowid()");
-					final ResultSet rs = s.getResultSet();
-					if (rs.next()) {
-						final Integer pk = rs.getInt(1);
-						return pk;
+					try {
+						s.execute("SELECT last_insert_rowid()");
+						final ResultSet rs = s.getResultSet();
+						try {
+							if (rs.next()) {
+								final Integer pk = rs.getInt(1);
+								return pk;
+							}
+						} finally {
+							rs.close();
+						}
+					} finally {
+						s.close();
 					}
 				}
 			}
@@ -945,14 +966,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				}
 				if (alreadyAdded) continue;
 
-				// create the condition
-				Condition condition = null;
-				for (int j=0; j<refingFields.length; ++j) {
-					final Condition condition2 = refingFields[j].eq(reffedFields[j]);
-					if (condition == null) condition = condition2;
-					else condition = condition.and(condition2);
-				}
-
 				if (Util.sameTable(reffingClass, baseTables[i])) {
 					baseTables[i+1] = reffedClass;
 					final String tableName = genTableName(reffedClass, q.usedTableNames);
@@ -960,6 +973,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					final TableInfo info = new TableInfo(reffedClass, tableName, path);
 					info.nameAutogenned = true;
 					final JoinInfo join = new JoinInfo();
+					// create the condition
+					Condition condition = null;
+					for (int j=0; j<refingFields.length; ++j) {
+						final Condition condition2 = refingFields[j].from(prevTableInfo).eq(reffedFields[j].from(info));
+						if (condition == null) condition = condition2;
+						else condition = condition.and(condition2);
+					}
 					join.condition = condition;
 					join.reffingTableInfo  = prevTableInfo;
 					join.reffedTableInfo = info;
@@ -974,6 +994,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					final TableInfo info = new TableInfo(reffingClass, tableName, path);
 					info.nameAutogenned = true;
 					final JoinInfo join = new JoinInfo();
+					// create the condition
+					Condition condition = null;
+					for (int j=0; j<refingFields.length; ++j) {
+						final Condition condition2 = refingFields[j].from(info).eq(reffedFields[j].from(prevTableInfo));
+						if (condition == null) condition = condition2;
+						else condition = condition.and(condition2);
+					}
 					join.condition = condition;
 					join.reffingTableInfo = info;
 					join.reffedTableInfo = prevTableInfo;
@@ -1135,11 +1162,42 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	//@Override
 	public <R> Map<R, Map<Field<Number>,Number>> sumBy(final Field<R> byField, final Field<? extends Number>... sumFields)
 			throws SQLException {
+		String function = "sum";
+		final Map<R, Map<Field<Number>, Number>> result = terminalMathFunctionBy(
+				byField, function, sumFields);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <R, S extends Number> Map<R, S> averageBy(final Field<S> sumField, final Field<R> byField)
+			throws SQLException {
+		final Map<R, S> ret = new LinkedHashMap<R, S>();
+		for (final Entry<R, Map<Field<Number>, Number>> e : averageBy(byField, sumField).entrySet()) {
+			ret.put(e.getKey(), (S) e.getValue().get(sumField));
+		}
+		return ret;
+	}
+
+	// i'm not sure i'm ready to expose this yet
+	@SuppressWarnings("unchecked")
+	//@Override
+	public <R> Map<R, Map<Field<Number>,Number>> averageBy(final Field<R> byField, final Field<? extends Number>... sumFields)
+			throws SQLException {
+		String function = "avg";
+		final Map<R, Map<Field<Number>, Number>> result = terminalMathFunctionBy(
+				byField, function, sumFields);
+		return result;
+	}
+
+	private <R> Map<R, Map<Field<Number>, Number>> terminalMathFunctionBy(
+			final Field<R> byField, String function,
+			final Field<? extends Number>... sumFields) throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
 		String sums = "";
 		for (final Field<? extends Number> sumField : sumFields) {
-			sums += ", sum("+ Util.derefField(sumField, context) +") ";
+			sums += ", "+ function +"("+ Util.derefField(sumField, context) +") ";
 		}
 		sql = "select "+ Util.derefField(byField, context)
 				+ sums + sql
@@ -1170,9 +1228,23 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public <S extends Number> S sum(final Field<S> sumField) throws SQLException {
+		String function = "sum";
+		final S ret = terminalMathFunction(sumField, function);
+		return ret;
+	}
+
+	@Override
+	public <S extends Number> S average(final Field<S> sumField) throws SQLException {
+		String function = "avg";
+		final S ret = terminalMathFunction(sumField, function);
+		return ret;
+	}
+
+	private <S extends Number> S terminalMathFunction(final Field<S> sumField,
+			String function) throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
-		sql = "select sum("+ Util.derefField(sumField, context) +")"+ sql;
+		sql = "select "+ function +"("+ Util.derefField(sumField, context) +")"+ sql;
 		Util.log(sql, null);
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;

@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Temporary Tables</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Queries"
+HREF="c210.html"><LINK
+REL="PREVIOUS"
+TITLE="Inner Queries"
+HREF="x378.html"><LINK
+REL="NEXT"
+TITLE="Table Aliases"
+HREF="x399.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x378.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Queries</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x399.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN389"
+>4.12. Temporary Tables</A
+></H1
+><P
+>The method Field.in() can take more than just an inner query.  Like in SQL it can take an arbitrary collection.  For instance:</P
+><PRE
+CLASS="programlisting"
+>List&#60;String&#62; names = new ArrayList&#60;String&#62;();
+names.add("Derek");
+names.add("Charles");
+for (Patient patient : Patient.ALL.where(Patient.FIRST_NAME.in(names))) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.first_name in (?,?) -- [Derek|Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>This could also be written like:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.where(Patient.FIRST_NAME.in("Derek", "Charles"))) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.first_name in (?,?) -- [Derek|Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>You'll note at the end of the SQL statement that DKOs use Java PreparedStatements (exclusively).  The two question marks are placeholders for the values shown pipe-delimited at the end of the query.  The DKO library is designed to way to protect you from SQL-injection attacks.</P
+><P
+>This technique of multiple placeholder values doesn't scale well however.  So after a current threshold (currently 256) DKOs switch to a temporary table and an inner query.  This is transparent to you but provides a significant performance boost (esp. on SQL Server).</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x378.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x399.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Inner Queries</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c210.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Table Aliases</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -585,7 +585,7 @@ public abstract class Condition {
 				sb.append("?");
 				bindings.add(v);
 			} else if (field2!=null) {
-				if (!field.isBound() && !field2.isBound() && field.sameField(field2)) {
+				if (!field.isBound() && !field2.isBound() && field.sameField(field2) && context!=null && context.tableNameMap!=null) {
 					final String id = context.getFullTableName(field.TABLE);
 					final Set<String> tableNames = context.tableNameMap.get(id);
 					if (tableNames.size() > 2) {
@@ -600,6 +600,21 @@ public abstract class Condition {
 						sb.append(cmp);
 						sb.append(i.next() + "."+ field2);
 					}
+				} else if (!field.isBound() && !field2.isBound() && field.sameField(field2) && context!=null) {
+					final Set<String> tableNames = context.getPossibleTableMatches(field.TABLE);
+					if (tableNames.size() > 2) {
+						throw new RuntimeException("field ambigious");
+					} else if (tableNames.size() < 2) {
+						sb.append(Util.derefField(field, context));
+						sb.append(cmp);
+						sb.append(Util.derefField(field2, context));
+					} else {
+						final Iterator<String> i = tableNames.iterator();
+						sb.append(i.next() + "."+ field.getSQL(context));
+						sb.append(cmp);
+						sb.append(i.next() + "."+ field2.getSQL(context));
+					}
+
 				} else {
 					sb.append(Util.derefField(field, context));
 					sb.append(cmp);

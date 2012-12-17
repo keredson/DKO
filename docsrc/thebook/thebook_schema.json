@@ -5,31 +5,6 @@
         0
     ],
     "schemas": {"": {
-        "patient": {
-            "id": "integer",
-            "since": "date",
-            "person_id": "integer",
-            "primary_doctor_id": "integer"
-        },
-        "person": {
-            "id": "integer",
-            "first_name": "text",
-            "last_name": "text",
-            "birth_date": "date",
-            "ssn": "text"
-        },
-        "doctor": {
-            "id": "integer",
-            "primary_office_id": "integer"
-        },
-        "office": {
-            "id": "integer",
-            "address1": "text",
-            "address2": "text",
-            "city": "text",
-            "state": "text",
-            "postal_code": "text"
-        },
         "appointment": {
             "id": "integer",
             "patient_id": "integer",
@@ -37,14 +12,52 @@
             "office_id": "integer",
             "start": "datetime",
             "end": "datetime"
+        },
+        "office": {
+            "name": "text",
+            "id": "integer",
+            "address1": "text",
+            "address2": "text",
+            "city": "text",
+            "state": "text",
+            "postal_code": "text"
+        },
+        "patient": {
+            "social_security_number": "text",
+            "birth_date": "date",
+            "last_name": "text",
+            "first_name": "text",
+            "id": "integer",
+            "since": "date",
+            "primary_doctor_id": "integer"
+        },
+        "doctor": {
+            "last_name": "text",
+            "first_name": "text",
+            "id": "integer",
+            "primary_office_id": "integer"
+        },
+        "item": {
+            "id": "integer",
+            "name": "text",
+            "description": "text",
+            "price": "numeric"
+        },
+        "purchase": {
+            "id": "integer",
+            "item_id": "integer",
+            "appointment_id": "integer",
+            "price": "numeric",
+            "quantity": "integer"
         }
     }},
     "primary_keys": {"": {
-        "patient": ["id"],
-        "person": ["id"],
-        "doctor": ["id"],
+        "appointment": ["id"],
         "office": ["id"],
-        "appointment": ["id"]
+        "patient": ["id"],
+        "doctor": ["id"],
+        "item": ["id"],
+        "purchase": ["id"]
     }},
     "foreign_keys": {}
 }

@@ -1,0 +1,2210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DKOs - The Book</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"></HEAD
+><BODY
+CLASS="book"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="BOOK"
+><A
+NAME="AEN1"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="title"
+><A
+NAME="AEN1"
+>DKOs - The Book</A
+></H1
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="#AEN3"
+>Introduction</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="#AEN5"
+>Should You Read This?</A
+></DT
+><DT
+>1.2. <A
+HREF="#AEN9"
+>Problems with Traditional ORMs</A
+></DT
+><DT
+>1.3. <A
+HREF="#AEN19"
+>Principles Behind DKOs</A
+></DT
+><DT
+>1.4. <A
+HREF="#AEN25"
+>Precursors to DKOs</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="#AEN30"
+>Setting Up DKOs</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="#AEN32"
+>Overview</A
+></DT
+><DT
+>2.2. <A
+HREF="#AEN36"
+>Extracting Your Database Schema</A
+></DT
+><DT
+>2.3. <A
+HREF="#AEN40"
+>Generating Classes</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="#AEN48"
+>Table Models</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="#AEN50"
+>Overview</A
+></DT
+><DT
+>3.2. <A
+HREF="#AEN59"
+>Fields</A
+></DT
+><DT
+>3.3. <A
+HREF="#AEN154"
+>Instances</A
+></DT
+><DT
+>3.4. <A
+HREF="#AEN196"
+>Foreign Keys</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="#AEN210"
+>Queries</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="#AEN212"
+>Overview</A
+></DT
+><DT
+>4.2. <A
+HREF="#AEN218"
+>Hello World</A
+></DT
+><DT
+>4.3. <A
+HREF="#AEN227"
+>Conditions</A
+></DT
+><DT
+>4.4. <A
+HREF="#AEN269"
+>The With Method</A
+></DT
+><DD
+><DL
+><DT
+>4.4.1. <A
+HREF="#AEN275"
+>Many to One Joins</A
+></DT
+><DT
+>4.4.2. <A
+HREF="#AEN299"
+>One to Many Joins</A
+></DT
+></DL
+></DD
+><DT
+>4.5. <A
+HREF="#AEN311"
+>Aggregation Functions</A
+></DT
+><DD
+><DL
+><DT
+>4.5.1. <A
+HREF="#AEN314"
+>Query.count()</A
+></DT
+><DT
+>4.5.2. <A
+HREF="#AEN319"
+>Query.countBy(Field)</A
+></DT
+><DT
+>4.5.3. <A
+HREF="#AEN324"
+>Query.mapBy(Field)</A
+></DT
+><DT
+>4.5.4. <A
+HREF="#AEN329"
+>Query.collectBy(Field)</A
+></DT
+><DT
+>4.5.5. <A
+HREF="#AEN334"
+>Query.sum(Field)</A
+></DT
+><DT
+>4.5.6. <A
+HREF="#AEN339"
+>Query.sumBy(Field, Field)</A
+></DT
+><DT
+>4.5.7. <A
+HREF="#AEN344"
+>Query.average(Field)</A
+></DT
+><DT
+>4.5.8. <A
+HREF="#AEN349"
+>Query.averageBy(Field, Field)</A
+></DT
+></DL
+></DD
+><DT
+>4.6. <A
+HREF="#AEN354"
+>Terminal vs. Non-terminal Methods</A
+></DT
+><DT
+>4.7. <A
+HREF="#AEN359"
+>Order By</A
+></DT
+><DT
+>4.8. <A
+HREF="#AEN362"
+>Distinct</A
+></DT
+><DT
+>4.9. <A
+HREF="#AEN365"
+>Limit Operations</A
+></DT
+><DT
+>4.10. <A
+HREF="#AEN368"
+>Selecting Only Specific Fields</A
+></DT
+><DT
+>4.11. <A
+HREF="#AEN371"
+>Performance</A
+></DT
+><DD
+><DL
+><DT
+>4.11.1. <A
+HREF="#AEN375"
+>Automatic Query Optimizations</A
+></DT
+><DT
+>4.11.2. <A
+HREF="#AEN378"
+>Automatic Performance Warnings</A
+></DT
+></DL
+></DD
+><DT
+>4.12. <A
+HREF="#AEN381"
+>Inner Queries</A
+></DT
+><DT
+>4.13. <A
+HREF="#AEN392"
+>Temporary Tables</A
+></DT
+><DT
+>4.14. <A
+HREF="#AEN402"
+>Table Aliases</A
+></DT
+><DT
+>4.15. <A
+HREF="#AEN414"
+>SQL Functions</A
+></DT
+><DT
+>4.16. <A
+HREF="#AEN417"
+>Joins</A
+></DT
+><DT
+>4.17. <A
+HREF="#AEN420"
+>as*() Transformations</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="#AEN423"
+>Write Operations</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="#AEN425"
+>Insert</A
+></DT
+><DT
+>5.2. <A
+HREF="#AEN428"
+>Update</A
+></DT
+><DT
+>5.3. <A
+HREF="#AEN431"
+>Delete</A
+></DT
+><DT
+>5.4. <A
+HREF="#AEN434"
+>Transactions</A
+></DT
+></DL
+></DD
+><DT
+>6. <A
+HREF="#AEN446"
+>Data Sources</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="#AEN449"
+>MatryoshkaDataSource</A
+></DT
+><DT
+>6.2. <A
+HREF="#AEN452"
+>ConnectionCountingDataSource</A
+></DT
+><DT
+>6.3. <A
+HREF="#AEN455"
+>MirroredDataSource</A
+></DT
+><DT
+>6.4. <A
+HREF="#AEN458"
+>ReflectedDataSource</A
+></DT
+><DT
+>6.5. <A
+HREF="#AEN461"
+>SingleConnectionDataSource</A
+></DT
+><DT
+>6.6. <A
+HREF="#AEN464"
+>SingleThreadedDataSource</A
+></DT
+><DT
+>6.7. <A
+HREF="#AEN467"
+>UnclosableConnection</A
+></DT
+></DL
+></DD
+><DT
+>7. <A
+HREF="#AEN470"
+>Miscellaneous</A
+></DT
+><DD
+><DL
+><DT
+>7.1. <A
+HREF="#AEN472"
+>Contexts</A
+></DT
+><DT
+>7.2. <A
+HREF="#AEN475"
+>Bulk Operations</A
+></DT
+><DT
+>7.3. <A
+HREF="#AEN478"
+>Supported Databases</A
+></DT
+><DT
+>7.4. <A
+HREF="#AEN481"
+>Diffs</A
+></DT
+><DT
+>7.5. <A
+HREF="#AEN484"
+>CSV</A
+></DT
+><DT
+>7.6. <A
+HREF="#AEN487"
+>FAQs</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><DIV
+CLASS="LOT"
+><DL
+CLASS="LOT"
+><DT
+><B
+>List of Tables</B
+></DT
+><DT
+>3-1. <A
+HREF="#AEN70"
+>Field Methods vs. SQL Comparisons</A
+></DT
+><DT
+>3-2. <A
+HREF="#AEN116"
+>Field Methods vs. SQL Math Operations</A
+></DT
+><DT
+>3-3. <A
+HREF="#AEN164"
+>Table Instance SQL Methods</A
+></DT
+><DT
+>4-1. <A
+HREF="#AEN242"
+>Condition Methods vs. SQL Conditions</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN3"
+></A
+>Chapter 1. Introduction</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN5"
+>1.1. Should You Read This?</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>target audience</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN9"
+>1.2. Problems with Traditional ORMs</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>string concat == bad</P
+><P
+>leads to db code isolation</P
+><P
+>"isolated" code grows to be large part of your project</P
+><P
+>or people use getAll() methods</P
+><P
+>always select * from...</P
+><P
+>xml configuration nightmare</P
+><P
+>live objects are bad</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN19"
+>1.3. Principles Behind DKOs</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>embrace sql</P
+><P
+>all compile-time checked</P
+><P
+>ORM mappings always 1-to-1</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN25"
+>1.4. Precursors to DKOs</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>django query api</P
+><P
+>apache torque</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN30"
+></A
+>Chapter 2. Setting Up DKOs</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN32"
+>2.1. Overview</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>ant-only</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN36"
+>2.2. Extracting Your Database Schema</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>enums.json</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN40"
+>2.3. Generating Classes</A
+></H2
+><P
+>TODO: STUB</P
+><P
+>type_mappings.json</P
+><P
+>fake_fks.json</P
+><P
+>default datasource</P
+><P
+>callbacks</P
+><P
+>code generation overview</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN48"
+></A
+>Chapter 3. Table Models</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN50"
+>3.1. Overview</A
+></H2
+><P
+>Table classes serve two purposes in DKOs.  First they model the database table itself.  And second they model the rows in the table.  This may seem odd at first.  Why would we not use two different classes to model the table and the row?  (In fact this is done in every other ORM I've seen)  But I think this adds unnecessary complexity to the framework when you consider that tables and their rows are in reality so closely intertwined as to be nearly inseparable.  And when you consider than another method of bifurcating is available:  The "static" modifier.</P
+><P
+>In a generated table class (by convention) everything that is a static method or variable is applicable to the database table, where everything that is not static applies to the row.  Let's take a look at an example:</P
+><PRE
+CLASS="programlisting"
+>public class Person extends Table {
+
+	public static final Query&#60;Person&#62; ALL = [...];
+
+	public static final Field&#60;Integer&#62; ID = [...];
+	public static final Field&#60;String&#62;  FIRST_NAME = [...];
+	public static final Field&#60;String&#62;  LAST_NAME = [...];
+	public static final Field&#60;Date&#62;    BIRTH_DATE = [...];
+	public static final Field&#60;String&#62;  SSN = [...];
+
+	public Integer getId() {}
+	public String getFirstName() {}
+	public String getLastName() {}
+	public Date getBirthDate() {}
+	public java.lang.String getSsn() {}
+
+}</PRE
+><P
+>You can clearly see the columns of the table are all static constants (useful for building database queries), where an instance of the class Person would have getter methods for the values in a specific row.</P
+><P
+></P
+><PRE
+CLASS="programlisting"
+></PRE
+><P
+></P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN59"
+>3.2. Fields</A
+></H2
+><P
+>Fields represent database columns.  All table classes have at least one public static field instance.  They are immutable and contain basic information about the database column they reflect (such as their type in SQL, their type in Java, the column name, what table they're a part of, etc.)  You will likely never construct one but they are one of the most important parts of the DKO library.  This is because fields are how you construct conditionals.  For instance, let's assume the following SQL query:</P
+><PRE
+CLASS="programlisting"
+>select * from PERSON where FIRST_NAME='Derek';</PRE
+><P
+>The where clause of this query is a simple equality condition.  To create a DKO representation of this condition you would use the following:</P
+><PRE
+CLASS="programlisting"
+>Condition condition = Person.FIRST_NAME.eq("Derek");</PRE
+><P
+>This condition object could then be passed into the where method on a query.  For Example:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(condition);</PRE
+><P
+>Of course this is such a small example you would probably do it all on one line:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(Person.FIRST_NAME.eq("Derek"));</PRE
+><P
+>All normal SQL conditional statements have direct corollaries in DKO.  Here is a table of SQL to field method names:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN70"
+></A
+><P
+><B
+>Table 3-1. Field Methods vs. SQL Comparisons</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>Operation</TH
+><TH
+>SQL</TH
+><TH
+>Field Method</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Equal to</TD
+><TD
+>field = x</TD
+><TD
+>FIELD.eq(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Greater than</TD
+><TD
+>field &#62; x</TD
+><TD
+>FIELD.gt(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Less than</TD
+><TD
+>field &#60; x</TD
+><TD
+>FIELD.lt(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Greater than or equal to</TD
+><TD
+>field &#62;= x</TD
+><TD
+>FIELD.gte(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Less than or equal to</TD
+><TD
+>field &#60;= x</TD
+><TD
+>FIELD.lte(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Not equal to</TD
+><TD
+>field &#60;&#62; x</TD
+><TD
+>FIELD.neq(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Between</TD
+><TD
+>field between x and y</TD
+><TD
+>FIELD.between(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>, <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>y</I
+></SPAN
+>)</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>Math operations are also supported:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN116"
+></A
+><P
+><B
+>Table 3-2. Field Methods vs. SQL Math Operations</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>Operation</TH
+><TH
+>SQL</TH
+><TH
+>Field Method</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Addition</TD
+><TD
+>field + x</TD
+><TD
+>FIELD.add(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Subtraction</TD
+><TD
+>field - x</TD
+><TD
+>FIELD.sub(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Multiplication</TD
+><TD
+>field * x</TD
+><TD
+>FIELD.mul(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Division</TD
+><TD
+>field / x</TD
+><TD
+>FIELD.div(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Modulus</TD
+><TD
+>field % x</TD
+><TD
+>FIELD.mod(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>All of these field operations are not limited to constants of their type (such as Field&#60;String&#62;.eq(String)).  They all also take other fields of compatible types (ie: Field&#60;String&#62;.eq(Field&#60;String&#62;)) or SQL function objects (which we'll discuss later).</P
+><P
+>All generated table classes also have a "public static List&#60;Field&#60;?&#62;&#62; _FIELDS" object that is an immutable list of all fields in the table.</P
+><P
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN154"
+>3.3. Instances</A
+></H2
+><P
+>Instances of classes that extend Table represent the rows in that table.  For example, if I wanted to create a new row in the person table in our example schema, I would do something like this:</P
+><PRE
+CLASS="programlisting"
+>Person person = new Person();
+person.setFirstName("Derek");
+person.setLastName("Anderson");
+boolean success = person.insert();</PRE
+><P
+>Since all generated table objects follow a builder pattern, this would also be valid:</P
+><PRE
+CLASS="programlisting"
+>boolean success = new Person()
+	.setFirstName("Derek")
+	.setLastName("Anderson")
+	.insert();</PRE
+><P
+>Both of these statements would insert into the default DataSource defined when generating these classes.  If none provided, you would need to provide one when calling insert.  (This is also how you would change at run-time which database the insert went to, assuming you have multiple databases)</P
+><PRE
+CLASS="programlisting"
+>DataSource ds = getSomeDataSource();
+boolean success = new Person()
+	.setFirstName("Derek")
+	.setLastName("Anderson")
+	.insert(ds);</PRE
+><P
+>Since our example is hitting a SQLite3 database and this table has a auto-generated primary key "id", we can access the value by subsequently calling "person.getId()".</P
+><P
+>All of your normal database operations are available:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN164"
+></A
+><P
+><B
+>Table 3-3. Table Instance SQL Methods</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>SQL Operation</TH
+><TH
+>Instance Method</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>INSERT</TD
+><TD
+>person.insert();</TD
+><TD
+>Inserts the given row into the database.  All fields that have been set are inserted.  (None of the fields that haven't been set are, allowing for database defaults)  Throws a SQLException if the row already exists.</TD
+></TR
+><TR
+><TD
+>UPDATE</TD
+><TD
+>person.update();</TD
+><TD
+>Updates the row in the database.  (Throws a SQLException if it doesn't exist)  Only the fields that have changed are updated (ie: it doesn't clobber any other fields that might have changed in the database in the interim)</TD
+></TR
+><TR
+><TD
+>DELETE</TD
+><TD
+>person.delete();</TD
+><TD
+>Deletes the row in the database.  Throws a SQLException if it doesn't exist.</TD
+></TR
+><TR
+><TD
+>EXISTS</TD
+><TD
+>person.exists();</TD
+><TD
+>Returns true if this row already exists in the database.  If the table has a primary key defined, this is used for the check.  Otherwise all columns are used.</TD
+></TR
+><TR
+><TD
+>INSERT or UPDATE</TD
+><TD
+>person.save();</TD
+><TD
+>Automatically performs an insert or an update based on whether this row exists in the database already.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>All of the above methods also have versions that take a specific DataSource.</P
+><P
+>All generated Table classes also have a generic "public &#60;T&#62; get(Field&#60;T&#62;)" method that will return the value associated with a given field.  Also they all have a "public List&#60;Field&#60;?&#62;&#62; fields()" that returns all the fields set or fetched for this specific instance.</P
+><P
+></P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN196"
+>3.4. Foreign Keys</A
+></H2
+><P
+>Foreign key relationships are a critical part of any database design and are automatically extracted and modeled in DKO-generated classes.  Let's look at our example schema:</P
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="db.png"></P
+></DIV
+><P
+>Now let's look at the code generated for the appointment table:</P
+><PRE
+CLASS="programlisting"
+>public class Appointment extends Table {
+
+	public static final Query&#60;Appointment&#62; ALL = [...];
+
+	public static final Field&#60;Integer&#62; ID = [...];
+	public static final Field&#60;Integer&#62; PATIENT_ID = [...];
+	public static final Field&#60;Integer&#62; DOCTOR_ID = [...];
+	public static final Field&#60;Integer&#62; OFFICE_ID = [...];
+	public static final Field&#60;Date&#62;    START = [...];
+	public static final Field&#60;Date&#62;    END = [...];
+	
+	public static final Field.FK&#60;Patient&#62; FK_PATIENT = [...];
+	public static final Field.FK&#60;Doctor&#62;  FK_DOCTOR = [...];
+	public static final Field.FK&#60;Office&#62;  FK_OFFICE = [...];
+
+	public Integer getId() {}
+	public Integer getPatientId() {}
+	public Integer getDoctorId() {}
+	public Integer getOfficeId() {}
+	public Date    getStart() {}
+	public Date    getEnd() {}
+
+	public Patient getPatientIdFK() {}
+	public Doctor  getDoctorIdFK() {}
+	public Office  getOfficeIdFK() {}
+	
+}</PRE
+><P
+>You should recognize the static Field objects, but you'll also notice the static Field.FK objects.  These obviously represent the foreign key relationships extracted from the database.</P
+><P
+>You'll also note that for every foreign key defined, a "get*FK()" method is also created.  If you call "getDoctorId()" you will receive the integer value in the column.  But if you call "getDoctorIdFK()" you will receive a full-fledged Doctor object (itself containing all the values in a row of the doctor table).</P
+><P
+>If you're at the other end of the relationship you can still traverse the foreign key.  For example, look at this subset of the generated office class:</P
+><PRE
+CLASS="programlisting"
+>public class Office extends Table {
+
+	public static final Query&#60;Office&#62; ALL = [...];
+
+	public static final Field&#60;Integer&#62; ID = [...];
+	public static final Field&#60;String&#62; ADDRESS1 = [...];
+	// etc
+	
+	public Query&#60;Doctor&#62;      getDoctorSet() {}
+	public Query&#60;Appointment&#62; getAppointmentSet() {}
+	
+}</PRE
+><P
+>Two methods are added to let you retrieve the set of all doctors (or appointments) that reference this office instance.  These methods return full-fledged query objects that can be filtered or joined with other tables as needed.  (or simply turned into a list with "asList()")</P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN210"
+></A
+>Chapter 4. Queries</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN212"
+>4.1. Overview</A
+></H2
+><P
+>DKO Query objects are the primary entry point for almost all uses of DKO objects.  It's name is somewhat misleading because the Query interface covers not just SQL select statements but all normal CRUD operations.  Combining both read and write operations into one interface was done intentionally however, as they are also intricately linked in SQL.  (recall that one of the goals of DKO is to embrace SQL, not hide it)  And naming it a "Query" intentionally reflects the almost universal disproportionate weighting of reads over writes in most programming applications.</P
+><P
+>There are two important aspects of DKO queries I want to make special note of here:</P
+><P
+>The first is that queries are immutable.  They follow a builder pattern, but at every step they return a new object.  This allows you to mix and match queries in different sections of code without worry.  It's very common to save off a commonly used query somewhere and have multiple other sections of your application further refine it with additional conditionals, joins, etc.</P
+><P
+>The second is that they are all implementers of java.lang.Iterable.  This means they can be used in the new Java for-each loops, which is by far the most common way to access the rows in a table.  It also means that's it's easy to run a query more often than you intended.  Every time Query.iterator() is called a new connection to the database is made.  (recall that Iterables can be iterated over multiple times, where Iterators can only be iterated over once)  It is very difficult (some would say impossible) to write good "should I cache this?" code without making performance (and run-time results) unpredictable.  When designing DKOs I intentionally left caching up to the discretion of the programmer.  (And attempted to make it dead-simple, such as with the "Query.asList()" method)</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN218"
+>4.2. Hello World</A
+></H2
+><P
+>Given our example schema and generated code defined so far, let's look at some simple examples.  For instance, printing out all the people in our database:</P
+><PRE
+CLASS="programlisting"
+>for (final Patient patient : Patient.ALL) {
+    System.out.println(patient);
+}
+</PRE
+><P
+>Will print the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>Take a look at the static constant "Person.ALL".  This is of type Query&#60;Person&#62;, which is of type Iterable&#60;Person&#62; (which is why you can use it in a for-each loop).  When iterated over it runs the query (basically a "select *") and streams the results from the database into your loop.  All generated DKO objects have this special (immutable) query object and it serves as the root source of all access to the person table in our database.</P
+><P
+>Note the line starting with "==&#62;":  This is debug information (optionally) printed to stderr whenever the DKO library runs a query against the database.  For all of the examples in this book I will include these lines to help demonstrate when the DKO library is hitting the database and when it is not.</P
+><P
+>The default toString() method of a DKO object is the class name, the primary key of the table and any "important" fields.  Here "important" is defined by a heuristic that may change as the DKO library evolves, but currently is simply whether the field name contains the strings "name" or "title".  If you want all the fields of a DKO object there is a similar toStringDetailed() method on each class.</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN227"
+>4.3. Conditions</A
+></H2
+><P
+>Only rarely are "select *" queries (such as in the Hello World example) useful.  Most SQL queries contain a "where clause".  Likewise, most DKO queries also contain a where clause.  Let's look at an example.  Suppose you want to find all the people with the first name "Derek".</P
+><PRE
+CLASS="programlisting"
+>select * from person where first_name='Derek'</PRE
+><P
+>The equivalent DKO query would be:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(Person.FIRST_NAME.eq("Derek"));</PRE
+><P
+>This API was intentionally written to have as much of a SQL "feel" as possible.  Let's break this down by type to better understand what's going on.</P
+><PRE
+CLASS="programlisting"
+>Field&#60;String&#62; fn = Person.FIRST_NAME;
+Condition whereClause = fn.eq("Derek");
+Query&#60;Person&#62; q = Person.ALL.where(whereClause);</PRE
+><P
+>Condition objects can be combined with "and" or "or":</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(
+    Person.FIRST_NAME.eq("Derek").and(Person.LAST_NAME.eq("Anderson"))
+);</PRE
+><P
+>Many queries are easier to read if you use static imports for the fields:</P
+><PRE
+CLASS="programlisting"
+>import static Person.*;
+Query&#60;Person&#62; q = Person.ALL.where(
+    FIRST_NAME.eq("Derek").and(LAST_NAME.eq("Anderson"))
+);</PRE
+><P
+>Going forward many of my code samples will assume a static import of the fields exists.</P
+><P
+>Note: Field objects are generic, so a Field&#60;String&#62; only has a .eq(String) method, not .eq(Object).</P
+><P
+>Conditions have the following methods available:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN242"
+></A
+><P
+><B
+>Table 4-1. Condition Methods vs. SQL Conditions</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>SQL</TH
+><TH
+>Condition Method</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>where <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+> and <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+>.and(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>where <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+> or <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+>.or(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>where not <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+>.not()</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN269"
+>4.4. The With Method</A
+></H2
+><P
+>The method Query.with(Field.FK...) is how you perform the majority of joins in DKOs.  Let's look at our schema again for reference:</P
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="db.png"></P
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN275"
+>4.4.1. Many to One Joins</A
+></H3
+><P
+>In our schema an appointment is made up of a patient, a doctor and an office.  Let's look at an example:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL.first();
+System.out.println("doctor: " + doctor);
+System.out.println("office: " + doctor.getPrimaryOfficeIdFK());
+</PRE
+><P
+>Will print the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id from doctor d  limit 1
+doctor: [Doctor id:1 last_name:Anderson first_name:Lingyan]
+==&#62; select o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code from office o  where o.id=? limit 2 -- [1]
+office: [Office id:1 name:"UH College of Optometry"]&#13;</PRE
+><P
+>This is an example of lazy-loading.  Two queries are run.  The first fetches the doctor instance.  The second fetches the office instance when it is needed.  This is useful behavior, but it can cause performance problems if done repeatedly.  To speed up this code we need to join the doctor and office tables and retrieve both in one go.  To do this we use Query.with(Field.FK...).  Here is the same code performing that join:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL
+        .with(Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .first();
+System.out.println("doctor: " + doctor);
+System.out.println("office: " + doctor.getPrimaryOfficeIdFK());
+</PRE
+><P
+>Prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code from doctor d  left outer join office o on  d.primary_office_id=o.id limit 1
+doctor: [Doctor id:1 last_name:Anderson first_name:Lingyan]
+office: [Office id:1 name:"UH College of Optometry"]&#13;</PRE
+><P
+>Notice only one query is run (with the appropriate join) and the returned doctor object's FK method is already linked to the related office object.</P
+><P
+>Often you want to join more than one table.  What if you want to print a list of all upcoming appointments?</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR)
+        .with(Appointment.FK_OFFICE)
+        .with(Appointment.FK_PATIENT);
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getPatientIdFK().getFirstName()
+            +" has an appointment with "
+            + apmt.getDoctorIdFK().getFirstName()
+            +" at "
+            + apmt.getOfficeIdFK().getName()
+    );
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  a.office_id=o.id left outer join patient p on  a.patient_id=p.id
+Derek has an appointment with Lingyan at UH College of Optometry
+Charles has an appointment with Lingyan at CF Eye Care&#13;</PRE
+><P
+>Notice that all four tables are joined together automatically, and that the returned object is a composite of the corresponding four table objects.</P
+><P
+>You may have also noticed that the with method takes a vararg.  (ie: Field.FK...)  Passing multiple FK references into one with statement lets you travel multiple levels deep into the object graph.  For instance, if you wanted to include the doctor's primary office in the previous example you would do the following:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .with(Appointment.FK_OFFICE);
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getDoctorIdFK().getFirstName()
+            +" (primary office: "
+            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName()
+            +") has an appointment at "
+            + apmt.getOfficeIdFK().getName()
+    );
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id
+Lingyan (primary office: UH College of Optometry) has an appointment at UH College of Optometry
+Lingyan (primary office: UH College of Optometry) has an appointment at CF Eye Care&#13;</PRE
+><P
+>Tables joined with the "with()" method can be used in where clauses as well.  For instance, what if we wanted to only print appointments where the appointment office and the primary office of the doctor are different?</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .with(Appointment.FK_OFFICE)
+        .where(Office.ID.neq(Office.ID));
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getDoctorIdFK().getFirstName()
+            +" has an appointment scheduled at "
+            + apmt.getOfficeIdFK().getName()
+            +" but her primary office is "
+            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName() +"!"
+    );
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id where o2.id!=o.id
+Lingyan has an appointment scheduled at CF Eye Care but her primary office is UH College of Optometry!&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN299"
+>4.4.2. One to Many Joins</A
+></H3
+><P
+>So far all of our examples have "many to one" joins.  What if you want a "one to many" join?  For instance what if you want all the appointments for a given doctor?  Every object that is the target of a foreign key has a ".getFKSet()" method which returns all the objects with a foreign key to this object.  Let's look at an example:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL
+        .with(Appointment.FK_DOCTOR)
+        .first();
+System.out.println(doctor.getFirstName() +" has the following appointments scheduled:");
+for (Appointment apmt : doctor.getAppointmentSet()) {
+    System.out.println("\t with: "+ apmt.getPatientIdFK().getFirstName());
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id, a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end from doctor d  left outer join appointment a on  a.doctor_id=d.id
+Lingyan has the following appointments scheduled:
+==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.id=? limit 2 -- [1]
+	 with: Derek
+==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.id=? limit 2 -- [2]
+	 with: Charles&#13;</PRE
+><P
+>Oops!  Well, this did get all the appointments for a doctor in the one query, but we lazy-loaded the patient information.  Let's pull that in with the appointment:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL
+        .with(Appointment.FK_DOCTOR, Appointment.FK_PATIENT)
+        .first();
+System.out.println(doctor.getFirstName() +" has the following appointments scheduled:");
+for (Appointment apmt : doctor.getAppointmentSet()) {
+    System.out.println("\t with: "+ apmt.getPatientIdFK().getFirstName());
+}
+</PRE
+><P
+>Which prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id, p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id, a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end from doctor d  left outer join appointment a on  a.doctor_id=d.id left outer join patient p on  a.patient_id=p.id
+Lingyan has the following appointments scheduled:
+	 with: Derek
+	 with: Charles&#13;</PRE
+><P
+>As you can see we now are fetching all three tables in one query.</P
+><P
+>A closer look at the API will reveal that the ".getAppointmentSet()" method doesn't return a java.util.Set.  It returns a Query&#60;Appointment&#62; which (in this case) is backed by a in-memory query implementation.  It's entirely possible to further filter your returned results even after your original database query is made.</P
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN311"
+>4.5. Aggregation Functions</A
+></H2
+><P
+>Many common database aggregation features are first-class citizens of the DKO library.  Here are some of the most commonly used.</P
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN314"
+>4.5.1. Query.count()</A
+></H3
+><P
+>Performs a count of the rows in your query.  For example:</P
+><PRE
+CLASS="programlisting"
+>System.out.println("There is "+ Doctor.ALL.count() +" doctor in the database.");
+System.out.println("There are "+ Patient.ALL.count() +" patients in the database.");
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select count(1) from doctor d 
+There is 1 doctor in the database.
+==&#62; select count(1) from patient p 
+There are 2 patients in the database.&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN319"
+>4.5.2. Query.countBy(Field)</A
+></H3
+><P
+>Performs a count of the rows in your query grouped by a given field.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;String, Integer&#62; countByFirstName = Patient.ALL.countBy(Patient.FIRST_NAME);
+System.out.println("Patients counts by first name: "+ countByFirstName);
+Map&#60;String, Integer&#62; countByLastName = Patient.ALL.countBy(Patient.LAST_NAME);
+System.out.println("Patients counts by last name: "+ countByLastName);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.first_name, count(p.first_name) from patient p  group by p.first_name
+Patients counts by first name: {Charles=1, Derek=1}
+==&#62; select p.last_name, count(p.last_name) from patient p  group by p.last_name
+Patients counts by last name: {Anderson=2}&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN324"
+>4.5.3. Query.mapBy(Field)</A
+></H3
+><P
+>Creates an in-memory map of the value of the given field to the object.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;String, Patient&#62; mapByFirstName = Patient.ALL.mapBy(Patient.FIRST_NAME);
+System.out.println("Patients counts by first name: "+ mapByFirstName);
+Map&#60;String, Patient&#62; mapByLastName = Patient.ALL.mapBy(Patient.LAST_NAME);
+System.out.println("Patients counts by last name: "+ mapByLastName);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+Patients counts by first name: {Derek=[Patient id:1 last_name:Anderson first_name:Derek], Charles=[Patient id:2 last_name:Anderson first_name:Charles]}
+==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+Patients counts by last name: {Anderson=[Patient id:2 last_name:Anderson first_name:Charles]}&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN329"
+>4.5.4. Query.collectBy(Field)</A
+></H3
+><P
+>You'll notice in the previous example only one object can be returned for each field value.  Because there are two patients with the last name "Anderson", there is a race and only one will be returned.  (which one is determined by the order the database returns the rows in)  If we want to capture both objects we can use the collectBy() method.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;String, Collection&#60;Patient&#62;&#62; collectByLastName = Patient.ALL.collectBy(Patient.LAST_NAME);
+for (Entry&#60;String, Collection&#60;Patient&#62;&#62; e : collectByLastName.entrySet()) {
+    String lastName = e.getKey();
+    System.out.println("We have the follow people with a last name of "+ lastName +":");
+    for (Patient patient : e.getValue()) {
+        System.out.println("\t"+ patient);
+    }
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+We have the follow people with a last name of Anderson:
+	[Patient id:1 last_name:Anderson first_name:Derek]
+	[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN334"
+>4.5.5. Query.sum(Field)</A
+></H3
+><P
+>If you want to sum a given field, use Query.sum(Field).  For example:</P
+><PRE
+CLASS="programlisting"
+>Double sum = Purchase.ALL.sum(Purchase.PRICE);
+System.out.println("Our customers purchased a total of $"+ sum);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select sum(p.price) from purchase p 
+Our customers purchased a total of $350.0&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN339"
+>4.5.6. Query.sumBy(Field, Field)</A
+></H3
+><P
+>If you want to sum a given field grouped by another field, use Query.sum(Field1, Field2).  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
+Map&#60;Integer, Double&#62; sums = Purchase.ALL.sumBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : sums.entrySet()) {
+    Integer itemId = e.getKey();
+    Double sum = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("Our customers purchased a total of $"+ sum +" in "+ item);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i 
+==&#62; select p.item_id, sum(p.price)  from purchase p  group by p.item_id
+Our customers purchased a total of $100.0 in [Item id:1 name:"Eye Exam"]
+Our customers purchased a total of $250.0 in [Item id:2 name:Glasses]&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN344"
+>4.5.7. Query.average(Field)</A
+></H3
+><P
+>If you want to average a given field, use Query.average(Field).  For example:</P
+><PRE
+CLASS="programlisting"
+>Double average = Purchase.ALL.average(Purchase.PRICE);
+System.out.println("Our customers purchased items with an average of $"+ average);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select avg(p.price) from purchase p 
+Our customers purchased items with an average of $175.0&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN349"
+>4.5.8. Query.averageBy(Field, Field)</A
+></H3
+><P
+>If you want to average a given field grouped by another field, use Query.averageBy(Field1, Field2).  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
+Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
+    Integer itemId = e.getKey();
+    Double average = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("The average "+ item +" purchase was $"+ average);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i 
+==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
+The average [Item id:1 name:"Eye Exam"] purchase was $100.0
+The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN354"
+>4.6. Terminal vs. Non-terminal Methods</A
+></H2
+><P
+>When is a query run?</P
+><P
+>The short and sweet of it is it's run when a terminal method is called.  A terminal method is a method that does not return a Query object.  For example, Query.sum(Field) is a terminal method because it returns a double.  Query.onlyFields(Field) is not because it returns another Query (which can be further specified).</P
+><P
+>TODO: Table of terminal vs. non-terminal methods</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN359"
+>4.7. Order By</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN362"
+>4.8. Distinct</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN365"
+>4.9. Limit Operations</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN368"
+>4.10. Selecting Only Specific Fields</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN371"
+>4.11. Performance</A
+></H2
+><P
+>DKOs are streaming where-ever possible.  Assuming your JDBC driver isn't terribly written you can iterate over huge datasets that would be impossible to fit into memory.  (And we do - few companies have larger data sets than my employer)</P
+><P
+>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</P
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN375"
+>4.11.1. Automatic Query Optimizations</A
+></H3
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H3
+CLASS="section"
+><A
+NAME="AEN378"
+>4.11.2. Automatic Performance Warnings</A
+></H3
+><P
+>TODO</P
+></DIV
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN381"
+>4.12. Inner Queries</A
+></H2
+><P
+>Previously we looked at an example for calculating cost averages by item types sold:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
+Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
+    Integer itemId = e.getKey();
+    Double average = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("The average "+ item +" purchase was $"+ average);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i 
+==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
+The average [Item id:1 name:"Eye Exam"] purchase was $100.0
+The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+><P
+>This works, but is inefficient because it pulls from the database more items than it needs.  This is fine in this example but could be a huge bottleneck if you have millions of available products for sale.  A better implementation would use an inner query.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.where(Item.ID.in(
+        Purchase.ALL.onlyFields(Purchase.ITEM_ID).distinct()
+)).mapBy(Item.ID);
+Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
+    Integer itemId = e.getKey();
+    Double average = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("The average "+ item +" purchase was $"+ average);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i  where i.id in (select distinct p.item_id from purchase p )
+==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
+The average [Item id:1 name:"Eye Exam"] purchase was $100.0
+The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+><P
+>In SQL, queries used as inner queries can only return one column.  To select which column we use the ".onlyFields()" method you see in the example above.</P
+><P
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN392"
+>4.13. Temporary Tables</A
+></H2
+><P
+>The method Field.in() can take more than just an inner query.  Like in SQL it can take an arbitrary collection.  For instance:</P
+><PRE
+CLASS="programlisting"
+>List&#60;String&#62; names = new ArrayList&#60;String&#62;();
+names.add("Derek");
+names.add("Charles");
+for (Patient patient : Patient.ALL.where(Patient.FIRST_NAME.in(names))) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.first_name in (?,?) -- [Derek|Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>This could also be written like:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.where(Patient.FIRST_NAME.in("Derek", "Charles"))) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.first_name in (?,?) -- [Derek|Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>You'll note at the end of the SQL statement that DKOs use Java PreparedStatements (exclusively).  The two question marks are placeholders for the values shown pipe-delimited at the end of the query.  The DKO library is designed to way to protect you from SQL-injection attacks.</P
+><P
+>This technique of multiple placeholder values doesn't scale well however.  So after a current threshold (currently 256) DKOs switch to a temporary table and an inner query.  This is transparent to you but provides a significant performance boost (esp. on SQL Server).</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN402"
+>4.14. Table Aliases</A
+></H2
+><P
+>Sometimes you need to join a table to itself or you for some other reason have the same table in your query multiple times.  We saw an example of this before when comparing the appointment office location with the primary office location of the appointment's doctor.  Let's look at that again:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .with(Appointment.FK_OFFICE)
+        .where(Office.ID.neq(Office.ID));
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getDoctorIdFK().getFirstName()
+            +" has an appointment scheduled at "
+            + apmt.getOfficeIdFK().getName()
+            +" but her primary office is "
+            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName() +"!"
+    );
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id where o2.id!=o.id
+Lingyan has an appointment scheduled at CF Eye Care but her primary office is UH College of Optometry!&#13;</PRE
+><P
+>In this instance the fields were not ambiguous and the comparison operation was symmetric, so the DKO library simply assigned one field to one table and the other field to the other.  But sometimes it's not clear-cut like this and you need to specify which field is from which table (just like you do in SQL).  To do this you use the Table.as() and Field.from() methods.  For an (admittedly contrived) example selecting only patients with family members who are also patients:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Patient&#62; q = Patient.ALL
+        .cross(Patient.as("family"))
+        .where(Patient.LAST_NAME.eq(Patient.LAST_NAME.from("family"))
+                .and(Patient.FIRST_NAME.neq(Patient.FIRST_NAME.from("family"))));
+for (Patient patient : q) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p , patient family where( p.first_name!=family.first_name and  p.last_name=family.last_name)
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN414"
+>4.15. SQL Functions</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN417"
+>4.16. Joins</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN420"
+>4.17. as*() Transformations</A
+></H2
+><P
+>TODO</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN423"
+></A
+>Chapter 5. Write Operations</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN425"
+>5.1. Insert</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN428"
+>5.2. Update</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN431"
+>5.3. Delete</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN434"
+>5.4. Transactions</A
+></H2
+><P
+>DKOs support transactions.  (They would be of little use if they didn't!)  But first we must introduce Context objects.  Let's first look at some example code:</P
+><PRE
+CLASS="programlisting"
+>System.out.println("I see " +Patient.ALL.count() +" patients.");
+DataSource ds = Patient.ALL.getDataSource();
+Context context = Context.getVMContext();
+context.startTransaction(ds);
+new Patient().setFirstName("John").setLastName("Doe").insert(ds);
+System.out.println("Now I see " +Patient.ALL.count() +" patients.");
+context.rollbackTransaction(ds);
+System.out.println("Finally I see " +Patient.ALL.count() +" patients.");
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select count(1) from patient p 
+I see 2 patients.
+==&#62; begin transaction
+==&#62; insert into patient (birth_date, social_security_number, since, last_name, id, primary_doctor_id, first_name) values (?, ?, ?, ?, ?, ?, ?) -- [null|null|null|Doe|null|null|John]
+==&#62; select count(1) from patient p 
+Now I see 3 patients.
+==&#62; rollback
+==&#62; select count(1) from patient p 
+Finally I see 2 patients.&#13;</PRE
+><P
+>The first thing we do here is get a reference to the javax.sql.DataSource configured as the default for our Patient.ALL query.  All query objects have this getDataSource() method.  We need this because transactions are handled per-datasource.</P
+><P
+>The next thing we do is get a reference to our context.  For this example we're using the VM context which means that transactions we start here will apply to all future queries (in all threads) that use this datasource (until we commit or it back).</P
+><P
+>The third thing we do it start a transaction on the given datasource.  Internally the DKO library keeps the connection open and reuses it for all future queries until the transaction is committed or rolled back.  The method context.startTransaction() returns a boolean value indicating success.</P
+><P
+>The rest of the example should be familiar to you by now, until you context.rollbackTransaction().</P
+><P
+></P
+><P
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN446"
+></A
+>Chapter 6. Data Sources</H1
+><P
+></P
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN449"
+>6.1. MatryoshkaDataSource</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN452"
+>6.2. ConnectionCountingDataSource</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN455"
+>6.3. MirroredDataSource</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN458"
+>6.4. ReflectedDataSource</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN461"
+>6.5. SingleConnectionDataSource</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN464"
+>6.6. SingleThreadedDataSource</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN467"
+>6.7. UnclosableConnection</A
+></H2
+><P
+>TODO</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+><HR><H1
+><A
+NAME="AEN470"
+></A
+>Chapter 7. Miscellaneous</H1
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN472"
+>7.1. Contexts</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN475"
+>7.2. Bulk Operations</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN478"
+>7.3. Supported Databases</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN481"
+>7.4. Diffs</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN484"
+>7.5. CSV</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><HR><H2
+CLASS="section"
+><A
+NAME="AEN487"
+>7.6. FAQs</A
+></H2
+><P
+>Q: What happens when I call .where() multiple times on the same query object?</P
+><P
+>A: All the calls to .where() are "and"ed together.</P
+><P
+>Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</P
+><P
+>A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</P
+><P
+>Q: </P
+><P
+>A: </P
+><P
+>Q: </P
+><P
+>A: </P
+><P
+>Q: </P
+><P
+>A: </P
+></DIV
+></DIV
+></DIV
+></BODY
+></HTML
+>

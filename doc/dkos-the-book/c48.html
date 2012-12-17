@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Table Models</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Generating Classes"
+HREF="x40.html"><LINK
+REL="NEXT"
+TITLE="Fields"
+HREF="x59.html"></HEAD
+><BODY
+CLASS="chapter"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x40.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x59.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="chapter"
+><H1
+><A
+NAME="AEN48"
+></A
+>Chapter 3. Table Models</H1
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN50"
+>3.1. Overview</A
+></H1
+><P
+>Table classes serve two purposes in DKOs.  First they model the database table itself.  And second they model the rows in the table.  This may seem odd at first.  Why would we not use two different classes to model the table and the row?  (In fact this is done in every other ORM I've seen)  But I think this adds unnecessary complexity to the framework when you consider that tables and their rows are in reality so closely intertwined as to be nearly inseparable.  And when you consider than another method of bifurcating is available:  The "static" modifier.</P
+><P
+>In a generated table class (by convention) everything that is a static method or variable is applicable to the database table, where everything that is not static applies to the row.  Let's take a look at an example:</P
+><PRE
+CLASS="programlisting"
+>public class Person extends Table {
+
+	public static final Query&#60;Person&#62; ALL = [...];
+
+	public static final Field&#60;Integer&#62; ID = [...];
+	public static final Field&#60;String&#62;  FIRST_NAME = [...];
+	public static final Field&#60;String&#62;  LAST_NAME = [...];
+	public static final Field&#60;Date&#62;    BIRTH_DATE = [...];
+	public static final Field&#60;String&#62;  SSN = [...];
+
+	public Integer getId() {}
+	public String getFirstName() {}
+	public String getLastName() {}
+	public Date getBirthDate() {}
+	public java.lang.String getSsn() {}
+
+}</PRE
+><P
+>You can clearly see the columns of the table are all static constants (useful for building database queries), where an instance of the class Person would have getter methods for the values in a specific row.</P
+><P
+></P
+><PRE
+CLASS="programlisting"
+></PRE
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x40.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x59.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Generating Classes</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Fields</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

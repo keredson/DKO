@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Instances</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Table Models"
+HREF="c48.html"><LINK
+REL="PREVIOUS"
+TITLE="Fields"
+HREF="x59.html"><LINK
+REL="NEXT"
+TITLE="Foreign Keys"
+HREF="x196.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x59.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Table Models</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x196.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN154"
+>3.3. Instances</A
+></H1
+><P
+>Instances of classes that extend Table represent the rows in that table.  For example, if I wanted to create a new row in the person table in our example schema, I would do something like this:</P
+><PRE
+CLASS="programlisting"
+>Person person = new Person();
+person.setFirstName("Derek");
+person.setLastName("Anderson");
+boolean success = person.insert();</PRE
+><P
+>Since all generated table objects follow a builder pattern, this would also be valid:</P
+><PRE
+CLASS="programlisting"
+>boolean success = new Person()
+	.setFirstName("Derek")
+	.setLastName("Anderson")
+	.insert();</PRE
+><P
+>Both of these statements would insert into the default DataSource defined when generating these classes.  If none provided, you would need to provide one when calling insert.  (This is also how you would change at run-time which database the insert went to, assuming you have multiple databases)</P
+><PRE
+CLASS="programlisting"
+>DataSource ds = getSomeDataSource();
+boolean success = new Person()
+	.setFirstName("Derek")
+	.setLastName("Anderson")
+	.insert(ds);</PRE
+><P
+>Since our example is hitting a SQLite3 database and this table has a auto-generated primary key "id", we can access the value by subsequently calling "person.getId()".</P
+><P
+>All of your normal database operations are available:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN164"
+></A
+><P
+><B
+>Table 3-3. Table Instance SQL Methods</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>SQL Operation</TH
+><TH
+>Instance Method</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>INSERT</TD
+><TD
+>person.insert();</TD
+><TD
+>Inserts the given row into the database.  All fields that have been set are inserted.  (None of the fields that haven't been set are, allowing for database defaults)  Throws a SQLException if the row already exists.</TD
+></TR
+><TR
+><TD
+>UPDATE</TD
+><TD
+>person.update();</TD
+><TD
+>Updates the row in the database.  (Throws a SQLException if it doesn't exist)  Only the fields that have changed are updated (ie: it doesn't clobber any other fields that might have changed in the database in the interim)</TD
+></TR
+><TR
+><TD
+>DELETE</TD
+><TD
+>person.delete();</TD
+><TD
+>Deletes the row in the database.  Throws a SQLException if it doesn't exist.</TD
+></TR
+><TR
+><TD
+>EXISTS</TD
+><TD
+>person.exists();</TD
+><TD
+>Returns true if this row already exists in the database.  If the table has a primary key defined, this is used for the check.  Otherwise all columns are used.</TD
+></TR
+><TR
+><TD
+>INSERT or UPDATE</TD
+><TD
+>person.save();</TD
+><TD
+>Automatically performs an insert or an update based on whether this row exists in the database already.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>All of the above methods also have versions that take a specific DataSource.</P
+><P
+>All generated Table classes also have a generic "public &#60;T&#62; get(Field&#60;T&#62;)" method that will return the value associated with a given field.  Also they all have a "public List&#60;Field&#60;?&#62;&#62; fields()" that returns all the fields set or fetched for this specific instance.</P
+><P
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x59.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x196.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Fields</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c48.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Foreign Keys</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

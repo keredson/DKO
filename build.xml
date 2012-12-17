@@ -156,12 +156,13 @@ public class BuildInfo {
       debug="true"
       javaoutputdir="${gen}/docbook"
       schemas="docsrc/thebook/thebook_schema.json"
+      fakefks="docsrc/thebook/thebook_fakefks.json"
       datasource="ds = test.DefaultDataSource.get();"
     />
     <javac srcdir="test/docbook:gen/docbook" destdir="bin" debug="on" 
     	classpath="${lib_nosco_jar}:${dep_sqlite_jar}"
    	/>
-    <copy todir="bin">
+    <copy todir="bin" overwrite="true">
       <fileset file="docsrc/thebook/thebook.db"/>
     </copy>
     <junit printsummary="yes" haltonfailure="yes" fork="yes">

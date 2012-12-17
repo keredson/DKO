@@ -65,7 +65,7 @@ class TableInfo implements Cloneable {
 		result = prime * result
 				+ ((dummyTable == null) ? 0 : dummyTable.hashCode());
 		result = prime * result + ((fkInfo == null) ? 0 : fkInfo.hashCode());
-		result = prime * result + ((join == null) ? 0 : join.hashCode());
+		//result = prime * result + ((join == null) ? 0 : join.hashCode());
 		result = prime * result + (nameAutogenned ? 1231 : 1237);
 		result = prime * result + Arrays.hashCode(path);
 		result = prime * result

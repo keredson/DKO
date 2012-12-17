@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Queries</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Foreign Keys"
+HREF="x196.html"><LINK
+REL="NEXT"
+TITLE="Hello World"
+HREF="x218.html"></HEAD
+><BODY
+CLASS="chapter"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x196.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x218.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="chapter"
+><H1
+><A
+NAME="AEN210"
+></A
+>Chapter 4. Queries</H1
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN212"
+>4.1. Overview</A
+></H1
+><P
+>DKO Query objects are the primary entry point for almost all uses of DKO objects.  It's name is somewhat misleading because the Query interface covers not just SQL select statements but all normal CRUD operations.  Combining both read and write operations into one interface was done intentionally however, as they are also intricately linked in SQL.  (recall that one of the goals of DKO is to embrace SQL, not hide it)  And naming it a "Query" intentionally reflects the almost universal disproportionate weighting of reads over writes in most programming applications.</P
+><P
+>There are two important aspects of DKO queries I want to make special note of here:</P
+><P
+>The first is that queries are immutable.  They follow a builder pattern, but at every step they return a new object.  This allows you to mix and match queries in different sections of code without worry.  It's very common to save off a commonly used query somewhere and have multiple other sections of your application further refine it with additional conditionals, joins, etc.</P
+><P
+>The second is that they are all implementers of java.lang.Iterable.  This means they can be used in the new Java for-each loops, which is by far the most common way to access the rows in a table.  It also means that's it's easy to run a query more often than you intended.  Every time Query.iterator() is called a new connection to the database is made.  (recall that Iterables can be iterated over multiple times, where Iterators can only be iterated over once)  It is very difficult (some would say impossible) to write good "should I cache this?" code without making performance (and run-time results) unpredictable.  When designing DKOs I intentionally left caching up to the discretion of the programmer.  (And attempted to make it dead-simple, such as with the "Query.asList()" method)</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x196.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x218.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Foreign Keys</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Hello World</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

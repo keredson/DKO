@@ -1,6 +1,7 @@
 package org.kered.dko;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,4 +63,24 @@ class SqlContext {
 		return sb.toString();
 	}
 
+	Set<String> getPossibleTableMatches(Class<? extends Table> table) {
+		Set<String> names = new HashSet<String>();
+		for (TableInfo ti : q.tableInfos) {
+			if (table.equals(ti.tableClass)) names.add(ti.tableName);
+		}
+		for (JoinInfo ji : q.joins) {
+			if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
+			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+		}
+		for (JoinInfo ji : q.joinsToOne) {
+			if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
+			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+		}
+		for (JoinInfo ji : q.joinsToMany) {
+			if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
+			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+		}
+		return names;
+	}
+	
 }

@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Conditions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Queries"
+HREF="c210.html"><LINK
+REL="PREVIOUS"
+TITLE="Hello World"
+HREF="x218.html"><LINK
+REL="NEXT"
+TITLE="The With Method"
+HREF="x269.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x218.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Queries</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x269.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN227"
+>4.3. Conditions</A
+></H1
+><P
+>Only rarely are "select *" queries (such as in the Hello World example) useful.  Most SQL queries contain a "where clause".  Likewise, most DKO queries also contain a where clause.  Let's look at an example.  Suppose you want to find all the people with the first name "Derek".</P
+><PRE
+CLASS="programlisting"
+>select * from person where first_name='Derek'</PRE
+><P
+>The equivalent DKO query would be:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(Person.FIRST_NAME.eq("Derek"));</PRE
+><P
+>This API was intentionally written to have as much of a SQL "feel" as possible.  Let's break this down by type to better understand what's going on.</P
+><PRE
+CLASS="programlisting"
+>Field&#60;String&#62; fn = Person.FIRST_NAME;
+Condition whereClause = fn.eq("Derek");
+Query&#60;Person&#62; q = Person.ALL.where(whereClause);</PRE
+><P
+>Condition objects can be combined with "and" or "or":</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(
+    Person.FIRST_NAME.eq("Derek").and(Person.LAST_NAME.eq("Anderson"))
+);</PRE
+><P
+>Many queries are easier to read if you use static imports for the fields:</P
+><PRE
+CLASS="programlisting"
+>import static Person.*;
+Query&#60;Person&#62; q = Person.ALL.where(
+    FIRST_NAME.eq("Derek").and(LAST_NAME.eq("Anderson"))
+);</PRE
+><P
+>Going forward many of my code samples will assume a static import of the fields exists.</P
+><P
+>Note: Field objects are generic, so a Field&#60;String&#62; only has a .eq(String) method, not .eq(Object).</P
+><P
+>Conditions have the following methods available:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN242"
+></A
+><P
+><B
+>Table 4-1. Condition Methods vs. SQL Conditions</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>SQL</TH
+><TH
+>Condition Method</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>where <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+> and <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+>.and(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>where <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+> or <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+>.or(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>b</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>where not <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+></TD
+><TD
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>a</I
+></SPAN
+>.not()</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x218.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x269.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Hello World</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c210.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The With Method</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

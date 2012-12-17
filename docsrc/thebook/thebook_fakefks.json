@@ -1,0 +1,33 @@
+{
+  "fk1": {
+    "reffing": ["","doctor"],
+    "reffed": ["","office"],
+    "columns": {"primary_office_id":"id"}
+  },
+  "fk3": {
+    "reffing": ["","appointment"],
+    "reffed": ["","patient"],
+    "columns": {"patient_id":"id"}
+  },
+  "fk4": {
+    "reffing": ["","appointment"],
+    "reffed": ["","doctor"],
+    "columns": {"doctor_id":"id"}
+  },
+  "fk5": {
+    "reffing": ["","appointment"],
+    "reffed": ["","office"],
+    "columns": {"office_id":"id"}
+  },
+  "fk6": {
+    "reffing": ["","purchase"],
+    "reffed": ["","item"],
+    "columns": {"item_id":"id"}
+  },
+  "fk7": {
+    "reffing": ["","purchase"],
+    "reffed": ["","appointment"],
+    "columns": {"appointment_id":"id"}
+  },
+}
+

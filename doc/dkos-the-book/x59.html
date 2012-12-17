@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Fields</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="DKOs - The Book"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Table Models"
+HREF="c48.html"><LINK
+REL="PREVIOUS"
+TITLE="Table Models"
+HREF="c48.html"><LINK
+REL="NEXT"
+TITLE="Instances"
+HREF="x154.html"></HEAD
+><BODY
+CLASS="section"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>DKOs - The Book</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="c48.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Table Models</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x154.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="section"
+><H1
+CLASS="section"
+><A
+NAME="AEN59"
+>3.2. Fields</A
+></H1
+><P
+>Fields represent database columns.  All table classes have at least one public static field instance.  They are immutable and contain basic information about the database column they reflect (such as their type in SQL, their type in Java, the column name, what table they're a part of, etc.)  You will likely never construct one but they are one of the most important parts of the DKO library.  This is because fields are how you construct conditionals.  For instance, let's assume the following SQL query:</P
+><PRE
+CLASS="programlisting"
+>select * from PERSON where FIRST_NAME='Derek';</PRE
+><P
+>The where clause of this query is a simple equality condition.  To create a DKO representation of this condition you would use the following:</P
+><PRE
+CLASS="programlisting"
+>Condition condition = Person.FIRST_NAME.eq("Derek");</PRE
+><P
+>This condition object could then be passed into the where method on a query.  For Example:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(condition);</PRE
+><P
+>Of course this is such a small example you would probably do it all on one line:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Person&#62; q = Person.ALL.where(Person.FIRST_NAME.eq("Derek"));</PRE
+><P
+>All normal SQL conditional statements have direct corollaries in DKO.  Here is a table of SQL to field method names:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN70"
+></A
+><P
+><B
+>Table 3-1. Field Methods vs. SQL Comparisons</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>Operation</TH
+><TH
+>SQL</TH
+><TH
+>Field Method</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Equal to</TD
+><TD
+>field = x</TD
+><TD
+>FIELD.eq(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Greater than</TD
+><TD
+>field &#62; x</TD
+><TD
+>FIELD.gt(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Less than</TD
+><TD
+>field &#60; x</TD
+><TD
+>FIELD.lt(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Greater than or equal to</TD
+><TD
+>field &#62;= x</TD
+><TD
+>FIELD.gte(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Less than or equal to</TD
+><TD
+>field &#60;= x</TD
+><TD
+>FIELD.lte(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Not equal to</TD
+><TD
+>field &#60;&#62; x</TD
+><TD
+>FIELD.neq(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Between</TD
+><TD
+>field between x and y</TD
+><TD
+>FIELD.between(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>, <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>y</I
+></SPAN
+>)</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>Math operations are also supported:</P
+><DIV
+CLASS="table"
+><A
+NAME="AEN116"
+></A
+><P
+><B
+>Table 3-2. Field Methods vs. SQL Math Operations</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>Operation</TH
+><TH
+>SQL</TH
+><TH
+>Field Method</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Addition</TD
+><TD
+>field + x</TD
+><TD
+>FIELD.add(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Subtraction</TD
+><TD
+>field - x</TD
+><TD
+>FIELD.sub(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Multiplication</TD
+><TD
+>field * x</TD
+><TD
+>FIELD.mul(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Division</TD
+><TD
+>field / x</TD
+><TD
+>FIELD.div(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+><TR
+><TD
+>Modulus</TD
+><TD
+>field % x</TD
+><TD
+>FIELD.mod(<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>x</I
+></SPAN
+>)</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>All of these field operations are not limited to constants of their type (such as Field&#60;String&#62;.eq(String)).  They all also take other fields of compatible types (ie: Field&#60;String&#62;.eq(Field&#60;String&#62;)) or SQL function objects (which we'll discuss later).</P
+><P
+>All generated table classes also have a "public static List&#60;Field&#60;?&#62;&#62; _FIELDS" object that is an immutable list of all fields in the table.</P
+><P
+></P
+><P
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="c48.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x154.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Table Models</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="c48.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Instances</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

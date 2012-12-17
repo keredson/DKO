@@ -1,7 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" [
-  <!ENTITY example1jva SYSTEM "../../gen/docbook/example1.jva">
-  <!ENTITY example1out SYSTEM "../../gen/docbook/example1.out">
+  <!ENTITY test1jva SYSTEM "../../gen/docbook/test1.jva">
+  <!ENTITY test1out SYSTEM "../../gen/docbook/test1.out">
+  <!ENTITY test2jva SYSTEM "../../gen/docbook/test2.jva">
+  <!ENTITY test2out SYSTEM "../../gen/docbook/test2.out">
+  <!ENTITY test3jva SYSTEM "../../gen/docbook/test3.jva">
+  <!ENTITY test3out SYSTEM "../../gen/docbook/test3.out">
+  <!ENTITY test4jva SYSTEM "../../gen/docbook/test4.jva">
+  <!ENTITY test4out SYSTEM "../../gen/docbook/test4.out">
+  <!ENTITY test5jva SYSTEM "../../gen/docbook/test5.jva">
+  <!ENTITY test5out SYSTEM "../../gen/docbook/test5.out">
+  <!ENTITY test6jva SYSTEM "../../gen/docbook/test6.jva">
+  <!ENTITY test6out SYSTEM "../../gen/docbook/test6.out">
+  <!ENTITY test7jva SYSTEM "../../gen/docbook/test7.jva">
+  <!ENTITY test7out SYSTEM "../../gen/docbook/test7.out">
+  <!ENTITY test8jva SYSTEM "../../gen/docbook/test8.jva">
+  <!ENTITY test8out SYSTEM "../../gen/docbook/test8.out">
+  <!ENTITY test9jva SYSTEM "../../gen/docbook/test9.jva">
+  <!ENTITY test9out SYSTEM "../../gen/docbook/test9.out">
+  <!ENTITY test10jva SYSTEM "../../gen/docbook/test10.jva">
+  <!ENTITY test10out SYSTEM "../../gen/docbook/test10.out">
+  <!ENTITY test11jva SYSTEM "../../gen/docbook/test11.jva">
+  <!ENTITY test11out SYSTEM "../../gen/docbook/test11.out">
+  <!ENTITY test12jva SYSTEM "../../gen/docbook/test12.jva">
+  <!ENTITY test12out SYSTEM "../../gen/docbook/test12.out">
+  <!ENTITY test13jva SYSTEM "../../gen/docbook/test13.jva">
+  <!ENTITY test13out SYSTEM "../../gen/docbook/test13.out">
+  <!ENTITY test14jva SYSTEM "../../gen/docbook/test14.jva">
+  <!ENTITY test14out SYSTEM "../../gen/docbook/test14.out">
+  <!ENTITY test15jva SYSTEM "../../gen/docbook/test15.jva">
+  <!ENTITY test15out SYSTEM "../../gen/docbook/test15.out">
+  <!ENTITY test16jva SYSTEM "../../gen/docbook/test16.jva">
+  <!ENTITY test16out SYSTEM "../../gen/docbook/test16.out">
+  <!ENTITY test17jva SYSTEM "../../gen/docbook/test17.jva">
+  <!ENTITY test17out SYSTEM "../../gen/docbook/test17.out">
+  <!ENTITY test18jva SYSTEM "../../gen/docbook/test18.jva">
+  <!ENTITY test18out SYSTEM "../../gen/docbook/test18.out">
+  <!ENTITY test19jva SYSTEM "../../gen/docbook/test19.jva">
+  <!ENTITY test19out SYSTEM "../../gen/docbook/test19.out">
+  <!ENTITY test20jva SYSTEM "../../gen/docbook/test20.jva">
+  <!ENTITY test20out SYSTEM "../../gen/docbook/test20.out">
+  <!ENTITY test21jva SYSTEM "../../gen/docbook/test21.jva">
+  <!ENTITY test21out SYSTEM "../../gen/docbook/test21.out">
+  <!ENTITY test22jva SYSTEM "../../gen/docbook/test22.jva">
+  <!ENTITY test22out SYSTEM "../../gen/docbook/test22.out">
+  <!ENTITY test23jva SYSTEM "../../gen/docbook/test23.jva">
+  <!ENTITY test23out SYSTEM "../../gen/docbook/test23.out">
+  <!ENTITY test24jva SYSTEM "../../gen/docbook/test24.jva">
+  <!ENTITY test24out SYSTEM "../../gen/docbook/test24.out">
+  <!ENTITY test25jva SYSTEM "../../gen/docbook/test25.jva">
+  <!ENTITY test25out SYSTEM "../../gen/docbook/test25.out">
+  <!ENTITY test26jva SYSTEM "../../gen/docbook/test26.jva">
+  <!ENTITY test26out SYSTEM "../../gen/docbook/test26.out">
+  <!ENTITY test27jva SYSTEM "../../gen/docbook/test27.jva">
+  <!ENTITY test27out SYSTEM "../../gen/docbook/test27.out">
+  <!ENTITY test28jva SYSTEM "../../gen/docbook/test28.jva">
+  <!ENTITY test28out SYSTEM "../../gen/docbook/test28.out">
+  <!ENTITY test29jva SYSTEM "../../gen/docbook/test29.jva">
+  <!ENTITY test29out SYSTEM "../../gen/docbook/test29.out">
 ]>
 
 <book>
@@ -337,62 +393,338 @@ boolean success = new Person()
     <section>
       <title>Hello World</title>
       <para>Given our example schema and generated code defined so far, let's look at some simple examples.  For instance, printing out all the people in our database:</para>
-      <programlisting language="java">&example1jva;</programlisting>
+      <programlisting language="java">&test1jva;</programlisting>
       <para>Will print the following:</para>
-      <programlisting language="java">&example1out;</programlisting>
-      <para>Take a look at the static constant "Person.ALL".  This is of type Query&lt;Person>, which is of type Iterable&lt;Person> (which is why you can use it in a for-each loop).  All generated DKO objects have this special (immutable) query object and it serves as the root source of all access to the person table in our database.</para>
+      <programlisting language="java">&test1out;</programlisting>
+      <para>Take a look at the static constant "Person.ALL".  This is of type Query&lt;Person>, which is of type Iterable&lt;Person> (which is why you can use it in a for-each loop).  When iterated over it runs the query (basically a "select *") and streams the results from the database into your loop.  All generated DKO objects have this special (immutable) query object and it serves as the root source of all access to the person table in our database.</para>
       <para>Note the line starting with "==>":  This is debug information (optionally) printed to stderr whenever the DKO library runs a query against the database.  For all of the examples in this book I will include these lines to help demonstrate when the DKO library is hitting the database and when it is not.</para>
       <para>The default toString() method of a DKO object is the class name, the primary key of the table and any "important" fields.  Here "important" is defined by a heuristic that may change as the DKO library evolves, but currently is simply whether the field name contains the strings "name" or "title".  If you want all the fields of a DKO object there is a similar toStringDetailed() method on each class.</para>
-      <para></para>
-      <para></para>
-      <para></para>
-      <para></para>
     </section>
     <section>
       <title>Conditions</title>
-      <para>TODO: STUB</para>
-      <para></para>
+      <para>Only rarely are "select *" queries (such as in the Hello World example) useful.  Most SQL queries contain a "where clause".  Likewise, most DKO queries also contain a where clause.  Let's look at an example.  Suppose you want to find all the people with the first name "Derek".</para>
+      <programlisting language="sql"><![CDATA[select * from person where first_name='Derek']]></programlisting>
+      <para>The equivalent DKO query would be:</para>
+      <programlisting language="java"><![CDATA[Query<Person> q = Person.ALL.where(Person.FIRST_NAME.eq("Derek"));]]></programlisting>
+      <para>This API was intentionally written to have as much of a SQL "feel" as possible.  Let's break this down by type to better understand what's going on.</para>
+      <programlisting language="java"><![CDATA[Field<String> fn = Person.FIRST_NAME;
+Condition whereClause = fn.eq("Derek");
+Query<Person> q = Person.ALL.where(whereClause);]]></programlisting>
+      <para>Condition objects can be combined with "and" or "or":</para>
+      <programlisting language="java"><![CDATA[Query<Person> q = Person.ALL.where(
+    Person.FIRST_NAME.eq("Derek").and(Person.LAST_NAME.eq("Anderson"))
+);]]></programlisting>
+      <para>Many queries are easier to read if you use static imports for the fields:</para>
+      <programlisting language="java"><![CDATA[import static Person.*;
+Query<Person> q = Person.ALL.where(
+    FIRST_NAME.eq("Derek").and(LAST_NAME.eq("Anderson"))
+);]]></programlisting>
+      <para>Going forward many of my code samples will assume a static import of the fields exists.</para>
+      <para>Note: Field objects are generic, so a Field&lt;String> only has a .eq(String) method, not .eq(Object).</para>
+      <para>Conditions have the following methods available:</para>
+      <table>
+      	<title>Condition Methods vs. SQL Conditions</title>
+      	<tgroup cols='2' align='left' colsep='2' rowsep='1'>
+          <thead>
+            <row>
+              <entry>SQL</entry>
+              <entry>Condition Method</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>where <emphasis>a</emphasis> and <emphasis>b</emphasis></entry>
+              <entry><emphasis>a</emphasis>.and(<emphasis>b</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>where <emphasis>a</emphasis> or <emphasis>b</emphasis></entry>
+              <entry><emphasis>a</emphasis>.or(<emphasis>b</emphasis>)</entry>
+            </row>
+            <row>
+              <entry>where not <emphasis>a</emphasis></entry>
+              <entry><emphasis>a</emphasis>.not()</entry>
+            </row>
+          </tbody>
+    	  </tgroup>
+      </table>
     </section>
     <section>
       <title>The With Method</title>
-      <para>TODO: STUB</para>
-      <para>lazy loading</para>
+      <para>The method Query.with(Field.FK...) is how you perform the majority of joins in DKOs.  Let's look at our schema again for reference:</para>
+      <mediaobject id="example_schema2">
+        <imageobject>
+          <imagedata fileref="db.png"/>
+        </imageobject>
+      </mediaobject>
       <section>
-        <title>Lazy Loading vs. Pre-Fetching</title>
-        <para>TODO: STUB</para>
-        <para>lazy loading</para>
+        <title>Many to One Joins</title>
+      <para>In our schema an appointment is made up of a patient, a doctor and an office.  Let's look at an example:</para>
+      <programlisting language="java">&test2jva;</programlisting>
+      <para>Will print the following:</para>
+      <programlisting language="java">&test2out;</programlisting>
+      <para>This is an example of lazy-loading.  Two queries are run.  The first fetches the doctor instance.  The second fetches the office instance when it is needed.  This is useful behavior, but it can cause performance problems if done repeatedly.  To speed up this code we need to join the doctor and office tables and retrieve both in one go.  To do this we use Query.with(Field.FK...).  Here is the same code performing that join:</para>
+      <programlisting language="java">&test3jva;</programlisting>
+      <para>Prints out the following:</para>
+      <programlisting language="java">&test3out;</programlisting>
+      <para>Notice only one query is run (with the appropriate join) and the returned doctor object's FK method is already linked to the related office object.</para>
+      <para>Often you want to join more than one table.  What if you want to print a list of all upcoming appointments?</para>
+      <programlisting language="java">&test4jva;</programlisting>
+      <para>When run prints out the following:</para>
+      <programlisting language="java">&test4out;</programlisting>
+      <para>Notice that all four tables are joined together automatically, and that the returned object is a composite of the corresponding four table objects.</para>
+      <para>You may have also noticed that the with method takes a vararg.  (ie: Field.FK...)  Passing multiple FK references into one with statement lets you travel multiple levels deep into the object graph.  For instance, if you wanted to include the doctor's primary office in the previous example you would do the following:</para>
+      <programlisting language="java">&test5jva;</programlisting>
+      <para>When run prints out the following:</para>
+      <programlisting language="java">&test5out;</programlisting>
+      <para>Tables joined with the "with()" method can be used in where clauses as well.  For instance, what if we wanted to only print appointments where the appointment office and the primary office of the doctor are different?</para>
+      <programlisting language="java">&test6jva;</programlisting>
+      <para>When run prints out the following:</para>
+      <programlisting language="java">&test6out;</programlisting>
+      </section>
+      <section>
+        <title>One to Many Joins</title>
+        <para>So far all of our examples have "many to one" joins.  What if you want a "one to many" join?  For instance what if you want all the appointments for a given doctor?  Every object that is the target of a foreign key has a ".getFKSet()" method which returns all the objects with a foreign key to this object.  Let's look at an example:</para>
+      <programlisting language="java">&test7jva;</programlisting>
+      <para>When run prints out the following:</para>
+      <programlisting language="java">&test7out;</programlisting>
+        <para>Oops!  Well, this did get all the appointments for a doctor in the one query, but we lazy-loaded the patient information.  Let's pull that in with the appointment:</para>
+      <programlisting language="java">&test8jva;</programlisting>
+      <para>Which prints out the following:</para>
+      <programlisting language="java">&test8out;</programlisting>
+      <para>As you can see we now are fetching all three tables in one query.</para>
+      <para>A closer look at the API will reveal that the ".getAppointmentSet()" method doesn't return a java.util.Set.  It returns a Query&lt;Appointment> which (in this case) is backed by a in-memory query implementation.  It's entirely possible to further filter your returned results even after your original database query is made.</para>
       </section>
     </section>
     <section>
-      <title>Aggregation Function</title>
-      <para>TODO: STUB</para>
-      <para></para>
+      <title>Aggregation Functions</title>
+      <para>Many common database aggregation features are first-class citizens of the DKO library.  Here are some of the most commonly used.</para>
+      <section>
+        <title>Query.count()</title>
+        <para>Performs a count of the rows in your query.  For example:</para>
+        <programlisting language="java">&test9jva;</programlisting>
+        <programlisting language="java">&test9out;</programlisting>
+      </section>
+      <section>
+        <title>Query.countBy(Field)</title>
+        <para>Performs a count of the rows in your query grouped by a given field.  For example:</para>
+        <programlisting language="java">&test10jva;</programlisting>
+        <programlisting language="java">&test10out;</programlisting>
+      </section>
+      <section>
+        <title>Query.mapBy(Field)</title>
+        <para>Creates an in-memory map of the value of the given field to the object.  For example:</para>
+        <programlisting language="java">&test11jva;</programlisting>
+        <programlisting language="java">&test11out;</programlisting>
+      </section>
+      <section>
+        <title>Query.collectBy(Field)</title>
+        <para>You'll notice in the previous example only one object can be returned for each field value.  Because there are two patients with the last name "Anderson", there is a race and only one will be returned.  (which one is determined by the order the database returns the rows in)  If we want to capture both objects we can use the collectBy() method.  For example:</para>
+        <programlisting language="java">&test12jva;</programlisting>
+        <programlisting language="java">&test12out;</programlisting>
+      </section>
+      <section>
+        <title>Query.sum(Field)</title>
+        <para>If you want to sum a given field, use Query.sum(Field).  For example:</para>
+        <programlisting language="java">&test13jva;</programlisting>
+        <programlisting language="java">&test13out;</programlisting>
+      </section>
+      <section>
+        <title>Query.sumBy(Field, Field)</title>
+        <para>If you want to sum a given field grouped by another field, use Query.sum(Field1, Field2).  For example:</para>
+        <programlisting language="java">&test14jva;</programlisting>
+        <programlisting language="java">&test14out;</programlisting>
+      </section>
+      <section>
+        <title>Query.average(Field)</title>
+        <para>If you want to average a given field, use Query.average(Field).  For example:</para>
+        <programlisting language="java">&test15jva;</programlisting>
+        <programlisting language="java">&test15out;</programlisting>
+      </section>
+      <section>
+        <title>Query.averageBy(Field, Field)</title>
+        <para>If you want to average a given field grouped by another field, use Query.averageBy(Field1, Field2).  For example:</para>
+        <programlisting language="java">&test16jva;</programlisting>
+        <programlisting language="java">&test16out;</programlisting>
+      </section>
     </section>
     <section>
       <title>Terminal vs. Non-terminal Methods</title>
-      <para>TODO: STUB</para>
-      <para>immutable</para>
-      <para>when is query run?</para>
+      <para>When is a query run?</para>
+      <para>The short and sweet of it is it's run when a terminal method is called.  A terminal method is a method that does not return a Query object.  For example, Query.sum(Field) is a terminal method because it returns a double.  Query.onlyFields(Field) is not because it returns another Query (which can be further specified).</para>
+      <para>TODO: Table of terminal vs. non-terminal methods</para>
+    </section>
+    <section>
+      <title>Order By</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Distinct</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Limit Operations</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Selecting Only Specific Fields</title>
+      <para>TODO</para>
     </section>
     <section>
       <title>Performance</title>
-      <para>TODO: STUB</para>
-      <para>Streaming</para>
+      <para>DKOs are streaming where-ever possible.  Assuming your JDBC driver isn't terribly written you can iterate over huge datasets that would be impossible to fit into memory.  (And we do - few companies have larger data sets than my employer)</para>
+      <para>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</para>
+      <section>
+        <title>Automatic Query Optimizations</title>
+        <para>TODO</para>
+      </section>
+      <section>
+        <title>Automatic Performance Warnings</title>
+        <para>TODO</para>
+      </section>
     </section>
     <section>
       <title>Inner Queries</title>
-      <para>TODO: STUB</para>
+      <para>Previously we looked at an example for calculating cost averages by item types sold:</para>
+      <programlisting language="java">&test16jva;</programlisting>
+      <programlisting language="java">&test16out;</programlisting>
+      <para>This works, but is inefficient because it pulls from the database more items than it needs.  This is fine in this example but could be a huge bottleneck if you have millions of available products for sale.  A better implementation would use an inner query.  For example:</para>
+      <programlisting language="java">&test17jva;</programlisting>
+      <programlisting language="java">&test17out;</programlisting>
+      <para>In SQL, queries used as inner queries can only return one column.  To select which column we use the ".onlyFields()" method you see in the example above.</para>
+      <para></para>
       <para></para>
     </section>
     <section>
       <title>Temporary Tables</title>
-      <para>TODO: STUB</para>
-      <para></para>
+      <para>The method Field.in() can take more than just an inner query.  Like in SQL it can take an arbitrary collection.  For instance:</para>
+      <programlisting language="java">&test18jva;</programlisting>
+      <programlisting language="java">&test18out;</programlisting>
+      <para>This could also be written like:</para>
+      <programlisting language="java">&test19jva;</programlisting>
+      <programlisting language="java">&test19out;</programlisting>
+      <para>You'll note at the end of the SQL statement that DKOs use Java PreparedStatements (exclusively).  The two question marks are placeholders for the values shown pipe-delimited at the end of the query.  The DKO library is designed to way to protect you from SQL-injection attacks.</para>
+      <para>This technique of multiple placeholder values doesn't scale well however.  So after a current threshold (currently 256) DKOs switch to a temporary table and an inner query.  This is transparent to you but provides a significant performance boost (esp. on SQL Server).</para>
     </section>
     <section>
       <title>Table Aliases</title>
-      <para>TODO: STUB</para>
+      <para>Sometimes you need to join a table to itself or you for some other reason have the same table in your query multiple times.  We saw an example of this before when comparing the appointment office location with the primary office location of the appointment's doctor.  Let's look at that again:</para>
+      <programlisting language="java">&test6jva;</programlisting>
+      <programlisting language="java">&test6out;</programlisting>
+      <para>In this instance the fields were not ambiguous and the comparison operation was symmetric, so the DKO library simply assigned one field to one table and the other field to the other.  But sometimes it's not clear-cut like this and you need to specify which field is from which table (just like you do in SQL).  To do this you use the Table.as() and Field.from() methods.  For an (admittedly contrived) example selecting only patients with family members who are also patients:</para>
+      <programlisting language="java">&test20jva;</programlisting>
+      <programlisting language="java">&test20out;</programlisting>
       <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
+    </section>
+    <section>
+      <title>SQL Functions</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Joins</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>as*() Transformations</title>
+      <para>TODO</para>
+    </section>
+  </chapter>
+  <chapter>
+    <title>Write Operations</title>
+    <section>
+      <title>Insert</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Update</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Delete</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Transactions</title>
+      <para>DKOs support transactions.  (They would be of little use if they didn't!)  But first we must introduce Context objects.  Let's first look at some example code:</para>
+      <programlisting language="java">&test21jva;</programlisting>
+      <programlisting language="java">&test21out;</programlisting>
+      <para>The first thing we do here is get a reference to the javax.sql.DataSource configured as the default for our Patient.ALL query.  All query objects have this getDataSource() method.  We need this because transactions are handled per-datasource.</para>
+      <para>The next thing we do is get a reference to our context.  For this example we're using the VM context which means that transactions we start here will apply to all future queries (in all threads) that use this datasource (until we commit or it back).</para>
+      <para>The third thing we do it start a transaction on the given datasource.  Internally the DKO library keeps the connection open and reuses it for all future queries until the transaction is committed or rolled back.  The method context.startTransaction() returns a boolean value indicating success.</para>
+      <para>The rest of the example should be familiar to you by now, until you context.rollbackTransaction().</para>
+      <para></para>
+      <para></para>
+      <para></para>
+    </section>
+  </chapter>
+  <chapter>
+    <title>Data Sources</title>
+      <para></para>
+    <section>
+      <title>MatryoshkaDataSource</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>ConnectionCountingDataSource</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>MirroredDataSource</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>ReflectedDataSource</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>SingleConnectionDataSource</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>SingleThreadedDataSource</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>UnclosableConnection</title>
+      <para>TODO</para>
+    </section>
+  </chapter>
+  <chapter>
+    <title>Miscellaneous</title>
+    <section>
+      <title>Contexts</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Bulk Operations</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Supported Databases</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Diffs</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>CSV</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>FAQs</title>
+      <para>Q: What happens when I call .where() multiple times on the same query object?</para>
+      <para>A: All the calls to .where() are "and"ed together.</para>
+      <para>Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</para>
+      <para>A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</para>
+      <para>Q: </para>
+      <para>A: </para>
+      <para>Q: </para>
+      <para>A: </para>
+      <para>Q: </para>
+      <para>A: </para>
     </section>
   </chapter>
 

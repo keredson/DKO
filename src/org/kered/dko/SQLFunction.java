@@ -361,6 +361,7 @@ public abstract class SQLFunction<T> {
 				case MYSQL:		sb.append(mysql==null ? "" : mysql); break;
 				case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
 				case HSQL:		sb.append(hsql==null ? "" : hsql); break;
+				case SQLITE3:		sb.append(hsql==null ? "" : hsql); break;
 				default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
 				}
 			} else {

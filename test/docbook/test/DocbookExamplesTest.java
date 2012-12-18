@@ -5,16 +5,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.kered.dko.Constants;
 import org.kered.dko.Context;
+import org.kered.dko.Field;
 import org.kered.dko.Query;
 import org.kered.dko.datasource.SingleConnectionDataSource;
 import org.kered.docbook.Appointment;
@@ -273,6 +277,137 @@ public class DocbookExamplesTest extends TestCase {
 		System.out.println("Now I see " +Patient.ALL.count() +" patients.");
 		context.rollbackTransaction(ds);
 		System.out.println("Finally I see " +Patient.ALL.count() +" patients.");
+	}
+
+	public void test22() throws SQLException {
+		init(); // IGNORE
+		for (Patient patient : Patient.ALL.orderBy(Patient.FIRST_NAME)) {
+			System.out.println(patient);
+		}
+	}
+
+	public void test23() throws SQLException {
+		init(); // IGNORE
+		for (Patient patient : Patient.ALL.orderBy(Constants.DIRECTION.DESCENDING, Patient.FIRST_NAME)) {
+			System.out.println(patient);
+		}
+	}
+
+	public void test24() throws SQLException {
+		init(); // IGNORE
+		for (Patient patient : Patient.ALL.distinct()) {
+			System.out.println(patient);
+		}
+	}
+
+	public void test25() throws SQLException {
+		init(); // IGNORE
+		for (Patient patient : Patient.ALL.onlyFields(Patient.LAST_NAME).distinct()) {
+			System.out.println(patient);
+		}
+	}
+
+	public void test26() throws SQLException {
+		init(); // IGNORE
+		for (Patient patient : Patient.ALL.limit(1)) {
+			System.out.println(patient);
+		}
+	}
+
+	public void test27() throws SQLException {
+		init(); // IGNORE
+		System.out.println(Patient.ALL
+				.first()
+				.toStringDetailed());
+	}
+
+	public void test28() throws SQLException {
+		init(); // IGNORE
+		System.out.println(Patient.ALL
+				.onlyFields(Patient.LAST_NAME)
+				.first()
+				.toStringDetailed());
+	}
+
+	public void test29() throws SQLException {
+		init(); // IGNORE
+		System.out.println(Patient.ALL
+				.deferFields(Patient.LAST_NAME)
+				.first()
+				.toStringDetailed());
+	}
+
+	public void test30() throws SQLException {
+		init(); // IGNORE
+		Query<Patient> q = Patient.ALL;
+		List<Patient> list = q.asList();
+		System.out.println(list);
+	}
+
+	public void test31() throws SQLException {
+		init(); // IGNORE
+		Query<Patient> q = Patient.ALL;
+		Set<Patient> set = q.asSet();
+		System.out.println(set);
+	}
+
+	public void test32() throws SQLException {
+		init(); // IGNORE
+		Query<Patient> q = Patient.ALL;
+		Iterable<Map<Field<?>, Object>> patients = q.asIterableOfMaps();
+		for (Map<Field<?>, Object> patient : patients) {
+			System.out.println(patient);
+		}
+	}
+
+	public void test33() throws SQLException {
+		init(); // IGNORE
+		Query<Patient> q = Patient.ALL;
+		Iterable<Object[]> patients = q.asIterableOfObjectArrays();
+		for (Object[] patient : patients) {
+			System.out.print("[");
+			for (Object o : patient) {
+				System.out.print(o +", ");
+			}
+			System.out.println("]");
+		}
+	}
+
+	public void test34() throws SQLException {
+		init(); // IGNORE
+		Query<Patient> q = Patient.ALL;
+		List<String> firstNames = q.asList(Patient.FIRST_NAME);
+		System.out.println(firstNames);
+	}
+
+	public void test35() throws SQLException {
+		init(); // IGNORE
+		Query<Patient> q = Patient.ALL;
+		Set<String> lastNames = q.asSet(Patient.LAST_NAME);
+		System.out.println(lastNames);
+	}
+
+	public void test36() throws SQLException {
+		init(); // IGNORE
+		Patient someone = new Patient()
+			.setFirstName("Jack")
+			.setLastName("Camp");
+		someone.insert();
+	}
+
+	public void test37() throws SQLException {
+		init(); // IGNORE
+//		Patient someone = Patient.ALL.first();
+//		someone.setSince(new Date(new java.util.Date().getTime()));
+//		someone.update();
+	}
+
+	public void test38() throws SQLException {
+		init(); // IGNORE
+//		Patient someone = new Patient().setFirstName("Jack").setLastName("Camp");
+//		someone.insert();
+//		someone = Patient.ALL.get(Patient.FIRST_NAME.eq("Jack"));
+//		someone.delete();
 	}
 
 }

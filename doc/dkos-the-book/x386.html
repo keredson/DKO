@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->FAQs</TITLE
+>Selecting Only Specific Fields</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,10 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Transactions"
-HREF="x382.html"></HEAD
+TITLE="Limit Operations"
+HREF="x380.html"><LINK
+REL="NEXT"
+TITLE="Performance"
+HREF="x399.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -42,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x382.html"
+HREF="x380.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -55,7 +58,11 @@ VALIGN="bottom"
 WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
->&nbsp;</TD
+><A
+HREF="x399.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ></TABLE
 ><HR
@@ -67,28 +74,54 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN386"
->4.12. FAQs</A
+>4.10. Selecting Only Specific Fields</A
 ></H1
 ><P
->Q: What happens when i call .where() multiple times on the same query object?</P
+>DKOs support limiting the fields selected in a query.  Usually this is unnecessary as the DKO library will watch how an object is used and automatically stop  selecting unused fields, but sometimes it is useful to be explicit.  Here are two examples:</P
+><PRE
+CLASS="programlisting"
+>System.out.println(Patient.ALL
+        .first()
+        .toStringDetailed());
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  limit 1
+[Patient id:1 social_security_number:null birth_date:null last_name:Anderson first_name:Derek since:null primary_doctor_id:null]&#13;</PRE
+><PRE
+CLASS="programlisting"
+>System.out.println(Patient.ALL
+        .onlyFields(Patient.LAST_NAME)
+        .first()
+        .toStringDetailed());
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.last_name from patient p  limit 1
+[Patient last_name:Anderson]&#13;</PRE
 ><P
->A: All the calls to .where() are "and"ed together.</P
+>Multiple calls to Query.onlyFields() reset the field list each time.  They are not additive nor is an intersection attempted.</P
 ><P
->Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</P
+>If you just want to not select a specific field you should use Query.deferFields().  for example:</P
+><PRE
+CLASS="programlisting"
+>System.out.println(Patient.ALL
+        .deferFields(Patient.LAST_NAME)
+        .first()
+        .toStringDetailed());
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  limit 1
+[Patient id:1 social_security_number:null birth_date:null first_name:Derek since:null primary_doctor_id:null]&#13;</PRE
 ><P
->A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</P
-><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
+>Multiple calls to deferFields() <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>are</I
+></SPAN
+> unioned together.</P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -106,7 +139,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x382.html"
+HREF="x380.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -123,20 +156,24 @@ ACCESSKEY="H"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+><A
+HREF="x399.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ><TR
 ><TD
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Transactions</TD
+>Limit Operations</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -144,7 +181,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+>Performance</TD
 ></TR
 ></TABLE
 ></DIV

@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Transactions</TITLE
+>Temporary Tables</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Table Aliases"
-HREF="x384.html"><LINK
+TITLE="Inner Queries"
+HREF="x385.html"><LINK
 REL="NEXT"
-TITLE="Contexts"
-HREF="x408.html"></HEAD
+TITLE="Table Aliases"
+HREF="x406.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x384.html"
+HREF="x385.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x408.html"
+HREF="x406.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,46 +74,41 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN396"
->4.11. Transactions</A
+>4.13. Temporary Tables</A
 ></H1
 ><P
->DKOs support transactions.  (They would be of little use if they didn't!)  But first we must introduce Context objects.  Let's first look at some example code:</P
+>The method Field.in() can take more than just an inner query.  Like in SQL it can take an arbitrary collection.  For instance:</P
 ><PRE
 CLASS="programlisting"
->System.out.println("I see " +Patient.ALL.count() +" patients.");
-DataSource ds = Patient.ALL.getDataSource();
-Context context = Context.getVMContext();
-context.startTransaction(ds);
-new Patient().setFirstName("John").setLastName("Doe").insert(ds);
-System.out.println("Now I see " +Patient.ALL.count() +" patients.");
-context.rollbackTransaction(ds);
-System.out.println("Finally I see " +Patient.ALL.count() +" patients.");
+>List&#60;String&#62; names = new ArrayList&#60;String&#62;();
+names.add("Derek");
+names.add("Charles");
+for (Patient patient : Patient.ALL.where(Patient.FIRST_NAME.in(names))) {
+    System.out.println(patient);
+}
 </PRE
 ><PRE
 CLASS="programlisting"
->==&#62; select count(1) from patient p 
-I see 2 patients.
-==&#62; begin transaction
-==&#62; insert into patient (birth_date, social_security_number, since, last_name, id, primary_doctor_id, first_name) values (?, ?, ?, ?, ?, ?, ?) -- [null|null|null|Doe|null|null|John]
-==&#62; select count(1) from patient p 
-Now I see 3 patients.
-==&#62; rollback
-==&#62; select count(1) from patient p 
-Finally I see 2 patients.&#13;</PRE
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.first_name in (?,?) -- [Derek|Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
 ><P
->The first thing we do here is get a reference to the javax.sql.DataSource configured as the default for our Patient.ALL query.  All query objects have this getDataSource() method.  We need this because transactions are handled per-datasource.</P
+>This could also be written like:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.where(Patient.FIRST_NAME.in("Derek", "Charles"))) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.first_name in (?,?) -- [Derek|Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
 ><P
->The next thing we do is get a reference to our context.  For this example we're using the VM context which means that transactions we start here will apply to all future queries (in all threads) that use this datasource (until we commit or it back).</P
+>You'll note at the end of the SQL statement that DKOs use Java PreparedStatements (exclusively).  The two question marks are placeholders for the values shown pipe-delimited at the end of the query.  The DKO library is designed to way to protect you from SQL-injection attacks.</P
 ><P
->The third thing we do it start a transaction on the given datasource.  Internally the DKO library keeps the connection open and reuses it for all future queries until the transaction is committed or rolled back.  The method context.startTransaction() returns a boolean value indicating success.</P
-><P
->The rest of the example should be familiar to you by now, until you context.rollbackTransaction().</P
-><P
-></P
-><P
-></P
-><P
-></P
+>This technique of multiple placeholder values doesn't scale well however.  So after a current threshold (currently 256) DKOs switch to a temporary table and an inner query.  This is transparent to you but provides a significant performance boost (esp. on SQL Server).</P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -131,7 +126,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x384.html"
+HREF="x385.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -149,7 +144,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x408.html"
+HREF="x406.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -159,13 +154,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Table Aliases</TD
+>Inner Queries</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -173,7 +168,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Contexts</TD
+>Table Aliases</TD
 ></TR
 ></TABLE
 ></DIV

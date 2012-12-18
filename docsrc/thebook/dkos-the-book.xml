@@ -58,6 +58,46 @@
   <!ENTITY test28out SYSTEM "../../gen/docbook/test28.out">
   <!ENTITY test29jva SYSTEM "../../gen/docbook/test29.jva">
   <!ENTITY test29out SYSTEM "../../gen/docbook/test29.out">
+  <!ENTITY test30jva SYSTEM "../../gen/docbook/test30.jva">
+  <!ENTITY test30out SYSTEM "../../gen/docbook/test30.out">
+  <!ENTITY test31jva SYSTEM "../../gen/docbook/test31.jva">
+  <!ENTITY test31out SYSTEM "../../gen/docbook/test31.out">
+  <!ENTITY test32jva SYSTEM "../../gen/docbook/test32.jva">
+  <!ENTITY test32out SYSTEM "../../gen/docbook/test32.out">
+  <!ENTITY test33jva SYSTEM "../../gen/docbook/test33.jva">
+  <!ENTITY test33out SYSTEM "../../gen/docbook/test33.out">
+  <!ENTITY test34jva SYSTEM "../../gen/docbook/test34.jva">
+  <!ENTITY test34out SYSTEM "../../gen/docbook/test34.out">
+  <!ENTITY test35jva SYSTEM "../../gen/docbook/test35.jva">
+  <!ENTITY test35out SYSTEM "../../gen/docbook/test35.out">
+  <!ENTITY test36jva SYSTEM "../../gen/docbook/test36.jva">
+  <!ENTITY test36out SYSTEM "../../gen/docbook/test36.out">
+  <!ENTITY test37jva SYSTEM "../../gen/docbook/test37.jva">
+  <!ENTITY test37out SYSTEM "../../gen/docbook/test37.out">
+  <!ENTITY test38jva SYSTEM "../../gen/docbook/test38.jva">
+  <!ENTITY test38out SYSTEM "../../gen/docbook/test38.out">
+  <!ENTITY test39jva SYSTEM "../../gen/docbook/test39.jva">
+  <!ENTITY test39out SYSTEM "../../gen/docbook/test39.out">
+  <!ENTITY test40jva SYSTEM "../../gen/docbook/test40.jva">
+  <!ENTITY test40out SYSTEM "../../gen/docbook/test40.out">
+  <!ENTITY test41jva SYSTEM "../../gen/docbook/test41.jva">
+  <!ENTITY test41out SYSTEM "../../gen/docbook/test41.out">
+  <!ENTITY test42jva SYSTEM "../../gen/docbook/test42.jva">
+  <!ENTITY test42out SYSTEM "../../gen/docbook/test42.out">
+  <!ENTITY test43jva SYSTEM "../../gen/docbook/test43.jva">
+  <!ENTITY test43out SYSTEM "../../gen/docbook/test43.out">
+  <!ENTITY test44jva SYSTEM "../../gen/docbook/test44.jva">
+  <!ENTITY test44out SYSTEM "../../gen/docbook/test44.out">
+  <!ENTITY test45jva SYSTEM "../../gen/docbook/test45.jva">
+  <!ENTITY test45out SYSTEM "../../gen/docbook/test45.out">
+  <!ENTITY test46jva SYSTEM "../../gen/docbook/test46.jva">
+  <!ENTITY test46out SYSTEM "../../gen/docbook/test46.out">
+  <!ENTITY test47jva SYSTEM "../../gen/docbook/test47.jva">
+  <!ENTITY test47out SYSTEM "../../gen/docbook/test47.out">
+  <!ENTITY test48jva SYSTEM "../../gen/docbook/test48.jva">
+  <!ENTITY test48out SYSTEM "../../gen/docbook/test48.out">
+  <!ENTITY test49jva SYSTEM "../../gen/docbook/test49.jva">
+  <!ENTITY test49out SYSTEM "../../gen/docbook/test49.out">
 ]>
 
 <book>
@@ -274,6 +314,7 @@ boolean success = person.insert();]]></programlisting>
 	.setFirstName("Derek")
 	.setLastName("Anderson")
 	.insert();]]></programlisting>
+<para>Note: Unlike the builder pattern for queries, the builder pattern for tables always returns the same object.  Table objects are mutable (unlike query objects).</para>
       <para>Both of these statements would insert into the default DataSource defined when generating these classes.  If none provided, you would need to provide one when calling insert.  (This is also how you would change at run-time which database the insert went to, assuming you have multiple databases)</para>
       <programlisting language="java"><![CDATA[DataSource ds = getSomeDataSource();
 boolean success = new Person()
@@ -555,19 +596,45 @@ Query<Person> q = Person.ALL.where(
     </section>
     <section>
       <title>Order By</title>
-      <para>TODO</para>
+      <para>Order by statements work much as the do in SQL.  There is a Query.orderBy(Field...) method which takes an arbitrary number of fields.  This by default orders rows in ascending order prioritizing earlier fields over later fields.  If you want to order in descending order you can prefix the field arguments with a constant direction enum.  Thesee are found in the class org.kered.dko.Constants.DIRECTION.  Available values as ASCENDING and DESCENDING.  Due to the limitations of Java's vararg syntax only one direction can be selected per call to orderBy().  However multiple orderBy()s can be chained to create any ordering desired.</para>
+      <para>Here are some examples:</para>
+      <programlisting language="java">&test22jva;</programlisting>
+      <programlisting language="java">&test22out;</programlisting>
+      <programlisting language="java">&test23jva;</programlisting>
+      <programlisting language="java">&test23out;</programlisting>
+      <para>Once again liberal use of static imports makes this code easier to read.  I'm not using it here however for clarity.</para>
     </section>
     <section>
       <title>Distinct</title>
-      <para>TODO</para>
+      <para>The method Query.distinct() adds a distinct modifier to your SQL statement.  For example:</para>
+      <programlisting language="java">&test24jva;</programlisting>
+      <programlisting language="java">&test24out;</programlisting>
+      <para>This is more useful when you limit the fields returned:</para>
+      <programlisting language="java">&test25jva;</programlisting>
+      <programlisting language="java">&test25out;</programlisting>
+      <para>The returned objects in this case will not have an id set (because we didn't select it).  If you were to later change a value and then call update() an exception would be thrown.</para>
+      <para></para>
+      <para></para>
     </section>
     <section>
       <title>Limit Operations</title>
-      <para>TODO</para>
+      <para>Limit operations work as expected.  Query.limit(long) will add a limit clause to your SQL statement (or top if you're running SQL Server).  Here is an example:</para>
+      <programlisting language="java">&test26jva;</programlisting>
+      <programlisting language="java">&test26out;</programlisting>
+      <para>There is one exception.  When using Query.with() and a relationship that is to-many from the root class of your query the limit it calculated client-side.  DKOs will stream enough rows from the database until the limit is reached and then close the connection.</para>
     </section>
     <section>
       <title>Selecting Only Specific Fields</title>
-      <para>TODO</para>
+      <para>DKOs support limiting the fields selected in a query.  Usually this is unnecessary as the DKO library will watch how an object is used and automatically stop  selecting unused fields, but sometimes it is useful to be explicit.  Here are two examples:</para>
+      <programlisting language="java">&test27jva;</programlisting>
+      <programlisting language="java">&test27out;</programlisting>
+      <programlisting language="java">&test28jva;</programlisting>
+      <programlisting language="java">&test28out;</programlisting>
+      <para>Multiple calls to Query.onlyFields() reset the field list each time.  They are not additive nor is an intersection attempted.</para>
+      <para>If you just want to not select a specific field you should use Query.deferFields().  for example:</para>
+      <programlisting language="java">&test29jva;</programlisting>
+      <programlisting language="java">&test29out;</programlisting>
+      <para>Multiple calls to deferFields() <emphasis>are</emphasis> unioned together.</para>
     </section>
     <section>
       <title>Performance</title>
@@ -575,11 +642,17 @@ Query<Person> q = Person.ALL.where(
       <para>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</para>
       <section>
         <title>Automatic Query Optimizations</title>
-        <para>TODO</para>
+        <para>When you get a DKO object back from the database it is by default automatically linked to a object called a UsageMonitor.  This monitor is generated once per query and all objects report back to it when fields are accessed.  It then persists this information to use during later runs of your program.</para>
+        <para>If your code does not use a field and you have not explicitly stated which fields the query is to select, the next time it is run that column will not be selected.  If your code does try to read a column that was previously optimized out of a query, the value of the column will be lazy-loaded, and the next time your query is run the field will be selected again.</para>
+        <para></para>
+        <para></para>
       </section>
       <section>
         <title>Automatic Performance Warnings</title>
-        <para>TODO</para>
+        <para>If you are lazy loading columns or foreign keys above built in thresholds, by default a warning will be printed to stderr (complete with code suggestions).</para>
+        <para>If you are selecting too many columns and have query optimizations turned off, by default a suggestion will be printed to stderr (complete with code example).</para>
+        <para></para>
+        <para></para>
       </section>
     </section>
     <section>
@@ -628,21 +701,50 @@ Query<Person> q = Person.ALL.where(
     </section>
     <section>
       <title>as*() Transformations</title>
-      <para>TODO</para>
+      <para>DKOs by default return generated object types based on the tables in your database.  But there are also several convenience methods available to transform them into other usable representations.  The first is by far the most common:</para>
+      <programlisting language="java">&test30jva;</programlisting>
+      <programlisting language="java">&test30out;</programlisting>
+      <para>Query.asList() populates and returns an ArrayList with your data.  This is useful if you don't want to iterate or if you want to iterate multiple times (and don't want to re-query the database).</para>
+      <para>Likewise there is Query.asSet():</para>
+      <programlisting language="java">&test31jva;</programlisting>
+      <programlisting language="java">&test31out;</programlisting>
+      <para>Query.asIterableOfMaps() is also useful:</para>
+      <programlisting language="java">&test32jva;</programlisting>
+      <programlisting language="java">&test32out;</programlisting>
+      <para>Less frequently used is Query.asIterableOfObjectArrays():</para>
+      <programlisting language="java">&test33jva;</programlisting>
+      <programlisting language="java">&test33out;</programlisting>
+      <para>Note the position of values in these object arrays will match the field order returned by Query.getSelectedFields().</para>
+      <para>Sometimes it's useful to turn the query into a list of a specific field:</para>
+      <programlisting language="java">&test34jva;</programlisting>
+      <programlisting language="java">&test34out;</programlisting>
+      <para>Likewise generating a set of a specific field:</para>
+      <programlisting language="java">&test35jva;</programlisting>
+      <programlisting language="java">&test35out;</programlisting>
+      <para></para>
+      <para></para>
     </section>
   </chapter>
   <chapter>
     <title>Write Operations</title>
     <section>
-      <title>Insert</title>
+      <title>Per Object</title>
+      <para>An example insert:</para>
+      <programlisting language="java">&test36jva;</programlisting>
+      <programlisting language="java">&test36out;</programlisting>
+      <para>An example update:</para>
+      <programlisting language="java">&test37jva;</programlisting>
+      <programlisting language="java">&test37out;</programlisting>
+      <para>An example delete:</para>
+      <programlisting language="java">&test38jva;</programlisting>
+      <programlisting language="java">&test38out;</programlisting>
+    </section>
+    <section>
+      <title>Server-Side</title>
       <para>TODO</para>
     </section>
     <section>
-      <title>Update</title>
-      <para>TODO</para>
-    </section>
-    <section>
-      <title>Delete</title>
+      <title>Bulk Writes</title>
       <para>TODO</para>
     </section>
     <section>
@@ -695,10 +797,6 @@ Query<Person> q = Person.ALL.where(
     <title>Miscellaneous</title>
     <section>
       <title>Contexts</title>
-      <para>TODO</para>
-    </section>
-    <section>
-      <title>Bulk Operations</title>
       <para>TODO</para>
     </section>
     <section>

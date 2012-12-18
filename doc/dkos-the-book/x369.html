@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->FAQs</TITLE
+>Distinct</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,10 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Transactions"
-HREF="x365.html"></HEAD
+TITLE="Order By"
+HREF="x360.html"><LINK
+REL="NEXT"
+TITLE="Limit Operations"
+HREF="x380.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -42,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x365.html"
+HREF="x360.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -55,7 +58,11 @@ VALIGN="bottom"
 WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
->&nbsp;</TD
+><A
+HREF="x380.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ></TABLE
 ><HR
@@ -67,28 +74,41 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN369"
->4.12. FAQs</A
+>4.8. Distinct</A
 ></H1
 ><P
->Q: What happens when i call .where() multiple times on the same query object?</P
+>The method Query.distinct() adds a distinct modifier to your SQL statement.  For example:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.distinct()) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select distinct p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+[Patient id:2 last_name:Anderson first_name:Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:3 last_name:Camp first_name:Jack]&#13;</PRE
 ><P
->A: All the calls to .where() are "and"ed together.</P
+>This is more useful when you limit the fields returned:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.onlyFields(Patient.LAST_NAME).distinct()) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select distinct p.last_name from patient p 
+[Patient last_name:Anderson]
+[Patient last_name:Camp]&#13;</PRE
 ><P
->Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</P
+>The returned objects in this case will not have an id set (because we didn't select it).  If you were to later change a value and then call update() an exception would be thrown.</P
 ><P
->A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</P
+></P
 ><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
+></P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -106,7 +126,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x365.html"
+HREF="x360.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -123,20 +143,24 @@ ACCESSKEY="H"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+><A
+HREF="x380.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ><TR
 ><TD
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Transactions</TD
+>Order By</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -144,7 +168,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+>Limit Operations</TD
 ></TR
 ></TABLE
 ></DIV

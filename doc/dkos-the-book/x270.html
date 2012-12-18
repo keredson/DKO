@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Table Aliases</TITLE
+>The With Method</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Temporary Tables"
-HREF="x266.html"><LINK
+TITLE="Conditions"
+HREF="x228.html"><LINK
 REL="NEXT"
-TITLE="Transactions"
-HREF="x274.html"></HEAD
+TITLE="Aggregation Functions"
+HREF="x312.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x266.html"
+HREF="x228.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x274.html"
+HREF="x312.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,12 +74,190 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN270"
->4.10. Table Aliases</A
+>4.4. The With Method</A
 ></H1
 ><P
->TODO: STUB</P
+>The method Query.with(Field.FK...) is how you perform the majority of joins in DKOs.  Let's look at our schema again for reference:</P
+><DIV
+CLASS="mediaobject"
 ><P
-></P
+><IMG
+SRC="db.png"></P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN276"
+>4.4.1. Many to One Joins</A
+></H2
+><P
+>In our schema an appointment is made up of a patient, a doctor and an office.  Let's look at an example:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL.first();
+System.out.println("doctor: " + doctor);
+System.out.println("office: " + doctor.getPrimaryOfficeIdFK());
+</PRE
+><P
+>Will print the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id from doctor d  limit 1
+doctor: [Doctor id:1 last_name:Anderson first_name:Lingyan]
+==&#62; select o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code from office o  where o.id=? limit 2 -- [1]
+office: [Office id:1 name:"UH College of Optometry"]&#13;</PRE
+><P
+>This is an example of lazy-loading.  Two queries are run.  The first fetches the doctor instance.  The second fetches the office instance when it is needed.  This is useful behavior, but it can cause performance problems if done repeatedly.  To speed up this code we need to join the doctor and office tables and retrieve both in one go.  To do this we use Query.with(Field.FK...).  Here is the same code performing that join:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL
+        .with(Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .first();
+System.out.println("doctor: " + doctor);
+System.out.println("office: " + doctor.getPrimaryOfficeIdFK());
+</PRE
+><P
+>Prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code from doctor d  left outer join office o on  d.primary_office_id=o.id limit 1
+doctor: [Doctor id:1 last_name:Anderson first_name:Lingyan]
+office: [Office id:1 name:"UH College of Optometry"]&#13;</PRE
+><P
+>Notice only one query is run (with the appropriate join) and the returned doctor object's FK method is already linked to the related office object.</P
+><P
+>Often you want to join more than one table.  What if you want to print a list of all upcoming appointments?</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR)
+        .with(Appointment.FK_OFFICE)
+        .with(Appointment.FK_PATIENT);
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getPatientIdFK().getFirstName()
+            +" has an appointment with "
+            + apmt.getDoctorIdFK().getFirstName()
+            +" at "
+            + apmt.getOfficeIdFK().getName()
+    );
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  a.office_id=o.id left outer join patient p on  a.patient_id=p.id
+Derek has an appointment with Lingyan at UH College of Optometry
+Charles has an appointment with Lingyan at CF Eye Care&#13;</PRE
+><P
+>Notice that all four tables are joined together automatically, and that the returned object is a composite of the corresponding four table objects.</P
+><P
+>You may have also noticed that the with method takes a vararg.  (ie: Field.FK...)  Passing multiple FK references into one with statement lets you travel multiple levels deep into the object graph.  For instance, if you wanted to include the doctor's primary office in the previous example you would do the following:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .with(Appointment.FK_OFFICE);
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getDoctorIdFK().getFirstName()
+            +" (primary office: "
+            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName()
+            +") has an appointment at "
+            + apmt.getOfficeIdFK().getName()
+    );
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id
+Lingyan (primary office: UH College of Optometry) has an appointment at UH College of Optometry
+Lingyan (primary office: UH College of Optometry) has an appointment at CF Eye Care&#13;</PRE
+><P
+>Tables joined with the "with()" method can be used in where clauses as well.  For instance, what if we wanted to only print appointments where the appointment office and the primary office of the doctor are different?</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .with(Appointment.FK_OFFICE)
+        .where(Office.ID.neq(Office.ID));
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getDoctorIdFK().getFirstName()
+            +" has an appointment scheduled at "
+            + apmt.getOfficeIdFK().getName()
+            +" but her primary office is "
+            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName() +"!"
+    );
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id where o2.id!=o.id
+Lingyan has an appointment scheduled at CF Eye Care but her primary office is UH College of Optometry!&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN300"
+>4.4.2. One to Many Joins</A
+></H2
+><P
+>So far all of our examples have "many to one" joins.  What if you want a "one to many" join?  For instance what if you want all the appointments for a given doctor?  Every object that is the target of a foreign key has a ".getFKSet()" method which returns all the objects with a foreign key to this object.  Let's look at an example:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL
+        .with(Appointment.FK_DOCTOR)
+        .first();
+System.out.println(doctor.getFirstName() +" has the following appointments scheduled:");
+for (Appointment apmt : doctor.getAppointmentSet()) {
+    System.out.println("\t with: "+ apmt.getPatientIdFK().getFirstName());
+}
+</PRE
+><P
+>When run prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id, a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end from doctor d  left outer join appointment a on  a.doctor_id=d.id
+Lingyan has the following appointments scheduled:
+==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.id=? limit 2 -- [1]
+	 with: Derek
+==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  where p.id=? limit 2 -- [2]
+	 with: Charles&#13;</PRE
+><P
+>Oops!  Well, this did get all the appointments for a doctor in the one query, but we lazy-loaded the patient information.  Let's pull that in with the appointment:</P
+><PRE
+CLASS="programlisting"
+>Doctor doctor = Doctor.ALL
+        .with(Appointment.FK_DOCTOR, Appointment.FK_PATIENT)
+        .first();
+System.out.println(doctor.getFirstName() +" has the following appointments scheduled:");
+for (Appointment apmt : doctor.getAppointmentSet()) {
+    System.out.println("\t with: "+ apmt.getPatientIdFK().getFirstName());
+}
+</PRE
+><P
+>Which prints out the following:</P
+><PRE
+CLASS="programlisting"
+>==&#62; select d.last_name, d.first_name, d.id, d.primary_office_id, p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id, a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end from doctor d  left outer join appointment a on  a.doctor_id=d.id left outer join patient p on  a.patient_id=p.id
+Lingyan has the following appointments scheduled:
+	 with: Derek
+	 with: Charles&#13;</PRE
+><P
+>As you can see we now are fetching all three tables in one query.</P
+><P
+>A closer look at the API will reveal that the ".getAppointmentSet()" method doesn't return a java.util.Set.  It returns a Query&#60;Appointment&#62; which (in this case) is backed by a in-memory query implementation.  It's entirely possible to further filter your returned results even after your original database query is made.</P
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -97,7 +275,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x266.html"
+HREF="x228.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -115,7 +293,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x274.html"
+HREF="x312.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -125,13 +303,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Temporary Tables</TD
+>Conditions</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -139,7 +317,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Transactions</TD
+>Aggregation Functions</TD
 ></TR
 ></TABLE
 ></DIV

@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Table Aliases</TITLE
+>Limit Operations</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Temporary Tables"
-HREF="x374.html"><LINK
+TITLE="Distinct"
+HREF="x369.html"><LINK
 REL="NEXT"
-TITLE="Transactions"
-HREF="x384.html"></HEAD
+TITLE="Selecting Only Specific Fields"
+HREF="x386.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x374.html"
+HREF="x369.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x384.html"
+HREF="x386.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,12 +74,22 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN380"
->4.10. Table Aliases</A
+>4.9. Limit Operations</A
 ></H1
 ><P
->TODO: STUB</P
+>Limit operations work as expected.  Query.limit(long) will add a limit clause to your SQL statement (or top if you're running SQL Server).  Here is an example:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.limit(1)) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  limit 1
+[Patient id:1 last_name:Anderson first_name:Derek]&#13;</PRE
 ><P
-></P
+>There is one exception.  When using Query.with() and a relationship that is to-many from the root class of your query the limit it calculated client-side.  DKOs will stream enough rows from the database until the limit is reached and then close the connection.</P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -97,7 +107,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x374.html"
+HREF="x369.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -115,7 +125,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x384.html"
+HREF="x386.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -125,13 +135,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Temporary Tables</TD
+>Distinct</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -139,7 +149,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Transactions</TD
+>Selecting Only Specific Fields</TD
 ></TR
 ></TABLE
 ></DIV

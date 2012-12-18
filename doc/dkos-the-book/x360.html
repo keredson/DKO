@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Transactions</TITLE
+>Order By</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Table Aliases"
-HREF="x356.html"><LINK
+TITLE="Terminal vs. Non-terminal Methods"
+HREF="x355.html"><LINK
 REL="NEXT"
-TITLE="FAQs"
-HREF="x364.html"></HEAD
+TITLE="Distinct"
+HREF="x369.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x356.html"
+HREF="x355.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x364.html"
+HREF="x369.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,12 +74,38 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN360"
->4.11. Transactions</A
+>4.7. Order By</A
 ></H1
 ><P
->TODO: STUB</P
+>Order by statements work much as the do in SQL.  There is a Query.orderBy(Field...) method which takes an arbitrary number of fields.  This by default orders rows in ascending order prioritizing earlier fields over later fields.  If you want to order in descending order you can prefix the field arguments with a constant direction enum.  Thesee are found in the class org.kered.dko.Constants.DIRECTION.  Available values as ASCENDING and DESCENDING.  Due to the limitations of Java's vararg syntax only one direction can be selected per call to orderBy().  However multiple orderBy()s can be chained to create any ordering desired.</P
 ><P
-></P
+>Here are some examples:</P
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.orderBy(Patient.FIRST_NAME)) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  order by p.first_name
+[Patient id:2 last_name:Anderson first_name:Charles]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:3 last_name:Camp first_name:Jack]&#13;</PRE
+><PRE
+CLASS="programlisting"
+>for (Patient patient : Patient.ALL.orderBy(Constants.DIRECTION.DESCENDING, Patient.FIRST_NAME)) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  order by p.first_name DESC
+[Patient id:3 last_name:Camp first_name:Jack]
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+><P
+>Once again liberal use of static imports makes this code easier to read.  I'm not using it here however for clarity.</P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -97,7 +123,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x356.html"
+HREF="x355.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -115,7 +141,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x364.html"
+HREF="x369.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -125,13 +151,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Table Aliases</TD
+>Terminal vs. Non-terminal Methods</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -139,7 +165,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->FAQs</TD
+>Distinct</TD
 ></TR
 ></TABLE
 ></DIV

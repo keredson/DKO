@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Table Aliases</TITLE
+>Performance</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Temporary Tables"
-HREF="x389.html"><LINK
+TITLE="Selecting Only Specific Fields"
+HREF="x386.html"><LINK
 REL="NEXT"
-TITLE="Write Operations (Insert, Update and Delete)"
-HREF="c411.html"></HEAD
+TITLE="Inner Queries"
+HREF="x415.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x389.html"
+HREF="x386.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="c411.html"
+HREF="x415.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,55 +74,46 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN399"
->4.13. Table Aliases</A
+>4.11. Performance</A
 ></H1
 ><P
->Sometimes you need to join a table to itself or you for some other reason have the same table in your query multiple times.  We saw an example of this before when comparing the appointment office location with the primary office location of the appointment's doctor.  Let's look at that again:</P
-><PRE
-CLASS="programlisting"
->Query&#60;Appointment&#62; apmts = Appointment.ALL
-        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
-        .with(Appointment.FK_OFFICE)
-        .where(Office.ID.neq(Office.ID));
-for (Appointment apmt : apmts) {
-    System.out.println(
-            apmt.getDoctorIdFK().getFirstName()
-            +" has an appointment scheduled at "
-            + apmt.getOfficeIdFK().getName()
-            +" but her primary office is "
-            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName() +"!"
-    );
-}
-</PRE
-><PRE
-CLASS="programlisting"
->==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id where o2.id!=o.id
-Lingyan has an appointment scheduled at CF Eye Care but her primary office is UH College of Optometry!&#13;</PRE
+>DKOs are streaming where-ever possible.  Assuming your JDBC driver isn't terribly written you can iterate over huge datasets that would be impossible to fit into memory.  (And we do - few companies have larger data sets than my employer)</P
 ><P
->In this instance the fields were not ambiguous and the comparison operation was symmetric, so the DKO library simply assigned one field to one table and the other field to the other.  But sometimes it's not clear-cut like this and you need to specify which field is from which table (just like you do in SQL).  To do this you use the Table.as() and Field.from() methods.  For an (admittedly contrived) example selecting only patients with family members who are also patients:</P
-><PRE
-CLASS="programlisting"
->Query&#60;Patient&#62; q = Patient.ALL
-        .cross(Patient.as("family"))
-        .where(Patient.LAST_NAME.eq(Patient.LAST_NAME.from("family"))
-                .and(Patient.FIRST_NAME.neq(Patient.FIRST_NAME.from("family"))));
-for (Patient patient : q) {
-    System.out.println(patient);
-}
-</PRE
-><PRE
-CLASS="programlisting"
->==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p , patient family where( p.first_name!=family.first_name and  p.last_name=family.last_name)
-[Patient id:1 last_name:Anderson first_name:Derek]
-[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
+>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN403"
+>4.11.1. Automatic Query Optimizations</A
+></H2
+><P
+>When you get a DKO object back from the database it is by default automatically linked to a object called a UsageMonitor.  This monitor is generated once per query and all objects report back to it when fields are accessed.  It then persists this information to use during later runs of your program.</P
+><P
+>If your code does not use a field and you have not explicitly stated which fields the query is to select, the next time it is run that column will not be selected.  If your code does try to read a column that was previously optimized out of a query, the value of the column will be lazy-loaded, and the next time your query is run the field will be selected again.</P
 ><P
 ></P
 ><P
 ></P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN409"
+>4.11.2. Automatic Performance Warnings</A
+></H2
+><P
+>If you are lazy loading columns or foreign keys above built in thresholds, by default a warning will be printed to stderr (complete with code suggestions).</P
+><P
+>If you are selecting too many columns and have query optimizations turned off, by default a suggestion will be printed to stderr (complete with code example).</P
 ><P
 ></P
 ><P
 ></P
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -140,7 +131,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x389.html"
+HREF="x386.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -158,7 +149,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="c411.html"
+HREF="x415.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -168,13 +159,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Temporary Tables</TD
+>Selecting Only Specific Fields</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -182,7 +173,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Write Operations (Insert, Update and Delete)</TD
+>Inner Queries</TD
 ></TR
 ></TABLE
 ></DIV

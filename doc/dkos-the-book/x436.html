@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->FAQs</TITLE
+>Table Aliases</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -10,11 +10,14 @@ REL="HOME"
 TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
-TITLE="Miscellaneous"
-HREF="c425.html"><LINK
+TITLE="Queries"
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Supported Databases"
-HREF="x433.html"></HEAD
+TITLE="Temporary Tables"
+HREF="x426.html"><LINK
+REL="NEXT"
+TITLE="SQL Functions"
+HREF="x448.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -42,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x433.html"
+HREF="x426.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -50,12 +53,16 @@ ACCESSKEY="P"
 WIDTH="80%"
 ALIGN="center"
 VALIGN="bottom"
->Chapter 6. Miscellaneous</TD
+>Chapter 4. Queries</TD
 ><TD
 WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
->&nbsp;</TD
+><A
+HREF="x448.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ></TABLE
 ><HR
@@ -67,28 +74,55 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN436"
->6.4. FAQs</A
+>4.14. Table Aliases</A
 ></H1
 ><P
->Q: What happens when I call .where() multiple times on the same query object?</P
+>Sometimes you need to join a table to itself or you for some other reason have the same table in your query multiple times.  We saw an example of this before when comparing the appointment office location with the primary office location of the appointment's doctor.  Let's look at that again:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Appointment&#62; apmts = Appointment.ALL
+        .with(Appointment.FK_DOCTOR, Doctor.FK_PRIMARY_OFFICE_OFFICE)
+        .with(Appointment.FK_OFFICE)
+        .where(Office.ID.neq(Office.ID));
+for (Appointment apmt : apmts) {
+    System.out.println(
+            apmt.getDoctorIdFK().getFirstName()
+            +" has an appointment scheduled at "
+            + apmt.getOfficeIdFK().getName()
+            +" but her primary office is "
+            + apmt.getDoctorIdFK().getPrimaryOfficeIdFK().getName() +"!"
+    );
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select a.id, a.patient_id, a.doctor_id, a.office_id, a.start, a.end, d.last_name, d.first_name, d.id, d.primary_office_id, o.name, o.id, o.address1, o.address2, o.city, o.state, o.postal_code, o2.name, o2.id, o2.address1, o2.address2, o2.city, o2.state, o2.postal_code from appointment a  left outer join doctor d on  a.doctor_id=d.id left outer join office o on  d.primary_office_id=o.id left outer join office o2 on  a.office_id=o2.id where o2.id!=o.id
+Lingyan has an appointment scheduled at CF Eye Care but her primary office is UH College of Optometry!&#13;</PRE
 ><P
->A: All the calls to .where() are "and"ed together.</P
+>In this instance the fields were not ambiguous and the comparison operation was symmetric, so the DKO library simply assigned one field to one table and the other field to the other.  But sometimes it's not clear-cut like this and you need to specify which field is from which table (just like you do in SQL).  To do this you use the Table.as() and Field.from() methods.  For an (admittedly contrived) example selecting only patients with family members who are also patients:</P
+><PRE
+CLASS="programlisting"
+>Query&#60;Patient&#62; q = Patient.ALL
+        .cross(Patient.as("family"))
+        .where(Patient.LAST_NAME.eq(Patient.LAST_NAME.from("family"))
+                .and(Patient.FIRST_NAME.neq(Patient.FIRST_NAME.from("family"))));
+for (Patient patient : q) {
+    System.out.println(patient);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p , patient family where( p.first_name!=family.first_name and  p.last_name=family.last_name)
+[Patient id:1 last_name:Anderson first_name:Derek]
+[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
 ><P
->Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</P
+></P
 ><P
->A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</P
+></P
 ><P
->Q: </P
+></P
 ><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
+></P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -106,7 +140,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x433.html"
+HREF="x426.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -123,20 +157,24 @@ ACCESSKEY="H"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+><A
+HREF="x448.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ><TR
 ><TD
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Supported Databases</TD
+>Temporary Tables</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c425.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -144,7 +182,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+>SQL Functions</TD
 ></TR
 ></TABLE
 ></DIV

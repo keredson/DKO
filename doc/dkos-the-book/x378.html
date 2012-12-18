@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Inner Queries</TITLE
+>Performance</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Performance"
-HREF="x368.html"><LINK
+TITLE="Selecting Only Specific Fields"
+HREF="x375.html"><LINK
 REL="NEXT"
-TITLE="Temporary Tables"
-HREF="x389.html"></HEAD
+TITLE="Inner Queries"
+HREF="x388.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x368.html"
+HREF="x375.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x389.html"
+HREF="x388.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,54 +74,34 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN378"
->4.11. Inner Queries</A
+>4.11. Performance</A
 ></H1
 ><P
->Previously we looked at an example for calculating cost averages by item types sold:</P
-><PRE
-CLASS="programlisting"
->Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
-Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
-for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
-    Integer itemId = e.getKey();
-    Double average = e.getValue();
-    Item item = items.get(itemId);
-    System.out.println("The average "+ item +" purchase was $"+ average);
-}
-</PRE
-><PRE
-CLASS="programlisting"
->==&#62; select i.id, i.name, i.description, i.price from item i 
-==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
-The average [Item id:1 name:"Eye Exam"] purchase was $100.0
-The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+>DKOs are streaming where-ever possible.  Assuming your JDBC driver isn't terribly written you can iterate over huge datasets that would be impossible to fit into memory.  (And we do - few companies have larger data sets than my employer)</P
 ><P
->This works, but is inefficient because it pulls from the database more items than it needs.  This is fine in this example but could be a huge bottleneck if you have millions of available products for sale.  A better implementation would use an inner query.  For example:</P
-><PRE
-CLASS="programlisting"
->Map&#60;Integer, Item&#62; items = Item.ALL.where(Item.ID.in(
-        Purchase.ALL.onlyFields(Purchase.ITEM_ID).distinct()
-)).mapBy(Item.ID);
-Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
-for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
-    Integer itemId = e.getKey();
-    Double average = e.getValue();
-    Item item = items.get(itemId);
-    System.out.println("The average "+ item +" purchase was $"+ average);
-}
-</PRE
-><PRE
-CLASS="programlisting"
->==&#62; select i.id, i.name, i.description, i.price from item i  where i.id in (select distinct p.item_id from purchase p )
-==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
-The average [Item id:1 name:"Eye Exam"] purchase was $100.0
-The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN382"
+>4.11.1. Automatic Query Optimizations</A
+></H2
 ><P
->In SQL, queries used as inner queries can only return one column.  To select which column we use the ".onlyFields()" method you see in the example above.</P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN385"
+>4.11.2. Automatic Performance Warnings</A
+></H2
 ><P
-></P
-><P
-></P
+>TODO</P
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -139,7 +119,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x368.html"
+HREF="x375.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -157,7 +137,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x389.html"
+HREF="x388.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -167,13 +147,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Performance</TD
+>Selecting Only Specific Fields</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -181,7 +161,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Temporary Tables</TD
+>Inner Queries</TD
 ></TR
 ></TABLE
 ></DIV

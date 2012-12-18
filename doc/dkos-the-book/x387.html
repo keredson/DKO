@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Transactions</TITLE
+>Performance</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Table Aliases"
-HREF="x383.html"><LINK
+TITLE="Selecting Only Specific Fields"
+HREF="x384.html"><LINK
 REL="NEXT"
-TITLE="FAQs"
-HREF="x391.html"></HEAD
+TITLE="Inner Queries"
+HREF="x397.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x383.html"
+HREF="x384.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x391.html"
+HREF="x397.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,12 +74,34 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN387"
->4.11. Transactions</A
+>4.11. Performance</A
 ></H1
 ><P
->TODO: STUB</P
+>DKOs are streaming where-ever possible.  Assuming your JDBC driver isn't terribly written you can iterate over huge datasets that would be impossible to fit into memory.  (And we do - few companies have larger data sets than my employer)</P
 ><P
-></P
+>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN391"
+>4.11.1. Automatic Query Optimizations</A
+></H2
+><P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN394"
+>4.11.2. Automatic Performance Warnings</A
+></H2
+><P
+>TODO</P
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -97,7 +119,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x383.html"
+HREF="x384.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -115,7 +137,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x391.html"
+HREF="x397.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -125,13 +147,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Table Aliases</TD
+>Selecting Only Specific Fields</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -139,7 +161,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->FAQs</TD
+>Inner Queries</TD
 ></TR
 ></TABLE
 ></DIV

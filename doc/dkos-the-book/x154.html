@@ -17,7 +17,7 @@ TITLE="Fields"
 HREF="x59.html"><LINK
 REL="NEXT"
 TITLE="Foreign Keys"
-HREF="x196.html"></HEAD
+HREF="x197.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x196.html"
+HREF="x197.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -93,6 +93,8 @@ CLASS="programlisting"
 	.setLastName("Anderson")
 	.insert();</PRE
 ><P
+>Note: Unlike the builder pattern for queries, the builder pattern for tables always returns the same object.  Table objects are mutable (unlike query objects).</P
+><P
 >Both of these statements would insert into the default DataSource defined when generating these classes.  If none provided, you would need to provide one when calling insert.  (This is also how you would change at run-time which database the insert went to, assuming you have multiple databases)</P
 ><PRE
 CLASS="programlisting"
@@ -108,7 +110,7 @@ boolean success = new Person()
 ><DIV
 CLASS="table"
 ><A
-NAME="AEN164"
+NAME="AEN165"
 ></A
 ><P
 ><B
@@ -212,7 +214,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x196.html"
+HREF="x197.html"
 ACCESSKEY="N"
 >Next</A
 ></TD

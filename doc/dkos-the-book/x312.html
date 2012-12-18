@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Aggregation Function</TITLE
+>Aggregation Functions</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
 TITLE="The With Method"
-HREF="x269.html"><LINK
+HREF="x270.html"><LINK
 REL="NEXT"
 TITLE="Terminal vs. Non-terminal Methods"
-HREF="x316.html"></HEAD
+HREF="x355.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x269.html"
+HREF="x270.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x316.html"
+HREF="x355.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,12 +74,206 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN312"
->4.5. Aggregation Function</A
+>4.5. Aggregation Functions</A
 ></H1
 ><P
->TODO: STUB</P
+>Many common database aggregation features are first-class citizens of the DKO library.  Here are some of the most commonly used.</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN315"
+>4.5.1. Query.count()</A
+></H2
 ><P
-></P
+>Performs a count of the rows in your query.  For example:</P
+><PRE
+CLASS="programlisting"
+>System.out.println("There is "+ Doctor.ALL.count() +" doctor in the database.");
+System.out.println("There are "+ Patient.ALL.count() +" patients in the database.");
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select count(1) from doctor d 
+There is 1 doctor in the database.
+==&#62; select count(1) from patient p 
+There are 2 patients in the database.&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN320"
+>4.5.2. Query.countBy(Field)</A
+></H2
+><P
+>Performs a count of the rows in your query grouped by a given field.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;String, Integer&#62; countByFirstName = Patient.ALL.countBy(Patient.FIRST_NAME);
+System.out.println("Patients counts by first name: "+ countByFirstName);
+Map&#60;String, Integer&#62; countByLastName = Patient.ALL.countBy(Patient.LAST_NAME);
+System.out.println("Patients counts by last name: "+ countByLastName);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.first_name, count(p.first_name) from patient p  group by p.first_name
+Patients counts by first name: {Charles=1, Derek=1, Jack=1}
+==&#62; select p.last_name, count(p.last_name) from patient p  group by p.last_name
+Patients counts by last name: {Anderson=2, Camp=1}&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN325"
+>4.5.3. Query.mapBy(Field)</A
+></H2
+><P
+>Creates an in-memory map of the value of the given field to the object.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;String, Patient&#62; mapByFirstName = Patient.ALL.mapBy(Patient.FIRST_NAME);
+System.out.println("Patients counts by first name: "+ mapByFirstName);
+Map&#60;String, Patient&#62; mapByLastName = Patient.ALL.mapBy(Patient.LAST_NAME);
+System.out.println("Patients counts by last name: "+ mapByLastName);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+Patients counts by first name: {Derek=[Patient id:1 last_name:Anderson first_name:Derek], Charles=[Patient id:2 last_name:Anderson first_name:Charles], Jack=[Patient id:3 last_name:Camp first_name:Jack]}
+==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+Patients counts by last name: {Anderson=[Patient id:2 last_name:Anderson first_name:Charles], Camp=[Patient id:3 last_name:Camp first_name:Jack]}&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN330"
+>4.5.4. Query.collectBy(Field)</A
+></H2
+><P
+>You'll notice in the previous example only one object can be returned for each field value.  Because there are two patients with the last name "Anderson", there is a race and only one will be returned.  (which one is determined by the order the database returns the rows in)  If we want to capture both objects we can use the collectBy() method.  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;String, Collection&#60;Patient&#62;&#62; collectByLastName = Patient.ALL.collectBy(Patient.LAST_NAME);
+for (Entry&#60;String, Collection&#60;Patient&#62;&#62; e : collectByLastName.entrySet()) {
+    String lastName = e.getKey();
+    System.out.println("We have the follow people with a last name of "+ lastName +":");
+    for (Patient patient : e.getValue()) {
+        System.out.println("\t"+ patient);
+    }
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
+We have the follow people with a last name of Anderson:
+	[Patient id:1 last_name:Anderson first_name:Derek]
+	[Patient id:2 last_name:Anderson first_name:Charles]
+We have the follow people with a last name of Camp:
+	[Patient id:3 last_name:Camp first_name:Jack]&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN335"
+>4.5.5. Query.sum(Field)</A
+></H2
+><P
+>If you want to sum a given field, use Query.sum(Field).  For example:</P
+><PRE
+CLASS="programlisting"
+>Double sum = Purchase.ALL.sum(Purchase.PRICE);
+System.out.println("Our customers purchased a total of $"+ sum);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select sum(p.price) from purchase p 
+Our customers purchased a total of $350.0&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN340"
+>4.5.6. Query.sumBy(Field, Field)</A
+></H2
+><P
+>If you want to sum a given field grouped by another field, use Query.sum(Field1, Field2).  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
+Map&#60;Integer, Double&#62; sums = Purchase.ALL.sumBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : sums.entrySet()) {
+    Integer itemId = e.getKey();
+    Double sum = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("Our customers purchased a total of $"+ sum +" in "+ item);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i 
+==&#62; select p.item_id, sum(p.price)  from purchase p  group by p.item_id
+Our customers purchased a total of $100.0 in [Item id:1 name:"Eye Exam"]
+Our customers purchased a total of $250.0 in [Item id:2 name:Glasses]&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN345"
+>4.5.7. Query.average(Field)</A
+></H2
+><P
+>If you want to average a given field, use Query.average(Field).  For example:</P
+><PRE
+CLASS="programlisting"
+>Double average = Purchase.ALL.average(Purchase.PRICE);
+System.out.println("Our customers purchased items with an average of $"+ average);
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select avg(p.price) from purchase p 
+Our customers purchased items with an average of $175.0&#13;</PRE
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN350"
+>4.5.8. Query.averageBy(Field, Field)</A
+></H2
+><P
+>If you want to average a given field grouped by another field, use Query.averageBy(Field1, Field2).  For example:</P
+><PRE
+CLASS="programlisting"
+>Map&#60;Integer, Item&#62; items = Item.ALL.mapBy(Item.ID);
+Map&#60;Integer, Double&#62; avgs = Purchase.ALL.averageBy(Purchase.PRICE, Purchase.ITEM_ID);
+for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
+    Integer itemId = e.getKey();
+    Double average = e.getValue();
+    Item item = items.get(itemId);
+    System.out.println("The average "+ item +" purchase was $"+ average);
+}
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select i.id, i.name, i.description, i.price from item i 
+==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
+The average [Item id:1 name:"Eye Exam"] purchase was $100.0
+The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -97,7 +291,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x269.html"
+HREF="x270.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -115,7 +309,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x316.html"
+HREF="x355.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -131,7 +325,7 @@ WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD

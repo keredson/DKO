@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Transactions</TITLE
+>Selecting Only Specific Fields</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,13 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Table Aliases"
-HREF="x384.html"><LINK
+TITLE="Limit Operations"
+HREF="x381.html"><LINK
 REL="NEXT"
-TITLE="FAQs"
-HREF="x392.html"></HEAD
+TITLE="Performance"
+HREF="x393.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -45,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x384.html"
+HREF="x381.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -59,7 +59,7 @@ WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
 ><A
-HREF="x392.html"
+HREF="x393.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -74,12 +74,21 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN388"
->4.11. Transactions</A
+>4.10. Selecting Only Specific Fields</A
 ></H1
 ><P
->TODO: STUB</P
-><P
-></P
+>DKOs support limiting the fields selected in a query.  Usually this is unnecessary as the DKO library will watch how an object is used and automatically stop  selecting unused fields, but sometimes it is useful to be explicit.  Here is an example:</P
+><PRE
+CLASS="programlisting"
+>System.out.println(Patient.ALL.first().toStringDetailed());
+System.out.println(Patient.ALL.onlyFields(Patient.LAST_NAME).first().toStringDetailed());
+</PRE
+><PRE
+CLASS="programlisting"
+>==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p  limit 1
+[Patient id:1 social_security_number:null birth_date:null last_name:Anderson first_name:Derek since:null primary_doctor_id:null]
+==&#62; select p.last_name from patient p  limit 1
+[Patient last_name:Anderson]&#13;</PRE
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -97,7 +106,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x384.html"
+HREF="x381.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -115,7 +124,7 @@ WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
 ><A
-HREF="x392.html"
+HREF="x393.html"
 ACCESSKEY="N"
 >Next</A
 ></TD
@@ -125,13 +134,13 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Table Aliases</TD
+>Limit Operations</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -139,7 +148,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->FAQs</TD
+>Performance</TD
 ></TR
 ></TABLE
 ></DIV

@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->FAQs</TITLE
+>Performance</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -11,10 +11,13 @@ TITLE="DKOs - The Book"
 HREF="index.html"><LINK
 REL="UP"
 TITLE="Queries"
-HREF="c210.html"><LINK
+HREF="c211.html"><LINK
 REL="PREVIOUS"
-TITLE="Transactions"
-HREF="x387.html"></HEAD
+TITLE="Selecting Only Specific Fields"
+HREF="x388.html"><LINK
+REL="NEXT"
+TITLE="Inner Queries"
+HREF="x401.html"></HEAD
 ><BODY
 CLASS="section"
 BGCOLOR="#FFFFFF"
@@ -42,7 +45,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="x387.html"
+HREF="x388.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -55,7 +58,11 @@ VALIGN="bottom"
 WIDTH="10%"
 ALIGN="right"
 VALIGN="bottom"
->&nbsp;</TD
+><A
+HREF="x401.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ></TABLE
 ><HR
@@ -67,28 +74,34 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN391"
->4.12. FAQs</A
+>4.11. Performance</A
 ></H1
 ><P
->Q: What happens when i call .where() multiple times on the same query object?</P
+>DKOs are streaming where-ever possible.  Assuming your JDBC driver isn't terribly written you can iterate over huge datasets that would be impossible to fit into memory.  (And we do - few companies have larger data sets than my employer)</P
 ><P
->A: All the calls to .where() are "and"ed together.</P
+>Comparisons to Hibernate are tricky.  When optimized, Hibernate is every bit as fast as DKOs.  (both are barely distinguishable from pure JDBC)  But when you factor in the time it takes to optimize Hibernate queries vs. DKO queries (and the fact that developer hours are limited), anecdotal evidence (a known mixed environment of Hibernate and DKOs) suggests that DKOs average runtimes less than half of comparable Hibernate queries.  (and with substantially less code)</P
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN395"
+>4.11.1. Automatic Query Optimizations</A
+></H2
 ><P
->Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</P
+>TODO</P
+></DIV
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN398"
+>4.11.2. Automatic Performance Warnings</A
+></H2
 ><P
->A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</P
-><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
-><P
->Q: </P
-><P
->A: </P
+>TODO</P
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
@@ -106,7 +119,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="x387.html"
+HREF="x388.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -123,20 +136,24 @@ ACCESSKEY="H"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+><A
+HREF="x401.html"
+ACCESSKEY="N"
+>Next</A
+></TD
 ></TR
 ><TR
 ><TD
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Transactions</TD
+>Selecting Only Specific Fields</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
 VALIGN="top"
 ><A
-HREF="c210.html"
+HREF="c211.html"
 ACCESSKEY="U"
 >Up</A
 ></TD
@@ -144,7 +161,7 @@ ACCESSKEY="U"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->&nbsp;</TD
+>Inner Queries</TD
 ></TR
 ></TABLE
 ></DIV

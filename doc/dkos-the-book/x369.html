@@ -88,8 +88,7 @@ CLASS="programlisting"
 CLASS="programlisting"
 >==&#62; select distinct p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
 [Patient id:2 last_name:Anderson first_name:Charles]
-[Patient id:1 last_name:Anderson first_name:Derek]
-[Patient id:3 last_name:Camp first_name:Jack]&#13;</PRE
+[Patient id:1 last_name:Anderson first_name:Derek]&#13;</PRE
 ><P
 >This is more useful when you limit the fields returned:</P
 ><PRE
@@ -101,8 +100,7 @@ CLASS="programlisting"
 ><PRE
 CLASS="programlisting"
 >==&#62; select distinct p.last_name from patient p 
-[Patient last_name:Anderson]
-[Patient last_name:Camp]&#13;</PRE
+[Patient last_name:Anderson]&#13;</PRE
 ><P
 >The returned objects in this case will not have an id set (because we didn't select it).  If you were to later change a value and then call update() an exception would be thrown.</P
 ><P

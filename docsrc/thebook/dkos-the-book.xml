@@ -728,7 +728,7 @@ Query<Person> q = Person.ALL.where(
   <chapter>
     <title>Write Operations</title>
     <section>
-      <title>Per Object</title>
+      <title>Writing Individual Objects</title>
       <para>An example insert:</para>
       <programlisting language="java">&test36jva;</programlisting>
       <programlisting language="java">&test36out;</programlisting>
@@ -740,8 +740,21 @@ Query<Person> q = Person.ALL.where(
       <programlisting language="java">&test38out;</programlisting>
     </section>
     <section>
-      <title>Server-Side</title>
-      <para>TODO</para>
+      <title>Modifying Rows on the Server</title>
+      <para>It's common in SQL to make data changes directly on the server (without first pulling the data down and then pushing it back up).  DKOs support the same.  Here are a few examples.</para>
+      <para>Updating all rows:</para>
+      <programlisting language="java">&test39jva;</programlisting>
+      <programlisting language="java">&test39out;</programlisting>
+      <para>Deleting a few rows:</para>
+      <programlisting language="java">&test40jva;</programlisting>
+      <programlisting language="java">&test40out;</programlisting>
+      <para>Updates are not limited to static values.  Formulas are OK too.  For instance:</para>
+      <programlisting language="java">&test41jva;</programlisting>
+      <programlisting language="java">&test41out;</programlisting>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
     </section>
     <section>
       <title>Bulk Writes</title>

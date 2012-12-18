@@ -397,17 +397,36 @@ public class DocbookExamplesTest extends TestCase {
 
 	public void test37() throws SQLException {
 		init(); // IGNORE
-//		Patient someone = Patient.ALL.first();
-//		someone.setSince(new Date(new java.util.Date().getTime()));
-//		someone.update();
+		Patient someone = Patient.ALL.first();
+		someone.setSocialSecurityNumber("123-456-7890");
+		someone.update();
 	}
 
 	public void test38() throws SQLException {
 		init(); // IGNORE
-//		Patient someone = new Patient().setFirstName("Jack").setLastName("Camp");
-//		someone.insert();
-//		someone = Patient.ALL.get(Patient.FIRST_NAME.eq("Jack"));
-//		someone.delete();
+		Patient someone = new Patient().setFirstName("Shirley").setLastName("Camp");
+		someone.insert();
+		System.out.println("deleted? "+ someone.delete());
+	}
+
+	public void test39() throws SQLException {
+		init(); // IGNORE
+		int count = Patient.ALL.set(Patient.SOCIAL_SECURITY_NUMBER, "123-456-7890").update();
+		System.out.println("updated "+ count +" rows");
+	}
+
+	public void test40() throws SQLException {
+		init(); // IGNORE
+		int count = Patient.ALL.where(Patient.LAST_NAME.eq("Camp")).delete();
+		System.out.println("deleted "+ count +" rows");
+	}
+
+	public void test41() throws SQLException {
+		init(); // IGNORE
+		System.out.println("total purchases: $"+ Purchase.ALL.sum(Purchase.PRICE));
+		int count = Purchase.ALL.set(Purchase.PRICE, Purchase.PRICE.add(2.0)).update();
+		System.out.println("updated "+ count +" rows");
+		System.out.println("total purchases: $"+ Purchase.ALL.sum(Purchase.PRICE));
 	}
 
 }

@@ -403,8 +403,20 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final List<Object> bindings = new ArrayList<Object>();
 		int i=0;
 		for (final Entry<Field<?>, Object> entry : data.entrySet()) {
-			fields[i++] = entry.getKey().getSQL(context)+"=?";
-			bindings.add(entry.getValue());
+			Field<?> field = entry.getKey();
+			Object other = entry.getValue();
+			if (other instanceof Field) {
+				fields[i++] = field.getSQL(context)+"="+((Field)other).getSQL(context);
+				bindings.add(other);
+			} else if (other instanceof SQLFunction) {
+				StringBuffer sb2 = new StringBuffer();
+				sb2.append(field.getSQL(context)).append("=");
+				((SQLFunction)other).getSQL(sb2, bindings, context);
+				fields[i++] = sb2.toString();
+			} else {
+				fields[i++] = field.getSQL(context)+"=?";
+				bindings.add(other);
+			}
 		}
 		sb.append(Util.join(", ", fields));
 		sb.append(" ");
@@ -446,7 +458,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						"is not yet supported");
 				q.tableInfos.get(0).tableName = null;
 				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, null);
+				Util.log(sql, q.bindings);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps);
 				ps.execute();
@@ -458,7 +470,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						"is not yet supported");
 				q.tableInfos.get(0).tableName = null;
 				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, null);
+				Util.log(sql, q.bindings);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps);
 				ps.execute();
@@ -471,17 +483,16 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				q.tableInfos.get(0).tableName = null;
 				final String sql = "delete from "+ schema
 						+ ".dbo." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, null);
+				Util.log(sql, q.bindings);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps);
 				ps.execute();
 				final int count = ps.getUpdateCount();
 				ps.close();
 				return count;
-
 			} else {
 				final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, null);
+				Util.log(sql, q.bindings);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps);
 				ps.execute();

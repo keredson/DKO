@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.docbook.Appointment;
 import org.kered.docbook.Doctor;
 import org.kered.docbook.Item;
@@ -13,8 +14,7 @@ import org.kered.docbook.Purchase;
 
 public class DefaultDataSource {
 
-	static DataSource ds = new org.kered.dko.datasource.JDBCDriverDataSource(
-			"jdbc:sqlite:bin/thebook.db");
+	static DataSource ds = new JDBCDriverDataSource("jdbc:sqlite:bin/thebook.db");
 
 	static {
 		try {

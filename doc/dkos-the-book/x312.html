@@ -120,9 +120,9 @@ System.out.println("Patients counts by last name: "+ countByLastName);
 ><PRE
 CLASS="programlisting"
 >==&#62; select p.first_name, count(p.first_name) from patient p  group by p.first_name
-Patients counts by first name: {Charles=1, Derek=1, Jack=1}
+Patients counts by first name: {Charles=1, Derek=1}
 ==&#62; select p.last_name, count(p.last_name) from patient p  group by p.last_name
-Patients counts by last name: {Anderson=2, Camp=1}&#13;</PRE
+Patients counts by last name: {Anderson=2}&#13;</PRE
 ></DIV
 ><DIV
 CLASS="section"
@@ -144,9 +144,9 @@ System.out.println("Patients counts by last name: "+ mapByLastName);
 ><PRE
 CLASS="programlisting"
 >==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
-Patients counts by first name: {Derek=[Patient id:1 last_name:Anderson first_name:Derek], Charles=[Patient id:2 last_name:Anderson first_name:Charles], Jack=[Patient id:3 last_name:Camp first_name:Jack]}
+Patients counts by first name: {Derek=[Patient id:1 last_name:Anderson first_name:Derek], Charles=[Patient id:2 last_name:Anderson first_name:Charles]}
 ==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
-Patients counts by last name: {Anderson=[Patient id:2 last_name:Anderson first_name:Charles], Camp=[Patient id:3 last_name:Camp first_name:Jack]}&#13;</PRE
+Patients counts by last name: {Anderson=[Patient id:2 last_name:Anderson first_name:Charles]}&#13;</PRE
 ></DIV
 ><DIV
 CLASS="section"
@@ -174,9 +174,7 @@ CLASS="programlisting"
 >==&#62; select p.social_security_number, p.birth_date, p.last_name, p.first_name, p.id, p.since, p.primary_doctor_id from patient p 
 We have the follow people with a last name of Anderson:
 	[Patient id:1 last_name:Anderson first_name:Derek]
-	[Patient id:2 last_name:Anderson first_name:Charles]
-We have the follow people with a last name of Camp:
-	[Patient id:3 last_name:Camp first_name:Jack]&#13;</PRE
+	[Patient id:2 last_name:Anderson first_name:Charles]&#13;</PRE
 ></DIV
 ><DIV
 CLASS="section"
@@ -196,7 +194,7 @@ System.out.println("Our customers purchased a total of $"+ sum);
 ><PRE
 CLASS="programlisting"
 >==&#62; select sum(p.price) from purchase p 
-Our customers purchased a total of $350.0&#13;</PRE
+Our customers purchased a total of $354.0&#13;</PRE
 ></DIV
 ><DIV
 CLASS="section"
@@ -223,8 +221,8 @@ for (Entry&#60;Integer, Double&#62; e : sums.entrySet()) {
 CLASS="programlisting"
 >==&#62; select i.id, i.name, i.description, i.price from item i 
 ==&#62; select p.item_id, sum(p.price)  from purchase p  group by p.item_id
-Our customers purchased a total of $100.0 in [Item id:1 name:"Eye Exam"]
-Our customers purchased a total of $250.0 in [Item id:2 name:Glasses]&#13;</PRE
+Our customers purchased a total of $102.0 in [Item id:1 name:"Eye Exam"]
+Our customers purchased a total of $252.0 in [Item id:2 name:Glasses]&#13;</PRE
 ></DIV
 ><DIV
 CLASS="section"
@@ -244,7 +242,7 @@ System.out.println("Our customers purchased items with an average of $"+ average
 ><PRE
 CLASS="programlisting"
 >==&#62; select avg(p.price) from purchase p 
-Our customers purchased items with an average of $175.0&#13;</PRE
+Our customers purchased items with an average of $177.0&#13;</PRE
 ></DIV
 ><DIV
 CLASS="section"
@@ -271,8 +269,8 @@ for (Entry&#60;Integer, Double&#62; e : avgs.entrySet()) {
 CLASS="programlisting"
 >==&#62; select i.id, i.name, i.description, i.price from item i 
 ==&#62; select p.item_id, avg(p.price)  from purchase p  group by p.item_id
-The average [Item id:1 name:"Eye Exam"] purchase was $100.0
-The average [Item id:2 name:Glasses] purchase was $250.0&#13;</PRE
+The average [Item id:1 name:"Eye Exam"] purchase was $102.0
+The average [Item id:2 name:Glasses] purchase was $252.0&#13;</PRE
 ></DIV
 ></DIV
 ><DIV

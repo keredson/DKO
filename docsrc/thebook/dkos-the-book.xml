@@ -728,7 +728,7 @@ Query<Person> q = Person.ALL.where(
   <chapter>
     <title>Write Operations</title>
     <section>
-      <title>Per Object</title>
+      <title>Writing Individual Objects</title>
       <para>An example insert:</para>
       <programlisting language="java">&test36jva;</programlisting>
       <programlisting language="java">&test36out;</programlisting>
@@ -740,12 +740,38 @@ Query<Person> q = Person.ALL.where(
       <programlisting language="java">&test38out;</programlisting>
     </section>
     <section>
-      <title>Server-Side</title>
-      <para>TODO</para>
+      <title>Modifying Data on the Server</title>
+      <para>It's common in SQL to make data changes directly on the server (without first pulling the data down and then pushing it back up).  DKOs support the same.  Here are a few examples.</para>
+      <para>Updating all rows:</para>
+      <programlisting language="java">&test39jva;</programlisting>
+      <programlisting language="java">&test39out;</programlisting>
+      <para>Deleting a few rows:</para>
+      <programlisting language="java">&test40jva;</programlisting>
+      <programlisting language="java">&test40out;</programlisting>
+      <para>Updates are not limited to static values.  Formulas are OK too.  For instance:</para>
+      <programlisting language="java">&test41jva;</programlisting>
+      <programlisting language="java">&test41out;</programlisting>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
     </section>
     <section>
       <title>Bulk Writes</title>
-      <para>TODO</para>
+      <para>Java's JDBC specification offers a batch mode that can be an order of magnitude faster than individual PreparedStatements when uploading large numbers of objects.  To take advantage of this DKOs offer the Bulk class.</para>
+      <section>
+        <title>Bulk Inserts</title>
+        <para>A not uncommon operation when you have multiple databases is to copy records from one database to another.  If the two databases are on the same machine you can do this with an insert statement and an inner query.  But if the databases are on different servers it's not so easy.  Bulk.insertAll() will let you stream a lot of records from one server to another (in addition to other uses).  It's not as fast as using database-specific bulk move tools (such as BCP for SQL Server), but it is a heck of a lot faster than what you normally would get writing your own non-batch JDBC statements.  (For example, it easily hits the ~50k rows/sec rate limit our databases are by default configured for.)  It's also very simple to use.  Here's an example streaming from one database to another:</para>
+        <programlisting language="java">&test42jva;</programlisting>
+        <programlisting language="java">&test42out;</programlisting>
+      <section>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
+      <para></para>
     </section>
     <section>
       <title>Transactions</title>
@@ -817,8 +843,8 @@ Query<Person> q = Person.ALL.where(
       <para>A: All the calls to .where() are "and"ed together.</para>
       <para>Q: I've called .onlyFields() but now I want to either update or delete.  Is this safe?</para>
       <para>A: Yes.  Write operations will ignore calls to .onlyFields() or .deferFields().</para>
-      <para>Q: </para>
-      <para>A: </para>
+      <para>Q: Why when i use Patient.ALL.get(Patient.ID.eq(1)) does the query contain a "limit 2" or a "top 2"?  (Also when lazy loading foreign keys, etc.)</para>
+      <para>A: Patient.ALL.get(...) is actually a shortcut for Patient.ALL.where(...).getTheOnly(), which differs from Query.first() in that it throws a RuntimeException if your query does not specify a unique record.  The "limit 2" is there to confirm that uniqueness.</para>
       <para>Q: </para>
       <para>A: </para>
       <para>Q: </para>

@@ -165,6 +165,7 @@ public class BuildInfo {
     <copy todir="bin" overwrite="true">
       <fileset file="docsrc/thebook/thebook.db"/>
     </copy>
+    <copy file="bin/thebook.db" tofile="bin/thebook2.db" overwrite="true"/>
     <junit printsummary="yes" haltonfailure="yes" fork="yes">
       <classpath>
         <pathelement location="bin"/>

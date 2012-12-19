@@ -362,8 +362,8 @@ public class Bulk {
 			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 			final StringBuffer sb = new StringBuffer();
 			sb.append("insert into ");
-			sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()))
-					+sep+ Util.getTABLE_NAME(table.getClass()));
+			String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()));
+			sb.append((schema==null || "".equals(schema) ? "" : schema+sep) + Util.getTABLE_NAME(table.getClass()));
 			sb.append(" (");
 			sb.append(Util.joinFields(dbType, ", ", fields));
 			sb.append(") values (");

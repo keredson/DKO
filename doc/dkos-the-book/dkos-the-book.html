@@ -297,7 +297,7 @@ HREF="#AEN480"
 ><DT
 >5.2. <A
 HREF="#AEN491"
->Modifying Data on the Server</A
+>Modifying Rows on the Server</A
 ></DT
 ><DT
 >5.3. <A
@@ -313,82 +313,87 @@ HREF="#AEN510"
 ></DT
 ></DL
 ></DD
+><DT
+>5.4. <A
+HREF="#AEN515"
+>Transactions</A
+></DT
 ></DL
 ></DD
 ><DT
 >6. <A
-HREF="#AEN535"
+HREF="#AEN527"
 >Data Sources</A
 ></DT
 ><DD
 ><DL
 ><DT
 >6.1. <A
-HREF="#AEN538"
+HREF="#AEN530"
 >MatryoshkaDataSource</A
 ></DT
 ><DT
 >6.2. <A
-HREF="#AEN541"
+HREF="#AEN533"
 >ConnectionCountingDataSource</A
 ></DT
 ><DT
 >6.3. <A
-HREF="#AEN544"
+HREF="#AEN536"
 >MirroredDataSource</A
 ></DT
 ><DT
 >6.4. <A
-HREF="#AEN547"
+HREF="#AEN539"
 >ReflectedDataSource</A
 ></DT
 ><DT
 >6.5. <A
-HREF="#AEN550"
+HREF="#AEN542"
 >SingleConnectionDataSource</A
 ></DT
 ><DT
 >6.6. <A
-HREF="#AEN553"
+HREF="#AEN545"
 >SingleThreadedDataSource</A
 ></DT
 ><DT
 >6.7. <A
-HREF="#AEN556"
+HREF="#AEN548"
 >UnclosableConnection</A
 ></DT
 ></DL
 ></DD
 ><DT
 >7. <A
-HREF="#AEN559"
+HREF="#AEN551"
 >Miscellaneous</A
 ></DT
 ><DD
 ><DL
 ><DT
 >7.1. <A
-HREF="#AEN561"
+HREF="#AEN553"
 >Contexts</A
 ></DT
 ><DT
 >7.2. <A
-HREF="#AEN564"
+HREF="#AEN556"
 >Supported Databases</A
 ></DT
 ><DT
 >7.3. <A
-HREF="#AEN567"
+HREF="#AEN559"
 >Diffs</A
 ></DT
 ><DT
 >7.4. <A
-HREF="#AEN570"
+HREF="#AEN562"
 >CSV</A
 ></DT
 ><DT
 >7.5. <A
-HREF="#AEN573"
+HREF="#AEN565"
 >FAQs</A
 ></DT
 ></DL
@@ -2208,7 +2213,7 @@ CLASS="section"
 CLASS="section"
 ><A
 NAME="AEN491"
->5.2. Modifying Data on the Server</A
+>5.2. Modifying Rows on the Server</A
 ></H2
 ><P
 >It's common in SQL to make data changes directly on the server (without first pulling the data down and then pushing it back up).  DKOs support the same.  Here are a few examples.</P
@@ -2293,37 +2298,16 @@ CLASS="programlisting"
 ==&#62; insert into patient (social_security_number, birth_date, last_name, first_name, id, since, primary_doctor_id) values (?,?,?,?,?,?,?)
 woot! insert into patient (social_security_number, birth_date, last_name, first_name, id, since, primary_doctor_id) values (?,?,?,?,?,?,?)
 copied 2 patients from src to dest&#13;</PRE
-><DIV
-CLASS="section"
-><HR><H4
-CLASS="section"
-><A
-NAME="AEN515"
->5.3.1.1. </A
-></H4
-><P
-></P
-><P
-></P
-><P
-></P
-><P
-></P
-><P
-></P
-><P
-></P
-><P
-></P
+></DIV
 ></DIV
 ><DIV
 CLASS="section"
-><HR><H4
+><HR><H2
 CLASS="section"
 ><A
-NAME="AEN523"
->5.3.1.2. Transactions</A
-></H4
+NAME="AEN515"
+>5.4. Transactions</A
+></H2
 ><P
 >DKOs support transactions.  (They would be of little use if they didn't!)  But first we must introduce Context objects.  Let's first look at some example code:</P
 ><PRE
@@ -2364,13 +2348,11 @@ Finally I see 2 patients.&#13;</PRE
 ></P
 ></DIV
 ></DIV
-></DIV
-></DIV
 ><DIV
 CLASS="chapter"
 ><HR><H1
 ><A
-NAME="AEN535"
+NAME="AEN527"
 ></A
 >Chapter 6. Data Sources</H1
 ><P
@@ -2380,7 +2362,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN538"
+NAME="AEN530"
 >6.1. MatryoshkaDataSource</A
 ></H2
 ><P
@@ -2391,7 +2373,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN541"
+NAME="AEN533"
 >6.2. ConnectionCountingDataSource</A
 ></H2
 ><P
@@ -2402,7 +2384,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN544"
+NAME="AEN536"
 >6.3. MirroredDataSource</A
 ></H2
 ><P
@@ -2413,7 +2395,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN547"
+NAME="AEN539"
 >6.4. ReflectedDataSource</A
 ></H2
 ><P
@@ -2424,7 +2406,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN550"
+NAME="AEN542"
 >6.5. SingleConnectionDataSource</A
 ></H2
 ><P
@@ -2435,7 +2417,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN553"
+NAME="AEN545"
 >6.6. SingleThreadedDataSource</A
 ></H2
 ><P
@@ -2446,7 +2428,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN556"
+NAME="AEN548"
 >6.7. UnclosableConnection</A
 ></H2
 ><P
@@ -2457,7 +2439,7 @@ NAME="AEN556"
 CLASS="chapter"
 ><HR><H1
 ><A
-NAME="AEN559"
+NAME="AEN551"
 ></A
 >Chapter 7. Miscellaneous</H1
 ><DIV
@@ -2465,7 +2447,7 @@ CLASS="section"
 ><H2
 CLASS="section"
 ><A
-NAME="AEN561"
+NAME="AEN553"
 >7.1. Contexts</A
 ></H2
 ><P
@@ -2476,7 +2458,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN564"
+NAME="AEN556"
 >7.2. Supported Databases</A
 ></H2
 ><P
@@ -2487,7 +2469,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN567"
+NAME="AEN559"
 >7.3. Diffs</A
 ></H2
 ><P
@@ -2498,7 +2480,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN570"
+NAME="AEN562"
 >7.4. CSV</A
 ></H2
 ><P
@@ -2509,7 +2491,7 @@ CLASS="section"
 ><HR><H2
 CLASS="section"
 ><A
-NAME="AEN573"
+NAME="AEN565"
 >7.5. FAQs</A
 ></H2
 ><P

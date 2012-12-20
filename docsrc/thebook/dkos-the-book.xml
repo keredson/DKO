@@ -740,7 +740,7 @@ Query<Person> q = Person.ALL.where(
       <programlisting language="java">&test38out;</programlisting>
     </section>
     <section>
-      <title>Modifying Data on the Server</title>
+      <title>Modifying Rows on the Server</title>
       <para>It's common in SQL to make data changes directly on the server (without first pulling the data down and then pushing it back up).  DKOs support the same.  Here are a few examples.</para>
       <para>Updating all rows:</para>
       <programlisting language="java">&test39jva;</programlisting>
@@ -764,14 +764,7 @@ Query<Person> q = Person.ALL.where(
         <para>A not uncommon operation when you have multiple databases is to copy records from one database to another.  If the two databases are on the same machine you can do this with an insert statement and an inner query.  But if the databases are on different servers it's not so easy.  Bulk.insertAll() will let you stream a lot of records from one server to another (in addition to other uses).  It's not as fast as using database-specific bulk move tools (such as BCP for SQL Server), but it is a heck of a lot faster than what you normally would get writing your own non-batch JDBC statements.  (For example, it easily hits the ~50k rows/sec rate limit our databases are by default configured for.)  It's also very simple to use.  Here's an example streaming from one database to another:</para>
         <programlisting language="java">&test42jva;</programlisting>
         <programlisting language="java">&test42out;</programlisting>
-      <section>
-      <para></para>
-      <para></para>
-      <para></para>
-      <para></para>
-      <para></para>
-      <para></para>
-      <para></para>
+      </section>
     </section>
     <section>
       <title>Transactions</title>

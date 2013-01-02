@@ -511,14 +511,15 @@ class ClassGenerator {
 		// write the generic get(field) method
 		br.write("\t@SuppressWarnings(\"unchecked\")\n");
 		br.write("\tpublic <S> S get(final Field<S> _field) {\n");
+		br.write("\t\tif ("+ className +".class==_field.TABLE) {\n");
 		for (final String column : columns.keySet()) {
-			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
+			br.write("\t\t\tif (_field=="+ getFieldName(column) +") ");
 			br.write("return (S) get"+ getInstanceMethodName(column) +"();\n");
 		}
+		br.write("\t\t}\n");
 		for (final FK fk : fks) {
 			final String fkOName = genFKCachedObjectName(fk);
-			br.write("\t\tif ("+fkOName+"!=null) try { return "+fkOName+".get(_field); }\n");
-			br.write("\t\tcatch (IllegalArgumentException e) { /* ignore */ }\n");
+			br.write("\t\tif ("+fkOName+"!=null) return "+fkOName+".get(_field);\n");
 		}
 		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");

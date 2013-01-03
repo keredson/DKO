@@ -46,6 +46,7 @@ public class Bulk {
 	private final DataSource ds;
 	private final DB_TYPE dbType;
 	private final int batchSize;
+	private long rateLimit = -1;
 	private static final int DEFAULT_BATCH_SIZE = 64;
 
 	/**
@@ -69,6 +70,11 @@ public class Bulk {
 		this.ds = ds;
 		dbType = DB_TYPE.detect(ds);
 		this.batchSize = batchSize;
+	}
+	
+	public Bulk setRateLimit(long limit) {
+		this.rateLimit  = limit;
+		return this;
 	}
 
 	/**
@@ -95,9 +101,16 @@ public class Bulk {
 	 */
 	public <T extends Table> long insertAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
+		long start = System.currentTimeMillis();
+		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
 		for (final T t : iterable) {
+			++c;
+			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
+				try { Thread.currentThread().sleep(1000); }
+				catch (InterruptedException e) { /* ignore */ }
+			}
 			final String key = t.__NOSCO_FETCHED_VALUES.toString();
 			Inserter<T> inserter = inserters.get(key);
 			if (inserter == null) {
@@ -158,9 +171,16 @@ public class Bulk {
 	 */
 	public <T extends Table> long updateAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
+		long start = System.currentTimeMillis();
+		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		for (final T t : iterable) {
+			++c;
+			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
+				try { Thread.currentThread().sleep(1000); }
+				catch (InterruptedException e) { /* ignore */ }
+			}
 			final String key = t.__NOSCO_UPDATED_VALUES.toString();
 			Updater<T> updater = updaters.get(key);
 			if (updater == null) {
@@ -505,11 +525,18 @@ public class Bulk {
 	 */
 	public <T extends Table> long insertOrUpdateAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
+		long start = System.currentTimeMillis();
+		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
 		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		final List<T> rejects = new ArrayList<T>();
 		for (final T t : iterable) {
+			++c;
+			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
+				try { Thread.currentThread().sleep(1000); }
+				catch (InterruptedException e) { /* ignore */ }
+			}
 			// we use a string for the key because the bitset could change out from under us
 			final String insertKey = t.__NOSCO_FETCHED_VALUES.toString();
 			Inserter<T> inserter = inserters.get(insertKey);
@@ -594,9 +621,16 @@ public class Bulk {
 	 */
 	public <T extends Table> long deleteAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
+		long start = System.currentTimeMillis();
+		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Deleter<T> deleter = new Deleter<T>();
 		for (final T t : iterable) {
+			++c;
+			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
+				try { Thread.currentThread().sleep(1000); }
+				catch (InterruptedException e) { /* ignore */ }
+			}
 			deleter.push(t);
 			if (callback!=null && ((System.currentTimeMillis()/1000.0) - lastCallback > frequency)) {
 				callback.call(deleter.count);

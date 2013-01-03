@@ -500,6 +500,35 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Creates a condition representing this field not being a member of the given set.
+	 * @param set
+	 * @return
+	 */
+	public Condition notIn(final T... set) {
+		return in(set).not();
+	}
+
+	/**
+	 * Creates a condition representing this field not being a member of the given set.
+	 * If this collection is large a temporary table is created and joined against.
+	 * @param set
+	 * @return
+	 */
+	public Condition notIn(final Field<?>... fields) {
+		return in(fields).not();
+	}
+
+	/**
+	 * Creates a condition representing this field not being a member of the given set.
+	 * If this collection is large a temporary table is created and joined against.
+	 * @param set
+	 * @return
+	 */
+	public Condition notIn(final Collection<T> set) {
+		return in(set).not();
+	}
+
+	/**
 	 * Performs a mathematical function on this field.
 	 * @param v
 	 * @return
@@ -786,6 +815,18 @@ public class Field<T> implements Cloneable {
 			}
 			return in(values);
 		}
+	}
+
+	/**
+	 * Creates a condition representing this field not being a member of the given sub-query. &nbsp;
+	 * Note that the given query MUST return only one field (using the {@code Query.onlyFields()})
+	 * method), otherwise this will throw a {@code SQLException} at runtime.
+	 * @param set
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Condition notIn(final Query<?> q) {
+		return in(q).not();
 	}
 
 	/**

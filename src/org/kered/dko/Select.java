@@ -122,9 +122,9 @@ class Select<T extends Table> implements CleanableIterator<T> {
 				/* ignore */
 			}
 
-			returnJoin = Join.J.class.isAssignableFrom(query.ofType);
+			returnJoin = Join.class.isAssignableFrom(query.ofType);
 			if (returnJoin) {
-				joinConstructor = query.ofType.getDeclaredConstructor(Object[].class, Integer.TYPE, Collection.class);
+				joinConstructor = query.ofType.getDeclaredConstructor(Object[].class);//, Integer.TYPE, Collection.class);
 				joinConstructor.setAccessible(true);
 			}
 
@@ -337,7 +337,7 @@ class Select<T extends Table> implements CleanableIterator<T> {
 				}
 				if (next == null) {
 					if (this.returnJoin) {
-						next = this.joinConstructor.newInstance(objects, 0);
+						next = (T) new Join(objects);
 					} else {
 						next = (T) objects[0];
 					}

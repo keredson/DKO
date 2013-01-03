@@ -16,7 +16,7 @@
 
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>
-  <property name="dep_mysql_jar"  location="/usr/share/java/mysql.jar"/>
+  <property name="dep_mysql_jar"  location="deps/mysql.jar"/>
   <property name="dep_sqlite_jar"  location="deps/sqlite-jdbc.jar"/>
   <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
   <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"/>
@@ -67,12 +67,12 @@
     <javac srcdir="${src}" 
     	includes="org/kered/dko/ant/JoinGenerator.java,org/kered/dko/ant/CodeGenerator.java,org/kered/dko/ant/ClassGenerator.java,org/kered/dko/ant/SchemaExtractor.java" 
 		destdir="${build}" debug="on" target="1.6" source="1.6"/>
-    <java classname="org.kered.dko.ant.JoinGenerator" fork="yes">
+    <!--java classname="org.kered.dko.ant.JoinGenerator" fork="yes">
         <arg value="9"/>
 		<classpath>
 			<pathelement path="${build}"/>
 		</classpath>
-    </java>
+    </java-->
     <echo file="gen/joinsrc/org/kered/dko/BuildInfo.java">package org.kered.dko;
 public class BuildInfo {
 	public static final String HG_ID = "${hg_id}";
@@ -264,7 +264,7 @@ public class BuildInfo {
 
   <target name="unit-test-gen-src-hsql" depends="unit-test-extract-schema-hsql">
     <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
-    <dkogen package="org.nosco.unittest" 
+    <dkogen package="org.kered.dko.unittest" 
       debug="true"
       javaoutputdir="gensrc"
       jarfile="bin/unittest.jar"

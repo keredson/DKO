@@ -183,15 +183,15 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join> type, final Query<T1> q, final Class<T2> other, final String joinType, final Condition on) {
 		this(type, q, other, null, joinType, on);
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join> type, final Query<T1> q, final __Alias<T2> other, final String joinType, final Condition on) {
 		this(type, q, other.table, other.alias, joinType, on);
 	}
 
-	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join.J> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join> type, final Query<T1> q, final Class<T2> other, String alias, final String joinType, final Condition on) {
 		super(type);
 		copy((DBQuery<T>) q);
 		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
@@ -591,11 +591,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 		for (JoinInfo join : joins) {
 			TableInfo ti = join.reffingTableInfo;
-			String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
-			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+			if (ti!=null) {
+				String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
+				tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+			}
 			ti = join.reffedTableInfo;
-			id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+			String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
 			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
 			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
 		}
@@ -1553,60 +1555,60 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public <S extends Table> Query<T> crossJoin(final Class<S> other) {
-		return new DBQuery<T>(this, "cross join", other, null, null);
+	public <S extends Table> Query<Join<T, S>> crossJoin(final Class<S> other) {
+		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "cross join", null);
 	}
 
 	@Override
-	public <S extends Table> Query<T> crossJoin(final __Alias<S> alias) {
-		return new DBQuery<T>(this, "cross join", alias.table, alias.alias, null);
+	public <S extends Table> Query<Join<T, S>> crossJoin(final __Alias<S> alias) {
+		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "cross join", null);
 	}
 
 	@Override
-	public <S extends Table> Query<T> leftJoin(final Class<S> other,
+	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<T>(this, "left outer join", other, null, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "left outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> leftJoin(final __Alias<S> alias,
+	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> alias,
 			final Condition condition) {
-		return new DBQuery<T>(this, "left outer join", alias.table, alias.alias, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "left outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> rightJoin(final Class<S> other,
+	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<T>(this, "right outer join", other, null, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "right outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> rightJoin(final __Alias<S> alias,
+	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> alias,
 			final Condition condition) {
-		return new DBQuery<T>(this, "right outer join", alias.table, alias.alias, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "right outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> outerJoin(final Class<S> other,
+	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<T>(this, "full outer join", other, null, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "full outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> outerJoin(final __Alias<S> alias,
+	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> alias,
 			final Condition condition) {
-		return new DBQuery<T>(this, "full outer join", alias.table, alias.alias, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "full outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> innerJoin(final Class<S> other,
+	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> other,
 			final Condition condition) {
-		return new DBQuery<T>(this, "inner join", other, null, condition);
+		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "inner join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<T> innerJoin(final __Alias<S> alias, final Condition condition) {
-		return new DBQuery<T>(this, "inner join", alias.table, alias.alias, condition);
+	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> alias, final Condition condition) {
+		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "inner join", condition);
 	}
 
 	@SuppressWarnings("unchecked")

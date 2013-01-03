@@ -19,7 +19,6 @@ import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Constants.JOIN_TYPE;
 import org.kered.dko.Field.FK;
-import org.kered.dko.Join.J;
 import org.kered.dko.Table.__Alias;
 
 class SoftJoin<T extends Table> extends AbstractQuery<T> {
@@ -39,7 +38,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 
 
 	public SoftJoin(final JOIN_TYPE joinType,
-			final Class<? extends Join.J> type,
+			final Class<? extends Table> type,
 			final Class<? extends Table> t1, final Class<? extends Table> t2,
 			final Condition on) {
 		super(type);
@@ -60,7 +59,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	public SoftJoin(final JOIN_TYPE joinType,
-			final Class<? extends Join.J> type,
+			final Class<? extends Table> type,
 			final Class<? extends Table> t1, final __Alias<? extends Table> t2,
 			final Condition on) {
 		super(type);
@@ -72,7 +71,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	public SoftJoin(final JOIN_TYPE joinType,
-			final Class<? extends Join.J> type,
+			final Class<? extends Table> type,
 			final __Alias<? extends Table> t1, final Class<? extends Table> t2,
 			final Condition on) {
 		super(type);
@@ -84,7 +83,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	public SoftJoin(final JOIN_TYPE joinType,
-			final Class<? extends Join.J> type,
+			final Class<? extends Table> type,
 			final __Alias<? extends Table> t1,
 			final __Alias<? extends Table> t2, final Condition on) {
 		super(type);
@@ -358,15 +357,15 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				try {
 					if (swapped) {
 						if (st2==1) oa[0] = t2;
-						else ((J)t2).populateObjectArray(oa, 0);
+						else ((Join)t2).populateObjectArray(oa, 0);
 						if (st1==1) oa[st2] = t1;
-						else ((J)t1).populateObjectArray(oa, st2);
+						else ((Join)t1).populateObjectArray(oa, st2);
 						return (T) jc.newInstance(oa, 0, fields);
 					} else {
 						if (st1==1) oa[0] = t1;
-						else ((J)t1).populateObjectArray(oa, 0);
+						else ((Join)t1).populateObjectArray(oa, 0);
 						if (st2==1) oa[st1] = t2;
-						else ((J)t2).populateObjectArray(oa, st1);
+						else ((Join)t2).populateObjectArray(oa, st1);
 						return (T) jc.newInstance(oa, 0, fields);
 					}
 				} catch (final IllegalArgumentException e) {

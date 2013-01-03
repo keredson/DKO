@@ -20,7 +20,7 @@ class JoinGenerator {
 
 		final String r = ""; //genRandomString();
 
-		final File file = new File("gen/joinsrc/org/kered/dko/Join.java");
+		final File file = new File("gen/joinsrc/org/kered/dko/JoinOld.java");
 		System.err.println("writing (to J"+n+"): "+ file.getPath());
 		genJoinsFile(file, n, r);
 //		final File file2 = new File("gen/joinsrc/org/kered/dko/_Join.java");
@@ -66,7 +66,7 @@ class JoinGenerator {
 		//w.write("import org.kered.dko._Join.*;\n");
 		w.write("\n");
 
-		w.write("public class Join {\n");
+		w.write("public class JoinOld {\n");
 		w.write("\n");
 
 		w.write("\tstatic abstract class J extends Table {\n");

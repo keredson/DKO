@@ -332,8 +332,48 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Set<T> asSet();
 
 	/**
+	 * Returns the max the value of a given field.
+	 * MAX is calculated by the database (if possible).  Objects are not transferred to the JVM.
+	 * @param f
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S extends Comparable> S max(Field<S> f) throws SQLException;
+
+	/**
+	 * Returns the max value of a field grouped by another field.
+	 * MAX is calculated by the database (if possible).  Objects are not transferred to the JVM.
+	 * @param maxField
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <R, S extends Comparable> Map<R, S> maxBy(Field<S> maxField, Field<R> byField)
+			throws SQLException;
+
+	/**
+	 * Returns the min the value of a given field.
+	 * Min is calculated by the database (if possible).  Objects are not transferred to the JVM.
+	 * @param f
+	 * @return
+	 * @throws SQLException
+	 */
+	public <S extends Comparable> S min(Field<S> f) throws SQLException;
+
+	/**
+	 * Returns the min value of a field grouped by another field.
+	 * Min is calculated by the database (if possible).  Objects are not transferred to the JVM.
+	 * @param minField
+	 * @param byField
+	 * @return
+	 * @throws SQLException
+	 */
+	public <R, S extends Comparable> Map<R, S> minBy(Field<S> minField, Field<R> byField)
+			throws SQLException;
+
+	/**
 	 * Sums the value of a given field.
-	 * Sum is calculated by the database.  Objects are not transferred to the JVM.
+	 * Sum is calculated by the database (if possible).  Objects are not transferred to the JVM.
 	 * @param f
 	 * @return
 	 * @throws SQLException
@@ -342,7 +382,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Sums the value of a field grouped by another field.
-	 * Sum is calculated by the database.  Objects are not transferred to the JVM.
+	 * Sum is calculated by the database (if possible).  Objects are not transferred to the JVM.
 	 * @param sumField
 	 * @param byField
 	 * @return

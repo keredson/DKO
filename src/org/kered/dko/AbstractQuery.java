@@ -653,4 +653,58 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return new Condition.Exists(this);
 	}
 
+	@Override
+	public <S extends Comparable> S max(Field<S> f) throws SQLException {
+		S max = null;
+		for (S s : this.asIterableOf(f)) {
+			if (max==null || max.compareTo(s)<0) {
+				max = s;
+			}
+		}
+		return max;
+	}
+
+	@Override
+	public <R, S extends Comparable> Map<R, S> maxBy(Field<S> maxField, Field<R> byField)
+			throws SQLException {
+		Map<R,S> maxes = new HashMap<R,S>();
+		for (T t : this) {
+			R r = t.get(byField);
+			S max = maxes.get(r);
+			S s = t.get(maxField);
+			if (max==null || max.compareTo(s)<0) {
+				maxes.put(r, s);
+			}
+		}
+		return maxes;
+	}
+
+	@Override
+	public <S extends Comparable> S min(Field<S> f) throws SQLException {
+		S min = null;
+		for (S s : this.asIterableOf(f)) {
+			if (min==null || min.compareTo(s)>0) {
+				min = s;
+			}
+		}
+		return min;
+	}
+
+	@Override
+	public <R, S extends Comparable> Map<R, S> minBy(Field<S> minField, Field<R> byField)
+			throws SQLException {
+		Map<R,S> mins = new HashMap<R,S>();
+		for (T t : this) {
+			R r = t.get(byField);
+			S min = mins.get(r);
+			S s = t.get(minField);
+			if (min==null || min.compareTo(s)>0) {
+				mins.put(r, s);
+			}
+		}
+		return mins;
+	}
+	
+	
+
 }

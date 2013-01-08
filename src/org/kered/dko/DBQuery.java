@@ -1176,7 +1176,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public <R> Map<R, Map<Field<Number>,Number>> sumBy(final Field<R> byField, final Field<? extends Number>... sumFields)
 			throws SQLException {
 		String function = "sum";
-		final Map<R, Map<Field<Number>, Number>> result = terminalMathFunctionBy(
+		final Map<R, Map<Field<Number>, Number>> result = terminalAggFunctionBy(
 				byField, function, sumFields);
 		return result;
 	}
@@ -1195,21 +1195,31 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	// i'm not sure i'm ready to expose this yet
 	@SuppressWarnings("unchecked")
 	//@Override
-	public <R> Map<R, Map<Field<Number>,Number>> averageBy(final Field<R> byField, final Field<? extends Number>... sumFields)
-			throws SQLException {
-		String function = "avg";
-		final Map<R, Map<Field<Number>, Number>> result = terminalMathFunctionBy(
-				byField, function, sumFields);
-		return result;
+	public <R> Map<R, Map<Field<Number>,Number>> averageBy(final Field<R> byField, final Field<? extends Number>... sumFields) throws SQLException {
+		return terminalAggFunctionBy(byField, "avg", sumFields);
 	}
 
-	private <R> Map<R, Map<Field<Number>, Number>> terminalMathFunctionBy(
+	// i'm not sure i'm ready to expose this yet
+	@SuppressWarnings("unchecked")
+	//@Override
+	public <R,S extends Comparable> Map<R, Map<Field<S>,S>> maxBy(final Field<R> byField, final Field<? extends Comparable>... sumFields) throws SQLException {
+		return terminalAggFunctionBy(byField, "max", sumFields);
+	}
+
+	// i'm not sure i'm ready to expose this yet
+	@SuppressWarnings("unchecked")
+	//@Override
+	public <R,S extends Comparable> Map<R, Map<Field<S>,S>> minBy(final Field<R> byField, final Field<? extends Comparable>... sumFields) throws SQLException {
+		return terminalAggFunctionBy(byField, "min", sumFields);
+	}
+
+	private <R,S> Map<R, Map<Field<S>, S>> terminalAggFunctionBy(
 			final Field<R> byField, String function,
-			final Field<? extends Number>... sumFields) throws SQLException {
+			final Field<?>... sumFields) throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
 		String sums = "";
-		for (final Field<? extends Number> sumField : sumFields) {
+		for (final Field<?> sumField : sumFields) {
 			sums += ", "+ function +"("+ Util.derefField(sumField, context) +") ";
 		}
 		sql = "select "+ Util.derefField(byField, context)
@@ -1222,12 +1232,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		setBindings(ps);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
-		final Map<R,Map<Field<Number>, Number>> result = new LinkedHashMap<R,Map<Field<Number>, Number>>();
+		final Map<R,Map<Field<S>, S>> result = new LinkedHashMap<R,Map<Field<S>, S>>();
 		while (rs.next()) {
 			final R key = Util.getTypedValueFromRS(rs, 1, byField);
-			final Map<Field<Number>, Number> value = new LinkedHashMap<Field<Number>,Number>();
+			final Map<Field<S>, S> value = new LinkedHashMap<Field<S>,S>();
 			for (int i=0; i<sumFields.length; ++i) {
-				value.put((Field<Number>) sumFields[i], Util.getTypedValueFromRS(rs, 2+i, sumFields[i]));
+				value.put((Field<S>) sumFields[i], (S) Util.getTypedValueFromRS(rs, 2+i, sumFields[i]));
 			}
 			result.put(key, value);
 		}
@@ -1242,18 +1252,50 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public <S extends Number> S sum(final Field<S> sumField) throws SQLException {
 		String function = "sum";
-		final S ret = terminalMathFunction(sumField, function);
+		final S ret = terminalAggFunction(sumField, function);
 		return ret;
 	}
 
 	@Override
 	public <S extends Number> S average(final Field<S> sumField) throws SQLException {
 		String function = "avg";
-		final S ret = terminalMathFunction(sumField, function);
+		final S ret = terminalAggFunction(sumField, function);
 		return ret;
 	}
 
-	private <S extends Number> S terminalMathFunction(final Field<S> sumField,
+	@Override
+	public <S extends Comparable> S max(Field<S> f) throws SQLException {
+		String function = "max";
+		final S ret = terminalAggFunction(f, function);
+		return ret;
+	}
+
+	@Override
+	public <R, S extends Comparable> Map<R, S> maxBy(Field<S> maxField, Field<R> byField) throws SQLException {
+		final Map<R, S> ret = new LinkedHashMap<R, S>();
+		for (final Entry<R, Map<Field<Comparable>, Comparable>> e : maxBy(byField, maxField).entrySet()) {
+			ret.put(e.getKey(), (S) e.getValue().get(maxField));
+		}
+		return ret;
+	}
+
+	@Override
+	public <S extends Comparable> S min(Field<S> f) throws SQLException {
+		String function = "min";
+		final S ret = terminalAggFunction(f, function);
+		return ret;
+	}
+
+	@Override
+	public <R, S extends Comparable> Map<R, S> minBy(Field<S> minField, Field<R> byField) throws SQLException {
+		final Map<R, S> ret = new LinkedHashMap<R, S>();
+		for (final Entry<R, Map<Field<Comparable>, Comparable>> e : maxBy(byField, minField).entrySet()) {
+			ret.put(e.getKey(), (S) e.getValue().get(minField));
+		}
+		return ret;
+	}
+
+	private <S> S terminalAggFunction(final Field<S> sumField,
 			String function) throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		String sql = getFromClause(context) + getWhereClauseAndSetBindings();

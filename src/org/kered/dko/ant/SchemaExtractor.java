@@ -78,7 +78,14 @@ public class SchemaExtractor extends Task {
 	public void setURL(final String s) throws Exception {
 		this.url = s;
 		if (url.startsWith("jdbc:sqlserver")) {
-			final Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+			try {
+				final Driver d = (Driver) Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+			} catch (ClassNotFoundException e) {
+				System.err.println("not found: com.microsoft.jdbc.sqlserver.SQLServerDriver");
+				System.err.print("trying: com.microsoft.sqlserver.jdbc.SQLServerDriver");
+				final Driver d = (Driver) Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
+				System.err.println(" ...success!");
+			}
 			dbType = DB_TYPE.SQLSERVER;
 		}
 		if (url.startsWith("jdbc:mysql")) {
@@ -741,8 +748,48 @@ public class SchemaExtractor extends Task {
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeysMSSQL(
-		final Connection conn) {
-	    return null;
+		final Connection conn) throws SQLException {
+	    final Map<String, Map<String,Object>> foreignKeys =
+			new LinkedHashMap<String, Map<String,Object>>();
+
+		final Statement s = conn.createStatement();
+		s.execute("select kcu1.table_catalog as 'table_schema', kcu1.constraint_name, kcu1.table_name, kcu1.column_name, kcu2.table_catalog as 'referenced_table_schema', kcu2.table_name as 'referenced_table_name', kcu2.column_name as 'referenced_column_name' " +
+				"from information_schema.referential_constraints rc " +
+				"join information_schema.key_column_usage kcu1 on kcu1.constraint_catalog = rc.constraint_catalog and kcu1.constraint_schema = rc.constraint_schema and kcu1.constraint_name = rc.constraint_name " +
+				"join information_schema.key_column_usage kcu2 on kcu2.constraint_catalog = rc.unique_constraint_catalog and kcu2.constraint_schema = rc.unique_constraint_schema and kcu2.constraint_name = rc.unique_constraint_name and kcu2.ordinal_position = kcu1.ordinal_position " +
+				"order by constraint_name, table_schema, table_name, column_name, kcu1.ordinal_position;");
+		final ResultSet rs = s.getResultSet();
+
+		while (rs.next()) {
+			final String constraint_name = rs.getString("constraint_name");
+			final String schema = rs.getString("table_schema").toLowerCase();
+			final String table = rs.getString("table_name").toLowerCase();
+			final String column = rs.getString("column_name").toLowerCase();
+			final String referenced_schema = rs.getString("referenced_table_schema").toLowerCase();
+			final String referenced_table = rs.getString("referenced_table_name").toLowerCase();
+			final String referenced_column = rs.getString("referenced_column_name").toLowerCase();
+
+			if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
+
+			Map<String, Object> fk = foreignKeys.get(constraint_name);
+			if (fk==null) {
+			    fk = new LinkedHashMap<String,Object>();
+			    final String[] reffing = {schema, table};
+			    fk.put("reffing", reffing);
+			    final String[] reffed = {referenced_schema, referenced_table};
+			    fk.put("reffed", reffed);
+				foreignKeys.put(constraint_name,fk);
+				fk.put("columns", new LinkedHashMap<String,String>());
+			}
+
+			@SuppressWarnings("unchecked")
+			final
+			Map<String,String> columns = (Map<String,String>) fk.get("columns");
+			columns.put(column, referenced_column);
+
+		}
+
+		return foreignKeys;
 	}
 
 	private Map<String, Map<String,Object>> getForeignKeysMySQL(

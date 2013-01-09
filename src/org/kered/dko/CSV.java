@@ -190,11 +190,13 @@ public class CSV {
 					if (line != null) {
 			            StringBuilder sb = new StringBuilder();
 			            boolean quoted = false;
+			            boolean valueWasQuoted = false;
 						for (int i = 0; i < line.length(); ++i) {
 			                final char c = line.charAt(i);
 			                sb.append(c);
 			                if (c == '"') {
 			                    quoted = !quoted;
+			                    valueWasQuoted |= quoted;
 			                }
 			                if ((!quoted && c == ',') || i == line.length()-1) {
 			                    final String s = sb.toString()
@@ -204,10 +206,11 @@ public class CSV {
 			                    		.trim();
 			                    if (pos<oa.length) {
 				                    Object o = null;
-				                    if (s.length()>0) {
+				                    if (s.length()>0 || valueWasQuoted) {
 				                    	o = fieldConstructors[pos].newInstance(s);
 				                    }
 			                    	oa[pos++] = o;
+			                    	valueWasQuoted = false;
 			                    }
 			                    sb = new StringBuilder();
 			                }

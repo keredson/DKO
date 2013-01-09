@@ -176,6 +176,7 @@ public class Bulk {
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		for (final T t : iterable) {
+			if (t.__NOSCO_UPDATED_VALUES==null) continue;
 			++c;
 			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
 				try { Thread.currentThread().sleep(1000); }
@@ -532,6 +533,7 @@ public class Bulk {
 		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
 		final List<T> rejects = new ArrayList<T>();
 		for (final T t : iterable) {
+			if (t.__NOSCO_UPDATED_VALUES==null) continue;
 			++c;
 			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
 				try { Thread.currentThread().sleep(1000); }

@@ -17,6 +17,7 @@
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>
   <property name="dep_mysql_jar"  location="deps/mysql.jar"/>
+  <property name="dep_mssql_jar"  location="deps/mssql-sqljdbc.jar"/>
   <property name="dep_sqlite_jar"  location="deps/sqlite-jdbc.jar"/>
   <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
   <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}"/>
@@ -166,7 +167,7 @@ public class BuildInfo {
       <fileset file="docsrc/thebook/thebook.db"/>
     </copy>
     <copy file="bin/thebook.db" tofile="bin/thebook2.db" overwrite="true"/>
-    <junit printsummary="yes" haltonfailure="yes" fork="yes">
+    <junit printsummary="yes" haltonfailure="no" fork="yes">
       <classpath>
         <pathelement location="bin"/>
         <pathelement location="${lib_nosco_jar}"/>
@@ -283,7 +284,7 @@ public class BuildInfo {
    	/>
     <mkdir dir="lib"/>
     <jar jarfile="lib/test.jar" basedir="bin_test"/>
-    <junit printsummary="yes" haltonfailure="yes" fork="yes">
+    <junit printsummary="yes" haltonfailure="no" fork="yes">
       <classpath>
         <pathelement location="lib/test.jar"/>
         <pathelement location="${lib_nosco_jar}"/>
@@ -315,6 +316,7 @@ public class BuildInfo {
     <exec executable="mysql" input="deps/jpetstore/mysql/jpetstore-mysql-schema.sql">
       <arg value="-u"/>
       <arg value="root"/>
+      <arg value="nosco_test_jpetstore"/>
     </exec>
     <exec executable="mysql" input="deps/jpetstore/mysql/jpetstore-mysql-dataload.sql">
       <arg value="-u"/>
@@ -353,7 +355,7 @@ public class BuildInfo {
   </target>
 
   <target name="unit-test-mysql" depends="unit-test-build-mysql">
-    <junit printsummary="yes" haltonfailure="yes" fork="yes">
+    <junit printsummary="yes" haltonfailure="no" fork="yes">
       <classpath>
         <pathelement location="lib/test.jar"/>
         <pathelement location="${lib_nosco_jar}"/>
@@ -376,6 +378,66 @@ public class BuildInfo {
 
   <!-- ========[ END UNIT TEST MYSQL ]======== -->
 
+  <!-- ========[ BEGIN UNIT TEST MSSQL ]======== -->
+  
+  <available file="bin/unit_test_mssql_schema.json" property="exists.unit_test_mssql_schema"/>
+  <target name="unit-test-extract-schema-mssql" depends="jar" unless="${exists.unit_test_mssql_schema}">
+    <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_mssql_jar}"/>
+    <noscoextractschema
+    	url="jdbc:sqlserver://XXXXXXXX:1433"
+    	username="XXXXXXXX"
+    	password="XXXXXXXX"
+    	schemas="nosco_test_jpetstore"
+    	out="bin/unit_test_mssql_schema.json"
+    />
+  </target>
+  
+  <target name="unit-test-gen-src-mssql" depends="unit-test-extract-schema-mssql">
+    <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <dkogen package="org.kered.dko.unittest" 
+      debug="true"
+      javaoutputdir="gensrc"
+      jarfile="bin/unittest.jar"
+      schemas="bin/unit_test_mssql_schema.json"
+      callbackPackage="test.db.callback"
+    />
+    <javac srcdir="gensrc" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}"
+   	/>
+  </target>
+
+  <target name="unit-test-build-mssql" depends="unit-test-gen-src-mssql">
+    <javac srcdir="test/utest" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
+   	/>
+    <mkdir dir="lib"/>
+    <jar jarfile="lib/test.jar" basedir="bin_test"/>
+  </target>
+
+  <target name="unit-test-mssql" depends="unit-test-build-mssql">
+    <junit printsummary="yes" haltonfailure="no" fork="yes">
+      <classpath>
+        <pathelement location="lib/test.jar"/>
+        <pathelement location="${lib_nosco_jar}"/>
+        <pathelement location="${dep_junit_jar}"/>
+        <pathelement location="${dep_hsqldb_jar}"/>
+        <pathelement location="${dep_mssql_jar}"/>
+      </classpath>
+      <!--jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/-->
+      <jvmarg value="-Dorg.nosco.log_sql=true"/>
+      <formatter type="plain"/>
+      <batchtest fork="yes" todir="${reports}">
+        <fileset dir="test/utest">
+          <include name="**/*TestMSSQL*.java"/>
+          <include name="**/TestUsageMonitor.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!-- ========[ END UNIT TEST MSSQL ]======== -->
+
   <target name="performance-test-mysql" depends="unit-test-build-mysql">
     <javac srcdir="test/performance" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
@@ -396,7 +458,7 @@ public class BuildInfo {
     	classpath="${lib_nosco_jar}:${all_deps}"
     	includes="test/nosco/json/*.java"
    	/>
-    <junit printsummary="yes" haltonfailure="yes" fork="yes">
+    <junit printsummary="yes" haltonfailure="no" fork="yes">
       <classpath>
         <pathelement path="bin_test"/>
         <pathelement location="${lib_nosco_jar}"/>

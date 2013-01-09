@@ -872,6 +872,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> info = getConnRW(ds);
 		final Connection conn = info.a;
 		try {
+			if (getDBType()==DB_TYPE.MYSQL) {
+				final Statement s = conn.createStatement();
+				try {
+					s.execute("SELECT LAST_INSERT_ID(-1)");
+				} finally {
+					s.close();
+				}
+			}
 			final PreparedStatement ps = conn.prepareStatement(sql);
 			q.setBindings(ps);
 			_preExecute(context, conn);
@@ -883,11 +891,20 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (count==1) {
 				if (getDBType()==DB_TYPE.MYSQL) {
 					final Statement s = conn.createStatement();
-					s.execute("SELECT LAST_INSERT_ID()");
-					final ResultSet rs = s.getResultSet();
-					if (rs.next()) {
-						final Integer pk = rs.getInt(1);
-						return pk;
+					try {
+						s.execute("SELECT LAST_INSERT_ID()");
+						final ResultSet rs = s.getResultSet();
+						try {
+							if (rs.next()) {
+								final int pk = rs.getInt(1);
+								System.err.println("LAST_INSERT_ID() == "+ pk);
+								if (pk!=-1) return pk;
+							}
+						} finally {
+							rs.close();
+						}
+					} finally {
+						s.close();
 					}
 				}
 				if (getDBType()==DB_TYPE.SQLITE3) {
@@ -897,7 +914,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						final ResultSet rs = s.getResultSet();
 						try {
 							if (rs.next()) {
-								final Integer pk = rs.getInt(1);
+								final int pk = rs.getInt(1);
 								return pk;
 							}
 						} finally {

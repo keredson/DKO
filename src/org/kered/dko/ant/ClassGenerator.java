@@ -961,7 +961,7 @@ class ClassGenerator {
 		if (pkSet.size() == 1) {
 			final String column = pkSet.iterator().next();
 			final String type = getFieldType(pkgName, table, column, columns.getString(column));
-			br.write("\t\t"+ getInstanceFieldName(column) +" = ("+ type +")_pk;\n");
+			br.write("\t\tif (_pk!=null) "+ getInstanceFieldName(column) +" = ("+ type +")_pk;\n");
 		}
 		br.write("\t\tif (__NOSCO_CALLBACK_INSERT_POST!=null) "
 				+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"

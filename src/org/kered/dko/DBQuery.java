@@ -949,7 +949,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (ti.dummyTable != null) {
 				names.add((dbType==DB_TYPE.SQLSERVER ? "#" : "") + ti.dummyTable.name +" "+ ti.tableName);
 			} else {
-				final String schema = Util.getSCHEMA_NAME(ti.tableClass);
+				final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ti.tableClass));
 				final String noContextTableName = "".equals(schema) ? Util.getTABLE_NAME(ti.tableClass) : schema+"."+Util.getTABLE_NAME(ti.tableClass);
 				final String fullTableName = context==null ? noContextTableName : context.getFullTableName(ti);
 				names.add(fullTableName +" "+ ti.tableName);

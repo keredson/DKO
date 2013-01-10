@@ -830,4 +830,18 @@ public class SharedDBTests extends TestCase {
 		}
     }
 
+    public void testDeleteWithSchemaChange() throws SQLException {
+		printTestName();
+    	final Product p = Product.ALL.first();
+    	new Item().setItemid("test-789").setProductid(p.getProductid()).insert(ds);
+		Undoer u = Context.getVMContext().overrideDatabaseName(ds, "nosco_test_jpetstore", "bad_db_name");
+    	try {
+    		Item.ALL.use(ds).where(Item.ITEMID.eq("test-789")).delete();
+    		assertTrue(false); // should not get here
+    	} catch (SQLException e) {
+    		u.undo();
+    		Item.ALL.use(ds).where(Item.ITEMID.eq("test-789")).delete();
+    	}
+    }
+
 }

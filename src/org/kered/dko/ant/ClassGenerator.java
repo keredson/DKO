@@ -296,7 +296,7 @@ class ClassGenerator {
 		br.write(" * This class represents the database table: "+ schema +"."+ table +"\n");
 		br.write(" * Static elements represent the table as a whole.  Instances represent rows in the database.\n");
 		br.write(" */\n");
-		br.write("public class "+ className +" extends Table implements Comparable<"+ className +"> {\n\n");
+		br.write("public class "+ className +" extends Table implements Comparable<"+ className +">, java.io.Serializable {\n\n");
 
 		// write field constants
 		int index = 0;

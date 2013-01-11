@@ -262,4 +262,24 @@
     </java>
   </target>
 
+  <target name="unit-test-serializable" depends="jar">
+    <javac srcdir="test/utest" destdir="bin_test" debug="on"
+        classpath="${lib_nosco_jar}:${all_deps}"
+        includes="test/TestSerializable.java"
+        />
+    <junit printsummary="yes" haltonfailure="yes" fork="yes">
+      <classpath>
+        <pathelement path="bin_test"/>
+        <pathelement location="${lib_nosco_jar}"/>
+        <pathelement location="${dep_junit_jar}"/>
+      </classpath>
+      <formatter type="plain"/>
+      <batchtest fork="yes" todir="${reports}">
+        <fileset dir="test/utest">
+          <include name="**/*TestSerializable*.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
 </project>

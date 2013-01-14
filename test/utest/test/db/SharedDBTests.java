@@ -844,4 +844,61 @@ public class SharedDBTests extends TestCase {
     	}
     }
 
+    public void testCrossDBJoin() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.use(ods).count();
+		final long c2 = Product.ALL.count();
+		final Query<Join<Item, Product>> q = Item.ALL.use(ods).crossJoin(Product.class);
+		assertEquals(c1 * c2,  q.count());
+		for (final Join<Item, Product> x : q.top(64)) {
+			System.err.println(x);
+			x.l.getItemid();
+		}
+    }
+
+	public void testCDBLeftJoin() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.count();
+		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		for (final Join<Item, Supplier> x : q.top(64)) {
+			System.err.println(x);
+		}
+		assertEquals(c1,  q.count());
+	}
+    
+	public void testCDBRightJoin() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.count();
+		final Query<Join<Supplier, Item>> q = Supplier.ALL.use(ods).rightJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		for (final Join<Supplier, Item> x : q.top(64)) {
+			System.err.println(x);
+		}
+		assertEquals(c1,  q.count());
+	}
+
+	public void testCDBInnerJoin() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.where(Item.SUPPLIER.isNotNull()).count();
+		final Query<Join<Supplier, Item>> q = Supplier.ALL.use(ods).innerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		assertEquals(c1,  q.count());
+		for (final Join<Supplier, Item> x : q.top(64)) {
+			System.err.println(x);
+		}
+	}
+
+	public void testCDBLeftJoinAlias() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.count();
+		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).leftJoin(Supplier.as("something"), Item.SUPPLIER.eq(Supplier.SUPPID));
+		for (final Join<Item, Supplier> x : q.top(64)) {
+			System.err.println(x);
+		}
+		assertEquals(c1,  q.count());
+	}
+    
 }

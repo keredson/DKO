@@ -1,11 +1,14 @@
 package org.kered.dko;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.kered.dko.persistence.QuerySize;
 
@@ -26,6 +29,7 @@ class UsageStats {
 	private synchronized static void init() {
 		if (cache != null) return;
 		try {
+			//DataSource ds = (DataSource) Class.forName("org.kered.dko.persistence.Util").getMethod("getDS", null).invoke(null);
 			cache = QuerySize.ALL.where(
 					QuerySize.LAST_SEEN.gt(System.currentTimeMillis()
 							- SIX_MONTHS_AGO)).mapBy(QuerySize.HASH_CODE);

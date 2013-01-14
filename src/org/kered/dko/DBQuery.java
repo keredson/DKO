@@ -160,7 +160,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DataSource getDefaultDataSource() {
 		if (defaultDS != null) return defaultDS;
 		defaultDS = Util.getDefaultDataSource(ofType);
-		return defaultDS;
+		if (defaultDS!=null) return defaultDS;
+		for (TableInfo ti : this.tableInfos) {
+			defaultDS = Util.getDefaultDataSource(ti.tableClass);
+			if (defaultDS!=null) return defaultDS;
+		}
+		return null;
 	}
 
 
@@ -1380,6 +1385,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> cross(final Class<? extends Table> tableClass) {
+		Util.getDefaultDataSource(tableClass);
 		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
 			final Table table = tableClass.getConstructor().newInstance();
@@ -1615,58 +1621,61 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> crossJoin(final Class<S> other) {
+		if (!Util.sameDataSource(this, other)) return super.crossJoin(other);
 		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "cross join", null);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> crossJoin(final __Alias<S> alias) {
+		if (!Util.sameDataSource(this, alias)) return super.crossJoin(alias);
 		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "cross join", null);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> other,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> other, final Condition condition) {
+		if (!Util.sameDataSource(this, other)) return super.leftJoin(other, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "left outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> alias,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> alias, final Condition condition) {
+		if (!Util.sameDataSource(this, alias)) return super.leftJoin(alias, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "left outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> other,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> other, final Condition condition) {
+		if (!Util.sameDataSource(this, other)) return super.rightJoin(other, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "right outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> alias,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> alias, final Condition condition) {
+		if (!Util.sameDataSource(this, alias)) return super.rightJoin(alias, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "right outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> other,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> other, final Condition condition) {
+		if (!Util.sameDataSource(this, other)) return super.outerJoin(other, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "full outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> alias,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> alias, final Condition condition) {
+		if (!Util.sameDataSource(this, alias)) return super.outerJoin(alias, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "full outer join", condition);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> other,
-			final Condition condition) {
+	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> other, final Condition condition) {
+		if (!Util.sameDataSource(this, other)) return super.innerJoin(other, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, other, null, "inner join", condition);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> alias, final Condition condition) {
+		if (!Util.sameDataSource(this, alias)) return super.innerJoin(alias, condition);
 		return new DBQuery<Join<T,S>>(Join.class, this, alias.table, alias.alias, "inner join", condition);
 	}
 

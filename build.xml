@@ -362,6 +362,7 @@ public class BuildInfo {
         <pathelement location="${dep_junit_jar}"/>
         <pathelement location="${dep_hsqldb_jar}"/>
         <pathelement location="${dep_mysql_jar}"/>
+        <pathelement location="${dep_sqlite_jar}"/>
       </classpath>
       <!--jvmarg value="-Xdebug"/>
       <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/-->

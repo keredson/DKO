@@ -359,7 +359,9 @@ class Util {
 		}
 	}
 
-	static DataSource getDefaultDataSource(final Class<?> type) {
+	static DataSource getDefaultDataSource(final Class<? extends Table> type) {
+		final DataSource ds = Context.getDataSource(type);
+		if (ds != null) return ds;
 		java.lang.reflect.Field field;
 		try {
 			field = type.getDeclaredField("__DEFAULT_DATASOURCE");

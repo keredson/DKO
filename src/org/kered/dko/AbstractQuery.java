@@ -538,52 +538,52 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> crossJoin(final Class<S> table) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.CROSS, Join.class, this, table, null);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> crossJoin(final __Alias<S> table) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.CROSS, Join.class, this, table, null);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.LEFT, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.LEFT, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.RIGHT, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.RIGHT, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.OUTER, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.OUTER, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.INNER, Join.class, this, table, on);
 	}
 
 	@Override
 	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> table, final Condition on) {
-		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
+		return new SoftJoin(Constants.JOIN_TYPE.INNER, Join.class, this, table, on);
 	}
 
 //	@Override

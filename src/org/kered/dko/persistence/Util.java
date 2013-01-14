@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.Constants;
+import org.kered.dko.Context;
+import org.kered.dko.Table;
 import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.dko.datasource.SingleThreadedDataSource;
 
@@ -73,6 +75,17 @@ public class Util {
 			}
 			ds = new SingleThreadedDataSource(new JDBCDriverDataSource(
 					Constants.DB_TYPE.SQLITE3, url), 10000, true);
+			
+			try {
+				Package pkg = Class.forName("org.kered.dko.persistence.QuerySize").getPackage();
+				Context[] contexts = {Context.getVMContext(), Context.getThreadContext(), Context.getThreadGroupContext() };
+				for (Context context : contexts) {
+					context.setDataSource(pkg, ds).setAutoUndo(false);
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return ds;
 	}

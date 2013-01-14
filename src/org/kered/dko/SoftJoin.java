@@ -309,8 +309,9 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				}
 				while (q1i.hasNext() || q2i.hasNext()) {
 					final T t = peekNext();
+					if (t1==null) t1 = q1i.next();
 					boolean matches = true;
-					if (conditions!=null) {
+					if (conditions!=null && ((Join)t).l!=null && ((Join)t).r!=null) {
 						for (final Condition c : conditions) {
 							matches &= c.matches(t);
 						}
@@ -344,7 +345,12 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 					if (q2i instanceof CleanableIterator) ((CleanableIterator)q2i).cleanUp();
 					q2i = q2a.iterator();
 					// add an extra null in for some join types
-					t2 = addNullForSomeJoins(q2i);
+					if (first) {
+						t2 = addNullForSomeJoins(q2i);
+						first = false;
+					} else {
+						t2 = q2i.next();
+					}
 				} else {
 					if (first) {
 						t2 = addNullForSomeJoins(q2i);

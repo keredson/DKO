@@ -32,14 +32,14 @@ import org.kered.dko.Field.FK;
 import org.kered.dko.Tuple.Tuple2;
 
 
-class Select<T extends Table> implements CleanableIterator<T> {
+class Select<T extends Table> implements ClosableIterator<T> {
 
 	private static final int BATCH_SIZE = 2048;
 
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		cleanUp();
+		close();
 		if (rs != null && !rs.isClosed()) rs.close();
 		if (ps != null && !ps.isClosed()) ps.close();
 	}
@@ -73,6 +73,8 @@ class Select<T extends Table> implements CleanableIterator<T> {
 	private boolean returnJoin;
 
 	private Constructor<T> joinConstructor = null;
+
+	private boolean finishedNatually = false;
 
 	Select(final DBQuery<T> dbQuery) {
 		this(dbQuery, true);
@@ -256,7 +258,10 @@ class Select<T extends Table> implements CleanableIterator<T> {
 
 	Object[] peekNextRow() throws SQLException {
 		if (!done && nextRows.isEmpty()) readNextRows(BATCH_SIZE);
-		if (nextRows.isEmpty()) return null;
+		if (nextRows.isEmpty()) {
+			this.finishedNatually  = true;
+			return null;
+		}
 		else return nextRows.peek();
 	}
 
@@ -265,7 +270,7 @@ class Select<T extends Table> implements CleanableIterator<T> {
 		int c = 0;
 		while (c < max) {
 			if (!rs.next()) {
-				cleanUp();
+				close();
 				//preFetchOtherJoins();
 				return c;
 			}
@@ -290,7 +295,7 @@ class Select<T extends Table> implements CleanableIterator<T> {
 		if (!this.initted) init();
 		if (query.top>0 && count >= query.top) {
 			this.next = null;
-			cleanUp();
+			close();
 			return false;
 		}
 		if (next!=null) return true;
@@ -309,7 +314,7 @@ class Select<T extends Table> implements CleanableIterator<T> {
 				final Object[] fieldValues = getNextRow();
 				this.lastFieldValues = fieldValues;
 				if (fieldValues == null) {
-					cleanUp();
+					close();
 					return false;
 				}
 				final int objectSize = allTableInfos.size();
@@ -375,27 +380,27 @@ class Select<T extends Table> implements CleanableIterator<T> {
 
 		} catch (final SQLException e) {
 			e.printStackTrace();
-			cleanUp();
+			close();
 			throw new RuntimeException(e);
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
-			cleanUp();
+			close();
 			throw new RuntimeException(e);
 		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
-			cleanUp();
+			close();
 			throw new RuntimeException(e);
 		} catch (final InvocationTargetException e) {
 			e.printStackTrace();
-			cleanUp();
+			close();
 			throw new RuntimeException(e);
 		} catch (final InstantiationException e) {
 			e.printStackTrace();
-			cleanUp();
+			close();
 			throw new RuntimeException(e);
 		}
 		final boolean hasNext = next != null;
-		if (!hasNext) cleanUp();
+		if (!hasNext) close();
 		return hasNext;
 	}
 
@@ -408,11 +413,28 @@ class Select<T extends Table> implements CleanableIterator<T> {
 //	}
 
 	@Override
-	public synchronized void cleanUp() {
+	public synchronized void close() {
 		if (done) return;
 		try {
 			query._postExecute(context, conn);
 		} catch (final SQLException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			if (!finishedNatually && rs!=null && !rs.isClosed()) {
+				ps.cancel();
+			}
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		}
+		try {
+			if (rs!=null && !rs.isClosed()) rs.close();
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		}
+		try {
+			if (ps!=null && !ps.isClosed()) ps.close();
+		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
 		if (shouldCloseConnection) {

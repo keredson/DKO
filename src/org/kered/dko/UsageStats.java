@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -17,12 +18,32 @@ class UsageStats {
 	private static final int SIX_MONTHS_AGO = 1000 * 60 * 60 * 24 * 265 / 2;
 	private static Map<Integer, QuerySize> cache = null;
 	private static long median = 0;
+	private static final Logger log = Logger.getLogger("org.kered.dko.UsageStats");
 
 	public static long estimateRowCount(final Query<? extends Table> q1) {
 		if (cache == null) init();
 		final int hashCode = q1.hashCode();
-		final QuerySize qs = cache.get(hashCode);
-		if (qs==null) return (long) (median + Math.random()*10);
+		QuerySize qs = cache.get(hashCode);
+		if (qs==null) {
+			try {
+				qs = new QuerySize();
+				qs.setId(hashCode);
+				qs.setHashCode(hashCode);
+				qs.setRowCount(q1.count());
+				qs.setLastSeen(System.currentTimeMillis());
+				Class<? extends Table> type = q1.getType();
+				try {
+					qs.setSchemaName(Util.getSCHEMA_NAME(type));
+					qs.setTableName(Util.getTABLE_NAME(type));
+				} catch (Exception e) {
+					log.warning("could not get schema or table info from type: "+ type +" --- "+ e);
+				}
+				qs.save();
+			} catch (SQLException e) {
+				log.warning("could not get count (reverting to median): "+ e);
+				return (long) (median + Math.random()*10);
+			}
+		}
 		return qs.getRowCount();
 	}
 

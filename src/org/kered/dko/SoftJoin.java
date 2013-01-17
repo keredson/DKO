@@ -15,10 +15,13 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import org.kered.dko.Condition.Binary;
+import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Constants.JOIN_TYPE;
 import org.kered.dko.Field.FK;
+import org.kered.dko.Field.PK;
 import org.kered.dko.Table.__Alias;
 
 class SoftJoin<T extends Table> extends AbstractQuery<T> {
@@ -28,7 +31,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 
 	private Query<? extends Table> q1;
 	private Query<? extends Table> q2;
-	private final List<Condition> conditions;
+	private Condition condition;
 	private final JOIN_TYPE joinType;
 	//private Class<? extends J> type;
 	private long limit = -1;
@@ -45,7 +48,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		this.joinType = joinType;
 		q1 = QueryFactory.IT.getQuery(t1);
 		q2 = QueryFactory.IT.getQuery(t2);
-		conditions = new ArrayList<Condition>();
 		if (on!=null) joinAwareWhere(on);
 	}
 
@@ -54,7 +56,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		joinType = q.joinType;
 		q1 = q.q1;
 		q2 = q.q2;
-		conditions = new ArrayList<Condition>(q.conditions);
+		condition = q.condition;
 		limit = q.limit;
 	}
 
@@ -66,7 +68,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		this.joinType = joinType;
 		q1 = QueryFactory.IT.getQuery(t1);
 		q2 = QueryFactory.IT.getQuery(t2.table);
-		conditions = new ArrayList<Condition>();
 		if (on!=null) joinAwareWhere(on);
 	}
 
@@ -78,7 +79,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		this.joinType = joinType;
 		q1 = QueryFactory.IT.getQuery(t1.table);
 		q2 = QueryFactory.IT.getQuery(t2);
-		conditions = new ArrayList<Condition>();
 		if (on!=null) joinAwareWhere(on);
 	}
 
@@ -90,7 +90,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		this.joinType = joinType;
 		q1 = QueryFactory.IT.getQuery(t1.table);
 		q2 = QueryFactory.IT.getQuery(t2.table);
-		conditions = new ArrayList<Condition>();
 		if (on!=null) joinAwareWhere(on);
 	}
 
@@ -99,7 +98,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		this.joinType = joinType;
 		q1 = q;
 		q2 = QueryFactory.IT.getQuery(t.table);
-		conditions = new ArrayList<Condition>();
 		if (on!=null) joinAwareWhere(on);
 	}
 
@@ -108,7 +106,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		this.joinType = joinType;
 		q1 = q;
 		q2 = QueryFactory.IT.getQuery(t);
-		conditions = new ArrayList<Condition>();
 		if (on!=null) joinAwareWhere(on);
 	}
 
@@ -126,7 +123,8 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 			} else if (conditionIsAllReferencingQuery(condition, q2)) {
 				q2 = q2.where(condition);
 			} else {
-				this.conditions.add(condition);
+				if (this.condition==null) this.condition = condition;
+				else this.condition = this.condition.and(condition);
 			}
 		}
 	}
@@ -263,16 +261,22 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		System.out.println("q2Rows "+ q2.getType().getName() +" "+ q2.hashCode() +" "+ q2Rows);
 	    final Iterable<? extends Table> q1a;
 	    final Iterable<? extends Table> q2a;
+	    final Iterable<? extends Table> q1nulled = (this.joinType==Constants.JOIN_TYPE.RIGHT || this.joinType==Constants.JOIN_TYPE.OUTER) ? new AddNullAtEnd(q1) : q1;
+	    final Iterable<? extends Table> q2nulled = (this.joinType==Constants.JOIN_TYPE.LEFT || this.joinType==Constants.JOIN_TYPE.OUTER) ? new AddNullAtEnd(q2) : q2;
 	    final boolean swapped;
+	    final boolean q2pk;
 		if (q1Rows > q2Rows) {
-	    	q1a = q1;
-	    	q2a = new LazyCacheIterable(q2, (int) (q2Rows*1.1));
+	    	q1a = q1nulled;
+	    	q2a = new LazyCacheIterable(q2nulled, (int) (q2Rows*1.1));
 	    	swapped = false;
+			q2pk = doesConditionCoverPK(q2.getType(), condition);
 	    } else {
-	    	q1a = q2;
-	    	q2a = new LazyCacheIterable(q1, (int) (q1Rows*1.1));
+	    	q1a = q2nulled;
+	    	q2a = new LazyCacheIterable(q1nulled, (int) (q1Rows*1.1));
 	    	swapped = true;
+			q2pk = doesConditionCoverPK(q1.getType(), condition);
 	    }
+		
 		System.out.println("swapped: "+ swapped);
 		Constructor c = null;
 		try {
@@ -288,46 +292,58 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		final int st1 = getObjectSizeOfQuery(q1);
 		final int st2 = getObjectSizeOfQuery(q2);
 
-		return new Iterator<T>() {
+		return new ClosableIterator<T>() {
 
 			Iterator<? extends Table> q1i = q1a.iterator();
 			Iterator<? extends Table> q2i = q2a.iterator();
+			boolean matchedq1 = false;
+			boolean matchedq2 = false;
 			long count = 0;
 			Table t1 = null;
 			private T next;
-			{
-				t1 = addNullForOtherJoins(q1i);
-			}
 			boolean first = true;
 
 			@Override
 			public boolean hasNext() {
 				if (next!=null) return true;
 				if ((limit>=0 && count>=limit)) {
-					cleanUp();
+					close();
 					return false;
 				}
-				while (q1i.hasNext() || q2i.hasNext()) {
+				while (q1i.hasNext() || (q2i!=null && q2i.hasNext())) {
 					final T t = peekNext();
-					if (t1==null) t1 = q1i.next();
+					if (t1==null && q1i.hasNext()) t1 = q1i.next();
 					boolean matches = true;
-					if (conditions!=null && ((Join)t).l!=null && ((Join)t).r!=null) {
-						for (final Condition c : conditions) {
-							matches &= c.matches(t);
+					if (condition!=null) {
+						Object q1o = swapped ? ((Join)t).r : ((Join)t).l;
+						Object q2o = swapped ? ((Join)t).l : ((Join)t).r;
+						if (!matchedq1 && q1o==null) {
+							matchedq1 = true;
+						} else if (!matchedq2 && q2o==null) {
+							matchedq2 = true;
+						} else {
+							matches &= condition.matches(t);
+							if (matches) {
+								matchedq1 = true;
+								matchedq2 = true;
+							}
 						}
 					}
 					if (matches) {
 						next = t;
+						if (q2pk) {
+							if (q1i.hasNext()) {
+								q2i = q2a.iterator();
+								t1 = q1i.next();
+							} else {
+								q2i = null;
+							}
+						}
 						return true;
 					}
 				}
-				cleanUp();
+				close();
 				return false;
-			}
-
-			private void cleanUp() {
-				if (q1i instanceof CleanableIterator) ((CleanableIterator)q1i).cleanUp();
-				if (q2i instanceof CleanableIterator) ((CleanableIterator)q2i).cleanUp();
 			}
 
 			@Override
@@ -339,25 +355,21 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 			}
 
 			public T peekNext() {
+				if (first) {
+					first = false;
+					if (q1i.hasNext()) t1 = q1i.next();
+					else return null;
+				}
 				final Table t2;
 				if (!q2i.hasNext() && q1i.hasNext()) {
 					t1 = q1i.next();
-					if (q2i instanceof CleanableIterator) ((CleanableIterator)q2i).cleanUp();
+					if (q2i instanceof ClosableIterator) ((ClosableIterator)q2i).close();
 					q2i = q2a.iterator();
+					matchedq2 = false;
 					// add an extra null in for some join types
-					if (first) {
-						t2 = addNullForSomeJoins(q2i);
-						first = false;
-					} else {
-						t2 = q2i.next();
-					}
+					t2 = q2i.next();
 				} else {
-					if (first) {
-						t2 = addNullForSomeJoins(q2i);
-						first = false;
-					} else {
-						t2 = q2i.next();
-					}
+					t2 = q2i.next();
 				}
 				final Object[] oa = new Object[st1+st2];
 				try {
@@ -386,19 +398,55 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				return null;
 			}
 
-			private Table addNullForSomeJoins(final Iterator<? extends Table> i) {
-				return joinType==JOIN_TYPE.LEFT || joinType==JOIN_TYPE.OUTER ? null : (i.hasNext() ? i.next() : null);
-			}
-
-			private Table addNullForOtherJoins(final Iterator<? extends Table> i) {
-				return joinType==JOIN_TYPE.RIGHT || joinType==JOIN_TYPE.OUTER ? null : (i.hasNext() ? i.next() : null);
-			}
+//			private Table addNullForSomeJoins(final Iterator<? extends Table> i) {
+//				return joinType==JOIN_TYPE.LEFT || joinType==JOIN_TYPE.OUTER ? null : (i.hasNext() ? i.next() : null);
+//			}
+//
+//			private Table addNullForOtherJoins(final Iterator<? extends Table> i) {
+//				return joinType==JOIN_TYPE.RIGHT || joinType==JOIN_TYPE.OUTER ? null : (i.hasNext() ? i.next() : null);
+//			}
 
 			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
+
+			@Override
+			public void close() {
+				if (q1i instanceof ClosableIterator) ((ClosableIterator)q1i).close();
+				if (q2i instanceof ClosableIterator) ((ClosableIterator)q2i).close();
+			}
 		};
+	}
+
+	private static boolean doesConditionCoverPK(Class<? extends Table> type, Condition condition) {
+		PK<? extends Table> pk = Util.getPK(type);
+		if (pk==null) return false;
+		Set<Field<?>> fields = new HashSet<Field<?>>(pk.GET_FIELDS());
+		List<Condition> conditions;
+		if (condition instanceof Condition.And) {
+			conditions = ((Condition.And)condition).conditions;
+		} else {
+			conditions = new ArrayList<Condition>();
+			conditions.add(condition);
+		}
+		for (Condition c : conditions) {
+			if (c instanceof Binary) {
+				Binary bc = (Binary)c;
+				if (bc.cmp!=null && "=".equals(bc.cmp.trim())) {
+					fields.remove(bc.field);
+					fields.remove(bc.field2);
+				}
+			}
+			if (c instanceof Binary2) {
+				Binary2 bc = (Binary2)c;
+				if (bc.cmp!=null && "=".equals(bc.cmp.trim())) {
+					fields.remove(bc.o1);
+					fields.remove(bc.o2);
+				}
+			}
+		}
+		return fields.isEmpty();
 	}
 
 	private int getObjectSizeOfQuery(final Query<? extends Table> q) {
@@ -411,6 +459,35 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	static class AddNullAtEnd<E extends Table> implements Iterable<E> {
+		private Query<E> q;
+		public AddNullAtEnd(Query<E> q) {
+			this.q = q;
+		}
+		@Override
+		public Iterator<E> iterator() {
+			final Iterator<E> i = q.iterator();
+			return new Iterator<E>() {
+				boolean sentLastNull = false;
+				@Override
+				public boolean hasNext() {
+					return i.hasNext() || !sentLastNull;
+				}
+				@Override
+				public E next() {
+					if (i.hasNext()) return i.next();
+					sentLastNull = true;
+					return null;
+				}
+				@Override
+				public void remove() {
+					i.remove();
+				}
+			};
+		}
+
 	}
 
 }

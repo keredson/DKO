@@ -25,7 +25,7 @@ class LazyCacheIterable<T extends Table> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		if (srci==null) initSourceIterator();
-		return new CleanableIterator<T>() {
+		return new ClosableIterator<T>() {
 
 			int position = 0;
 
@@ -47,8 +47,8 @@ class LazyCacheIterable<T extends Table> implements Iterable<T> {
 			}
 
 			@Override
-			public synchronized void cleanUp() {
-				if (srci instanceof CleanableIterator) ((CleanableIterator)srci).cleanUp();
+			public synchronized void close() {
+				if (srci instanceof ClosableIterator) ((ClosableIterator)srci).close();
 			}
 
 		};

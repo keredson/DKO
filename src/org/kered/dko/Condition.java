@@ -267,9 +267,7 @@ public abstract class Condition {
 	 * @return A new condition ANDing this with the given conditions
 	 */
 	public Condition and(final Condition... conditions) {
-		final AndCondition c = new AndCondition(conditions);
-		c.conditions.add(this);
-		return c;
+		return new And(this, conditions);
 	}
 
 	/**
@@ -278,19 +276,20 @@ public abstract class Condition {
 	 * @return A new condition ORing this with the given conditions
 	 */
 	public Condition or(final Condition... conditions) {
-		final OrCondition c = new OrCondition(conditions);
+		final Or c = new Or(conditions);
 		c.conditions.add(this);
 		return c;
 	}
 
-	private static class AndCondition extends Condition {
+	static class And extends Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
 
-		public AndCondition(final Condition[] conditions) {
+		public And(Condition cnd, final Condition[] conditions) {
+			this.conditions.add(cnd);
 			for (final Condition condition : conditions) {
-				if (condition instanceof AndCondition) {
-					for (final Condition c : ((AndCondition)condition).conditions) {
+				if (condition instanceof And) {
+					for (final Condition c : ((And)condition).conditions) {
 						this.conditions.add(c);
 					}
 				} else {
@@ -338,14 +337,14 @@ public abstract class Condition {
 
 	}
 
-	private static class OrCondition extends Condition {
+	static class Or extends Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
 
-		public OrCondition(final Condition[] conditions) {
+		public Or(final Condition[] conditions) {
 			for (final Condition condition : conditions) {
-				if (condition instanceof OrCondition) {
-					for (final Condition c : ((OrCondition)condition).conditions) {
+				if (condition instanceof Or) {
+					for (final Condition c : ((Or)condition).conditions) {
 						this.conditions.add(c);
 					}
 				} else {
@@ -543,13 +542,13 @@ public abstract class Condition {
 
 	static class Binary extends Condition {
 
-		private final Field<?> field;
+		final Field<?> field;
 		private Object v;
-		private Field<?> field2;
-		private final String cmp;
+		Field<?> field2;
+		final String cmp;
 		private Select<?> s;
 		private SQLFunction function;
-
+		
 		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
 			// note "v" should be of type T here - set to object to work around
 			// this bug: http://stackoverflow.com/questions/5361513/reference-is-ambiguous-with-generics
@@ -661,9 +660,9 @@ public abstract class Condition {
 
 	static class Binary2 extends Condition {
 
-		private final String cmp;
-		private final Object o2;
-		private final Object o1;
+		final String cmp;
+		final Object o2;
+		final Object o1;
 
 		Binary2(final Object o1, final String cmp, final Object o2) {
 			this.o1 = o1;

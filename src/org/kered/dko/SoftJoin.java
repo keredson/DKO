@@ -6,8 +6,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -264,16 +266,23 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	    final Iterable<? extends Table> q1nulled = (this.joinType==Constants.JOIN_TYPE.RIGHT || this.joinType==Constants.JOIN_TYPE.OUTER) ? new AddNullAtEnd(q1) : q1;
 	    final Iterable<? extends Table> q2nulled = (this.joinType==Constants.JOIN_TYPE.LEFT || this.joinType==Constants.JOIN_TYPE.OUTER) ? new AddNullAtEnd(q2) : q2;
 	    final boolean swapped;
-	    final boolean q2pk;
+	    final boolean q1pk, q2pk;
+	    final Map<Field<?>, Field<?>> fieldOpposingPK;
 		if (q1Rows > q2Rows) {
 	    	q1a = q1nulled;
 	    	q2a = new LazyCacheIterable(q2nulled, (int) (q2Rows*1.1));
 	    	swapped = false;
+			q1pk = doesConditionCoverPK(q1.getType(), condition);
+			if (q1pk) fieldOpposingPK = getFieldsOpposingPK(q1.getType(), condition);
+			else fieldOpposingPK = null;
 			q2pk = doesConditionCoverPK(q2.getType(), condition);
 	    } else {
 	    	q1a = q2nulled;
 	    	q2a = new LazyCacheIterable(q1nulled, (int) (q1Rows*1.1));
 	    	swapped = true;
+			q1pk = doesConditionCoverPK(q2.getType(), condition);
+			if (q1pk) fieldOpposingPK = getFieldsOpposingPK(q2.getType(), condition);
+			else fieldOpposingPK = null;
 			q2pk = doesConditionCoverPK(q1.getType(), condition);
 	    }
 		
@@ -302,6 +311,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 			Table t1 = null;
 			private T next;
 			boolean first = true;
+			boolean firstPassQ2 = true;
 
 			@Override
 			public boolean hasNext() {
@@ -312,6 +322,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				}
 				while (q1i.hasNext() || (q2i!=null && q2i.hasNext())) {
 					final T t = peekNext();
+					if (t==null) continue;
 					if (t1==null && q1i.hasNext()) t1 = q1i.next();
 					boolean matches = true;
 					if (condition!=null) {
@@ -334,6 +345,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 						if (q2pk) {
 							if (q1i.hasNext()) {
 								q2i = q2a.iterator();
+								firstPassQ2 = false;
 								t1 = q1i.next();
 							} else {
 								q2i = null;
@@ -353,24 +365,44 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				next = null;
 				return ret;
 			}
+			
+			Set<List> seenT1Keys = new HashSet<List>();
+			Set<List> seenT2Keys = new HashSet<List>();
 
 			public T peekNext() {
 				if (first) {
 					first = false;
-					if (q1i.hasNext()) t1 = q1i.next();
+					if (q1i.hasNext()) {
+						t1 = q1i.next();
+						if (q1pk) registerT1();
+					}
 					else return null;
 				}
 				final Table t2;
 				if (!q2i.hasNext() && q1i.hasNext()) {
 					t1 = q1i.next();
+					if (q1pk) {
+						List values = registerT1();
+						while (!isT1inT2(values)) {
+							if (q1i.hasNext()) {
+								t1 = q1i.next();
+								values = registerT1();
+							} else {
+								return null;
+							}
+						}
+					}
 					if (q2i instanceof ClosableIterator) ((ClosableIterator)q2i).close();
+					if (q1pk && weHitAll()) return null;
 					q2i = q2a.iterator();
+					firstPassQ2 = false;
 					matchedq2 = false;
-					// add an extra null in for some join types
+					if (!q2i.hasNext()) return null;
 					t2 = q2i.next();
 				} else {
 					t2 = q2i.next();
 				}
+				if (firstPassQ2 && q1pk) registerT2(t2);
 				final Object[] oa = new Object[st1+st2];
 				try {
 					if (swapped) {
@@ -398,6 +430,35 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				return null;
 			}
 
+			private boolean isT1inT2(List values) {
+				return seenT2Keys.contains(values);
+			}
+
+			private List registerT1() {
+				List values = new ArrayList();
+				for (Field<?> f : fieldOpposingPK.keySet()) {
+					values.add(t1.get(f));
+				}
+				seenT1Keys.add(values);
+				return values;
+			}
+
+			private void registerT2(Table t2) {
+				List values = new ArrayList();
+				for (Field<?> f : fieldOpposingPK.values()) {
+					values.add(t2.get(f));
+				}
+				seenT2Keys.add(values);
+			}
+
+			private boolean weHitAll() {
+				Set<List> keysLeft = new HashSet<List>(seenT2Keys);
+				keysLeft.removeAll(seenT1Keys);
+				boolean weHitAll = keysLeft.isEmpty();
+				System.err.println("weHitAll? "+ weHitAll +" "+ keysLeft.size());
+				return weHitAll;
+			}
+
 //			private Table addNullForSomeJoins(final Iterator<? extends Table> i) {
 //				return joinType==JOIN_TYPE.LEFT || joinType==JOIN_TYPE.OUTER ? null : (i.hasNext() ? i.next() : null);
 //			}
@@ -417,6 +478,41 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				if (q2i instanceof ClosableIterator) ((ClosableIterator)q2i).close();
 			}
 		};
+	}
+
+	private static Map<Field<?>,Field<?>> getFieldsOpposingPK(Class<? extends Table> type, Condition condition) {
+		PK<? extends Table> pk = Util.getPK(type);
+		if (pk==null) return null;
+		Set<Field<?>> pkFields = new HashSet<Field<?>>(pk.GET_FIELDS());
+		Map<Field<?>,Field<?>> otherFields = new LinkedHashMap<Field<?>,Field<?>>();
+		List<Condition> conditions;
+		if (condition instanceof Condition.And) {
+			conditions = ((Condition.And)condition).conditions;
+		} else {
+			conditions = new ArrayList<Condition>();
+			conditions.add(condition);
+		}
+		for (Condition c : conditions) {
+			if (c instanceof Binary) {
+				Binary bc = (Binary)c;
+				if (bc.cmp!=null && "=".equals(bc.cmp.trim())) {
+					if (pkFields.contains(bc.field) && bc.field2!=null) otherFields.put(bc.field, bc.field2);
+					if (pkFields.contains(bc.field2) && bc.field!=null) otherFields.put(bc.field2, bc.field);
+					pkFields.remove(bc.field);
+					pkFields.remove(bc.field2);
+				}
+			}
+			if (c instanceof Binary2) {
+				Binary2 bc = (Binary2)c;
+				if (bc.cmp!=null && "=".equals(bc.cmp.trim())) {
+					if (pkFields.contains(bc.o1) && bc.o2 instanceof Field) otherFields.put((Field<?>) bc.o1, (Field<?>) bc.o2);
+					if (pkFields.contains(bc.o2) && bc.o1 instanceof Field) otherFields.put((Field<?>) bc.o2, (Field<?>) bc.o1);
+					pkFields.remove(bc.o1);
+					pkFields.remove(bc.o2);
+				}
+			}
+		}
+		return otherFields;
 	}
 
 	private static boolean doesConditionCoverPK(Class<? extends Table> type, Condition condition) {

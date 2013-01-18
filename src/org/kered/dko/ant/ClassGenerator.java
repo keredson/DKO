@@ -521,7 +521,8 @@ class ClassGenerator {
 			final String fkOName = genFKCachedObjectName(fk);
 			br.write("\t\tif ("+fkOName+"!=null) return "+fkOName+".get(_field);\n");
 		}
-		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
+		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
+		br.write("\t\tthrow new IllegalArgumentException(\"unknown field\");\n");
 		br.write("\t}\n\n");
 
 		// write the generic set(field, value) method

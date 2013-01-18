@@ -259,7 +259,7 @@ class Select<T extends Table> implements ClosableIterator<T> {
 	Object[] peekNextRow() throws SQLException {
 		if (!done && nextRows.isEmpty()) readNextRows(BATCH_SIZE);
 		if (nextRows.isEmpty()) {
-			this.finishedNatually  = true;
+			this.finishedNatually = true;
 			return null;
 		}
 		else return nextRows.peek();
@@ -426,16 +426,34 @@ class Select<T extends Table> implements ClosableIterator<T> {
 			}
 		} catch (SQLException e2) {
 			e2.printStackTrace();
+		} catch (AbstractMethodError e) {
+			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
+				// ignore - bad jdbc driver
+			} else {
+				throw e;
+			}
 		}
 		try {
 			if (rs!=null && !rs.isClosed()) rs.close();
 		} catch (SQLException e2) {
 			e2.printStackTrace();
+		} catch (AbstractMethodError e) {
+			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
+				// ignore - bad jdbc driver
+			} else {
+				throw e;
+			}
 		}
 		try {
 			if (ps!=null && !ps.isClosed()) ps.close();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
+		} catch (AbstractMethodError e) {
+			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
+				// ignore - bad jdbc driver
+			} else {
+				throw e;
+			}
 		}
 		if (shouldCloseConnection) {
 			try {

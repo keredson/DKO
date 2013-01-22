@@ -1,5 +1,6 @@
 package org.kered.dko;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -99,12 +100,14 @@ public class Field<T> implements Cloneable {
 	public final Class<T> TYPE;
 	final String SQL_TYPE;
 	final String JAVA_NAME;
+	public final Method GETTER;
 
 	String boundTable = null;
 	Field<T> unBound = null;
 	Set<Object> tags = null;
 	private TableInfo boundTableInfo = null;
 
+	@Deprecated
 	public Field(final int index, final Class<? extends Table> table, final String name, final String javaName, final Class<T> type, final String sqlType) {
 		INDEX = index;
 		TABLE = table;
@@ -112,6 +115,23 @@ public class Field<T> implements Cloneable {
 		TYPE = type;
 		SQL_TYPE = sqlType;
 		JAVA_NAME = javaName;
+		GETTER = null;
+	}
+
+	public Field(final int index, final Class<? extends Table> table, final String name, final String javaName, final String methodName, final Class<T> type, final String sqlType) {
+		INDEX = index;
+		TABLE = table;
+		NAME = name;
+		TYPE = type;
+		SQL_TYPE = sqlType;
+		JAVA_NAME = javaName;
+		Method getter = null;
+		try {
+			getter = TABLE.getMethod(methodName, (Class<?>[]) null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GETTER = getter;
 	}
 
 	/**
@@ -126,6 +146,7 @@ public class Field<T> implements Cloneable {
 		TYPE = type;
 		SQL_TYPE = type.getSimpleName();
 		JAVA_NAME = name;
+		GETTER = null;
 	}
 
 	/**
@@ -1177,7 +1198,5 @@ public class Field<T> implements Cloneable {
 			return false;
 		return true;
 	}
-
-
 
 }

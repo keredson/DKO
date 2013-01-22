@@ -261,32 +261,37 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	    final long q2Rows = UsageStats.estimateRowCount(q2);
 		System.out.println("q1Rows "+ q1.getType().getName() +" "+ q1.hashCode() +" "+ q1Rows);
 		System.out.println("q2Rows "+ q2.getType().getName() +" "+ q2.hashCode() +" "+ q2Rows);
-	    final Iterable<? extends Table> q1a;
-	    final Iterable<? extends Table> q2a;
+	    final Iterable<? extends Table> qXa;
+	    final Iterable<? extends Table> qYa;
 	    final Iterable<? extends Table> q1nulled = (this.joinType==Constants.JOIN_TYPE.RIGHT || this.joinType==Constants.JOIN_TYPE.OUTER) ? new AddNullAtEnd(q1) : q1;
 	    final Iterable<? extends Table> q2nulled = (this.joinType==Constants.JOIN_TYPE.LEFT || this.joinType==Constants.JOIN_TYPE.OUTER) ? new AddNullAtEnd(q2) : q2;
 	    final boolean swapped;
 	    final boolean q1pk, q2pk;
+	    final boolean qXpk, qYpk;
 	    final Map<Field<?>, Field<?>> fieldOpposingPK;
-		if (q1Rows > q2Rows) {
-	    	q1a = q1nulled;
-	    	q2a = new LazyCacheIterable(q2nulled, (int) (q2Rows*1.1));
+		q1pk = doesConditionCoverPK(q1.getType(), condition);
+		q2pk = doesConditionCoverPK(q2.getType(), condition);
+		if (q1Rows > q2Rows) { // && !(q2pk && !q1pk)
+	    	qXa = q1nulled;
+	    	qYa = new LazyCacheIterable(q2nulled, (int) (q2Rows*1.1));
 	    	swapped = false;
-			q1pk = doesConditionCoverPK(q1.getType(), condition);
-			if (q1pk) fieldOpposingPK = getFieldsOpposingPK(q1.getType(), condition);
+			qXpk = q1pk;
+			if (qXpk) fieldOpposingPK = getFieldsOpposingPK(q1.getType(), condition);
 			else fieldOpposingPK = null;
-			q2pk = doesConditionCoverPK(q2.getType(), condition);
+			qYpk = q2pk;
 	    } else {
-	    	q1a = q2nulled;
-	    	q2a = new LazyCacheIterable(q1nulled, (int) (q1Rows*1.1));
+	    	qXa = q2nulled;
+	    	qYa = new LazyCacheIterable(q1nulled, (int) (q1Rows*1.1));
 	    	swapped = true;
-			q1pk = doesConditionCoverPK(q2.getType(), condition);
-			if (q1pk) fieldOpposingPK = getFieldsOpposingPK(q2.getType(), condition);
+			qXpk = q2pk;
+			if (qXpk) fieldOpposingPK = getFieldsOpposingPK(q2.getType(), condition);
 			else fieldOpposingPK = null;
-			q2pk = doesConditionCoverPK(q1.getType(), condition);
+			qYpk = q1pk;
 	    }
 		
-		System.out.println("swapped: "+ swapped);
+		System.err.println("swapped: "+ swapped);
+		System.err.println("q1.getType(): "+ q1.getType());
+		System.err.println("q2.getType(): "+ q2.getType());
 		Constructor c = null;
 		try {
 			c = getType().getDeclaredConstructor(Object[].class, Integer.TYPE, Collection.class);
@@ -303,15 +308,15 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 
 		return new ClosableIterator<T>() {
 
-			Iterator<? extends Table> q1i = q1a.iterator();
-			Iterator<? extends Table> q2i = q2a.iterator();
-			boolean matchedq1 = false;
-			boolean matchedq2 = false;
+			Iterator<? extends Table> qXi = qXa.iterator();
+			Iterator<? extends Table> qYi = qYa.iterator();
+			boolean matchedqX = false;
+			boolean matchedqY = false;
 			long count = 0;
-			Table t1 = null;
+			Table tX = null;
 			private T next;
 			boolean first = true;
-			boolean firstPassQ2 = true;
+			boolean firstPassQY = true;
 
 			@Override
 			public boolean hasNext() {
@@ -320,35 +325,35 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 					close();
 					return false;
 				}
-				while (q1i.hasNext() || (q2i!=null && q2i.hasNext())) {
+				while (qXi.hasNext() || (qYi!=null && qYi.hasNext())) {
 					final T t = peekNext();
 					if (t==null) continue;
-					if (t1==null && q1i.hasNext()) t1 = q1i.next();
+					if (tX==null && qXi.hasNext()) tX = qXi.next();
 					boolean matches = true;
 					if (condition!=null) {
-						Object q1o = swapped ? ((Join)t).r : ((Join)t).l;
-						Object q2o = swapped ? ((Join)t).l : ((Join)t).r;
-						if (!matchedq1 && q1o==null) {
-							matchedq1 = true;
-						} else if (!matchedq2 && q2o==null) {
-							matchedq2 = true;
+						Object qXo = swapped ? ((Join)t).r : ((Join)t).l;
+						Object qYo = swapped ? ((Join)t).l : ((Join)t).r;
+						if (!matchedqX && qXo==null) {
+							matchedqX = true;
+						} else if (!matchedqY && qYo==null) {
+							matchedqY = true;
 						} else {
 							matches &= condition.matches(t);
 							if (matches) {
-								matchedq1 = true;
-								matchedq2 = true;
+								matchedqX = true;
+								matchedqY = true;
 							}
 						}
 					}
 					if (matches) {
 						next = t;
-						if (q2pk) {
-							if (q1i.hasNext()) {
-								q2i = q2a.iterator();
-								firstPassQ2 = false;
-								t1 = q1i.next();
+						if (qYpk) {
+							if (qXi.hasNext()) {
+								qYi = qYa.iterator();
+								firstPassQY = false;
+								tX = qXi.next();
 							} else {
-								q2i = null;
+								qYi = null;
 							}
 						}
 						return true;
@@ -366,56 +371,56 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 				return ret;
 			}
 			
-			Set<List> seenT1Keys = new HashSet<List>();
-			Set<List> seenT2Keys = new HashSet<List>();
+			Set<List> seenTXKeys = new HashSet<List>();
+			Set<List> seenTYKeys = new HashSet<List>();
 
 			public T peekNext() {
 				if (first) {
 					first = false;
-					if (q1i.hasNext()) {
-						t1 = q1i.next();
-						if (q1pk) registerT1();
+					if (qXi.hasNext()) {
+						tX = qXi.next();
+						if (qXpk) registerTX();
 					}
 					else return null;
 				}
-				final Table t2;
-				if (!q2i.hasNext() && q1i.hasNext()) {
-					t1 = q1i.next();
-					if (q1pk) {
-						List values = registerT1();
+				final Table tY;
+				if (!qYi.hasNext() && qXi.hasNext()) {
+					tX = qXi.next();
+					if (qXpk) {
+						List values = registerTX();
 						while (!isT1inT2(values)) {
-							if (q1i.hasNext()) {
-								t1 = q1i.next();
-								values = registerT1();
+							if (qXi.hasNext()) {
+								tX = qXi.next();
+								values = registerTX();
 							} else {
 								return null;
 							}
 						}
 					}
-					if (q2i instanceof ClosableIterator) ((ClosableIterator)q2i).close();
-					if (q1pk && weHitAll()) return null;
-					q2i = q2a.iterator();
-					firstPassQ2 = false;
-					matchedq2 = false;
-					if (!q2i.hasNext()) return null;
-					t2 = q2i.next();
+					if (qYi instanceof ClosableIterator) ((ClosableIterator)qYi).close();
+					if (qXpk && weHitAll()) return null;
+					qYi = qYa.iterator();
+					firstPassQY = false;
+					matchedqY = false;
+					if (!qYi.hasNext()) return null;
+					tY = qYi.next();
 				} else {
-					t2 = q2i.next();
+					tY = qYi.next();
 				}
-				if (firstPassQ2 && q1pk) registerT2(t2);
+				if (firstPassQY && qXpk) registerTY(tY);
 				final Object[] oa = new Object[st1+st2];
 				try {
 					if (swapped) {
-						if (st2==1) oa[0] = t2;
-						else ((Join)t2).populateObjectArray(oa, 0);
-						if (st1==1) oa[st2] = t1;
-						else ((Join)t1).populateObjectArray(oa, st2);
+						if (st2==1) oa[0] = tY;
+						else ((Join)tY).populateObjectArray(oa, 0);
+						if (st1==1) oa[st2] = tX;
+						else ((Join)tX).populateObjectArray(oa, st2);
 						return (T) jc.newInstance(oa, 0, fields);
 					} else {
-						if (st1==1) oa[0] = t1;
-						else ((Join)t1).populateObjectArray(oa, 0);
-						if (st2==1) oa[st1] = t2;
-						else ((Join)t2).populateObjectArray(oa, st1);
+						if (st1==1) oa[0] = tX;
+						else ((Join)tX).populateObjectArray(oa, 0);
+						if (st2==1) oa[st1] = tY;
+						else ((Join)tY).populateObjectArray(oa, st1);
 						return (T) jc.newInstance(oa, 0, fields);
 					}
 				} catch (final IllegalArgumentException e) {
@@ -431,29 +436,30 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 			}
 
 			private boolean isT1inT2(List values) {
-				return seenT2Keys.contains(values);
+				return seenTYKeys.contains(values);
 			}
 
-			private List registerT1() {
+			private List registerTX() {
+				if (tX==null) return Collections.emptyList();
 				List values = new ArrayList();
 				for (Field<?> f : fieldOpposingPK.keySet()) {
-					values.add(t1.get(f));
+					values.add(tX.get(f));
 				}
-				seenT1Keys.add(values);
+				seenTXKeys.add(values);
 				return values;
 			}
 
-			private void registerT2(Table t2) {
+			private void registerTY(Table t2) {
 				List values = new ArrayList();
 				for (Field<?> f : fieldOpposingPK.values()) {
 					values.add(t2.get(f));
 				}
-				seenT2Keys.add(values);
+				seenTYKeys.add(values);
 			}
 
 			private boolean weHitAll() {
-				Set<List> keysLeft = new HashSet<List>(seenT2Keys);
-				keysLeft.removeAll(seenT1Keys);
+				Set<List> keysLeft = new HashSet<List>(seenTYKeys);
+				keysLeft.removeAll(seenTXKeys);
 				boolean weHitAll = keysLeft.isEmpty();
 				System.err.println("weHitAll? "+ weHitAll +" "+ keysLeft.size());
 				return weHitAll;
@@ -474,8 +480,8 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 
 			@Override
 			public void close() {
-				if (q1i instanceof ClosableIterator) ((ClosableIterator)q1i).close();
-				if (q2i instanceof ClosableIterator) ((ClosableIterator)q2i).close();
+				if (qXi instanceof ClosableIterator) ((ClosableIterator)qXi).close();
+				if (qYi instanceof ClosableIterator) ((ClosableIterator)qYi).close();
 			}
 		};
 	}

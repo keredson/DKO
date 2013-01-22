@@ -308,11 +308,17 @@ class ClassGenerator {
 			final String sqlType = columns.getString(column);
 			br.write(getFieldType(pkgName, table, column, sqlType));
 			final String fieldName = getFieldName(column);
+			final String methodName = getInstanceMethodName(column);
 			br.write("> "+ fieldName);
-			br.write(" = new Field<"+ getFieldType(pkgName, table, column, sqlType));
-			br.write(">("+ index +", "+ className +".class, \""+ column +"\", \""+ fieldName);
-			br.write("\", "+ getFieldType(pkgName, table, column, sqlType) +".class");
-			br.write(", \""+ sqlType +"\");\n");
+			br.write(" = new Field<"+ getFieldType(pkgName, table, column, sqlType) +">(");
+			br.write(index +", ");
+			br.write(className +".class, ");
+			br.write("\""+ column +"\", ");
+			br.write("\""+ fieldName+ "\", ");
+			br.write("\"get"+ methodName +"\",");
+			br.write(getFieldType(pkgName, table, column, sqlType) +".class, ");
+			br.write("\""+ sqlType +"\"");
+			br.write(");\n");
 			++index;
 		}
 		br.write("\n");
@@ -512,6 +518,10 @@ class ClassGenerator {
 		br.write("\t@SuppressWarnings(\"unchecked\")\n");
 		br.write("\tpublic <S> S get(final Field<S> _field) {\n");
 		br.write("\t\tif ("+ className +".class==_field.TABLE) {\n");
+		br.write("\t\t\tif (_field.GETTER != null) {\n");
+		br.write("\t\t\t\ttry { _field.GETTER.invoke(this, (Object[])null); }\n");
+		br.write("\t\t\t\tcatch (Exception e) { e.printStackTrace(); }\n");
+		br.write("\t\t\t}\n");
 		for (final String column : columns.keySet()) {
 			br.write("\t\t\tif (_field=="+ getFieldName(column) +") ");
 			br.write("return (S) get"+ getInstanceMethodName(column) +"();\n");
@@ -522,7 +532,8 @@ class ClassGenerator {
 			br.write("\t\tif ("+fkOName+"!=null) return "+fkOName+".get(_field);\n");
 		}
 		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
-		br.write("\t\tthrow new IllegalArgumentException(\"unknown field\");\n");
+		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field\");\n");
+		br.write("\t\treturn null;\n");
 		br.write("\t}\n\n");
 
 		// write the generic set(field, value) method

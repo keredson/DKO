@@ -81,15 +81,16 @@ public class Join<L extends Table, R extends Table> extends Table {
 	@Override
 	public <S> S get(final Field<S> field) {
 		if (l != null) {
-			try { return l.get(field); }
-			catch (final IllegalArgumentException e) { /* ignore */ }
+			S o = l.get(field);
+			if (o!=null) return o;
 		}
 		if (r != null) {
-			try { return r.get(field); }
-			catch (final IllegalArgumentException e) { /* ignore */ }
+			S o = r.get(field);
+			if (o!=null) return o;
 		}
 		if (fields.contains(field)) return null;
-		throw new IllegalArgumentException("unknown field " + field);
+		//throw new IllegalArgumentException("unknown field " + field);
+		return null;
 	}
 
 	@Override

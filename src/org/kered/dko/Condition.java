@@ -335,6 +335,11 @@ public abstract class Condition {
 			}
 		}
 
+		void visit(Visitor v) {
+			v.visited(this);
+			for (Condition condition : conditions) condition.visit(v);
+		}
+
 	}
 
 	static class Or extends Condition {
@@ -390,6 +395,11 @@ public abstract class Condition {
 			}
 		}
 
+		void visit(Visitor v) {
+			v.visited(this);
+			for (Condition condition : conditions) condition.visit(v);
+		}
+
 	}
 
 	static class Not extends Condition {
@@ -431,15 +441,20 @@ public abstract class Condition {
 			condition._postExecute(context, conn);
 		}
 
+		void visit(Visitor v) {
+			v.visited(this);
+			condition.visit(v);
+		}
+
 	}
 
 	static class Ternary extends Condition {
 
-		private final Object v1;
+		final Object v1;
 		private final String cmp1;
-		private final Object v2;
+		final Object v2;
 		private final String cmp2;
-		private final Object v3;
+		final Object v3;
 
 		public Ternary(final Object v1, final String cmp1, final Object v2, final String cmp2, final Object v3) {
 			this.v1 = v1;
@@ -510,7 +525,7 @@ public abstract class Condition {
 
 	static class Unary extends Condition {
 
-		private final Field<?> field;
+		final Field<?> field;
 		private final String cmp;
 
 		public <T> Unary(final Field<T> field, final String cmp) {
@@ -829,6 +844,14 @@ public abstract class Condition {
 
 	void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
 		// default to do nothing
+	}
+	
+	void visit(Visitor v) {
+		v.visited(this);
+	}
+	
+	static interface Visitor {
+		void visited(Condition c);
 	}
 
 }

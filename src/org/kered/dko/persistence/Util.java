@@ -31,7 +31,7 @@ public class Util {
 				try {
 					driver = Class.forName(s);
 				} catch (final ClassNotFoundException e) {
-					log.info("could not find "+ s);
+					log.fine("could not find "+ s);
 				}
 			}
 			if (driver==null) {

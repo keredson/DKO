@@ -60,7 +60,7 @@ public abstract class Table {
 	/**
 	 * Please do not use.
 	 */
-	protected BitSet __NOSCO_FETCHED_VALUES = new BitSet();
+	protected BitSet __NOSCO_FETCHED_VALUES = null;
 
 	/**
 	 * Please do not use.

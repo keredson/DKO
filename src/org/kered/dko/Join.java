@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.sql.DataSource;
 import org.kered.dko.Field.FK;
-import org.kered.dko.Table.__Alias;
 
 /**
  * This class represents a join across 2 tables. It contains 2 typed references
@@ -45,11 +44,6 @@ public class Join<L extends Table, R extends Table> extends Table {
 		this.fields = fields;
 	}
 
-	void populateObjectArray(Object[] oa, int i) {
-		oa[i + 0] = l;
-		oa[i + 1] = r;
-	}
-
 	@Override
 	protected String SCHEMA_NAME() {
 		return (l == null ? null : l.SCHEMA_NAME()) + " + " + (r == null ? null : r.SCHEMA_NAME());
@@ -71,7 +65,7 @@ public class Join<L extends Table, R extends Table> extends Table {
 		return fields;
 	}
 
-	final FK[] fks = {};
+	private static final FK[] fks = {};
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected FK[] FKS() {
@@ -88,7 +82,7 @@ public class Join<L extends Table, R extends Table> extends Table {
 			S o = r.get(field);
 			if (o!=null) return o;
 		}
-		if (fields.contains(field)) return null;
+		if (fields!=null && fields.contains(field)) return null;
 		//throw new IllegalArgumentException("unknown field " + field);
 		return null;
 	}

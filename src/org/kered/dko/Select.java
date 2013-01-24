@@ -463,7 +463,9 @@ class Select<T extends Table> implements ClosableIterator<T> {
 				e.printStackTrace();
 			}
 		}
-		if (usageMonitor!=null) usageMonitor.iteratorIsDone();
+		if (usageMonitor!=null && finishedNatually) {
+			usageMonitor.saveSizeOfQuery();
+		}
 		done = true;
 	}
 

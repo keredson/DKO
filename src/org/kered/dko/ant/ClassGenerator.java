@@ -10,6 +10,7 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -513,6 +514,9 @@ class ClassGenerator {
 			br.write(genFKName(fk.columns.keySet(), referencedTable) + ",");
 		}
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
+		
+		// write the fetched values bitset
+		br.write("\t\t{ __NOSCO_FETCHED_VALUES = new java.util.BitSet(); }\n\n");
 
 		// write the generic get(field) method
 		br.write("\t@SuppressWarnings(\"unchecked\")\n");

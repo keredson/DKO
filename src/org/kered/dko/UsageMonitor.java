@@ -561,13 +561,9 @@ class UsageMonitor<T extends Table> {
 		}
 	}
 
-	public void iteratorIsDone() {
-		saveSizeOfQuery();
-	}
-
 	private final static BlockingQueue<UsageMonitor> querySizes = new LinkedBlockingQueue<UsageMonitor>();
 
-	private void saveSizeOfQuery() {
+	void saveSizeOfQuery() {
 		if (this.queryType.getPackage().getName().startsWith("org.kered.dko"))
 			return;
 		querySizes.add(this);

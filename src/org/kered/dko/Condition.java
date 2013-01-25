@@ -561,7 +561,7 @@ public abstract class Condition {
 		private Object v;
 		Field<?> field2;
 		final String cmp;
-		private Select<?> s;
+		private DBRowIterator<?> s;
 		private SQLFunction function;
 		
 		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
@@ -581,7 +581,7 @@ public abstract class Condition {
 		public <T,S extends Table> Binary(final Field<T> field, final String cmp, final DBQuery<S> q) {
 			this.field = field;
 			this.cmp = cmp;
-			this.s = new Select<S>(q);
+			this.s = new DBRowIterator<S>(q);
 		}
 
 		public <T> Binary(final Field<T> field, final String cmp, final SQLFunction f) {
@@ -801,11 +801,11 @@ public abstract class Condition {
 	static class Exists extends Condition {
 
 		private final Query<? extends Table> q;
-		private final Select<?> s;
+		private final DBRowIterator<?> s;
 
 		<T extends Table> Exists(final Query<T> q) {
 			this.q = q;
-			if (q instanceof DBQuery) this.s = new Select<T>((DBQuery<T>) q);
+			if (q instanceof DBQuery) this.s = new DBRowIterator<T>((DBQuery<T>) q);
 			else s = null;
 		}
 

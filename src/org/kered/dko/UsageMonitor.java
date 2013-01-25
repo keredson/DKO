@@ -296,6 +296,7 @@ class UsageMonitor<T extends Table> {
 	}
 
 	void setSelectedFields(final Field<?>[] selectedFields) {
+		if (selectedFields==null) throw new IllegalArgumentException("selectedFields cannot be null");
 		this.selectedFields = selectedFields;
 	}
 

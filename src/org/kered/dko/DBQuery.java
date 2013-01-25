@@ -220,7 +220,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public Iterator<T> iterator() {
 		//sanityCheckToManyJoins();
-		return new Select<T>(this);
+		return new SelectFromOAI<T>(this);
 	}
 
 	private void sanityCheckToManyJoins() {
@@ -525,7 +525,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return new Iterable<T>() {
 			@Override
 			public Iterator<T> iterator() {
-				return new Select<T>(q);
+				return new SelectFromOAI<T>(q);
 			}
 		};
 	}
@@ -1487,7 +1487,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Iterable<Object[]> asIterableOfObjectArrays() {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySelectFromFirstTableAndJoins  = false;
-		return new SelectAsObjectArrayIterable<T>(q);
+		return new Iterable<Object[]>() {
+			@Override
+			public Iterator<Object[]> iterator() {
+				return new DBRowIterator<T>(q, false);
+			}
+		};
 	}
 
 	@Override

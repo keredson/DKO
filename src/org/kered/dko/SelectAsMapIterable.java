@@ -16,28 +16,20 @@ class SelectAsMapIterable<T extends Table> implements Iterable<Map<Field<?>, Obj
 
 	@Override
 	public Iterator<Map<Field<?>, Object>> iterator() {
-		final Select<T> select = new Select<T>(query, false);
-		select.init();
+		final DBRowIterator<T> i = new DBRowIterator<T>(query, false);
+		i.init();
 		final List<Field<?>> fields = query.getSelectFields();
 		return new Iterator<Map<Field<?>, Object>>() {
 			@Override
 			public boolean hasNext() {
-				try {
-					return select.peekNextRow() != null;
-				} catch (final SQLException e) {
-					throw new RuntimeException(e);
-				}
+				return i.peek() != null;
 			}
 			@Override
 			public Map<Field<?>, Object> next() {
-				try {
-					final Object[] oa = select.getNextRow();
-					final Map<Field<?>, Object> ret = new LinkedHashMap<Field<?>, Object>();
-					for (int i=0; i<fields.size(); ++i) ret.put(fields.get(i), oa[i]);
-					return ret;
-				} catch (final SQLException e) {
-					throw new RuntimeException(e);
-				}
+				final Object[] oa = i.next();
+				final Map<Field<?>, Object> ret = new LinkedHashMap<Field<?>, Object>();
+				for (int i=0; i<fields.size(); ++i) ret.put(fields.get(i), oa[i]);
+				return ret;
 			}
 			@Override
 			public void remove() {

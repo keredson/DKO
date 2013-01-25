@@ -329,7 +329,7 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 				org.kered.dko.persistence.Util.getDS();
 
 				try {
-					tmpFile  = File.createTempFile("dko_local_join_", ".db", new File("/u/dander/tmp"));
+					tmpFile  = File.createTempFile("dko_local_join_", ".db");
 					//tmpFile.deleteOnExit();
 					System.err.println(tmpFile.getPath());
 					String url = "jdbc:sqlite:" + tmpFile.getPath();

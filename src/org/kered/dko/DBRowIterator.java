@@ -19,7 +19,7 @@ import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Tuple.Tuple2;
 
 
-class DBRowIterator<T extends Table> implements ClosableIterator<Object[]>, PeekableIterator<Object[]> {
+class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[]> {
 
 	private static final int BATCH_SIZE = 2048;
 
@@ -37,7 +37,7 @@ class DBRowIterator<T extends Table> implements ClosableIterator<Object[]>, Peek
 	final DBQuery<T> query;
 	private PreparedStatement ps;
 	private ResultSet rs;
-	private Field<?>[] selectedFields;
+	Field<?>[] selectedFields;
 	private Field<?>[] selectedBoundFields;
 	private Connection conn;
 	private final Queue<Object[]> nextRows = new LinkedList<Object[]>();
@@ -167,7 +167,7 @@ class DBRowIterator<T extends Table> implements ClosableIterator<Object[]>, Peek
 		return new Tuple2<String,List<Object>>(sb.toString(), ret.b);
 	}
 
-	private Field<?>[] toArray(final List<Field<?>> fields) {
+	static Field<?>[] toArray(final List<Field<?>> fields) {
 		final Field<?>[] ret = new Field<?>[fields.size()];
 		int i = 0;
 		for (final Field<?> field : fields) {

@@ -198,9 +198,14 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new Iterator<T>() {
+		return new ClosableIterator<T>() {
 			
 			private File tmpFile = null;
+			private List<Field<?>> qLfields;
+			private List<Field<?>> qRfields;
+			private ClosableIterator<Table> iL;
+			private ClosableIterator<Table> iR;
+			private DualIterator di;
 
 			{
 			    final boolean qLpk = SoftJoinUtil.doesConditionCoverPK(qL.getType(), condition);
@@ -229,99 +234,44 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			    	Query<? extends Table> qRf = createFilteredQ(qR, condition, "tl", ds);
 			    	load(qRf, "tr", ds);
 			    }
-
-		    	String sql = "select * from tl "+ joinType +" tr on "+ condition.getSQL(null);
-		    	System.err.println(sql);
-		    	try {
-			    	Connection conn = ds.getConnection();
-			    	Statement stmt = conn.createStatement();
-			    	ResultSet rs = stmt.executeQuery(sql);
-			    	int count = 0;
-			    	while (rs.next()) ++count;
-			    	System.err.println("final join: "+ count +" rows");
-		    	} catch (Exception e) {
-		    		
-		    	}
+			    
+			    initQuery(ds);
 
 			}
 
 			@Override
 			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
+				return iL.hasNext() || iR.hasNext();
 			}
 
-			private Query<? extends Table> createFilteredQ(Query<? extends Table> q, Condition condition, String otherTable, DataSource ds) {
-				final Set<Field<?>> queryFields = new HashSet<Field<?>>(q.getSelectFields());
-				final Map<Field<?>,Field<?>> fields = new LinkedHashMap<Field<?>,Field<?>>();
-				condition.visit(new Visitor() {
-					@Override
-					public void visited(Condition c) {
-						if (c instanceof Condition.Binary) {
-							Condition.Binary o = (Condition.Binary) c;
-							if (queryFields.contains(o.field)) fields.put(o.field, o.field2);
-							if (queryFields.contains(o.field2)) fields.put(o.field2, o.field);
-						}
-						if (c instanceof Condition.Binary2) {
-							Condition.Binary2 o = (Condition.Binary2) c;
-							if (o.o1 instanceof Field && queryFields.contains(o.o1)) fields.put((Field<?>)o.o1, (Field<?>)o.o2);
-							if (o.o2 instanceof Field && queryFields.contains(o.o2)) fields.put((Field<?>)o.o2, (Field<?>)o.o1);
-						}
-//						if (c instanceof Condition.Ternary) {
-//							Condition.Ternary o = (Condition.Ternary) c;
-//							if (o.v1 instanceof Field && fields.contains(o.v1)) fields.add((Field<?>)o.v1);
-//							if (o.v2 instanceof Field && fields.contains(o.v2)) fields.add((Field<?>)o.v2);
-//							if (o.v3 instanceof Field && fields.contains(o.v3)) fields.add((Field<?>)o.v3);
-//						}
-//						if (c instanceof Condition.Unary) {
-//							Condition.Unary o = (Condition.Unary) c;
-//							if (fields.contains(o.field)) fields.add(o.field);
-//						}
-					}
-				});
-				for (Entry<Field<?>, Field<?>> e : fields.entrySet()) {
-					List values = getDistinctFrom(e.getValue(), otherTable, ds);
-					q = q.where(e.getKey().in(values));
-				}
-				return q;
-			}
-
-			private List getDistinctFrom(Field<?> key, String otherTable, DataSource ds) {
-				List ret = new ArrayList();
-				String sql = "select distinct "+ key.NAME +" from "+ otherTable;
-				Connection conn = null;
-				Statement ps = null;
-				try {
-					conn = ds.getConnection();
-					ps = conn.createStatement();
-					System.err.println(sql);
-					ResultSet rs = ps.executeQuery(sql);
-					while (rs.next()) {
-						ret.add(rs.getObject(1));
-					}
-					rs.close();
-				} catch (SQLException e) {
-					throw new RuntimeException(e);
-				} finally {
-					try {
-						if (conn!=null && !conn.isClosed()) conn.close();
-					} catch (SQLException e) {
-						throw new RuntimeException(e);
-					}
-				}
-				return ret;
+			private void initQuery(DataSource ds) {
+				qLfields = qL.getSelectFields();
+				qRfields = qR.getSelectFields();
+				StringBuffer sb = new StringBuffer();
+				sb.append("select ").append(Util.joinFields(Constants.DB_TYPE.SQLITE3, ", ",  qLfields)).append(", ");
+				sb.append(Util.joinFields(Constants.DB_TYPE.SQLITE3, ", ",  qRfields)).append(" ");
+				sb.append("from tl ").append(joinType).append(" tr on ").append(condition.getSQL(null));
+				String sql = sb.toString();
+		    	di = new DualIterator(ds, sql, qLfields, qRfields);
+		    	iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
+		    	iR = new SelectFromOAI((DBQuery) qR, di.getRightIterator());
 			}
 
 			@Override
 			public T next() {
-				// TODO Auto-generated method stub
-				return null;
+				Table left = iL.hasNext() ? iL.next() : null;
+				Table right = iR.hasNext() ? iR.next() : null;
+				return (T) new Join<Table,Table>(left, right);
 			}
 
 			@Override
 			public void remove() {
-				// TODO Auto-generated method stub
-				
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public synchronized void close() {
+				di.close();
 			}
 
 			private DataSource createDS() {
@@ -379,11 +329,11 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 					else ps.setObject(i+1, o);
 				}
 				++count;
-				//ps.execute();
-				ps.addBatch();
-				if (count%256==0) ps.executeBatch();
+				ps.execute();
+				//ps.addBatch();
+				//if (count%256==0) ps.executeBatch();
 			}
-			if (count%256!=0) ps.executeBatch();
+			//if (count%256!=0) ps.executeBatch();
 			conn.commit();
 			System.err.println("loaded "+ count +" rows into "+ table);
 		} catch (SQLException e) {
@@ -423,6 +373,67 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	private static List getDistinctFrom(Field<?> key, String otherTable, DataSource ds) {
+		List ret = new ArrayList();
+		String sql = "select distinct "+ key.NAME +" from "+ otherTable;
+		Connection conn = null;
+		Statement ps = null;
+		try {
+			conn = ds.getConnection();
+			ps = conn.createStatement();
+			System.err.println(sql);
+			ResultSet rs = ps.executeQuery(sql);
+			while (rs.next()) {
+				ret.add(rs.getObject(1));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (conn!=null && !conn.isClosed()) conn.close();
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return ret;
+	}
+
+	private static Query<? extends Table> createFilteredQ(Query<? extends Table> q, Condition condition, String otherTable, DataSource ds) {
+		final Set<Field<?>> queryFields = new HashSet<Field<?>>(q.getSelectFields());
+		final Map<Field<?>,Field<?>> fields = new LinkedHashMap<Field<?>,Field<?>>();
+		if (condition!=null) condition.visit(new Visitor() {
+			@Override
+			public void visited(Condition c) {
+				if (c instanceof Condition.Binary) {
+					Condition.Binary o = (Condition.Binary) c;
+					if (queryFields.contains(o.field)) fields.put(o.field, o.field2);
+					if (queryFields.contains(o.field2)) fields.put(o.field2, o.field);
+				}
+				if (c instanceof Condition.Binary2) {
+					Condition.Binary2 o = (Condition.Binary2) c;
+					if (o.o1 instanceof Field && queryFields.contains(o.o1)) fields.put((Field<?>)o.o1, (Field<?>)o.o2);
+					if (o.o2 instanceof Field && queryFields.contains(o.o2)) fields.put((Field<?>)o.o2, (Field<?>)o.o1);
+				}
+//				if (c instanceof Condition.Ternary) {
+//					Condition.Ternary o = (Condition.Ternary) c;
+//					if (o.v1 instanceof Field && fields.contains(o.v1)) fields.add((Field<?>)o.v1);
+//					if (o.v2 instanceof Field && fields.contains(o.v2)) fields.add((Field<?>)o.v2);
+//					if (o.v3 instanceof Field && fields.contains(o.v3)) fields.add((Field<?>)o.v3);
+//				}
+//				if (c instanceof Condition.Unary) {
+//					Condition.Unary o = (Condition.Unary) c;
+//					if (fields.contains(o.field)) fields.add(o.field);
+//				}
+			}
+		});
+		for (Entry<Field<?>, Field<?>> e : fields.entrySet()) {
+			List values = getDistinctFrom(e.getValue(), otherTable, ds);
+			q = q.where(e.getKey().in(values));
+		}
+		return q;
 	}
 
 }

@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -104,6 +105,7 @@ class Util {
 		}
 		Object o = rs.getObject(i);
 		if (o instanceof Short) o = ((Short)o).intValue();
+		if (o instanceof Long && "datetime".equals(field.SQL_TYPE)) o = new Timestamp((Long) o);
 		return (S) o;
 	}
 

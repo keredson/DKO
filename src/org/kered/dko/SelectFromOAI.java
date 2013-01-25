@@ -47,18 +47,33 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 
 	private Constructor<T> joinConstructor = null;
 
-	private DBRowIterator<T> dbRowIterator;
+	private PeekableClosableIterator<Object[]> src;
 
 	SelectFromOAI(final DBQuery<T> dbQuery) {
 		this(dbQuery, true);
 	}
-	SelectFromOAI(final DBQuery<T> dbQuery, final boolean useWarnings) {
-
-		dbRowIterator = new DBRowIterator<T>(dbQuery, useWarnings);
-		query = dbRowIterator.query;
-		usageMonitor = dbRowIterator.usageMonitor;
-
+	
+	SelectFromOAI(final DBQuery<T> dbQuery, PeekableClosableIterator<Object[]> src) {
+		this.src = src;
+		query = dbQuery;
+		usageMonitor = null;
 		allTableInfos = query.getAllTableInfos();
+		final List<Field<?>> selectFieldsList = query.getSelectFields(false);
+		selectedFields = DBRowIterator.toArray(selectFieldsList);
+		init();
+	}
+	
+	SelectFromOAI(final DBQuery<T> dbQuery, final boolean useWarnings) {
+		DBRowIterator<T> dbRowIterator = new DBRowIterator<T>(dbQuery, useWarnings);
+		src = dbRowIterator;
+		query = dbRowIterator.query;
+		selectedFields = dbRowIterator.selectedFields;
+		usageMonitor = dbRowIterator.usageMonitor;
+		allTableInfos = query.getAllTableInfos();
+		init();
+	}
+	
+	private void init() {
 		try {
 			final List<TableInfo> tableInfos = query.getAllTableInfos();
 			for (final TableInfo tableInfo : tableInfos) {
@@ -103,7 +118,6 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	DBQuery<T> getUnderlyingQuery() {
@@ -122,19 +136,20 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 			return false;
 		}
 		if (next!=null) return true;
+		if (!src.hasNext()) return false;
 		ttbMap.clear();
 		Object[] prevFieldValues = null;
 		Table[] prevObjects = null;
 		try {
 			do {
-				final Object[] peekRow = dbRowIterator.peek();
+				final Object[] peekRow = src.peek();
 				if (peekRow == null) break;
 				if (prevFieldValues != null) {
 					final TableInfo ti = allTableInfos.get(0);
 					if (!Util.allTheSame(prevFieldValues, peekRow, ti.start, ti.end)) break;
 				}
 
-				final Object[] fieldValues = dbRowIterator.next();
+				final Object[] fieldValues = src.next();
 				this.lastFieldValues = fieldValues;
 				if (fieldValues == null) {
 					close();
@@ -234,7 +249,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 	@Override
 	public synchronized void close() {
 		if (done) return;
-		dbRowIterator.close();
+		src.close();
 		done = true;
 	}
 

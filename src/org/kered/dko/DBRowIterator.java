@@ -45,7 +45,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	Object[] lastFieldValues;
 	private boolean shouldCloseConnection = true;
 	private SqlContext context = null;
-	private DataSource ds = null;
+	DataSource ds = null;
 	final UsageMonitor<T> usageMonitor;
 	private boolean initted = false;
 	long count = 0;
@@ -74,12 +74,12 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		if (this.usageMonitor!=null) {
 			this.usageMonitor.setSelectedFields(selectedFields);
 		}
+		ds  = query.getDataSource();
 	}
 
 	void init() {
 		// old iterator method before merging
 		try {
-			ds  = query.getDataSource();
 			final Tuple2<Connection,Boolean> connInfo = DBQuery.getConnR(ds);
 			conn = connInfo.a;
 			shouldCloseConnection  = connInfo.b;

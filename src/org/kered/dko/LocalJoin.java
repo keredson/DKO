@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -206,6 +207,8 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			private ClosableIterator<Table> iL;
 			private ClosableIterator<Table> iR;
 			private DualIterator di;
+			private Map<Field, String> fieldNameOverridesL;
+			private Map<Field, String> fieldNameOverridesR;
 
 			{
 			    final boolean qLpk = SoftJoinUtil.doesConditionCoverPK(qL.getType(), condition);
@@ -226,13 +229,13 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			    DataSource ds = createDS();
 			    
 			    if (loadRFirst) {
-			    	load(qR, "tr", ds);
+			    	fieldNameOverridesR = load(qR, "tr", ds);
 			    	Query<? extends Table> qLf = createFilteredQ(qL, condition, "tr", ds);
-			    	load(qLf, "tl", ds);
+			    	fieldNameOverridesL = load(qLf, "tl", ds);
 			    } else {
-			    	load(qL, "tl", ds);
+			    	fieldNameOverridesL = load(qL, "tl", ds);
 			    	Query<? extends Table> qRf = createFilteredQ(qR, condition, "tl", ds);
-			    	load(qRf, "tr", ds);
+			    	fieldNameOverridesR = load(qRf, "tr", ds);
 			    }
 			    
 			    initQuery(ds);
@@ -247,10 +250,36 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			private void initQuery(DataSource ds) {
 				qLfields = qL.getSelectFields();
 				qRfields = qR.getSelectFields();
+				Set<String> usedFieldNames = new HashSet<String>();
+				Map<Field,String> fieldNameOverrides = new HashMap<Field,String>();
 				StringBuffer sb = new StringBuffer();
-				sb.append("select ").append(Util.joinFields(Constants.DB_TYPE.SQLITE3, ", ",  qLfields)).append(", ");
-				sb.append(Util.joinFields(Constants.DB_TYPE.SQLITE3, ", ",  qRfields)).append(" ");
-				sb.append("from tl ").append(joinType).append(" tr on ").append(condition.getSQL(null));
+				sb.append("select ");
+				for (Field<?> field : qLfields) {
+					String fieldName = fieldNameOverridesL.get(field);
+					if (fieldName==null) fieldName = field.NAME;
+					sb.append("tl.").append(fieldName).append(", ");
+					usedFieldNames.add(fieldName);
+					fieldNameOverrides.put(field, fieldName);
+				}
+				for (Field<?> field : qRfields) {
+					String fieldName = fieldNameOverridesR.get(field);
+					if (fieldName==null) fieldName = field.NAME;
+					sb.append("tr.").append(fieldName).append(", ");
+					usedFieldNames.add(fieldName);
+					fieldNameOverrides.put(field, fieldName);
+				}
+				sb.delete(sb.length()-2, sb.length()).append(" "); // delete the last comma
+				SqlContext context = new SqlContext(DB_TYPE.SQLITE3);
+				for (Entry<Field, String> e : fieldNameOverrides.entrySet()) {
+					context.setFieldNameOverride(e.getKey(), e.getValue());
+				}
+				if (joinType == JOIN_TYPE.RIGHT) {
+					// sqlite doesn't support right joins, so we fake it
+					sb.append("from tr ").append(JOIN_TYPE.LEFT).append(" tl");
+				} else {
+					sb.append("from tl ").append(joinType).append(" tr");
+				}
+				if (condition!=null) sb.append(" on ").append(condition.getSQL(context));
 				String sql = sb.toString();
 		    	di = new DualIterator(ds, sql, qLfields, qRfields);
 		    	iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
@@ -294,14 +323,18 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		};
 	}
 
-	private static void load(Query<? extends Table> q, String table, DataSource ds) {
+	private static Map<Field, String> load(Query<? extends Table> q, String table, DataSource ds) {
 		List<Field<?>> fields = q.getSelectFields();
-		buildSchema(fields, table, ds);
+		Map<Field, String> fieldNameOverrides = buildSchema(fields, table, ds);
 		StringBuffer sb = new StringBuffer();
 		sb.append("insert into ").append(table).append(" (");
 		for (int i=0; i<fields.size(); ++i) {
 			Field<?> field = fields.get(i);
-			sb.append(field.NAME);
+			if (fieldNameOverrides.containsKey(field)) {
+				sb.append(fieldNameOverrides.get(field));
+			} else {
+				sb.append(field.NAME);
+			}
 			if (i<fields.size()-1) sb.append(", ");
 		}
 		sb.append(") values (");
@@ -345,14 +378,27 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 				throw new RuntimeException(e);
 			}
 		}
+		return fieldNameOverrides;
 	}
 
-	private static void buildSchema(List<Field<?>> fields, String table, DataSource ds) {
+	private static Map<Field, String> buildSchema(List<Field<?>> fields, String table, DataSource ds) {
+		Set<String> usedFieldNames = new HashSet<String>();
+		Map<Field,String> fieldNameOverrides = new HashMap<Field,String>();
 		StringBuffer sb = new StringBuffer();
 		sb.append("create table ").append(table).append(" (");
 		for (int i=0; i<fields.size(); ++i) {
 			Field<?> field = fields.get(i);
-			sb.append(field.NAME).append(" ").append(field.SQL_TYPE);
+			String fieldName = field.NAME;
+			if (usedFieldNames.contains(fieldName)) {
+				if (!fieldName.endsWith("_")) fieldName = fieldName + "_";
+				while (usedFieldNames.contains(fieldName)) {
+					char c = (char) ('A' + Math.random() * ('Z'-'A'));
+					fieldName = fieldName + c;
+				}
+				fieldNameOverrides.put(field, fieldName);
+			}
+			usedFieldNames.add(fieldName);
+			sb.append(fieldName).append(" ").append(field.SQL_TYPE);
 			if (i<fields.size()-1) sb.append(", ");
 		}
 		sb.append(")");
@@ -373,6 +419,7 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 				throw new RuntimeException(e);
 			}
 		}
+		return fieldNameOverrides;
 	}
 
 	private static List getDistinctFrom(Field<?> key, String otherTable, DataSource ds) {

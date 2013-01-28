@@ -30,6 +30,9 @@ class Util {
 	static String derefField(final Field<?> field, final SqlContext context) {
 		if (context == null) return field.getSQL(context);
 		if (field.isBound()) return field.getSQL(context);
+		if (context.fieldNameOverrides!=null && context.fieldNameOverrides.containsKey(field)) {
+			return context.fieldNameOverrides.get(field);
+		}
 		final List<String> selectedTables = new ArrayList<String>();
 		final List<TableInfo> unboundTables = new ArrayList<TableInfo>();
 		SqlContext tmp = context;
@@ -43,7 +46,7 @@ class Util {
 			tmp = tmp.parentContext;
 		}
 		if (unboundTables.size() < 1) {
-			throw new FieldNotPartOfSelectableTableSet("field "+ field.TABLE.getSimpleName() +"."+ field +
+			throw new FieldNotPartOfSelectableTableSet("field "+ field +
 					" is not from one of the selected tables {"+
 					join(",", selectedTables) +"}");
 		} else if (unboundTables.size() > 1) {

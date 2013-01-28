@@ -66,6 +66,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 	SelectFromOAI(final DBQuery<T> dbQuery, final boolean useWarnings) {
 		DBRowIterator<T> dbRowIterator = new DBRowIterator<T>(dbQuery, useWarnings);
 		src = dbRowIterator;
+		ds = dbRowIterator.ds;
 		query = dbRowIterator.query;
 		selectedFields = dbRowIterator.selectedFields;
 		usageMonitor = dbRowIterator.usageMonitor;

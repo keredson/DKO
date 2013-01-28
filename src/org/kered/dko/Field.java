@@ -65,6 +65,9 @@ public class Field<T> implements Cloneable {
 	}
 
 	protected void getSQL(final StringBuffer sb, final SqlContext context) {
+		if (context!=null && context.fieldNameOverrides!=null && context.fieldNameOverrides.containsKey(this)) {
+			sb.append(context.fieldNameOverrides.get(this));
+		}
 		getSQL(sb, context==null ? Constants.DB_TYPE.SQL92 : context.dbType);
 	}
 

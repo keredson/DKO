@@ -1,6 +1,7 @@
 package org.kered.dko;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +29,18 @@ class SqlContext {
 		dbType = parentContext == null ? q.getDBType() : parentContext.dbType;
 		this.q = q;
 	}
+	
+	public SqlContext(DB_TYPE dbType) {
+		this.dbType = dbType;
+		q = null;
+		tableInfos = new ArrayList<TableInfo>();
+	}
 
 	Map<String, Set<String>> tableNameMap = null;
 	List<TableInfo> tableInfos = null;
 	DB_TYPE dbType = null;
 	SqlContext parentContext = null;
+	Map<Field,String> fieldNameOverrides = null;
 	public int maxFields = Integer.MAX_VALUE;
 
 	boolean inInnerQuery() {
@@ -81,6 +89,11 @@ class SqlContext {
 			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
 		}
 		return names;
+	}
+
+	public void setFieldNameOverride(Field<?> key, String value) {
+		if (fieldNameOverrides==null) fieldNameOverrides = new HashMap<Field,String>();
+		fieldNameOverrides.put(key, value);
 	}
 	
 }

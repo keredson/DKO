@@ -1,4 +1,8 @@
 package test.db;
+
+import static org.kered.dko.SQLFunction.CONCAT;
+import static org.kered.dko.SQLFunction.DATEADD;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -8,10 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,16 +26,16 @@ import org.kered.dko.Bulk;
 import org.kered.dko.CSV;
 import org.kered.dko.Condition;
 import org.kered.dko.Constants;
+import org.kered.dko.Constants.CALENDAR;
 import org.kered.dko.Context;
+import org.kered.dko.Context.Undoer;
 import org.kered.dko.Diff;
+import org.kered.dko.Diff.RowChange;
 import org.kered.dko.Field;
 import org.kered.dko.Join;
 import org.kered.dko.Query;
 import org.kered.dko.QueryFactory;
 import org.kered.dko.Table;
-import org.kered.dko.Constants.CALENDAR;
-import org.kered.dko.Context.Undoer;
-import org.kered.dko.Diff.RowChange;
 import org.kered.dko.datasource.ConnectionCountingDataSource;
 import org.kered.dko.unittest.nosco_test_jpetstore.Account;
 import org.kered.dko.unittest.nosco_test_jpetstore.Category;
@@ -43,10 +45,8 @@ import org.kered.dko.unittest.nosco_test_jpetstore.Orderstatus;
 import org.kered.dko.unittest.nosco_test_jpetstore.Product;
 import org.kered.dko.unittest.nosco_test_jpetstore.Supplier;
 
-//import static org.kered.dko.Function.*;
-import static org.kered.dko.SQLFunction.*;
-
 import test.db.callback.nosco_test_jpetstore.ItemCB;
+//import static org.kered.dko.Function.*;
 
 
 public class SharedDBTests extends TestCase {
@@ -224,10 +224,11 @@ public class SharedDBTests extends TestCase {
 			count += 1;
 			if (diff.isAdd()) adds += 1;
 			if (diff.isUpdate()) updates += 1;
+			System.err.println(diff);
 		}
-		assertEquals(3, count);
 		assertEquals(1, updates);
 		assertEquals(2, adds);
+		assertEquals(3, count);
 	}
 
 	public void testDateAdd() throws SQLException {

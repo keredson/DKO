@@ -703,4 +703,18 @@ public class SharedDBTests extends TestCase {
     	assertTrue(Item.ALL.first().toString().endsWith("/CB"));
     }
 
+    public void testFKSetThenGet() {
+	System.err.println("testFKSetThenGet");
+    	Item item = new Item();
+	System.err.println("item" + item);
+    	Product product = new Product().setProductid("dsfhlkljfds");
+	System.err.println("product" + product);
+    	assertNotNull(product);
+    	item.setProductidFK(product);
+    	Product p2 = item.getProductidFK();
+	System.err.println("p2" + p2);
+    	assertNotNull(p2);
+    	assertEquals(product.getProductid(), p2.getProductid());
+    }
+
 }

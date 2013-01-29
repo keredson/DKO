@@ -679,6 +679,7 @@ class ClassGenerator {
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(fk.columns.keySet()) +".INDEX);\n");
 			br.write("\t\t"+ cachedObjectName +" = v;\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ fkName +".INDEX);\n");
+			br.write("\t\t__NOSCO_FETCHED_VALUES.set("+ fkName +".INDEX);\n");
 			br.write("\t\treturn this;\n");
 
 			br.write("\n\t}\n\n");

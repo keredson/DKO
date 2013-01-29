@@ -1,5 +1,6 @@
 package org.kered.dko;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -576,6 +577,22 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Query<T> toMemory();
+
+	/**
+	 * Evaluates this query, serializes it to disk (a temporary file that is deleted 
+	 * on this object's GC or on VM exit), and returns to you an Iterable backed by
+	 * the snapshot.
+	 * @return
+	 */
+	public Iterable<T> snapshot();
+
+	/**
+	 * Evaluates this query, serializes it to disk (to the file provided), and returns 
+	 * to you an Iterable backed by the snapshot.  If the file in a directory a temporary
+	 * file will be created in that directory and deleted on this object's GC or on VM exit.
+	 * @return
+	 */
+	public Iterable<T> snapshot(File f);
 
 	/**
 	 * Turns a query into an "exists" subquery. &nbsp; Example:

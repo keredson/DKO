@@ -2,6 +2,7 @@ package org.kered.dko;
 
 import static org.kered.dko.Constants.DIRECTION.ASCENDING;
 
+import java.io.File;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

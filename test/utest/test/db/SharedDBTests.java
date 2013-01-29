@@ -14,9 +14,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -900,6 +902,17 @@ public class SharedDBTests extends TestCase {
 			System.err.println(x);
 		}
 		assertEquals(c1,  q.count());
+	}
+    
+	public void testSnapshot() throws SQLException {
+		printTestName();
+		Set<Item> items = new HashSet<Item>(Item.ALL.asList());
+		Iterable<Item> snapshot = Item.ALL.snapshot();
+		Set<Item> items2 = new HashSet<Item>();
+		for (Item item : snapshot) items2.add(item);
+		assertEquals(items.size(), items2.size());
+		items.removeAll(items2);
+		assertEquals(0, items.size());
 	}
     
 }

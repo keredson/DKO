@@ -2,6 +2,7 @@ package org.kered.dko;
 
 import static org.kered.dko.Constants.DIRECTION.DESCENDING;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -586,56 +587,6 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return new LocalJoin(Constants.JOIN_TYPE.INNER, Join.class, this, table.table, on);
 	}
 
-//	@Override
-//	public <S extends Table> Query<T> crossFilter(final Class<S> table) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> crossFilter(final __Alias<S> table) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> leftFilter(final Class<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> leftFilter(final __Alias<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> rightFilter(final Class<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> rightFilter(final __Alias<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> outerFilter(final Class<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> outerFilter(final __Alias<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> innerFilter(final Class<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-//
-//	@Override
-//	public <S extends Table> Query<T> innerFilter(final __Alias<S> table, final Condition on) {
-//		throw new UnsupportedOperationException("joins on "+ this.getClass().getSimpleName() +" are not supported");
-//	}
-
 	@Override
 	public Query<T> exclude(final Condition... conditions) {
 	    final Condition[] where = new Condition[conditions.length];
@@ -704,7 +655,15 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		}
 		return mins;
 	}
-	
-	
+
+	@Override
+	public Iterable<T> snapshot() {
+		return new QuerySnapshot<T>(this);
+	}
+
+	@Override
+	public Iterable<T> snapshot(File f) {
+		return new QuerySnapshot<T>(this, f);
+	}
 
 }

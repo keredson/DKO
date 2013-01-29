@@ -323,7 +323,7 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		};
 	}
 
-	private static Map<Field, String> load(Query<? extends Table> q, String table, DataSource ds) {
+	static Map<Field, String> load(Query<? extends Table> q, String table, DataSource ds) {
 		List<Field<?>> fields = q.getSelectFields();
 		Map<Field, String> fieldNameOverrides = buildSchema(fields, table, ds);
 		StringBuffer sb = new StringBuffer();

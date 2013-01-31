@@ -361,11 +361,18 @@ class ClassGenerator {
 				final String pkType = getFieldType(pkgName, table, pk, columns.getString(pk));
 				br.write("\tpublic enum PKS implements Table.__SimplePrimaryKey<"+ className +", "+ pkType +"> {\n\n");
 				int count = 0;
+				Set<String> usedNames = new HashSet<String>();
 				for (final String name : instances.keySet()) {
 					++ count;
 					String value = instances.optJSONArray(name).getString(0);
+					String javaName = name.toUpperCase().replaceAll("\\W", "_");
+					if (Character.isDigit(javaName.charAt(0))) javaName = "_"+javaName;
+					if (usedNames.contains(javaName)) {
+						javaName = javaName +"_"+ value.toUpperCase().replaceAll("\\W", "_");
+					}
+					usedNames.add(javaName);
 					if ("java.lang.String".equals(pkType)) value = "\""+ value +"\"";
-					br.write("\t\t"+ name.toUpperCase().replaceAll("\\W", "_"));
+					br.write("\t\t"+ javaName);
 					br.write("(\""+ name.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\"") +"\", "+ value +")");
 					if (count < instances.keySet().size()) br.write(",\n");
 				}
@@ -379,14 +386,14 @@ class ClassGenerator {
 				br.write("\t\tpublic "+ pkType +" get"+ getInstanceMethodName(pk) +"() {\n");
 				br.write("\t\t\treturn "+ getFieldName(pk) +";\n");
 				br.write("\t\t}\n");
-				br.write("\t\t@Override\n");
+				br.write("\t\t@java.lang.Override\n");
 				br.write("\t\tpublic java.util.List<Field<?>> FIELDS() {\n");
 				br.write("\t\t\tjava.util.List<Field<?>> ret = new java.util.ArrayList<Field<?>>();\n");
 				br.write("\t\t\tret.add("+ className +"."+ getFieldName(pk) +");\n");
 				br.write("\t\t\treturn ret;\n");
 				br.write("\t\t}\n");
 				br.write("\t\t@SuppressWarnings(\"unchecked\")\n");
-				br.write("\t\t@Override\n");
+				br.write("\t\t@java.lang.Override\n");
 				br.write("\t\tpublic <R> R get(Field<R> field) {\n");
 				br.write("\t\t\tif (field=="+ className +"."+ getFieldName(pk)
 						+") return (R) Integer.valueOf("+ getFieldName(pk) +"); \n");
@@ -395,11 +402,11 @@ class ClassGenerator {
 						+ getFieldName(pk) +");\n");
 				br.write("\t\t\tthrow new RuntimeException(\"field \"+ field +\" is not part of this primary key\");\n");
 				br.write("\t\t}\n");
-				br.write("\t\t@Override\n");
+				br.write("\t\t@java.lang.Override\n");
 				br.write("\t\tpublic "+ pkType +" value() {\n");
 				br.write("\t\t\treturn "+ getFieldName(pk)+ ";\n");
 				br.write("\t\t}\n\n");
-				br.write("\t\t@Override\n");
+				br.write("\t\t@java.lang.Override\n");
 				br.write("\t\tpublic String toString() {\n");
 				br.write("\t\t\treturn _NAME;\n");
 				br.write("\t\t}\n\n");
@@ -1081,7 +1088,7 @@ class ClassGenerator {
 		br.write("\t}\n\n");
 
 		// write the hashcode function
-		br.write("\t@Override\n");
+		br.write("\t@java.lang.Override\n");
 		br.write("\tpublic int hashCode() {\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_HASH_CODE!=null)\n"
 				+ "\t\t\ttry { return (Integer) __NOSCO_CALLBACK_HASH_CODE.invoke(null, this); }\n"
@@ -1097,7 +1104,7 @@ class ClassGenerator {
 		br.write("\t}\n\n");
 
 		// write the equals function
-		br.write("\t@Override\n");
+		br.write("\t@java.lang.Override\n");
 		br.write("\tpublic boolean equals(final Object other) {\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_EQUALS!=null)\n"
 				+ "\t\t\ttry { return (Boolean) __NOSCO_CALLBACK_EQUALS.invoke(null, this, other); }\n"
@@ -1116,7 +1123,7 @@ class ClassGenerator {
 		br.write("\t}\n\n");
 
 		// write the compare function
-		br.write("\t@Override\n");
+		br.write("\t@java.lang.Override\n");
 		br.write("\t@SuppressWarnings({\"rawtypes\",\"unchecked\"})\n");
 		br.write("\tpublic int compareTo(final "+ className +" o) {\n");
 		br.write("\t\tif (__NOSCO_CALLBACK_COMPARE_TO!=null) "
@@ -1137,7 +1144,7 @@ class ClassGenerator {
 		br.write("\t}\n\n");
 
 		// write the map type function
-		br.write("\t@Override\n");
+		br.write("\t@java.lang.Override\n");
 		br.write("\t/**\n");
 		br.write("\t * Internal method - please do not use.\n");
 		br.write("\t */\n");

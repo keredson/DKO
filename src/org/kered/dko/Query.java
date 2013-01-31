@@ -197,6 +197,53 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> onlyFields(Field<?>... fields);
 
 	/**
+	 * Only include the following fields in the select statement.
+	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not in this list, another
+	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
+	 * This is functionally equivalent to onlyFields().
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> select(Field<?>... fields);
+
+	/**
+	 * Only include the following fields in the select statement.
+	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not in this list, another
+	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
+	 * This is functionally equivalent to onlyFields().
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> select(Collection<Field<?>> fields);
+
+	/**
+	 * Add the following fields to the select statement.
+	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not selected, another
+	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> alsoSelect(Field<?>... fields);
+
+	/**
+	 * Add the following fields to the select statement.
+	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not selected, another
+	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> alsoSelect(Collection<Field<?>> fields);
+
+	/**
+	 * Add the following inner query to the select statement.  Please note that if the query is not a valid inner query a SQLException 
+	 * will be thrown when it's evaluated.  Generally speaking any query that returns only one row containing one column is valid.
+	 * For example {@code MyTable.ALL.onlyFields(MyTable.A_FIELD).max()} would return be a valid inner query.<br>
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> alsoSelect(Query<?> q);
+
+	/**
 	 * Returns the last value that would be returned by the query.
 	 * Same as: .orderBy(DESCENDING, field).top(1).getTheOnly()
 	 * @param field

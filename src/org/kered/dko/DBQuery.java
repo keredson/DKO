@@ -1710,4 +1710,50 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return q;
 	}
 
+	@Override
+	public Query<T> select(Field<?>... fields) {
+		return onlyFields(fields);
+	}
+
+	@Override
+	public Query<T> select(Collection<Field<?>> fields) {
+		return onlyFields(fields);
+	}
+
+	@Override
+	public Query<T> alsoSelect(Field<?>... fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>() : new LinkedHashSet<Field<?>>(onlySet);
+		for (final Field<?> field : fields) {
+			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+				throw new RuntimeException("cannot use bound fields " +
+						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+						"primary/first table");
+			}
+			q.onlySet.add(field);
+		}
+		return q;
+	}
+
+	@Override
+	public Query<T> alsoSelect(Collection<Field<?>> fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>() : new LinkedHashSet<Field<?>>(onlySet);
+		for (final Field<?> field : fields) {
+			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+				throw new RuntimeException("cannot use bound fields " +
+						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+						"primary/first table");
+			}
+			q.onlySet.add(field);
+		}
+		return q;
+	}
+
+	@Override
+	public Query<T> alsoSelect(Query<?> q) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

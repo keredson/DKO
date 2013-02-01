@@ -144,6 +144,12 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * Sets the max function on the selected columns in this statement.
 	 * @return
 	 */
+	public Query<T> avg();
+
+	/**
+	 * Sets the max function on the selected columns in this statement.
+	 * @return
+	 */
 	public Query<T> max();
 
 	/**
@@ -234,14 +240,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Query<T> alsoSelect(Collection<Field<?>> fields);
 
-	/**
-	 * Add the following inner query to the select statement.  Please note that if the query is not a valid inner query a SQLException 
-	 * will be thrown when it's evaluated.  Generally speaking any query that returns only one row containing one column is valid.
-	 * For example {@code MyTable.ALL.onlyFields(MyTable.A_FIELD).max()} would return be a valid inner query.<br>
-	 * @param fields
-	 * @return
-	 */
-	public Query<T> alsoSelect(Query<?> q);
+//	/**
+//	 * Add the following inner query to the select statement.  Please note that if the query is not a valid inner query a SQLException 
+//	 * will be thrown when it's evaluated.  Generally speaking any query that returns only one row containing one column is valid.
+//	 * For example {@code MyTable.ALL.onlyFields(MyTable.A_FIELD).max()} would return be a valid inner query.<br>
+//	 * @param fields
+//	 * @return
+//	 */
+//	public <S extends Table> Query<T> alsoSelect(Query<S> q);
 
 	/**
 	 * Returns the last value that would be returned by the query.
@@ -671,6 +677,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Iterable<Object[]> asIterableOfObjectArrays();
+
+	/**
+	 * Returns this query as a special field object which can then be passed into some other query's 
+	 * alsoSelect(Field...) method.  Once the outer query returns you a row object you can use this
+	 * field instance to get the value returned from the database with {@code row.get(field)}.
+	 * @param field what to select from the inner query
+	 * @return
+	 */
+	public <S> Field<S> asInnerQueryOf(Field<S> field);
 
 	/**
 	 * Returns the results of the query as a {@code Iterable} of {@code Map<Field<?>,Object>}s. &nbsp;

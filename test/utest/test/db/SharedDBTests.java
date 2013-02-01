@@ -928,5 +928,36 @@ public class SharedDBTests extends TestCase {
 		items.removeAll(items2);
 		assertEquals(0, items.size());
 	}
-    
+
+//	public void testInnerQuerySelect() throws SQLException {
+//		printTestName();
+//		Query<Item> items = Item.ALL.alsoSelect(Product.ALL.onlyFields(Product.PRODUCTID).max());
+//		for (Item item : items) {
+//			// do nothing
+//		}
+//	}
+
+	public void testInnerQuerySelect() throws SQLException {
+		printTestName();
+		Field<String> field = Product.ALL.max().asInnerQueryOf(Product.PRODUCTID);
+		Query<Item> items = Item.ALL.alsoSelect(field);
+		for (Item item : items) {
+			System.err.println(field +" = "+ item.get(field));
+			assertNotNull(item.get(field));
+		}
+	}
+
+	public void testInnerQuerySelect2() throws SQLException {
+		printTestName();
+		Field<Double> avg = Item.ALL.avg().where(Item.SUPPLIER.eq(Supplier.SUPPID))
+				.asInnerQueryOf(Item.UNITCOST);
+		Query<Supplier> suppliers = Supplier.ALL.alsoSelect(avg);
+		for (Supplier supplier : suppliers) {
+			System.err.println(supplier +" average cost: $"+ supplier.get(avg));
+			if ("XYZ Pets".equals(supplier.getName())) {
+				assertNotNull(supplier.get(avg));
+			}
+		}
+	}
+
 }

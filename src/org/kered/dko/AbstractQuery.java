@@ -666,4 +666,34 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return new QuerySnapshot<T>(this, f);
 	}
 
+	@Override
+	public Query<T> select(Field<?>... fields) {
+		return onlyFields(fields);
+	}
+
+	@Override
+	public Query<T> select(Collection<Field<?>> fields) {
+		return onlyFields(fields);
+	}
+
+	@Override
+	public Query<T> alsoSelect(Field<?>... fields) {
+		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
+	}
+	
+	@Override
+	public Query<T> alsoSelect(Collection<Field<?>> fields) {
+		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
+	}
+	
+//	@Override
+//	public <S extends Table> Query<T> alsoSelect(Query<S> q) {
+//		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
+//	}
+
+	@Override
+	public <S> Field<S> asInnerQueryOf(Field<S> field) {
+		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
+	}
+
 }

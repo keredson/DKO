@@ -752,6 +752,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			final List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
 			if(onlySet!=null) {
+				LinkedHashSet<Field<?>> unusedOnlySet = new LinkedHashSet<Field<?>>(onlySet);
 				for (final TableInfo ti : allTableInfos) {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
@@ -759,12 +760,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						for (final Field<?> field : Util.getFIELDS(ti.tableClass)) {
 							if (field.sameField(other) && ti.nameAutogenned) {
 								fields.add(bind ? other.from(tableName) : other);
+								unusedOnlySet.remove(other);
 								++c;
 								continue;
 							}
 							if (other.isBound() && other.boundTable.equals(ti.tableName)
 									&& field.sameField(other)) {
 								fields.add(bind ? other.from(tableName) : other);
+								unusedOnlySet.remove(other);
 								++c;
 								continue;
 							}
@@ -772,6 +775,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					}
 					ti.end = c;
 				}
+				fields.addAll(unusedOnlySet);
 			} else {
 				for (final TableInfo ti : allTableInfos) {
 					ti.start = c;
@@ -1428,6 +1432,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
+	public Query<T> avg() {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.globallyAppliedSelectFunction = "avg";
+		return q;
+	}
+
+	@Override
 	public Query<T> max() {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.globallyAppliedSelectFunction = "max";
@@ -1711,19 +1722,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> select(Field<?>... fields) {
-		return onlyFields(fields);
-	}
-
-	@Override
-	public Query<T> select(Collection<Field<?>> fields) {
-		return onlyFields(fields);
-	}
-
-	@Override
 	public Query<T> alsoSelect(Field<?>... fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>() : new LinkedHashSet<Field<?>>(onlySet);
+		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>(this.getSelectFields()) : new LinkedHashSet<Field<?>>(onlySet);
 		for (final Field<?> field : fields) {
 			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 				throw new RuntimeException("cannot use bound fields " +
@@ -1738,7 +1739,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public Query<T> alsoSelect(Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>() : new LinkedHashSet<Field<?>>(onlySet);
+		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>(this.getSelectFields()) : new LinkedHashSet<Field<?>>(onlySet);
 		for (final Field<?> field : fields) {
 			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 				throw new RuntimeException("cannot use bound fields " +
@@ -1750,10 +1751,23 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return q;
 	}
 
-	@Override
-	public Query<T> alsoSelect(Query<?> q) {
-		// TODO Auto-generated method stub
-		return null;
+	public <S> Field<S> asInnerQueryOf(Field<S> field) {
+		return new SubQueryField<T,S>(field, (DBQuery<T>) this.onlyFields(field));
 	}
+
+//	@Override
+//	public <S extends Table> Query<T> alsoSelect(Query<S> subquery) {
+//		if (!(subquery instanceof DBQuery)) return super.alsoSelect(subquery);
+//		List<Field<?>> sqFields = subquery.getSelectFields();
+//		if (sqFields.size() != 1) {
+//			throw new RuntimeException("SQL subqueries are limited to returning only one column.  This query returns "
+//					+ sqFields.size() +".  Please select one of the following with subquery.onlyFields(x): "+ sqFields);
+//		}
+//		Field theField = sqFields.get(0);
+//		final DBQuery<T> q = new DBQuery<T>(this);
+//		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>(this.getSelectFields()) : new LinkedHashSet<Field<?>>(onlySet);
+//		q.onlySet.add(new SubQueryField<S,Object>(theField, (DBQuery<S>) subquery));
+//		return q;
+//	}
 
 }

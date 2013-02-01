@@ -509,6 +509,7 @@ class ClassGenerator {
 		br.write("\t\tfor (Field<?> field : _FIELDS) {\n");
 		br.write("\t\t\tif (__NOSCO_FETCHED_VALUES.get(field.INDEX)) fields.add(field);\n");
 		br.write("\t\t}\n");
+		br.write("\t\tif (__NOSCO_EXTRA_VALUES!=null) fields.addAll(__NOSCO_EXTRA_VALUES.keySet());\n");
 		br.write("\t\treturn fields;\n\t}\n\n");
 
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
@@ -538,9 +539,17 @@ class ClassGenerator {
 			br.write("return (S) get"+ getInstanceMethodName(column) +"();\n");
 		}
 		br.write("\t\t}\n");
+		br.write("\t\tif (__NOSCO_EXTRA_VALUES!=null) {\n");
+		br.write("\t\t\tObject _value = __NOSCO_EXTRA_VALUES.get(_field);\n");
+		br.write("\t\t\tif(_value!=null) return (S) _value;\n");
+		br.write("\t\t\t\n");
+		br.write("\t\t}\n");
 		for (final FK fk : fks) {
 			final String fkOName = genFKCachedObjectName(fk);
-			br.write("\t\tif ("+fkOName+"!=null) return "+fkOName+".get(_field);\n");
+			br.write("\t\tif ("+fkOName+"!=null) {\n");
+			br.write("\t\t\tS _value = "+fkOName+".get(_field);\n");
+			br.write("\t\t\tif(_value!=null) return _value;\n");
+			br.write("\t\t}\n");
 		}
 		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field\");\n");
@@ -548,12 +557,15 @@ class ClassGenerator {
 		br.write("\t}\n\n");
 
 		// write the generic set(field, value) method
+		br.write("\tprivate java.util.Map<Field<?>,Object> __NOSCO_EXTRA_VALUES = null;\n\n");
 		br.write("\tpublic <S> void set(final Field<S> _field, final S _value) {\n");
 		for (final String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
 			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(pkgName, table, column, columns.getString(column)) +") _value; else\n");
 		}
-		br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
+		br.write("\t\tif (__NOSCO_EXTRA_VALUES==null) __NOSCO_EXTRA_VALUES = new java.util.HashMap<Field<?>,Object>();\n");
+		br.write("\t\t__NOSCO_EXTRA_VALUES.put(_field, _value);\n");
+		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
 
 		//br.write("\tpublic Field[] GET_PRIMARY_KEY_FIELDS() {\n\t\tField[] fields = {");

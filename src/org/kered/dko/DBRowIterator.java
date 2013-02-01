@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -125,12 +126,13 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
 			sb.append(" top ").append(query.top).append(" ");
 		}
+		List<Object> bindings = new ArrayList<Object>();
 		if (query.globallyAppliedSelectFunction == null) {
-			sb.append(Util.joinFields(context, ", ", selectedBoundFields));
+			sb.append(Util.joinFields(context, ", ", selectedBoundFields, bindings));
 		} else {
 			final String[] x = new String[selectedBoundFields.length];
 			for (int i=0; i < x.length; ++i) {
-				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i].getSQL(context) +")";
+				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i].getSQL(context, bindings) +")";
 			}
 			sb.append(Util.join(", ", x));
 		}

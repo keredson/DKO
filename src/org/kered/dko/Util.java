@@ -307,8 +307,14 @@ class Util {
 		return true;
 	}
 
-	static String joinFields(final SqlContext context, final String s, final Field[] c) {
-		return joinFields(context.dbType, s, c);
+	static String joinFields(final SqlContext context, final String s, final Field[] c, List<Object> bindings) {
+		if(c==null || c.length==0) return "";
+	    final StringBuilder sb = new StringBuilder();
+	    for (final Field<?> o : c) {
+	    	sb.append(o==null ? "" : o.getSQL(context, bindings));
+	    	sb.append(s);
+	    }
+	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
 	}
 
 	static String joinFields(final DB_TYPE dbType, final String s, final Field[] c) {

@@ -64,11 +64,21 @@ public class Field<T> implements Cloneable {
 		return sb.toString();
 	}
 
+	protected String getSQL(final SqlContext context, List<Object> bindings) {
+		final StringBuffer sb = new StringBuffer();
+		getSQL(sb, bindings, context);
+		return sb.toString();
+	}
+
 	protected void getSQL(final StringBuffer sb, final SqlContext context) {
 		if (context!=null && context.fieldNameOverrides!=null && context.fieldNameOverrides.containsKey(this)) {
 			sb.append(context.fieldNameOverrides.get(this));
 		}
 		getSQL(sb, context==null ? Constants.DB_TYPE.SQL92 : context.dbType);
+	}
+
+	protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+		getSQL(sb, context);
 	}
 
 	protected void getSQL(final StringBuffer sb, final Constants.DB_TYPE dbType) {

@@ -42,6 +42,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 	private DataSource ds = null;
 	private final UsageMonitor<T> usageMonitor;
 	long count = 0;
+	int extraFieldsStartAt = 0;
 
 	private boolean returnJoin;
 
@@ -78,6 +79,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 		try {
 			final List<TableInfo> tableInfos = query.getAllTableInfos();
 			for (final TableInfo tableInfo : tableInfos) {
+				if (tableInfo.end > extraFieldsStartAt) extraFieldsStartAt = tableInfo.end;
 				if (tableInfo.tableClass.getName().startsWith("org.nosco.TmpTableBuilder")) continue;
 				final Constructor<? extends Table> constructor = tableInfo.tableClass.getDeclaredConstructor(
 						new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
@@ -170,11 +172,16 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 						newObjectThisRow[i] = false;
 					} else {
 						if (Util.notAllNull(fieldValues, ti.start, ti.end)) {
-							final Table fkv = constructors.get(ti.tableClass)
+							final Table t = constructors.get(ti.tableClass)
 									.newInstance(selectedFields, fieldValues, ti.start, ti.end);
-							fkv.__NOSCO_USAGE_MONITOR = usageMonitor;
-							fkv.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
-							objects[i] = fkv;
+							t.__NOSCO_USAGE_MONITOR = usageMonitor;
+							t.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
+							if (i==0 && extraFieldsStartAt < fieldValues.length) {
+								for (int j=extraFieldsStartAt; j<fieldValues.length; ++j) {
+									t.set((Field)this.selectedFields[j], fieldValues[j]);
+								}
+							}
+							objects[i] = t;
 						}
 						newObjectThisRow[i] = true;
 					}

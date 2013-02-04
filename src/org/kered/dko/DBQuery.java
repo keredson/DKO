@@ -1723,34 +1723,56 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> alsoSelect(Field<?>... fields) {
-		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>(this.getSelectFields()) : new LinkedHashSet<Field<?>>(onlySet);
-		for (final Field<?> field : fields) {
-			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-				throw new RuntimeException("cannot use bound fields " +
-						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-						"primary/first table");
-			}
-			q.onlySet.add(field);
-		}
-		return q;
+		Collection<Field<?>> fs = new ArrayList<Field<?>>();
+		for (Field<?> f : fields) fs.add(f);
+		return alsoSelect(fs);
 	}
 
 	@Override
 	public Query<T> alsoSelect(Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = onlySet==null ? new LinkedHashSet<Field<?>>(this.getSelectFields()) : new LinkedHashSet<Field<?>>(onlySet);
-		for (final Field<?> field : fields) {
-			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-				throw new RuntimeException("cannot use bound fields " +
-						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-						"primary/first table");
+		if (onlySet==null) {
+			q.onlySet = new LinkedHashSet<Field<?>>();
+			Set<Field<?>> left = new LinkedHashSet<Field<?>>(fields);
+			for (Field<?> defaultField : this.getSelectFields()) {
+				boolean foundMatch = false;
+				for (final Field<?> field : fields) {
+					if (field.sameField(defaultField)) {
+						foundMatch = true;
+						if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+							throw new RuntimeException("cannot use bound fields " +
+									"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+									"primary/first table");
+						}
+						q.onlySet.add(field);
+						left.remove(field);
+						break;
+					}
+				}
+				if (!foundMatch) q.onlySet.add(defaultField);
 			}
-			q.onlySet.add(field);
+			for (Field<?> field : left) {
+				if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+					throw new RuntimeException("cannot use bound fields " +
+							"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+							"primary/first table");
+				}
+				q.onlySet.add(field);
+			}
+		} else {
+			q.onlySet = new LinkedHashSet<Field<?>>(onlySet);
+			for (Field<?> field : fields) {
+				if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
+					throw new RuntimeException("cannot use bound fields " +
+							"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
+							"primary/first table");
+				}
+				q.onlySet.add(field);
+			}
 		}
 		return q;
 	}
-
+	
 	public <S> Field<S> asInnerQueryOf(Field<S> field) {
 		return new SubQueryField<T,S>(field, (DBQuery<T>) this.onlyFields(field));
 	}

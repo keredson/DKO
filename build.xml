@@ -233,7 +233,7 @@ public class BuildInfo {
       <group title="Group 2 Packages" packages="com.dummy.test.b*:com.dummy.test.c*"/>
       <link offline="true" href="http://download.oracle.com/javase/6/docs/api/" packagelistLoc="C:\tmp"/>
       <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/-->
-      <source file="gen/joinsrc/org/kered/dko/Join.java" />
+      <source file="gen/joinsrc/org/kered/dko/persistence/QuerySize.java" />
     </javadoc>
   </target>
 

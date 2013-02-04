@@ -531,7 +531,7 @@ class ClassGenerator {
 		br.write("\tpublic <S> S get(final Field<S> _field) {\n");
 		br.write("\t\tif ("+ className +".class==_field.TABLE) {\n");
 		br.write("\t\t\tif (_field.GETTER != null) {\n");
-		br.write("\t\t\t\ttry { _field.GETTER.invoke(this, (Object[])null); }\n");
+		br.write("\t\t\t\ttry { return (S) _field.GETTER.invoke(this, (Object[])null); }\n");
 		br.write("\t\t\t\tcatch (Exception e) { e.printStackTrace(); }\n");
 		br.write("\t\t\t}\n");
 		for (final String column : columns.keySet()) {

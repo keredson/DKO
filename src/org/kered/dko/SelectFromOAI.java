@@ -76,6 +76,12 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 	}
 	
 	private void init() {
+		// revert from tagged fields to their untagged srcs
+		for (int i=0; i<selectedFields.length; ++i) {
+			while (selectedFields[i].underlying != null) {
+				selectedFields[i] = selectedFields[i].underlying;
+			}
+		}
 		try {
 			final List<TableInfo> tableInfos = query.getAllTableInfos();
 			for (final TableInfo tableInfo : tableInfos) {

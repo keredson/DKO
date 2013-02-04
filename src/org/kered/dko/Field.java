@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.kered.dko.Condition.Binary;
 import org.kered.dko.Condition.Ternary;
@@ -117,7 +119,8 @@ public class Field<T> implements Cloneable {
 
 	String boundTable = null;
 	Field<T> unBound = null;
-	Set<Object> tags = null;
+	Field<T> underlying = null;
+	Set<Tag<? extends T>> tags = null;
 	private TableInfo boundTableInfo = null;
 
 	@Deprecated
@@ -1065,13 +1068,14 @@ public class Field<T> implements Cloneable {
 	 * @param tag
 	 * @return
 	 */
-	public Field<T> tag(final Object tag) {
+	public Field<T> tag(final Tag<? extends T> tag) {
 		try {
 			@SuppressWarnings("unchecked")
 			final Field<T> f = (Field<T>) this.clone();
-			if (f.tags == null) f.tags = new HashSet<Object>();
-			else f.tags = new HashSet<Object>(f.tags);
+			if (f.tags == null) f.tags = new HashSet<Tag<? extends T>>();
+			else f.tags = new HashSet<Tag<? extends T>>(f.tags);
 			f.tags.add(tag);
+			f.underlying = this;
 			return f;
 		} catch (final CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -1084,14 +1088,15 @@ public class Field<T> implements Cloneable {
 	 * @param tag
 	 * @return
 	 */
-	public Field<T> untag(final Object tag) {
+	public Field<T> untag(final Tag<? extends T> tag) {
+		if (tags == null) return this;
 		try {
 			@SuppressWarnings("unchecked")
 			final Field<T> f = (Field<T>) this.clone();
-			if (f.tags == null) f.tags = new HashSet<Object>();
-			else f.tags = new HashSet<Object>(f.tags);
+			f.tags = new HashSet<Tag<? extends T>>(f.tags);
 			f.tags.remove(tag);
-			return f;
+			if (f.tags.size() == 0) return f.underlying;
+			else return f;
 		} catch (final CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
@@ -1103,7 +1108,7 @@ public class Field<T> implements Cloneable {
 	 * @param tag
 	 * @return
 	 */
-	public boolean hasTag(final Object tag) {
+	public boolean hasTag(final Tag<?> tag) {
 		if (tags==null) return false;
 		return tags.contains(tag);
 	}
@@ -1210,6 +1215,121 @@ public class Field<T> implements Cloneable {
 		} else if (!unBound.equals(other.unBound))
 			return false;
 		return true;
+	}
+	
+	/**
+	 * Tags are useful if you have multiple data types that have enough similarity where they can be 
+	 * interchanged in certain circumstances but not similar enough to be represented by the same
+	 * classes.  For example:  Assume you have a vet office, and you track both customers and pets.
+	 * You'll likely have different tables representing each, but you want to have only one 
+	 * averageAge() function.  You could do the following:
+	 * 
+	 * <pre> {@code
+	 * final static Tag<Double> AGE = new Tag<Double>();
+	 * public double averageAge(Query<?> q) {
+	 *     Field<Double> ageField = AGE.findField(q);
+	 *     double sum = 0;  int count = 0;
+	 *     for (Table t : q) {
+	 *         sum += t.get(ageField);  ++count;
+	 *     }
+	 *     return sum / count;
+	 * }}</pre>
+	 *  
+	 * You can then use it with multiple source queries like this:
+	 *  
+	 * <pre> {@code
+	 * double avgPetAge = averageAge(Pet.ALL.alsoSelect(Pet.AGE.tag(AGE)));
+	 * double avgCustAge = averageAge(Customer.ALL.alsoSelect(Customer.AGE.tag(AGE)));
+	 * }</pre>
+	 *  
+	 * @param <S>
+	 */
+	public static class Tag<S> {
+		
+		private final Object key;
+
+		/**
+		 * Generates a globally unique tag.
+		 */
+		public Tag() {
+			key = UUID.randomUUID();
+		}
+		
+		/**
+		 * Generates a tag only as unique as the key you pass it.
+		 * (two tags made from the same key have equal hashCode() and equals() methods)
+		 * @param key
+		 */
+		public Tag(Object key) {
+			this.key = key;
+		}
+		
+		/**
+		 * Searches the given query for a field tagged with this tag.  Returns the field 
+		 * if found.  Null if not found.  Throws a RuntimeException if more than one 
+		 * field in this query is tagged with this tag. 
+		 * @param q
+		 * @return
+		 */
+		public Field<S> findField(Query<?> q) {
+			Field<S> ret = null;
+			List<Field<?>> fields = q.getSelectFields();
+			for (Field<?> field : fields) {
+				if (field.hasTag(this)) {
+					if (ret!=null) throw new RuntimeException("More than one field in this query has been tagged with this tag: {"+ ret +" && "+ field +"}");
+					ret = (Field<S>) field;
+				}
+			}
+			return ret;
+		}
+
+		/**
+		 * Searches the given query for a field tagged with this tag.
+		 * Returns a collection containing all the fields found.
+		 * @param q
+		 * @return
+		 */
+		public Collection<Field<S>> findFields(Query<?> q) {
+			Collection<Field<S>> ret = new LinkedHashSet<Field<S>>();
+			List<Field<?>> fields = q.getSelectFields();
+			for (Field<?> field : fields) {
+				if (field.hasTag(this)) {
+					ret.add((Field<S>) field);
+				}
+			}
+			return ret;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((key == null) ? 0 : key.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Tag other = (Tag) obj;
+			if (key == null) {
+				if (other.key != null)
+					return false;
+			} else if (!key.equals(other.key))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "Tag[" + key + "]";
+		}
+		
 	}
 
 }

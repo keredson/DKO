@@ -34,6 +34,7 @@ import org.kered.dko.Context.Undoer;
 import org.kered.dko.Diff;
 import org.kered.dko.Diff.RowChange;
 import org.kered.dko.Field;
+import org.kered.dko.Field.Tag;
 import org.kered.dko.Join;
 import org.kered.dko.Query;
 import org.kered.dko.QueryFactory;
@@ -957,6 +958,36 @@ public class SharedDBTests extends TestCase {
 			if ("XYZ Pets".equals(supplier.getName())) {
 				assertNotNull(supplier.get(avg));
 			}
+		}
+	}
+
+	public void testTag() throws SQLException {
+		printTestName();
+		Tag<String> tag = new Field.Tag<String>();
+		System.err.println("tag: "+ tag);
+		Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
+		Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
+		Field<String> taggedField = tag.findField(q);
+		System.err.println("taggedField: "+ taggedField);
+		for (Item item : q) {
+			String value = item.get(taggedField);
+			assertNotNull(value);
+		}
+	}
+
+	public void testTag2() throws SQLException {
+		printTestName();
+		Tag<String> tag = new Field.Tag<String>();
+		System.err.println("tag: "+ tag);
+		Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
+		Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
+		Collection<Field<String>> taggedFields = tag.findFields(q);
+		assertEquals(1, taggedFields.size());
+		Field<String> taggedField = taggedFields.iterator().next();
+		System.err.println("taggedField: "+ taggedField);
+		for (Item item : q) {
+			String value = item.get(taggedField);
+			assertNotNull(value);
 		}
 	}
 

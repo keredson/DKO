@@ -1,8 +1,13 @@
 bin/
 bin_test/
 gensrc/
+gen/joinsrc/
 .classpath
 .project
 .settings/
 lib/
 reports/
+.orig
+~
+.class
+.bak

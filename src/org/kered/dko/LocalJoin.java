@@ -30,7 +30,7 @@ import org.kered.dko.Field.FK;
 import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.dko.datasource.SingleThreadedDataSource;
 
-public class LocalJoin<T extends Table> extends AbstractQuery<T> {
+class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 	private static final Logger log = Logger.getLogger("org.kered.dko.LocalJoin");
 
@@ -481,6 +481,12 @@ public class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			q = q.where(e.getKey().in(values));
 		}
 		return q;
+	}
+
+	@Override
+	public Query<T> avg() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

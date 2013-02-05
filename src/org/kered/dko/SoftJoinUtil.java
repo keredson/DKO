@@ -12,7 +12,7 @@ import org.kered.dko.Condition.Binary;
 import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Field.PK;
 
-public class SoftJoinUtil {
+class SoftJoinUtil {
 
 	static Map<Field<?>,Field<?>> getFieldsOpposingPK(Class<? extends Table> type, Condition condition) {
 		PK<? extends Table> pk = Util.getPK(type);

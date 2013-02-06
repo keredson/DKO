@@ -225,7 +225,8 @@ public class BuildInfo {
            version="true"
            use="true"
            additionalparam="-notimestamp"
-           windowtitle="Nosco API">
+           windowtitle="Nosco API"
+           Public="true">
       <doctitle><![CDATA[<h1>Nosco</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2011 Derek Anderson. All Rights Reserved.</i>]]></bottom>
       <tag name="todo" scope="all" description="To do:"/>

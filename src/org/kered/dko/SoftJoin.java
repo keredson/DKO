@@ -418,5 +418,11 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		};
 	}
 
+	@Override
+	public Query<T> avg() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

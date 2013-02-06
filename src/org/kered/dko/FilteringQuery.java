@@ -291,4 +291,10 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 		return null;
 	}
 
+	@Override
+	public Query<T> avg() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

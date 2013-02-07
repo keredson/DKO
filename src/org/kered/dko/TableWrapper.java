@@ -41,9 +41,10 @@ class TableWrapper extends Table {
 	}
 
 	@Override
-	public <S> void set(final Field<S> field, final S value) {
+	public <S> Table set(final Field<S> field, final S value) {
 		if (this.field.sameField(field)) this.value = value;
 		else t.set(field, value);
+		return this;
 	}
 
 	@Override

@@ -88,14 +88,14 @@ public class Join<L extends Table, R extends Table> extends Table {
 	}
 
 	@Override
-	public <S> void set(final Field<S> field, final S value) {
+	public <S> Table set(final Field<S> field, final S value) {
 		try {
 			l.set(field, value);
-			return;
+			return this;
 		} catch (final IllegalArgumentException e) { /* ignore */ }
 		try {
 			r.set(field, value);
-			return;
+			return this;
 		} catch (final IllegalArgumentException e) { /* ignore */ }
 		if (fields != null && fields.contains(field))
 			throw new RuntimeException("you can't set this field because the joined object is null (some join types can return nulls from the database): " + field);

@@ -57,7 +57,8 @@ class TemporaryTableFactory {
 		}
 
 		@Override
-		public <S> void set(final Field<S> field, final S value) {
+		public <S> Table set(final Field<S> field, final S value) {
+			return null;
 			// TODO Auto-generated method stub
 
 		}

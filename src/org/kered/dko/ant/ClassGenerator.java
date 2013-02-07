@@ -245,9 +245,10 @@ class ClassGenerator {
 
 
 	private static String getFieldName(final String column) {
-		final String proposed = column.replace(' ', '_')
+		final String proposed = column
 			.replace("%", "_PERCENT")
 			.replace("-", "_DASH_")
+			.replaceAll("\\W", "_")
 			.toUpperCase();
 		if (Constants.INVALID_FIELD_NAMES.contains(proposed)) return ""+ proposed +"_FIELD";
 		return proposed;
@@ -558,21 +559,16 @@ class ClassGenerator {
 
 		// write the generic set(field, value) method
 		br.write("\tprivate java.util.Map<Field<?>,Object> __NOSCO_EXTRA_VALUES = null;\n\n");
-		br.write("\tpublic <S> void set(final Field<S> _field, final S _value) {\n");
+		br.write("\tpublic <S> "+ className +" set(final Field<S> _field, final S _value) {\n");
 		for (final String column : columns.keySet()) {
-			br.write("\t\tif (_field=="+ getFieldName(column) +") ");
-			br.write(getInstanceFieldName(column) +" = ("+ getFieldType(pkgName, table, column, columns.getString(column)) +") _value; else\n");
+			br.write("\t\tif (_field=="+ getFieldName(column) +") return set");
+			br.write(getInstanceMethodName(column) +"(("+ getFieldType(pkgName, table, column, columns.getString(column)) +") _value);\n");
 		}
 		br.write("\t\tif (__NOSCO_EXTRA_VALUES==null) __NOSCO_EXTRA_VALUES = new java.util.HashMap<Field<?>,Object>();\n");
 		br.write("\t\t__NOSCO_EXTRA_VALUES.put(_field, _value);\n");
+		br.write("\t\treturn this;\n");
 		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");
 		br.write("\t}\n\n");
-
-		//br.write("\tpublic Field[] GET_PRIMARY_KEY_FIELDS() {\n\t\tField[] fields = {");
-		//for (int i=0; i<pks.length(); ++i) {
-		//	br.write(pks.getString(i).toUpperCase()+",");
-		//}
-		//br.write("};\n\t\treturn fields;\n\t}\n\n");
 
 		br.write("\t/**\n");
 		br.write("\t * Represents all rows in the database.  This is the object you will likely\n");

@@ -98,12 +98,11 @@ public abstract class Table {
 
 	/**
 	 * Sets the value of this instance that corresponds to the given field.
-	 * Throws an IllegalArgumentException if the field isn't part of this instance.
 	 * @param field
 	 * @param value
 	 * @return
 	 */
-	public abstract <S> void set(Field<S> field, S value);
+	public abstract <S> Table set(Field<S> field, S value);
 
 	/**
 	 * Creates and executes an insert statement for this object

@@ -1777,6 +1777,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return new SubQueryField<T,S>(field, (DBQuery<T>) this.onlyFields(field));
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("DBQuery<").append(this.getType().getSimpleName()).append(">");
+		sb.append("#").append(Integer.toHexString(this.hashCode()));
+		return sb.toString();
+	}
+
 //	@Override
 //	public <S extends Table> Query<T> alsoSelect(Query<S> subquery) {
 //		if (!(subquery instanceof DBQuery)) return super.alsoSelect(subquery);

@@ -18,7 +18,12 @@ import org.kered.dko.datasource.SingleThreadedDataSource;
 
 public class Util {
 
-    static final String CREATE = "CREATE TABLE query_size (last_seen BIGINT, schema_name TEXT, table_name TEXT, id INTEGER PRIMARY KEY, hash_code int, row_count bigint);";
+    static final String CREATE_QS = "CREATE TABLE query_size (last_seen BIGINT, schema_name TEXT, table_name TEXT, id INTEGER PRIMARY KEY, hash_code int, row_count bigint);";
+    static final String CREATE_CA = "CREATE TABLE column_access (id INTEGER PRIMARY KEY, query_execution_id int, table_name TEXT, column_name TEXT, last_seen bigint);";
+    static final String CREATE_CA_I = "CREATE INDEX caqe ON column_access(query_execution_id ASC);";
+    static final String CREATE_QE = "CREATE TABLE query_execution (id INTEGER PRIMARY KEY, query_hash int, stack_hash int, last_seen bigint, description text);";
+    static final String CREATE_QE_I1 = "CREATE INDEX qeqh ON query_execution(query_hash ASC);";
+    static final String CREATE_QE_I2 = "CREATE INDEX qesh ON query_execution(stack_hash ASC);";
 
 	static DataSource ds = null;
 	private static final Logger log = Logger.getLogger("org.kered.dko.persistence.Util");
@@ -52,18 +57,9 @@ public class Util {
 			Connection conn = null;
 			try {
 				conn = DriverManager.getConnection(url);
-				final Statement stmt = conn.createStatement();
-				try {
-					final ResultSet rs = stmt
-							.executeQuery("select count(1) from query_size");
-					rs.next();
-					rs.getInt(1);
-					rs.close();
-				} catch (final SQLException e) {
-					System.err.println("init " + PERSISTENCE_DB);
-					stmt.executeUpdate(CREATE);
-				}
-				stmt.close();
+				checkQuerySize(conn);
+				checkQueryExecution(conn);
+				checkColumnAccess(conn);
 			} catch (final SQLException e) {
 				e.printStackTrace();
 			} finally {
@@ -88,5 +84,50 @@ public class Util {
 			}
 		}
 		return ds;
+	}
+
+	private static void checkQueryExecution(Connection conn) throws SQLException {
+		final Statement stmt = conn.createStatement();
+		try {
+			final ResultSet rs = stmt.executeQuery("select count(1) from query_execution");
+			rs.next();
+			rs.getInt(1);
+			rs.close();
+		} catch (final SQLException e) {
+			System.err.println("...init query_ecexution");
+			stmt.executeUpdate(CREATE_QE);
+			stmt.executeUpdate(CREATE_QE_I1);
+			stmt.executeUpdate(CREATE_QE_I2);
+		}
+		stmt.close();
+	}
+
+	private static void checkColumnAccess(Connection conn) throws SQLException {
+		final Statement stmt = conn.createStatement();
+		try {
+			final ResultSet rs = stmt.executeQuery("select count(1) from column_access");
+			rs.next();
+			rs.getInt(1);
+			rs.close();
+		} catch (final SQLException e) {
+			System.err.println("...init columnAccess");
+			stmt.executeUpdate(CREATE_CA);
+			stmt.executeUpdate(CREATE_CA_I);
+		}
+		stmt.close();
+	}
+
+	private static void checkQuerySize(Connection conn) throws SQLException {
+		final Statement stmt = conn.createStatement();
+		try {
+			final ResultSet rs = stmt.executeQuery("select count(1) from query_size");
+			rs.next();
+			rs.getInt(1);
+			rs.close();
+		} catch (final SQLException e) {
+			System.err.println("...init query_size");
+			stmt.executeUpdate(CREATE_QS);
+		}
+		stmt.close();
 	}
 }

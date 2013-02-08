@@ -327,7 +327,7 @@ class Util {
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
 	}
 
-	public static String joinFields(final DB_TYPE dbType, final String s, final List<Field<?>> c) {
+	static String joinFields(final DB_TYPE dbType, final String s, final List<Field<?>> c) {
 		if(c==null || c.size()==0) return "";
 	    final StringBuilder sb = new StringBuilder();
 	    for (final Field<?> o : c) {
@@ -337,7 +337,7 @@ class Util {
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();
 	}
 
-	public static String joinFields(final SqlContext context, final String s, final List<Field<?>> c) {
+	static String joinFields(final SqlContext context, final String s, final List<Field<?>> c) {
 		return joinFields(context.dbType, s, c);
 	}
 

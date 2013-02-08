@@ -1,0 +1,7 @@
+{
+  "fk1": {
+		"reffing": ["", "column_access"],
+		"reffed": ["", "query_execution"],
+		"columns": {"query_execution_id":"id"}
+  }
+}

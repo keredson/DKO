@@ -61,15 +61,14 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	DBRowIterator(final DBQuery<T> dbQuery, final boolean useWarnings) {
 		if (useWarnings && Context.usageWarningsEnabled()) {
 			// make sure usage monitor has loaded stats for all the tables we care about
-			for (final TableInfo tableInfo : dbQuery.getAllTableInfos()) {
-				UsageMonitor.loadStatsFor(tableInfo.tableClass);
-			}
-			usageMonitor = new UsageMonitor<T>(dbQuery);
-			this.query = usageMonitor.getSelectOptimizedQuery();
+//			for (final TableInfo tableInfo : dbQuery.getAllTableInfos()) {
+//				UsageMonitor.loadStatsFor(tableInfo.tableClass);
+//			}
+			usageMonitor = UsageMonitor.build(dbQuery);
 		} else {
 			usageMonitor = null;
-			this.query = dbQuery;
 		}
+		this.query = usageMonitor==null ? dbQuery : usageMonitor.getSelectOptimizedQuery();
 		final List<Field<?>> selectFieldsList = query.getSelectFields(false);
 		selectedFields = toArray(selectFieldsList);
 		if (this.usageMonitor!=null) {

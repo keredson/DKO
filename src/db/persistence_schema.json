@@ -4,14 +4,34 @@
         2,
         0
     ],
-    "schemas": {"": {"query_size": {
-        "last_seen": "bigint",
-        "schema_name": "text",
-        "table_name": "text",
-        "id": "integer",
-        "hash_code": "int",
-        "row_count": "bigint"
-    }}},
-    "primary_keys": {"": {"query_size": ["id"]}},
+    "schemas": {"": {
+        "query_size": {
+            "last_seen": "bigint",
+            "schema_name": "text",
+            "table_name": "text",
+            "id": "integer",
+            "hash_code": "int",
+            "row_count": "bigint"
+        },
+        "column_access": {
+            "id": "integer",
+            "query_execution_id": "int",
+            "table_name": "text",
+            "column_name": "text",
+            "last_seen": "bigint"
+        },
+        "query_execution": {
+            "description": "text",
+            "id": "integer",
+            "query_hash": "int",
+            "stack_hash": "int",
+            "last_seen": "bigint"
+        }
+    }},
+    "primary_keys": {"": {
+        "query_size": ["id"],
+        "column_access": ["id"],
+        "query_execution": ["id"]
+    }},
     "foreign_keys": {}
 }

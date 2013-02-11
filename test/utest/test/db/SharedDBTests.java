@@ -1025,4 +1025,36 @@ public class SharedDBTests extends TestCase {
 		}
 	}
 
+    public void testJoinInnerQuery() throws SQLException {
+		printTestName();
+		final long c1 = Item.ALL.count();
+		Query<Product> jq = Product.ALL;
+		final long c2 = jq.count();
+		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(jq);
+		assertEquals(c1 * c2,  q.count());
+		int c=0;
+		for (final Join<Item, Product> x : q) {
+			++c;
+			if (c<64) System.err.println(x);
+			x.l.getItemid();
+		}
+		assertEquals(c1 * c2,  c);
+    }
+
+    public void testJoinInnerQuery2() throws SQLException {
+		printTestName();
+		final long c1 = Item.ALL.count();
+		Query<Product> jq = Product.ALL.where(Product.PRODUCTID.like("FL%"));
+		final long c2 = jq.count();
+		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(jq);
+		assertEquals(c1 * c2,  q.count());
+		int c=0;
+		for (final Join<Item, Product> x : q) {
+			++c;
+			if (c<64) System.err.println(x);
+			x.l.getItemid();
+		}
+		assertEquals(c1 * c2,  c);
+    }
+
 }

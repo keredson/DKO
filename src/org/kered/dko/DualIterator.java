@@ -56,7 +56,13 @@ class DualIterator {
 		return rightIterator;
 	}
 
-	public void close() {
+	@Override
+	protected void finalize() throws Throwable {
+		if (!done) close();
+		super.finalize();
+	}
+
+	public synchronized void close() {
 		if (done) return;
 		if (iterator!=null) iterator.close();
 		try {

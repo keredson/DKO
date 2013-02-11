@@ -137,6 +137,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 		sb.append(query.getFromClause(context, bindings));
 		final Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
+		bindings.addAll(ret.b);
 		sb.append(ret.a);
 
 		final List<DIRECTION> directions = query.getOrderByDirections();
@@ -165,7 +166,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 
 		sql = sb.toString();
-		return new Tuple2<String,List<Object>>(sb.toString(), ret.b);
+		return new Tuple2<String,List<Object>>(sb.toString(), bindings);
 	}
 
 	static Field<?>[] toArray(final List<Field<?>> fields) {

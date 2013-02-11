@@ -13,7 +13,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -34,7 +36,7 @@ class Util {
 			return context.fieldNameOverrides.get(field);
 		}
 		final List<String> selectedTables = new ArrayList<String>();
-		final List<TableInfo> unboundTables = new ArrayList<TableInfo>();
+		final Set<TableInfo> unboundTables = new LinkedHashSet<TableInfo>();
 		SqlContext tmp = context;
 		while (tmp != null) {
 			for (final TableInfo info : tmp.tableInfos) {

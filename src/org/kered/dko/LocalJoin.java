@@ -193,8 +193,9 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public List<Field<?>> getSelectFields() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Field<?>> ret = new ArrayList<Field<?>>(qL.getSelectFields());
+		ret.addAll(qR.getSelectFields());
+		return ret;
 	}
 
 	@Override
@@ -282,8 +283,10 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 				if (condition!=null) sb.append(" on ").append(condition.getSQL(context));
 				String sql = sb.toString();
 		    	di = new DualIterator(ds, sql, qLfields, qRfields);
-		    	iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
-		    	iR = new SelectFromOAI((DBQuery) qR, di.getRightIterator());
+		    	if (qL instanceof DBQuery) iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
+		    	else if (qL instanceof LocalJoin) iL = ((LocalJoin)qL).buildIteratorFrom(di.getLeftIterator());
+		    	if (qR instanceof DBQuery) iR = new SelectFromOAI((DBQuery) qR, di.getRightIterator());
+		    	else if (qR instanceof LocalJoin) iR = ((LocalJoin)qR).buildIteratorFrom(di.getRightIterator());
 			}
 
 			@Override
@@ -318,6 +321,43 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 					throw new RuntimeException(e);
 				}
 				
+			}
+
+		};
+	}
+
+	protected ClosableIterator<Table> buildIteratorFrom(PeekableClosableIterator<Object[]> iterator) {
+		final DualIterator di = new DualIterator(iterator, qL.getSelectFields(), qR.getSelectFields());
+    	final ClosableIterator<Table> iL;
+		if (qL instanceof DBQuery) iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
+    	else if (qL instanceof LocalJoin) iL = ((LocalJoin)qL).buildIteratorFrom(di.getLeftIterator());
+    	else iL = null;
+    	final ClosableIterator<Table> iR;
+		if (qR instanceof DBQuery) iR = new SelectFromOAI((DBQuery) qR, di.getRightIterator());
+    	else if (qR instanceof LocalJoin) iR = ((LocalJoin)qR).buildIteratorFrom(di.getRightIterator());
+    	else iR = null;
+		return new ClosableIterator<Table>() {
+
+			@Override
+			public boolean hasNext() {
+				return iL.hasNext() || iR.hasNext();
+			}
+
+			@Override
+			public T next() {
+				Table left = iL.hasNext() ? iL.next() : null;
+				Table right = iR.hasNext() ? iR.next() : null;
+				return (T) new Join<Table,Table>(left, right);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public synchronized void close() {
+				di.close();
 			}
 
 		};

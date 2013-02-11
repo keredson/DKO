@@ -24,6 +24,7 @@ class DualIterator {
 	InternalIterator rightIterator = new InternalIterator(rightQueue);
 	private List<Field<?>> qLfields;
 	private List<Field<?>> qRfields;
+	private PeekableClosableIterator<Object[]> iterator = null;
 
 	public DualIterator(DataSource ds, String sql, List<Field<?>> qLfields, List<Field<?>> qRfields) {
 		this.qLfields = qLfields;
@@ -38,6 +39,15 @@ class DualIterator {
     	}
 	}
 
+	public DualIterator(PeekableClosableIterator<Object[]> iterator, List<Field<?>> qLfields, List<Field<?>> qRfields) {
+		this.qLfields = qLfields;
+		this.qRfields = qRfields;
+		conn = null;
+		ps = null;
+		rs = null;
+		this.iterator = iterator;
+	}
+
 	public PeekableClosableIterator<Object[]> getLeftIterator() {
 		return leftIterator;
 	}
@@ -48,8 +58,9 @@ class DualIterator {
 
 	public void close() {
 		if (done) return;
+		if (iterator!=null) iterator.close();
 		try {
-			if (!finishedNatually && rs!=null && !rs.isClosed()) {
+			if (!finishedNatually && rs!=null && ps!=null && !rs.isClosed()) {
 				ps.cancel();
 			}
 		} catch (SQLException e2) {
@@ -133,22 +144,35 @@ class DualIterator {
 	}
 
 	public void getNextRow() {
-		try {
-			if (!rs.next()) return;
+		if (rs!=null) {
+			try {
+				if (!rs.next()) return;
+				int leftSize = qLfields.size();
+				final Object[] leftRow = new Object[leftSize];
+				for (int i=0; i<leftSize; ++i) {
+					leftRow[i] = Util.getTypedValueFromRS(rs, i+1, qLfields.get(i));
+				}
+				leftQueue.add(leftRow);
+				int rightSize = qRfields.size();
+				final Object[] rightRow = new Object[rightSize];
+				for (int i=0; i<rightSize; ++i) {
+					rightRow[i] = Util.getTypedValueFromRS(rs, leftSize+i+1, qRfields.get(i));
+				}
+				rightQueue.add(rightRow);
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		} else if (iterator!=null) {
+			if (!iterator.hasNext()) return;
+			Object[] row = iterator.next();
 			int leftSize = qLfields.size();
 			final Object[] leftRow = new Object[leftSize];
-			for (int i=0; i<leftSize; ++i) {
-				leftRow[i] = Util.getTypedValueFromRS(rs, i+1, qLfields.get(i));
-			}
+			System.arraycopy(row, 0, leftRow, 0, leftSize);
 			leftQueue.add(leftRow);
 			int rightSize = qRfields.size();
 			final Object[] rightRow = new Object[rightSize];
-			for (int i=0; i<rightSize; ++i) {
-				rightRow[i] = Util.getTypedValueFromRS(rs, leftSize+i+1, qRfields.get(i));
-			}
+			System.arraycopy(row, leftSize, rightRow, 0, rightSize);
 			rightQueue.add(rightRow);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
 		}
 	}
 

@@ -918,7 +918,41 @@ public class SharedDBTests extends TestCase {
 		}
 		assertEquals(c1,  q.count());
 	}
+
+	public void testCDBCrossJoinX2() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.count();
+		final long c2 = Supplier.ALL.count();
+		final long c3 = Product.ALL.count();
+		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).crossJoin(Supplier.class);
+		Query<Join<Join<Item, Supplier>, Product>> q2 = q.crossJoin(Product.class);
+		int c = 0;
+		for (final Join<Join<Item, Supplier>, Product> x : q2) {
+			System.err.println(x);
+			++c;
+		}
+		assertEquals(c1*c2*c3,  c);
+	}
     
+	public void testCDBCrossJoinX3() throws SQLException {
+		printTestName();
+		DataSource ods = new PassThruDS(ds);
+		final long c1 = Item.ALL.count();
+		final long c2 = Supplier.ALL.count();
+		final long c3 = Product.ALL.count();
+		final long c4 = Category.ALL.count();
+		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).crossJoin(Supplier.class);
+		Query<Join<Join<Item, Supplier>, Product>> q2 = q.crossJoin(Product.class);
+		Query<Join<Join<Join<Item, Supplier>, Product>, Category>> q3 = q2.crossJoin(Category.class);
+		int c = 0;
+		for (final Join<Join<Join<Item, Supplier>, Product>, Category> x : q3) {
+			if (c<64) System.err.println(x);
+			++c;
+		}
+		assertEquals(c1*c2*c3*c4,  c);
+	}
+
 	public void testSnapshot() throws SQLException {
 		printTestName();
 		Set<Item> items = new HashSet<Item>(Item.ALL.asList());

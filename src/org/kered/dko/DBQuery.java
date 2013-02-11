@@ -1798,6 +1798,30 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "cross join", null);
 	}
 
+	@Override
+	public <S extends Table> Query<Join<T, S>> leftJoin(Query<S> other, Condition on) {
+		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
+		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "left join", on);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> rightJoin(Query<S> other, Condition on) {
+		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
+		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "right join", on);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> innerJoin(Query<S> other, Condition on) {
+		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
+		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "inner join", on);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> outerJoin(Query<S> other, Condition on) {
+		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
+		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "outer join", on);
+	}
+
 //	@Override
 //	public <S extends Table> Query<T> alsoSelect(Query<S> subquery) {
 //		if (!(subquery instanceof DBQuery)) return super.alsoSelect(subquery);

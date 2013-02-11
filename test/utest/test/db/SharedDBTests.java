@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -613,6 +614,7 @@ public class SharedDBTests extends TestCase {
 		final Query<Join<Item, Supplier>> q = Item.ALL.leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		assertEquals(c1,  q.count());
 		for (final Join<Item, Supplier> x : q.top(64)) {
+			assertNotNull(x);
 			System.err.println(x);
 		}
 	}
@@ -1056,5 +1058,26 @@ public class SharedDBTests extends TestCase {
 		}
 		assertEquals(c1 * c2,  c);
     }
+
+	public void testLeftJoinWithInnerQuery() throws SQLException {
+		printTestName();
+		final long c1 = Item.ALL.count();
+		final Query<Join<Item, Supplier>> q = Item.ALL.leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
+		final Query<Join<Item, Supplier>> q2 = Item.ALL.leftJoin(Supplier.ALL, Item.SUPPLIER.eq(Supplier.SUPPID));
+		assertEquals(c1, q.count());
+		assertEquals(c1, q2.count());
+		List<Join<Item, Supplier>> i1 = q.asList();
+		List<Join<Item, Supplier>> i2 = q2.asList();
+		assertEquals(i1.size(), i2.size());
+		for (int x=0; x<i1.size(); ++x) {
+			Join<Item, Supplier> a = i1.get(x);
+			Join<Item, Supplier> b = i2.get(x);
+			System.err.println("a: "+ a);
+			System.err.println("b: "+ b);
+			assertNotNull(a);
+			assertNotNull(b);
+			assertTrue(a.equals(b));
+		}
+	}
 
 }

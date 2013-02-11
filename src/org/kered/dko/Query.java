@@ -725,8 +725,6 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a left join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -735,8 +733,6 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a left join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -744,9 +740,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public <S extends Table> Query<Join<T,S>> leftJoin(__Alias<S> table, Condition on);
 
 	/**
+	 * Performs a left join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> leftJoin(Query<S> table, Condition on);
+
+	/**
 	 * Performs a right join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -755,8 +757,6 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs a right join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -764,9 +764,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public <S extends Table> Query<Join<T,S>> rightJoin(__Alias<S> table, Condition on);
 
 	/**
+	 * Performs a right join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> rightJoin(Query<S> table, Condition on);
+
+	/**
 	 * Performs an outer join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -775,8 +781,6 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs an outer join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -784,9 +788,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public <S extends Table> Query<Join<T,S>> outerJoin(__Alias<S> table, Condition on);
 
 	/**
+	 * Performs an outer join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> outerJoin(Query<S> table, Condition on);
+
+	/**
 	 * Performs an inner join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
@@ -795,13 +805,19 @@ public interface Query<T extends Table> extends Iterable<T> {
 
 	/**
 	 * Performs an inner join using the given condition.
-	 * This returns a query of the existing type.  (this is useful for filtering)
-	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}
 	 * @param table
 	 * @param condition
 	 * @return
 	 */
 	public <S extends Table> Query<Join<T,S>> innerJoin(__Alias<S> table, Condition on);
+
+	/**
+	 * Performs an inner join using the given condition.
+	 * @param table
+	 * @param condition
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> innerJoin(Query<S> table, Condition on);
 
 //	/**
 //	 * Performs a cross join.

@@ -563,6 +563,11 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
+	public <S extends Table> Query<Join<T, S>> leftJoin(final Query<S> other, final Condition on) {
+		return new LocalJoin(Constants.JOIN_TYPE.LEFT, Join.class, this, other, on);
+	}
+
+	@Override
 	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> table, final Condition on) {
 		return new LocalJoin(Constants.JOIN_TYPE.RIGHT, Join.class, this, table, on);
 	}
@@ -570,6 +575,11 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> table, final Condition on) {
 		return new LocalJoin(Constants.JOIN_TYPE.RIGHT, Join.class, this, table.table, on);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> rightJoin(final Query<S> other, final Condition on) {
+		return new LocalJoin(Constants.JOIN_TYPE.RIGHT, Join.class, this, other, on);
 	}
 
 	@Override
@@ -583,6 +593,11 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
+	public <S extends Table> Query<Join<T, S>> outerJoin(final Query<S> other, final Condition on) {
+		return new LocalJoin(Constants.JOIN_TYPE.OUTER, Join.class, this, other, on);
+	}
+
+	@Override
 	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> table, final Condition on) {
 		return new LocalJoin(Constants.JOIN_TYPE.INNER, Join.class, this, table, on);
 	}
@@ -590,6 +605,11 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	@Override
 	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> table, final Condition on) {
 		return new LocalJoin(Constants.JOIN_TYPE.INNER, Join.class, this, table.table, on);
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> innerJoin(final Query<S> other, final Condition on) {
+		return new LocalJoin(Constants.JOIN_TYPE.INNER, Join.class, this, other, on);
 	}
 
 	@Override

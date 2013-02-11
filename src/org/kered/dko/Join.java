@@ -169,4 +169,45 @@ public class Join<L extends Table, R extends Table> extends Table {
 				+ (r == null ? r : r.toStringDetailed());
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+		result = prime * result + ((l == null) ? 0 : l.hashCode());
+		result = prime * result + ((r == null) ? 0 : r.hashCode());
+		result = prime * result + ((types == null) ? 0 : types.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		Join other = (Join) obj;
+		if (fields == null) {
+			if (other.fields != null)
+				return false;
+		} else if (!fields.equals(other.fields))
+			return false;
+		if (l == null) {
+			if (other.l != null)
+				return false;
+		} else if (!l.equals(other.l))
+			return false;
+		if (r == null) {
+			if (other.r != null)
+				return false;
+		} else if (!r.equals(other.r))
+			return false;
+		if (types == null) {
+			if (other.types != null)
+				return false;
+		} else if (!types.equals(other.types))
+			return false;
+		return true;
+	}
+
 }

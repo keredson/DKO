@@ -60,6 +60,14 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		if (on!=null) joinAwareWhere(on);
 	}
 
+	public LocalJoin(JOIN_TYPE joinType, Class<Join> type, Query<? extends Table> q, Query<? extends Table> other, final Condition on) {
+		super(type);
+		this.joinType = joinType;
+		qL = q;
+		qR = other;
+		if (on!=null) joinAwareWhere(on);
+	}
+
 	private void joinAwareWhere(final Condition... conditions) {
 		for (final Condition condition : conditions) {
 			if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qL)) {

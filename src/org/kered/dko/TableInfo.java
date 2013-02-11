@@ -22,6 +22,7 @@ class TableInfo implements Cloneable {
 	transient int start = -1;
 	transient int end = -1;
 	transient int position = -1;
+	DBQuery<? extends Table> innerQuery = null;
 
 	public TableInfo(final Class<? extends Table> tableClass, final String tableName, final FK[] path) {
 		this.tableClass = tableClass;
@@ -33,6 +34,13 @@ class TableInfo implements Cloneable {
 		this.tableName = alias.alias;
 		this.tableClass = alias.table;
 		dummyTable  = alias.dummyTable;
+	}
+
+	public TableInfo(DBQuery<? extends Table> innerQuery, final String tableName, final FK[] path) {
+		this.tableClass = innerQuery.getType();
+		this.innerQuery = innerQuery;
+		this.tableName = tableName;
+		this.path  = path;
 	}
 
 	@Override

@@ -135,7 +135,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			}
 			sb.append(Util.join(", ", x));
 		}
-		sb.append(query.getFromClause(context));
+		sb.append(query.getFromClause(context, bindings));
 		final Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
 		sb.append(ret.a);
 

@@ -422,6 +422,12 @@ class Util {
 	    return d1==null ? d2==null : d1.equals(d2);
 	}
 
+	static boolean sameDataSource(final Query q1, final Query q2) {
+	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(q1));
+	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(q2));
+	    return d1==null ? d2==null : d1.equals(d2);
+	}
+
 	static boolean sameDataSource(final Query q, final __Alias t) {
 	    final DataSource d1 = getBaseDataSource(getDefaultDataSource(q));
 	    final DataSource d2 = getBaseDataSource(getDefaultDataSource(t));

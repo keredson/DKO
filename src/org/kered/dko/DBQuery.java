@@ -41,10 +41,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	static { UsageMonitor.doNothing(); }
 
 	// genned once and cached
-	transient private String sql;
 	transient private List<Field<?>> fields;
 	transient private List<Field<?>> boundFields;
-	transient List<Object> bindings = null;
 	transient Map<String,Set<String>> tableNameMap = null;
 	transient DB_TYPE detectedDbType = null;
 
@@ -218,6 +216,27 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		this.onlySelectFromFirstTableAndJoins = false;
 	}
 
+	<T1 extends Table, T2 extends Table> DBQuery(final Class<? extends Join> type, final DBQuery<T1> q, final DBQuery<T2> other, String alias, final String joinType, final Condition on) {
+		super(type);
+		copy((DBQuery<T>) q);
+		final JoinInfo<T1,T2> ji = new JoinInfo<T1,T2>();
+		ji.lType = q.getType();
+		ji.rType = null;
+		ji.type = joinType;
+		ji.condition = on;
+		try {
+			final boolean autogenName = alias == null;
+			if (autogenName) alias = genTableName(other.getType(), usedTableNames);
+			usedTableNames.add(alias);
+			ji.reffedTableInfo = new TableInfo(other, alias, null);
+			ji.reffedTableInfo.nameAutogenned = autogenName;
+			joins.add(ji);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+		this.onlySelectFromFirstTableAndJoins = false;
+	}
+
 	@Override
 	public Iterator<T> iterator() {
 		//sanityCheckToManyJoins();
@@ -291,14 +310,19 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public long count() throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		final String sql = "select count(1)"+ getFromClause(context) + getWhereClauseAndSetBindings();
+		initTableNameMap(true);
+		List<Object> bindings = new ArrayList<Object>();
+		String fromClause = getFromClause(context, bindings);
+		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		bindings.addAll(wcab.b);
+		final String sql = "select count(1)"+ fromClause + wcab.a;
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
 		Util.log(sql, bindings);
 		PreparedStatement ps;
 		try {
 			ps = conn.prepareStatement(sql);
-			setBindings(ps);
+			setBindings(ps, bindings);
 			_preExecute(context, conn);
 			ps.execute();
 			final ResultSet rs = ps.getResultSet();
@@ -426,8 +450,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 		sb.append(Util.join(", ", fields));
 		sb.append(" ");
-		sb.append(getWhereClauseAndSetBindings(false));
-		bindings.addAll(this.bindings);
+		initTableNameMap(false);
+		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		sb.append(wcab.a);
+		bindings.addAll(wcab.b);
 		final String sql = sb.toString();
 
 		Util.log(sql, bindings);
@@ -453,54 +479,56 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public int delete() throws SQLException {
 		final DBQuery<T> q = new DBQuery<T>(this);
+		final SqlContext context = new SqlContext(q);
 		final DataSource ds = getDataSource();
 		final Tuple2<Connection,Boolean> info = q.getConnRW(ds);
 		final Connection conn = info.a;
+		q.initTableNameMap(true);
+		Tuple2<String, List<Object>> wcab = q.getWhereClauseAndBindings(context);
 		try {
 			final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
 			final String schemaWithDot = "".equals(schema) ? "" : schema + ".";
 			if (q.getDBType()==DB_TYPE.MYSQL) {
-				if (q.tableInfos.size() > 1) throw new RuntimeException("MYSQL multi-table delete " +
+				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("MYSQL multi-table delete " +
 						"is not yet supported");
 				q.tableInfos.get(0).tableName = null;
-				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, q.bindings);
+				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + wcab.a;
+				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
-				q.setBindings(ps);
+				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
 				ps.close();
 				return count;
 			} else if (getDBType()==DB_TYPE.SQLITE3) {
-				if (q.tableInfos.size() > 1) throw new RuntimeException("SQLITE3 multi-table delete " +
+				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLITE3 multi-table delete " +
 						"is not yet supported");
 				q.tableInfos.get(0).tableName = null;
-				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, q.bindings);
+				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + wcab.a;
+				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
-				q.setBindings(ps);
+				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
 				ps.close();
 				return count;
 			} else if (getDBType()==DB_TYPE.SQLSERVER) {
-				if (q.tableInfos.size() > 1) throw new RuntimeException("SQLSERVER multi-table delete " +
+				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLSERVER multi-table delete " +
 						"is not yet supported");
 				q.tableInfos.get(0).tableName = null;
-				final String sql = "delete from "+ schema
-						+ ".dbo." + Util.getTABLE_NAME(ofType) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, q.bindings);
+				final String sql = "delete"+ getFromClause(context, null) + wcab.a;
+				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
-				q.setBindings(ps);
+				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
 				ps.close();
 				return count;
 			} else {
-				final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + q.getWhereClauseAndSetBindings();
-				Util.log(sql, q.bindings);
+				final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + wcab.a;
+				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
-				q.setBindings(ps);
+				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
 				ps.close();
@@ -531,16 +559,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		};
 	}
 
-///	@Override
-//	public Query<Table> join(Field field, Relationship equals, Field field2) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-	String getWhereClauseAndSetBindings() {
-		return getWhereClauseAndSetBindings(true);
-	}
-
 	@SuppressWarnings("unchecked")
 	Tuple2<String,List<Object>> getWhereClauseAndBindings(final SqlContext context) {
 		final StringBuffer sb = new StringBuffer();
@@ -558,34 +576,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return new Tuple2<String,List<Object>>(
 				sb.toString(),
 				Collections.unmodifiableList(bindings));
-	}
-
-	@SuppressWarnings("unchecked")
-	String getWhereClauseAndSetBindings(final boolean bindTables) {
-		if (sql==null) {
-
-			final StringBuffer sb = new StringBuffer();
-			bindings = new ArrayList<Object>();
-
-			initTableNameMap(bindTables);
-
-			final SqlContext context = new SqlContext(this);
-
-			if (conditions!=null && conditions.size()>0) {
-				sb.append(" where");
-				final String[] tmp = new String[conditions.size()];
-				int i=0;
-				for (final Condition condition : conditions) {
-					tmp[i++] = condition.getSQL(context);
-					bindings.addAll(condition.getSQLBindings());
-				}
-				sb.append(Util.join(" and", tmp));
-			}
-
-			sql = sb.toString();
-			if (bindings!=null) bindings = Collections.unmodifiableList(bindings);
-		}
-		return sql;
 	}
 
 	private void initTableNameMap(final boolean bindTables) {
@@ -609,15 +599,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 	}
 
-	List<Object> getSQLBindings() {
-		return bindings;
-	}
-
 	/**
 	 * @param context
+	 * @param bindings2 
 	 * @return
 	 */
-	String getJoinClause(final SqlContext context) {
+	String getJoinClause(final SqlContext context, List<Object> bindings) {
 		final StringBuffer sb = new StringBuffer();
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = getDBType();
@@ -629,7 +616,17 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			sb.append(" ");
 			sb.append(join.type);
 			sb.append(" ");
-			sb.append(context.getFullTableName(tableInfo) +" "+ tableInfo.tableName);
+			if (tableInfo.innerQuery!=null) {
+				sb.append("(");
+				final SqlContext innerContext = new SqlContext(tableInfo.innerQuery, context);
+				final Tuple2<String, List<Object>> ret = new DBRowIterator(tableInfo.innerQuery).getSQL(innerContext);
+				sb.append(ret.a);
+				if (bindings!=null) bindings.addAll(ret.b);
+				sb.append(")");
+				sb.append(" "+ tableInfo.tableName);
+			} else {
+				sb.append(context.getFullTableName(tableInfo) +" "+ tableInfo.tableName);
+			}
 			if (join.condition != null) {
 				sb.append(" on ");
 				sb.append(join.condition.getSQL(context));
@@ -757,7 +754,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
 					for (final Field<?> other : onlySet) {
-						for (final Field<?> field : Util.getFIELDS(ti.tableClass)) {
+						List<Field<?>> fields_ti = ti.innerQuery==null ? Util.getFIELDS(ti.tableClass) : ti.innerQuery.getSelectFields();
+						for (final Field<?> field : fields_ti) {
 							if (field.sameField(other) && ti.nameAutogenned) {
 								fields.add(bind ? other.from(tableName) : other);
 								unusedOnlySet.remove(other);
@@ -804,10 +802,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	List<Field<?>> getOrderByFields() {
 		return orderByFields;
-	}
-
-	public void setBindings(final PreparedStatement ps) throws SQLException {
-		setBindings(ps, bindings);
 	}
 
 	public void setBindings(final PreparedStatement ps, final List<Object> bindings) throws SQLException {
@@ -873,12 +867,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
 		final String[] bindStrings = new String[q.data.size()];
-		q.bindings = new ArrayList<Object>();
+		List<Object> bindings = new ArrayList<Object>();
 		int i=0;
 		for (final Entry<Field<?>, Object> entry : q.data.entrySet()) {
 			fields[i] = entry.getKey().getSQL(context);
 			bindStrings[i] = "?";
-			q.bindings.add(entry.getValue());
+			bindings.add(entry.getValue());
 			++i;
 		}
 		sb.append(Util.join(", ", fields));
@@ -887,7 +881,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		sb.append(")");
 		final String sql = sb.toString();
 
-		Util.log(sql, q.bindings);
+		Util.log(sql, bindings);
 		final Tuple2<Connection,Boolean> info = getConnRW(ds);
 		final Connection conn = info.a;
 		try {
@@ -900,7 +894,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				}
 			}
 			final PreparedStatement ps = conn.prepareStatement(sql);
-			q.setBindings(ps);
+			q.setBindings(ps, bindings);
 			_preExecute(context, conn);
 			ps.execute();
 			final int count = ps.getUpdateCount();
@@ -1183,11 +1177,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	}
 
-	String getFromClause(final SqlContext context) {
+	String getFromClause(final SqlContext context, List<Object> bindings) {
 		final List<String> tableNames = getTableNameList(context);
 		final String firstTableName = tableNames.get(0);
 		final StringBuilder sb = new StringBuilder();
-		sb.append(" from "+ firstTableName +" "+ getJoinClause(context));
+		sb.append(" from "+ firstTableName +" "+ getJoinClause(context, bindings));
 		for (final String tableName : tableNames.subList(1, tableNames.size())) {
 			sb.append(", ");
 			sb.append(tableName);
@@ -1253,7 +1247,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			final Field<R> byField, String function,
 			final Field<?>... sumFields) throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
+		List<Object> bindings = new ArrayList<Object>();
+		String fromClause = getFromClause(context, bindings);
+		initTableNameMap(true);
+		Tuple2<String, List<Object>> wcab = this.getWhereClauseAndBindings(context);
+		bindings.addAll(wcab.b);
+		String sql = fromClause + wcab.a;
 		String sums = "";
 		for (final Field<?> sumField : sumFields) {
 			sums += ", "+ function +"("+ Util.derefField(sumField, context) +") ";
@@ -1265,7 +1264,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
 		final PreparedStatement ps = conn.prepareStatement(sql);
-		setBindings(ps);
+		setBindings(ps, bindings);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
 		final Map<R,Map<Field<S>, S>> result = new LinkedHashMap<R,Map<Field<S>, S>>();
@@ -1334,13 +1333,18 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private <S> S terminalAggFunction(final Field<S> sumField,
 			String function) throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		String sql = getFromClause(context) + getWhereClauseAndSetBindings();
+		List<Object> bindings = new ArrayList<Object>();
+		String fromClause = getFromClause(context, bindings);
+		initTableNameMap(true);
+		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		bindings.addAll(wcab.b);
+		String sql = fromClause + wcab.a;
 		sql = "select "+ function +"("+ Util.derefField(sumField, context) +")"+ sql;
 		Util.log(sql, null);
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
 		final PreparedStatement ps = conn.prepareStatement(sql);
-		setBindings(ps);
+		setBindings(ps, bindings);
 		_preExecute(context, conn);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
@@ -1359,8 +1363,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		String sql = getFromClause(context)
-				+ getWhereClauseAndSetBindings();
+		List<Object> bindings = new ArrayList<Object>();
+		String fromClause = getFromClause(context, bindings);
+		initTableNameMap(true);
+		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		bindings.addAll(wcab.b);
+		String sql = fromClause + wcab.a;
 		sql = "select "+ Util.derefField(byField, context)
 				+", count("+ Util.derefField(byField, context) +")"+ sql
 				+" group by "+ Util.derefField(byField, context);
@@ -1368,7 +1376,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
 		final PreparedStatement ps = conn.prepareStatement(sql);
-		setBindings(ps);
+		setBindings(ps, bindings);
 		_preExecute(context, conn);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
@@ -1783,6 +1791,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		sb.append("DBQuery<").append(this.getType().getSimpleName()).append(">");
 		sb.append("#").append(Integer.toHexString(this.hashCode()));
 		return sb.toString();
+	}
+
+	@Override
+	public <S extends Table> Query<Join<T, S>> crossJoin(Query<S> other) {
+		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
+		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "cross join", null);
 	}
 
 //	@Override

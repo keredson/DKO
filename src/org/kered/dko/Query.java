@@ -717,6 +717,13 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public <S extends Table> Query<Join<T,S>> crossJoin(__Alias<S> table);
 
 	/**
+	 * Performs a cross join.
+	 * @param table
+	 * @return
+	 */
+	public <S extends Table> Query<Join<T,S>> crossJoin(Query<S> q);
+
+	/**
 	 * Performs a left join using the given condition.
 	 * This returns a query of the existing type.  (this is useful for filtering)
 	 * If you want a join of a combined type (so you can access the data you're joining to), use {@code Join.left()}

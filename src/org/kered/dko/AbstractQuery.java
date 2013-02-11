@@ -548,6 +548,11 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
+	public <S extends Table> Query<Join<T, S>> crossJoin(Query<S> other) {
+		return new LocalJoin(Constants.JOIN_TYPE.CROSS, Join.class, this, other, null);
+	}
+
+	@Override
 	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> table, final Condition on) {
 		return new LocalJoin(Constants.JOIN_TYPE.LEFT, Join.class, this, table, on);
 	}

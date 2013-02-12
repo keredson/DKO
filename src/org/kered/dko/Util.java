@@ -221,6 +221,8 @@ class Util {
 
 	static void log(final String sql, final List<Object> bindings) {
 		if (sql.startsWith("insert into query_size") || sql.contains("from query_size")) return;
+		if (sql.startsWith("insert into column_access") || sql.startsWith("from query_size")) return;
+		if (sql.startsWith("insert into query_execution") || sql.startsWith("select qe.description, qe.id, qe.query_hash, qe.stack_hash")) return;
 		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ join("|", bindings) +"]" : "");
 		logSql.fine(msg);
 		if (androidLoggerDebug != null) {

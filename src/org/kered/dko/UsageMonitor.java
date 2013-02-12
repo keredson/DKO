@@ -26,8 +26,8 @@ import org.kered.dko.persistence.QuerySize;
 
 class UsageMonitor<T extends Table> {
 
-	private static final int ONE_DAY = 1000*60*60*24;
-	private static final int FORTY_FIVE_DAYS = ONE_DAY * 45;
+	private static final long ONE_DAY = 1000*60*60*24;
+	private static final long FORTY_FIVE_DAYS = ONE_DAY * 45;
 	private static final int MIN_WARN_COUNT = 8;
 
 	private static final String WARN_OFF = "To turn these warnings off, "
@@ -52,11 +52,13 @@ class UsageMonitor<T extends Table> {
 	private Set<Field<?>> seenFields = new HashSet<Field<?>>();
 	private DataSource ds;
 	private boolean newQE;
+	private boolean shutdown = false;
 	private static long warnBadFKUsageCount = 0;
 
-	@Override
-	protected void finalize() throws Throwable {
+	private synchronized void shutdown() {
+		if (shutdown) return;
 		try {
+			shutdown = true;
 			updateColumnAccesses();
 			warnBadFKUsage();
 			questionUnusedColumns();
@@ -64,6 +66,11 @@ class UsageMonitor<T extends Table> {
 			t.printStackTrace();
 			log.severe(t.toString());
 		}
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		shutdown();
 		super.finalize();
 	}
 
@@ -73,7 +80,7 @@ class UsageMonitor<T extends Table> {
 			used = new HashMap<String, Map<String, ColumnAccess>>();
 		} else {
 			try {
-				used = qe.getColumnAccessSet().mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
+				used = ColumnAccess.ALL.where(ColumnAccess.QUERY_EXECUTION_ID.eq(qe.getId())).mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				used = new HashMap<String, Map<String, ColumnAccess>>();
@@ -151,8 +158,8 @@ class UsageMonitor<T extends Table> {
 				.with(ColumnAccess.FK_QUERY_EXECUTION)
 				.orderBy(Constants.DIRECTION.DESCENDING, QueryExecution.LAST_SEEN)
 				.first();
-		this.newQE = qe!=null;
-		if (qe == null) {
+		this.newQE = qe==null;
+		if (newQE) {
 			qe = new QueryExecution()
 			.setStackHash(stackHash)
 			.setQueryHash(queryHash)
@@ -314,12 +321,14 @@ class UsageMonitor<T extends Table> {
 			//System.err.println("used "+ used +" @ "+ this.queryHash);
 			final Set<Field<?>> deffer = new HashSet<Field<?>>();
 			final List<Field<?>> originalSelectedFields = query.getSelectFields(false);
-			long threshold = System.currentTimeMillis() - FORTY_FIVE_DAYS;
+			long threshold = qe.getLastSeen() - FORTY_FIVE_DAYS;
 			for (final Field<?> f : originalSelectedFields) {
 				Map<String, ColumnAccess> columns = used.get(Util.getTABLE_NAME(f.TABLE));
 				if (columns==null) continue;
 				ColumnAccess ca = columns.get(f.NAME);
-				if (ca==null || ca.getLastSeen() < threshold) deffer.add(f);
+				if (ca==null || ca.getLastSeen() < threshold) {
+					deffer.add(f);
+				}
 			}
 			if (deffer.isEmpty()) return query;
 			deffer.removeAll(pks);
@@ -391,17 +400,16 @@ class UsageMonitor<T extends Table> {
 	}
 
 	static Thread saveQuerySizes = new Thread() {
-		DataSource ds = org.kered.dko.persistence.Util.getDS();
-
 		@Override
 		public void run() {
-			if (ds==null) {
-				log.warning("could not load usage monitor datasource - not collection perf info");
-				return;
-			}
 			while (true) {
 				try {
 					final UsageMonitor um = querySizes.take();
+					DataSource ds = org.kered.dko.persistence.Util.getDS();
+					if (ds==null) {
+						log.warning("I could not load the usage monitor's datasource, so I'm stopping collecting performance metrics.");
+						return;
+					}
 					// final int id = Math.abs(um.queryHashCode);
 					final int id = um.queryHash;
 					final QuerySize qs = QuerySize.ALL.use(ds).get(

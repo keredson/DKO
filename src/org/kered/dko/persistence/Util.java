@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.Constants;
-import org.kered.dko.Context;
-import org.kered.dko.Table;
 import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.dko.datasource.SingleThreadedDataSource;
 
@@ -26,7 +24,13 @@ public class Util {
     static final String CREATE_QE_I2 = "CREATE INDEX qesh ON query_execution(stack_hash ASC);";
 
 	static DataSource ds = null;
+	private static File dbPath = null;
 	private static final Logger log = Logger.getLogger("org.kered.dko.persistence.Util");
+	
+	public static void setPersistenceDatabasePath(File f) {
+		dbPath = f;
+		ds = null;
+	}
 
 	public static DataSource getDS() {
 		if (ds == null) {
@@ -46,7 +50,9 @@ public class Util {
 			final String path = System
 					.getProperty(Constants.PROPERTY_PERSISTENCE_DB);
 			File PERSISTENCE_DB = null;
-			if (path == null) {
+			if (dbPath != null) {
+				PERSISTENCE_DB = dbPath;
+			} else if (path == null) {
 				final File BASE_DIR = new File(
 						System.getProperty("user.home"));
 				PERSISTENCE_DB = new File(BASE_DIR, ".dko_persistence.db");
@@ -72,16 +78,16 @@ public class Util {
 			ds = new SingleThreadedDataSource(new JDBCDriverDataSource(
 					Constants.DB_TYPE.SQLITE3, url), 10000, true);
 			
-			try {
-				Package pkg = Class.forName("org.kered.dko.persistence.QuerySize").getPackage();
-				Context[] contexts = {Context.getVMContext(), Context.getThreadContext(), Context.getThreadGroupContext() };
-				for (Context context : contexts) {
-					context.setDataSource(pkg, ds).setAutoUndo(false);
-				}
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				Package pkg = Class.forName("org.kered.dko.persistence.QuerySize").getPackage();
+//				Context[] contexts = {Context.getVMContext(), Context.getThreadContext(), Context.getThreadGroupContext() };
+//				for (Context context : contexts) {
+//					context.setDataSource(pkg, ds).setAutoUndo(false);
+//				}
+//			} catch (ClassNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		return ds;
 	}
@@ -94,7 +100,7 @@ public class Util {
 			rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
-			System.err.println("...init query_ecexution");
+			log.info(CREATE_QE);
 			stmt.executeUpdate(CREATE_QE);
 			stmt.executeUpdate(CREATE_QE_I1);
 			stmt.executeUpdate(CREATE_QE_I2);
@@ -110,7 +116,7 @@ public class Util {
 			rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
-			System.err.println("...init columnAccess");
+			log.info(CREATE_CA);
 			stmt.executeUpdate(CREATE_CA);
 			stmt.executeUpdate(CREATE_CA_I);
 		}
@@ -125,7 +131,7 @@ public class Util {
 			rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
-			System.err.println("...init query_size");
+			log.info(CREATE_QS);
 			stmt.executeUpdate(CREATE_QS);
 		}
 		stmt.close();

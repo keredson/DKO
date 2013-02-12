@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import org.kered.dko.Tuple.Tuple2;
+import org.kered.dko.persistence.QuerySize;
 
 
 /**
@@ -75,6 +76,9 @@ public class Context {
 	}
 
 	static DataSource getDataSource(final Class<? extends Table> cls) {
+		// don't let DB overrides effect persistence classes
+		if (QuerySize.class.getPackage().equals(cls.getPackage())) return null;
+		
 		final Context[] contexts = {getThreadContext(), getThreadGroupContext(), getVMContext()};
 		for (final Context context : contexts) {
 			DataSource ds = null;

@@ -59,7 +59,7 @@ public class SharedDBTests extends TestCase {
 	DataSource ds = null;
 	ConnectionCountingDataSource ccds = null;
 
-	private void printTestName() {
+	public static void printTestName() {
 		StackTraceElement[] st = Thread.currentThread().getStackTrace();
 		System.err.println("------------============[ "+ st[2].getMethodName() +" ]============------------");
 	}

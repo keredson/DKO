@@ -61,6 +61,8 @@ public class CodeGenerator extends Task {
 	private final Map<String,String> schemaAliases = new HashMap<String,String>();
 	private boolean useDetailedToString = false;
 	private final boolean genGson = false;
+	private String allConstType = null;
+	private String allConstFactory = null;
 
 	/**
 	 * Path to the jar file that should be generated.
@@ -107,6 +109,14 @@ public class CodeGenerator extends Task {
 	 */
 	public void setPackage(final String s) {
 		this.pkg = s;
+	}
+	
+	public void setAllConstType(final String s) {
+		this.allConstType = s;
+	}
+
+	public void setAllConstFactory(final String s) {
+		this.allConstFactory = s;
 	}
 
 	/**
@@ -322,7 +332,7 @@ public class CodeGenerator extends Task {
 			org.kered.dko.ant.ClassGenerator.go(tempDir.getAbsolutePath(), pkg,
 					stripPrefixes, stripSuffixes, schemas.getAbsolutePath(), schemaAliases,
 					fake_fks, typeMappings==null ? null : typeMappings.getAbsolutePath(),
-					dataSource, callbackPackage, enums, useDetailedToString, genGson);
+					dataSource, callbackPackage, enums, useDetailedToString, genGson, allConstType, allConstFactory);
 
 			if (dataSource != null) {
 				org.kered.dko.ant.DataSourceGenerator.go(tempDir.getAbsolutePath(), pkg, dataSource,

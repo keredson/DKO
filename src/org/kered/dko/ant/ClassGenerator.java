@@ -42,6 +42,8 @@ class ClassGenerator {
 	private JSONObject typeMappingFunctions = new JSONObject();
 	private Map<Pattern, String> schemaTypeMappings;
 	private final Map<String, String> schemaAliases;
+	private String allConstType = null;
+	private String allConstFactory = null;
 
 
 	public ClassGenerator(final String dir, final String pkg, final String[] stripPrefixes, final String[] stripSuffixes, final Map<String, String> schemaAliases) {
@@ -64,7 +66,7 @@ class ClassGenerator {
 		final String[] stripSuffixes, final String metadataFile, final Map<String, String> schemaAliases,
 		final File fakeFKsFile, final String typeMappingsFile, final String dataSource,
 		final String callbackPackage, final JSONObject enums, final boolean useDetailedToString,
-		final boolean genGson)
+		final boolean genGson, String allConstType, String allConstFactory)
 				throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
@@ -105,6 +107,8 @@ class ClassGenerator {
 			final String value = schemaTypeMappings.optString(key);
 			generator.schemaTypeMappings.put(Pattern.compile(key), value);
 		}
+		generator.allConstType = allConstType;
+		generator.allConstFactory = allConstFactory;
 
 		final JSONObject schemas = metadata.getJSONObject("schemas");
 		final JSONObject foreignKeys = metadata.getJSONObject("foreign_keys");
@@ -578,11 +582,8 @@ class ClassGenerator {
 		br.write("\t * for more usage information.  (Or the 'introduction to DKOs' document \n");
 		br.write("\t * <a href='http://nosco.googlecode.com/hg/doc/introduction.html'>here</a>)\n");
 		br.write("\t */\n");
-		br.write("\tpublic static final Query<"+ className +"> ALL = QueryFactory.IT.getQuery("
-		+ className +".class)");
-		//if (dataSourceName != null) {
-		//	br.write(".use("+ pkg +"."+ dataSourceName +"."+ pkgName.toUpperCase() +")");
-		//}
+		br.write("\tpublic static final "+ (allConstType==null ? "Query<"+ className +">" : allConstType) +" ALL = "
+				+ (allConstFactory==null ? "QueryFactory.IT.getQuery" : allConstFactory) +"("+ className +".class)");
 		br.write(";\n\n");
 		if (dataSourceName != null) {
 			br.write("\tstatic DataSource __DEFAULT_DATASOURCE = "+ pkg +"."

@@ -21,10 +21,13 @@ import javax.sql.DataSource;
  */
 public class ReflectedDataSource implements MatryoshkaDataSource {
 
+	private static final Logger log = Logger.getLogger("org.kered.dko.ReflectedDataSource");
+
 	DataSource ds = null;
 	private final String cls;
 	private final String method;
 	private String schema = null;
+	StackTraceElement[] st = Thread.currentThread().getStackTrace();
 
 	public ReflectedDataSource(final String cls, final String method) {
 		this.cls = cls;
@@ -49,19 +52,12 @@ public class ReflectedDataSource implements MatryoshkaDataSource {
 				ds = (DataSource) m.invoke(null, schema);
 			}
 			//System.err.println("ds: "+ ds);
-		} catch (final SecurityException e) {
-			throw new RuntimeException(e);
-		} catch (final NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		} catch (final ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (final IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		} catch (final IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (final InvocationTargetException e) {
+		} catch (final Exception e) {
+			log.severe("could not access "+ cls +"."+ method +": "+ e.getMessage());
 			throw new RuntimeException(e);
 		}
+		if (ds==null) throw new RuntimeException("Method "+ cls +"."+ method +" returned a null DataSource.  "
+				+"ReflectedDataSource created at:\n\t\t"+ Util.join("\n\t\t", st));
 	}
 
 	@Override
@@ -91,6 +87,7 @@ public class ReflectedDataSource implements MatryoshkaDataSource {
 	@Override
 	public boolean isWrapperFor(final Class<?> arg0) throws SQLException {
 		checkDS();
+		if (ds==null) return false;
 		if (ds.getClass().equals(arg0)) return true;
 		return ds.isWrapperFor(arg0);
 	}

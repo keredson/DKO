@@ -489,7 +489,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Tuple2<String, List<Object>> wcab = q.getWhereClauseAndBindings(context);
 		try {
 			final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
-			final String schemaWithDot = "".equals(schema) ? "" : schema + ".";
+			String schemaWithDot = "".equals(schema) ? "" : schema + ".";
 			if (q.getDBType()==DB_TYPE.MYSQL) {
 				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("MYSQL multi-table delete " +
 						"is not yet supported");
@@ -515,7 +515,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			} else if (getDBType()==DB_TYPE.SQLSERVER) {
 				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLSERVER multi-table delete " +
 						"is not yet supported");
-				final String sql = "delete"+ getFromClause(context, null) + wcab.a;
+				if (!"".equals(schemaWithDot)) schemaWithDot = schemaWithDot + ".";
+				final String sql = "delete from "+ schemaWithDot + Util.getTABLE_NAME(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps, wcab.b);

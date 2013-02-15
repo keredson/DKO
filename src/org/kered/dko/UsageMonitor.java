@@ -80,7 +80,7 @@ class UsageMonitor<T extends Table> {
 			used = new HashMap<String, Map<String, ColumnAccess>>();
 		} else {
 			try {
-				used = ColumnAccess.ALL.where(ColumnAccess.QUERY_EXECUTION_ID.eq(qe.getId())).mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
+				used = ColumnAccess.ALL.where(ColumnAccess.QUERY_EXECUTION_ID.eq(qe==null ? null : qe.getId())).mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				used = new HashMap<String, Map<String, ColumnAccess>>();
@@ -137,6 +137,7 @@ class UsageMonitor<T extends Table> {
 		if (QueryExecution.class.equals(type)) return null;
 		if (QuerySize.class.equals(type)) return null;
 		if (ColumnAccess.class.equals(type)) return null;
+		if (org.kered.dko.persistence.Util.getDS()==null) return null;
 		return new UsageMonitor<T>(query);
 	}
 

@@ -245,7 +245,8 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 				ps.cancel();
 			}
 		} catch (SQLException e2) {
-			e2.printStackTrace();
+			// some drivers don't like ps.cancel().  ignore them.
+			// e2.printStackTrace();
 		} catch (AbstractMethodError e) {
 			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
 				// ignore - bad jdbc driver

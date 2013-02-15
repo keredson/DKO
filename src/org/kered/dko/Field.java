@@ -1042,6 +1042,7 @@ public class Field<T> implements Cloneable {
 			Field<T> f = (Field<T>) this.clone();
 			f.boundTable = table;
 			f.unBound  = isBound() ? this.unBound : this;
+			f.underlying = this;
 			return f;
 		} catch (final CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -1056,6 +1057,7 @@ public class Field<T> implements Cloneable {
 			Field<T> f = (Field<T>) this.clone();
 			f.boundTableInfo = tableInfo;
 			f.unBound  = isBound() ? this.unBound : this;
+			f.underlying = this;
 			return f;
 		} catch (final CloneNotSupportedException e) {
 			e.printStackTrace();

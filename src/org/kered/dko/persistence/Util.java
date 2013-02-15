@@ -31,6 +31,8 @@ public class Util {
 		dbPath = f;
 		ds = null;
 	}
+	
+	static boolean warnedNoSqlite3 = false;
 
 	public static DataSource getDS() {
 		if (ds == null) {
@@ -44,7 +46,10 @@ public class Util {
 				}
 			}
 			if (driver==null) {
-				log.warning("could not find any sqlite3 jdbc drivers");
+				if (!warnedNoSqlite3) {
+					log.warning("Could not find any Sqlite3 JDBC drivers.  All query optimization and snapshot functionality is turned off.");
+					warnedNoSqlite3 = true;
+				}
 				return null;
 			}
 			final String path = System

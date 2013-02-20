@@ -320,7 +320,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 				try {
 					tmpFile  = File.createTempFile("dko_local_join_", ".db");
-					//tmpFile.deleteOnExit();
+					tmpFile.deleteOnExit();
 					System.err.println(tmpFile.getPath());
 					String url = "jdbc:sqlite:" + tmpFile.getPath();
 					DataSource ds = new SingleThreadedDataSource(new JDBCDriverDataSource(Constants.DB_TYPE.SQLITE3, url), 10000, false);

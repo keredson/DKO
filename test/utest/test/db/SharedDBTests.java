@@ -1027,6 +1027,19 @@ public class SharedDBTests extends TestCase {
 		}
 	}
 
+	public void testClearTag() throws SQLException {
+		printTestName();
+		Tag<String> tag = new Field.Tag<String>();
+		System.err.println("tag: "+ tag);
+		Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
+		Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
+		Field<String> taggedField = tag.findField(q);
+		System.err.println("taggedField: "+ taggedField);
+		assertNotNull(taggedField);
+		q = tag.clearFrom(q);
+		assertNull(tag.findField(q));
+	}
+
     public void testJoinInnerQuery() throws SQLException {
 		printTestName();
 		final long c1 = Item.ALL.count();

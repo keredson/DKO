@@ -1301,6 +1301,17 @@ public class Field<T> implements Cloneable {
 			}
 			return ret;
 		}
+		
+		public <S extends Table> Query<S> clearFrom(Query<S> q) {
+			List<Field<?>> fields = q.getSelectFields();
+			for (int i=0; i<fields.size(); ++i) {
+				Field<?> field = fields.get(i);
+				if (field.hasTag(this)) {
+					fields.set(i, field.untag((Tag) this));
+				}
+			}
+			return q.select(fields);
+		}
 
 		@Override
 		public int hashCode() {

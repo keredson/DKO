@@ -1303,7 +1303,7 @@ public class Field<T> implements Cloneable {
 		}
 		
 		public <S extends Table> Query<S> clearFrom(Query<S> q) {
-			List<Field<?>> fields = q.getSelectFields();
+			List<Field<?>> fields = new ArrayList<Field<?>>(q.getSelectFields());
 			for (int i=0; i<fields.size(); ++i) {
 				Field<?> field = fields.get(i);
 				if (field.hasTag(this)) {

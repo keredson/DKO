@@ -825,7 +825,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 							ps.setString(i++, o.toString());
 						}
 					}
-					if (o instanceof Blob) ps.setBlob(i++, (Blob) o);
+					else if (o instanceof Blob) ps.setBlob(i++, (Blob) o);
 					else ps.setObject(i++, o);
 					//System.err.print("\t"+ o +"");
 				}

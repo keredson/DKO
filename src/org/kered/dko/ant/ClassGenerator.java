@@ -1295,6 +1295,7 @@ class ClassGenerator {
 				break;
 			}
 		} //*/
+		proposed = proposed.replaceAll("/", "_");
 		String proposed2 = underscoreToCamelCase(dePlural(proposed), true);
 		if (tableToClassName.containsValue(proposed2)) {
 			proposed2 = underscoreToCamelCase(proposed, true);
@@ -1375,7 +1376,9 @@ class ClassGenerator {
 		}
 	}
 
-	private Class<? extends Object> getFieldClassType(final String type) {
+	private Class<? extends Object> getFieldClassType(String type) {
+		type = type.toLowerCase();
+		if ("string".equals(type)) return String.class;
 		if ("varchar".equals(type)) return String.class;
 		if ("char".equals(type)) return Character.class;
 		if ("nvarchar".equals(type)) return String.class;
@@ -1392,8 +1395,11 @@ class ClassGenerator {
 		if ("smallint".equals(type)) return Integer.class;
 		if ("tinyint".equals(type)) return Integer.class;
 		if ("bigint".equals(type)) return Long.class;
+		if ("long".equals(type)) return Long.class;
 		if ("integer".equals(type)) return Integer.class;
+		if ("int".equals(type)) return Integer.class;
 		if ("decimal".equals(type)) return Double.class;
+		if ("double".equals(type)) return Double.class;
 		if ("money".equals(type)) return Double.class;
 		if ("numeric".equals(type)) return Double.class;
 		if ("float".equals(type)) return Double.class;

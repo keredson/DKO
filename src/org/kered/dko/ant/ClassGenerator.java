@@ -247,15 +247,26 @@ class ClassGenerator {
 		file.delete();
 	}
 
+	static String splitCamelCase(String s) {
+		   return s.replaceAll(
+		      String.format("%s|%s|%s",
+		         "(?<=[A-Z])(?=[A-Z][a-z])",
+		         "(?<=[^A-Z])(?=[A-Z])",
+		         "(?<=[A-Za-z])(?=[^A-Za-z])"
+		      ),
+		      " "
+		   );
+		}
 
-	private static String getFieldName(final String column) {
-		final String proposed = column
+	private static String getFieldName(String column) {
+		if (!column.contains("_")) column = splitCamelCase(column);
+		column = column
 			.replace("%", "_PERCENT")
 			.replace("-", "_DASH_")
 			.replaceAll("\\W", "_")
 			.toUpperCase();
-		if (Constants.INVALID_FIELD_NAMES.contains(proposed)) return ""+ proposed +"_FIELD";
-		return proposed;
+		if (Constants.INVALID_FIELD_NAMES.contains(column)) return ""+ column +"_FIELD";
+		return column;
 	}
 
 	private static String getFieldName(final Collection<String> columns) {
@@ -310,13 +321,13 @@ class ClassGenerator {
 			br.write("\t/**\n");
 			br.write("\t * Represents the database field: "+ table +"."+ column +"\n");
 			br.write("\t */\n");
-			br.write("\tpublic static final Field<");
+			br.write("\tpublic static final org.kered.dko.Field<");
 			final String sqlType = columns.getString(column);
 			br.write(getFieldType(pkgName, table, column, sqlType));
 			final String fieldName = getFieldName(column);
 			final String methodName = getInstanceMethodName(column);
 			br.write("> "+ fieldName);
-			br.write(" = new Field<"+ getFieldType(pkgName, table, column, sqlType) +">(");
+			br.write(" = new org.kered.dko.Field<"+ getFieldType(pkgName, table, column, sqlType) +">(");
 			br.write(index +", ");
 			br.write(className +".class, ");
 			br.write("\""+ column +"\", ");
@@ -333,7 +344,7 @@ class ClassGenerator {
 		br.write("\t/**\n");
 		br.write("\t * A special object defining what fields make up the primary key of this table\n");
 		br.write("\t */\n");
-		br.write("\tpublic static Field.PK<"+ className +"> PK = new Field.PK<"+ className +">(");
+		br.write("\tpublic static org.kered.dko.Field.PK<"+ className +"> PK = new org.kered.dko.Field.PK<"+ className +">(");
 		for (int i=0; i<pks.length(); ++i) {
 			br.write(pks.getString(i).toUpperCase());
 			if (i<pks.length()-1) br.write(", ");
@@ -477,7 +488,7 @@ class ClassGenerator {
 		br.write("\t\tif(o.__NOSCO_UPDATED_VALUES != null) __NOSCO_UPDATED_VALUES = (java.util.BitSet) o.__NOSCO_UPDATED_VALUES.clone();\n\n");
 		br.write("\t}\n\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tprotected "+ className +"(final Field[] _fields, final Object[] _objects, final int _start, final int _end) {\n");
+		br.write("\tprotected "+ className +"(final org.kered.dko.Field[] _fields, final Object[] _objects, final int _start, final int _end) {\n");
 		br.write("\t\tif (_fields.length != _objects.length)\n\t\t\tthrow new IllegalArgumentException(");
 		br.write("\"fields.length != objects.length => \"+ _fields.length +\" != \"+ _objects.length");
 		br.write(" +\"\");\n");

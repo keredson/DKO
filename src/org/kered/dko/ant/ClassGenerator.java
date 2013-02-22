@@ -582,7 +582,7 @@ class ClassGenerator {
 		br.write("\t * for more usage information.  (Or the 'introduction to DKOs' document \n");
 		br.write("\t * <a href='http://nosco.googlecode.com/hg/doc/introduction.html'>here</a>)\n");
 		br.write("\t */\n");
-		br.write("\tpublic static final "+ (allConstType==null ? "Query<"+ className +">" : allConstType) +" ALL = "
+		br.write("\tpublic static final "+ (allConstType==null ? "org.kered.dko.Query" : allConstType) +"<"+ className +"> ALL = "
 				+ (allConstFactory==null ? "QueryFactory.IT.getQuery" : allConstFactory) +"("+ className +".class)");
 		br.write(";\n\n");
 		if (dataSourceName != null) {

@@ -98,12 +98,13 @@ public abstract class SQLFunction<T> {
 		return new SQLFunction<java.sql.Date>() {
 			@Override
 			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
-				if (context.dbType == DB_TYPE.MYSQL) {
+				final DB_TYPE dbType = context==null ? null : context.dbType;
+				if (dbType == DB_TYPE.MYSQL) {
 					sb.append("date_add(");
 					f1.getSQL(sb, bindings, context);
 					sb.append(", interval ? "+ component +")");
 					bindings.add(count);
-				} else if ((context.dbType == DB_TYPE.HSQL)) {
+				} else if ((dbType == DB_TYPE.HSQL)) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, ");
 					bindings.add(count);
 					f1.getSQL(sb, bindings, context);

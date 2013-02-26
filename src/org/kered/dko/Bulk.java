@@ -275,11 +275,8 @@ public class Bulk {
 					final Field<?> field = fields[j];
 					Object o = table.get(field);
 					o = table.__NOSCO_PRIVATE_mapType(o);
-					// hack for sql server which otherwise gives:
-					// com.microsoft.sqlserver.jdbc.SQLServerException:
-					// The conversion from UNKNOWN to UNKNOWN is unsupported.
-					if (o instanceof Character) ps.setString(k++, o.toString());
-					else ps.setObject(k++, o);
+					Util.setBindingWithTypeFixes(ps, k, o);
+					++k;
 					//System.err.print(o + ", ");
 				}
 				//System.err.println();

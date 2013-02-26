@@ -259,7 +259,9 @@ class ClassGenerator {
 		}
 
 	private static String getFieldName(String column) {
-		if (!column.contains("_")) column = splitCamelCase(column);
+		if (!column.contains("_") && column.matches("[A-Z]") && column.matches("[a-z]")) {
+			column = splitCamelCase(column);
+		}
 		column = column
 			.replace("%", "_PERCENT")
 			.replace("-", "_DASH_")

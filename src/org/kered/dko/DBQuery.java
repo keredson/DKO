@@ -812,22 +812,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (bindings!=null) {
 				for (Object o : bindings) {
 					o = main.__NOSCO_PRIVATE_mapType(o);
-					if (o instanceof Character) {
-						//System.err.println("ps.getClass().toString() "+ ps.getClass().toString() +" "+ ps.getClass().toString().hashCode());
-						int psHash = ps.getClass().toString().hashCode();
-						if (psHash==-18396152 || psHash==-592363600) {
-							// blacklist this stupid fucking POS PreparedStatement impl...
-							ps.setBytes(i++, o.toString().getBytes());
-						} else {
-							// hack for sql server which otherwise gives:
-							// com.microsoft.sqlserver.jdbc.SQLServerException:
-							// The conversion from UNKNOWN to UNKNOWN is unsupported.
-							ps.setString(i++, o.toString());
-						}
-					}
-					else if (o instanceof Blob) ps.setBlob(i++, (Blob) o);
-					else ps.setObject(i++, o);
-					//System.err.print("\t"+ o +"");
+					Util.setBindingWithTypeFixes(ps, i, o);
+					++i;
 				}
 			}
 		} catch (final InstantiationException e) {

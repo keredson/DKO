@@ -56,8 +56,7 @@ class TmpTableBuilder {
 					++i;
 					for (int j=0; j<row.length; ++j) {
 						final Object t = row[j];
-						if (t instanceof Character) ps.setString(1, t.toString());
-						else ps.setObject(j+1, t);
+						Util.setBindingWithTypeFixes(ps, j+1, t);
 					}
 					ps.addBatch();
 					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;

@@ -406,8 +406,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 					Field<?> field = fields.get(i);
 					Object o = row.get(field);
 					o = row.__NOSCO_PRIVATE_mapType(o);
-					if (o instanceof Character) ps.setString(i+1, o.toString());
-					else ps.setObject(i+1, o);
+					Util.setBindingWithTypeFixes(ps, i+1, o);
 				}
 				++count;
 				ps.execute();

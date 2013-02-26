@@ -119,8 +119,7 @@ public abstract class Condition {
 				int added = 0;
 				for (final T t : set) {
 					++i;
-					if (t instanceof Character) ps.setString(1, t.toString());
-					else ps.setObject(1, t);
+					Util.setBindingWithTypeFixes(ps, 1, t);
 					ps.addBatch();
 					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;
 				}

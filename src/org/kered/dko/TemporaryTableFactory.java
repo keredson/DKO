@@ -162,8 +162,7 @@ class TemporaryTableFactory {
 					for (int j=0; j<fields.size(); ++j) {
 						final Field<?> field = fields.get(j);
 						final Object o = t.get(field);
-						if (o instanceof Character) ps.setString(j+1, t.toString());
-						else ps.setObject(j+1, o);
+						Util.setBindingWithTypeFixes(ps, j+1, o);
 					}
 					ps.addBatch();
 					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;

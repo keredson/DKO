@@ -318,7 +318,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			@Override
 			public synchronized void close() {
 				di.close();
-				//if (tmpFile.exists()) tmpFile.delete();
+				if (tmpFile.exists()) tmpFile.delete();
 			}
 
 			@Override
@@ -333,7 +333,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 				try {
 					tmpFile  = File.createTempFile("dko_local_join_", ".db");
-					//tmpFile.deleteOnExit();
+					tmpFile.deleteOnExit();
 					System.err.println("creating "+ tmpFile.getPath());
 					log.fine("creating "+ tmpFile.getPath());
 					String url = "jdbc:sqlite:" + tmpFile.getPath();

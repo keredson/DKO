@@ -259,7 +259,7 @@ class ClassGenerator {
 		}
 
 	private static String getFieldName(String column) {
-		if (!column.contains("_") && column.matches("[A-Z]") && column.matches("[a-z]")) {
+		if (!column.contains("_") && column.matches(".*[A-Z].*") && column.matches(".*[a-z].*")) {
 			column = splitCamelCase(column);
 		}
 		column = column
@@ -1308,7 +1308,7 @@ class ClassGenerator {
 				break;
 			}
 		} //*/
-		proposed = proposed.replaceAll("/", "_");
+		proposed = proposed.replaceAll("\\W", "_");
 		String proposed2 = underscoreToCamelCase(dePlural(proposed), true);
 		if (tableToClassName.containsValue(proposed2)) {
 			proposed2 = underscoreToCamelCase(proposed, true);

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.kered.dko.Condition.Binary;
+import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Condition.Ternary;
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Table.__SimplePrimaryKey;
@@ -251,7 +252,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition lt(final T v) {
-		return new Binary(this, "<", v);
+		return new Binary2(this, "<", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) < 0;
+			}
+		};
 	}
 
 	/**
@@ -260,7 +267,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition lt(final Field<T> v) {
-		return new Binary(this, "<", v);
+		return new Binary2(this, "<", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) < 0;
+			}
+		};
 	}
 
 	/**
@@ -278,7 +291,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition lte(final T v) {
-		return new Binary(this, "<=", v);
+		return new Binary2(this, "<=", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) <= 0;
+			}
+		};
 	}
 
 	/**
@@ -287,7 +306,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition lte(final Field<T> v) {
-		return new Binary(this, "<=", v);
+		return new Binary2(this, "<=", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) <= 0;
+			}
+		};
 	}
 
 	/**
@@ -305,7 +330,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition gt(final T v) {
-		return new Binary(this, ">", v);
+		return new Binary2(this, ">", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) > 0;
+			}
+		};
 	}
 
 	/**
@@ -314,7 +345,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition gt(final Field<T> v) {
-		return new Binary(this, ">", v);
+		return new Binary2(this, ">", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) > 0;
+			}
+		};
 	}
 
 	/**
@@ -332,7 +369,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition gte(final T v) {
-		return new Binary(this, ">=", v);
+		return new Binary2(this, ">=", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) >= 0;
+			}
+		};
 	}
 
 	/**
@@ -341,7 +384,13 @@ public class Field<T> implements Cloneable {
 	 * @return
 	 */
 	public Condition gte(final Field<T> v) {
-		return new Binary(this, ">=", v);
+		return new Binary2(this, ">=", v) {
+			@Override
+			boolean matches(Object v1, Object v2) {
+				if (v1==null) return false;
+				return ((Comparable<T>)v1).compareTo((T) v2) >= 0;
+			}
+		};
 	}
 
 	/**

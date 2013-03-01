@@ -75,6 +75,16 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 		init();
 	}
 	
+	SelectFromOAI(Query<T> q, PeekableClosableIterator<Object[]> src) {
+		this.src = src;
+		query = new DBQuery<T>(q.getType()).onlyFields(q.getSelectFields());
+		usageMonitor = null;
+		allTableInfos = query.getAllTableInfos();
+		final List<Field<?>> selectFieldsList = q.getSelectFields();
+		selectedFields = DBRowIterator.toArray(selectFieldsList);
+		init();
+	}
+
 	private void init() {
 		// revert from tagged fields to their untagged srcs
 		for (int i=0; i<selectedFields.length; ++i) {

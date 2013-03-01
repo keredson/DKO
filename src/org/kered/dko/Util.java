@@ -362,6 +362,7 @@ class Util {
 	}
 
 	static String getTABLE_NAME(final Class<? extends Table> t) {
+		if (Table.class.equals(t)) return "table";
 		try {
 			return (String) t.getField("_TABLE_NAME").get(null);
 		} catch (final Exception e) {

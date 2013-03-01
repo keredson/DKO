@@ -337,7 +337,13 @@ public abstract class Table {
 	 * @return
 	 */
 	public String toStringDetailed() {
-		return toString();
+		StringBuffer sb = new StringBuffer();
+		sb.append("[").append(this.getClass().getSimpleName());
+		for (Field<?> field : fields()) {
+			sb.append(" ").append(field.NAME).append(":").append(this.get(field));
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 
 	/**

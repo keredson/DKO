@@ -1,7 +1,6 @@
 package org.kered.dko;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,288 +12,224 @@ import javax.sql.DataSource;
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Field.FK;
-import org.kered.dko.Table.__Alias;
 
 class FilteringQuery<T extends Table> extends AbstractQuery<T> implements MatryoshkaQuery<T> {
 
-	private final List<Query<? extends Table>> q = new ArrayList<Query<? extends Table>>();
+	private Query<T> q;
+	private Condition condition = null;
+	private long top = -1;
+
+	FilteringQuery(final FilteringQuery<T> src) {
+		super(src.getType());
+		this.q = src.q;
+		this.condition = src.condition;
+		this.top = src.top;
+	}
 
 	FilteringQuery(final Query<T> q, final Condition... conditions) {
 		super(q);
-		this.q.add(q);
+		this.q = q;
+		if (conditions==null || conditions.length==0) return;
+		condition = conditions[0];
+		if (conditions.length>1) {
+			Condition[] c2 = new Condition[conditions.length-1];
+			System.arraycopy(conditions, 1, c2, 0, conditions.length-1);
+			condition = condition.and(c2);
+		}
 	}
 
 	@Override
 	public Query<T> where(final Condition... conditions) {
-		return new FilteringQuery<T>(this, conditions);
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		if (condition==null) {
+			condition = conditions[0];
+			if (conditions.length>1) {
+				Condition[] c2 = new Condition[conditions.length-1];
+				System.arraycopy(conditions, 1, c2, 0, conditions.length-1);
+				condition = condition.and(c2);
+			}
+		} else {
+			this.condition = this.condition.and(conditions);
+		}
+		return ret;
 	}
 
 	@Override
-	public Query<T> exclude(final Condition... conditions) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> orderBy(Field<?>... fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.orderBy(fields);
+		return ret;
 	}
 
 	@Override
-	public Query<T> orderBy(final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> limit(final long n) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> limit(long n) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.limit(-1);
+		ret.top = n;
+		return ret;
 	}
 
 	@Override
 	public Query<T> distinct() {
-		// TODO Auto-generated method stub
-		return null;
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.distinct();
+		return ret;
+	}
+
+	@Override
+	public Query<T> avg() {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.avg();
+		return ret;
 	}
 
 	@Override
 	public Query<T> max() {
-		// TODO Auto-generated method stub
-		return null;
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.max();
+		return ret;
 	}
 
 	@Override
 	public Query<T> min() {
-		// TODO Auto-generated method stub
-		return null;
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.min();
+		return ret;
 	}
 
 	@Override
-	public Query<T> with(final FK... fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> with(FK... fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.with(fields);
+		return ret;
 	}
 
 	@Override
-	public Query<T> deferFields(final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> deferFields(Field<?>... fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.deferFields(fields);
+		return ret;
 	}
 
 	@Override
-	public Query<T> deferFields(final Collection<Field<?>> fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> deferFields(Collection<Field<?>> fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.deferFields(fields);
+		return ret;
 	}
 
 	@Override
-	public Query<T> onlyFields(final Collection<Field<?>> fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> onlyFields(Collection<Field<?>> fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.onlyFields(fields);
+		return ret;
 	}
 
 	@Override
-	public Query<T> onlyFields(final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> onlyFields(Field<?>... fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.onlyFields(fields);
+		return ret;
 	}
 
 	@Override
-	public int update() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.orderBy(fields);
+		return ret;
 	}
 
 	@Override
-	public int delete() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public Query<T> set(Field<?> key, Object value) {
+		throw new IllegalStateException("this is a read-only query");
 	}
 
 	@Override
-	public Iterable<T> all() {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> set(Map<Field<?>, Object> values) {
+		throw new IllegalStateException("this is a read-only query");
 	}
 
 	@Override
-	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> use(DataSource ds) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.use(ds);
+		return ret;
 	}
 
 	@Override
-	public Query<T> set(final Field<?> key, final Object value) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> use(Connection conn) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.use(conn);
+		return ret;
 	}
 
 	@Override
-	public Query<T> set(final Map<Field<?>, Object> values) {
-		// TODO Auto-generated method stub
-		return null;
+	public Query<T> use(DB_TYPE type) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.use(type);
+		return ret;
 	}
 
 	@Override
-	public Object insert() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public <R, S extends Number> Map<R, S> sumBy(final Field<S> sumField, final Field<R> byField)
-			throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public <S extends Number> S sum(final Field<S> f) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> use(final DataSource ds) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> use(final Connection conn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> use(final DB_TYPE type) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> cross(final __Alias<? extends Table> t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> cross(final Class<? extends Table> t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> in(final Collection<T> set) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S> Iterable<S> asIterableOf(final Field<S> field) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> toMemory() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Condition exists() {
+	public Query<T> in(Collection<T> set) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public DataSource getDataSource() {
-		// TODO Auto-generated method stub
-		return null;
+		return q.getDataSource();
 	}
 
 	@Override
 	public List<Field<?>> getSelectFields() {
-		// TODO Auto-generated method stub
-		return null;
+		return q.getSelectFields();
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Iterator<T>() {
+
+			final Iterator<T> i = q.iterator();
+			T next = null;
+			int count = 0;
+
+			@Override
+			public boolean hasNext() {
+				if (next!=null) return true;
+				if (top > -1 && count >= top) return false;
+				while (i.hasNext()) {
+					T candidate = i.next();
+					if (condition.matches(candidate)) {
+						next = candidate;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public T next() {
+				T ret = next;
+				next = null;
+				++count;
+				return ret;
+			}
+
+			@Override
+			public void remove() {
+				i.remove();
+			}
+		};
 	}
 
 	@Override
-	public List<Query<? extends Table>> getUnderlying() {
-		return q;
+	public Collection<Query<? extends Table>> getUnderlying() {
+		Collection<Query<? extends Table>> ret = new ArrayList();
+		ret.add(q);
+		return ret;
 	}
 
-	@Override
-	public <S extends Table> Query<Join<T, S>> crossJoin(final Class<S> table) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public <S extends Table> Query<Join<T, S>> crossJoin(final __Alias<S> table) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(final __Alias<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(final __Alias<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(final __Alias<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final Class<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(final __Alias<S> table, final Condition on) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> avg() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

@@ -297,6 +297,18 @@ public abstract class Condition {
 			}
 		}
 
+		public And(final Condition[] conditions) {
+			for (final Condition condition : conditions) {
+				if (condition instanceof And) {
+					for (final Condition c : ((And)condition).conditions) {
+						this.conditions.add(c);
+					}
+				} else {
+					this.conditions.add(condition);
+				}
+			}
+		}
+
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append("(");
@@ -689,8 +701,18 @@ public abstract class Condition {
 			if ((o1 instanceof SQLFunction) || (o2 instanceof SQLFunction)) {
 				throw new RuntimeException("Condition checking of functions cached queries not yet supported.");
 			}
-			// TODO Auto-generated method stub
-			return false;
+			Object v1 = o1 instanceof Field ? t.get((Field) o1) : o1;
+			Object v2 = o2 instanceof Field ? t.get((Field) o2) : o2;
+			return matches(v1, v2);
+		}
+		
+		boolean matches(Object v1, Object v2) {
+			throw new RuntimeException("In memory checking of this condition type is not supported yet.");
+		}
+
+		Object deO(Table t, Object o) {
+			if (o instanceof Field) return t.get((Field) o);
+			return o;
 		}
 
 		@Override

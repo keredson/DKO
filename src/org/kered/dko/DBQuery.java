@@ -400,7 +400,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> onlyFields(final Collection<Field<?>> fields) {
+	public DBQuery<T> onlyFields(final Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySet = new LinkedHashSet<Field<?>>();
 		for (final Field<?> field : fields) {

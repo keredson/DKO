@@ -36,7 +36,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 	private Query<? extends Table> qL;
 	private Query<? extends Table> qR;
-	private Condition condition;
+	private Condition joinCondition;
 	private final JOIN_TYPE joinType;
 	private long limit = -1;
 
@@ -48,7 +48,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		joinType = q.joinType;
 		qL = q.qL;
 		qR = q.qR;
-		condition = q.condition;
+		joinCondition = q.joinCondition;
 		limit = q.limit;
 	}
 
@@ -68,24 +68,31 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		if (on!=null) joinAwareWhere(on);
 	}
 
-	private void joinAwareWhere(final Condition... conditions) {
-		for (final Condition condition : conditions) {
-			if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qL)) {
-				qL = qL.where(condition);
-			} else if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qR)) {
-				qR = qR.where(condition);
-			} else {
-				if (this.condition==null) this.condition = condition;
-				else this.condition = this.condition.and(condition);
-			}
+	private void joinAwareWhere(final Condition condition) {
+		if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qL)) {
+			qL = qL.where(condition);
+		} else if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qR)) {
+			qR = qR.where(condition);
+		} else {
+			if (this.joinCondition==null) this.joinCondition = condition;
+			else this.joinCondition = this.joinCondition.and(condition);
 		}
 	}
 
 	@Override
 	public Query<T> where(final Condition... conditions) {
-		final LocalJoin<T> q = new LocalJoin<T>(this);
-		q.joinAwareWhere(conditions);
-		return q;
+		Condition condition = new Condition.And(conditions);
+		if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qL)) {
+			LocalJoin<T> ret = new LocalJoin<T>(this);
+			ret.qL = ret.qL.where(condition);
+			return ret;
+		}
+		if (SoftJoinUtil.conditionIsAllReferencingQuery(condition, qR)) {
+			LocalJoin<T> ret = new LocalJoin<T>(this);
+			ret.qR = ret.qR.where(condition);
+			return ret;
+		}
+		return new FilteringQuery<T>(this, conditions);
 	}
 
 	@Override
@@ -220,9 +227,9 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			private Map<Field, String> fieldNameOverridesR;
 
 			{
-			    final boolean qLpk = SoftJoinUtil.doesConditionCoverPK(qL.getType(), condition);
-			    final boolean qRpk = SoftJoinUtil.doesConditionCoverPK(qR.getType(), condition);
-			    System.err.println("qLpk:"+ qLpk +" qRpk:"+qRpk);
+			    final boolean qLpk = SoftJoinUtil.doesConditionCoverPK(qL.getType(), joinCondition);
+			    final boolean qRpk = SoftJoinUtil.doesConditionCoverPK(qR.getType(), joinCondition);
+			    //System.err.println("qLpk:"+ qLpk +" qRpk:"+qRpk);
 
 			    boolean loadRFirst = false;
 			    if (qLpk || qRpk) {
@@ -230,8 +237,8 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			    } else {
 				    final long qLCount = UsageStats.estimateRowCount(qL);
 				    final long qRCount = UsageStats.estimateRowCount(qR);
-					System.err.println("qLCount "+ qL.getType().getName() +" h:"+ qL.hashCode() +" c:"+ qLCount);
-					System.err.println("qRCount "+ qR.getType().getName() +" h:"+ qR.hashCode() +" c:"+ qRCount);
+					//System.err.println("qLCount "+ qL.getType().getName() +" h:"+ qL.hashCode() +" c:"+ qLCount);
+					//System.err.println("qRCount "+ qR.getType().getName() +" h:"+ qR.hashCode() +" c:"+ qRCount);
 			    	loadRFirst = qLCount > qRCount;
 			    }
 
@@ -239,11 +246,11 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			    
 			    if (loadRFirst) {
 			    	fieldNameOverridesR = load(qR, "tr", ds);
-			    	Query<? extends Table> qLf = createFilteredQ(qL, condition, "tr", ds);
+			    	Query<? extends Table> qLf = createFilteredQ(qL, joinCondition, "tr", ds);
 			    	fieldNameOverridesL = load(qLf, "tl", ds);
 			    } else {
 			    	fieldNameOverridesL = load(qL, "tl", ds);
-			    	Query<? extends Table> qRf = createFilteredQ(qR, condition, "tl", ds);
+			    	Query<? extends Table> qRf = createFilteredQ(qR, joinCondition, "tl", ds);
 			    	fieldNameOverridesR = load(qRf, "tr", ds);
 			    }
 			    
@@ -259,22 +266,19 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			private void initQuery(DataSource ds) {
 				qLfields = qL.getSelectFields();
 				qRfields = qR.getSelectFields();
-				Set<String> usedFieldNames = new HashSet<String>();
 				Map<Field,String> fieldNameOverrides = new HashMap<Field,String>();
 				StringBuffer sb = new StringBuffer();
 				sb.append("select ");
 				for (Field<?> field : qLfields) {
 					String fieldName = fieldNameOverridesL.get(field);
-					if (fieldName==null) fieldName = field.NAME;
-					sb.append("tl.").append(fieldName).append(", ");
-					usedFieldNames.add(fieldName);
+					if (fieldName==null) fieldName = "tl."+ field.NAME;
+					sb.append(fieldName).append(", ");
 					fieldNameOverrides.put(field, fieldName);
 				}
 				for (Field<?> field : qRfields) {
 					String fieldName = fieldNameOverridesR.get(field);
-					if (fieldName==null) fieldName = field.NAME;
-					sb.append("tr.").append(fieldName).append(", ");
-					usedFieldNames.add(fieldName);
+					if (fieldName==null) fieldName = "tr."+ field.NAME;
+					sb.append(fieldName).append(", ");
 					fieldNameOverrides.put(field, fieldName);
 				}
 				sb.delete(sb.length()-2, sb.length()).append(" "); // delete the last comma
@@ -288,13 +292,15 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 				} else {
 					sb.append("from tl ").append(joinType).append(" tr");
 				}
-				if (condition!=null) sb.append(" on ").append(condition.getSQL(context));
+				if (joinCondition!=null) sb.append(" on ").append(joinCondition.getSQL(context));
 				String sql = sb.toString();
 		    	di = new DualIterator(ds, sql, qLfields, qRfields);
 		    	if (qL instanceof DBQuery) iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
 		    	else if (qL instanceof LocalJoin) iL = ((LocalJoin)qL).buildIteratorFrom(di.getLeftIterator());
+		    	else iL = new SelectFromOAI(qL, di.getLeftIterator());
 		    	if (qR instanceof DBQuery) iR = new SelectFromOAI((DBQuery) qR, di.getRightIterator());
 		    	else if (qR instanceof LocalJoin) iR = ((LocalJoin)qR).buildIteratorFrom(di.getRightIterator());
+		    	else iR = new SelectFromOAI(qR, di.getRightIterator());
 			}
 
 			@Override
@@ -312,6 +318,13 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			@Override
 			public synchronized void close() {
 				di.close();
+				//if (tmpFile.exists()) tmpFile.delete();
+			}
+
+			@Override
+			protected void finalize() throws Throwable {
+				close();
+				super.finalize();
 			}
 
 			private DataSource createDS() {
@@ -320,8 +333,9 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 				try {
 					tmpFile  = File.createTempFile("dko_local_join_", ".db");
-					tmpFile.deleteOnExit();
-					System.err.println(tmpFile.getPath());
+					//tmpFile.deleteOnExit();
+					System.err.println("creating "+ tmpFile.getPath());
+					log.fine("creating "+ tmpFile.getPath());
 					String url = "jdbc:sqlite:" + tmpFile.getPath();
 					DataSource ds = new SingleThreadedDataSource(new JDBCDriverDataSource(Constants.DB_TYPE.SQLITE3, url), 10000, false);
 					return ds;
@@ -339,11 +353,11 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
     	final ClosableIterator<Table> iL;
 		if (qL instanceof DBQuery) iL = new SelectFromOAI((DBQuery) qL, di.getLeftIterator());
     	else if (qL instanceof LocalJoin) iL = ((LocalJoin)qL).buildIteratorFrom(di.getLeftIterator());
-    	else iL = null;
+    	else iL = new SelectFromOAI(qL, di.getLeftIterator());
     	final ClosableIterator<Table> iR;
 		if (qR instanceof DBQuery) iR = new SelectFromOAI((DBQuery) qR, di.getRightIterator());
     	else if (qR instanceof LocalJoin) iR = ((LocalJoin)qR).buildIteratorFrom(di.getRightIterator());
-    	else iR = null;
+    	else iR = new SelectFromOAI(qR, di.getRightIterator());
 		return new ClosableIterator<Table>() {
 
 			@Override
@@ -399,7 +413,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			conn = ds.getConnection();
 			conn.setAutoCommit(false);
 			ps = conn.prepareStatement(sql);
-			System.err.println(sql);
+			Util.log(sql, null);
 			int count = 0;
 			for (Table row : q) {
 				for (int i=0; i<fields.size(); ++i) {
@@ -415,7 +429,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			}
 			//if (count%256!=0) ps.executeBatch();
 			conn.commit();
-			System.err.println("loaded "+ count +" rows into "+ table);
+			log.fine("loaded "+ count +" rows into "+ table);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -455,7 +469,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		try {
 			conn = ds.getConnection();
 			stmt = conn.createStatement();
-			System.err.println(sql);
+			Util.log(sql, null);
 			stmt.execute(sql);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -477,7 +491,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		try {
 			conn = ds.getConnection();
 			ps = conn.createStatement();
-			System.err.println(sql);
+			Util.log(sql, null);
 			ResultSet rs = ps.executeQuery(sql);
 			while (rs.next()) {
 				ret.add(rs.getObject(1));

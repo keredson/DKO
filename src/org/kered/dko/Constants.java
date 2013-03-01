@@ -257,6 +257,7 @@ public class Constants {
 	 * A Java property that controls where Nosco keeps cached performance metrics.
 	 * By default: ~/.dko_optimizations
 	 */
+	@Deprecated
 	public static final String PROPERTY_CACHE_DIR = "org.kered.dko.cache_dir";
 	@Deprecated
 	static final String PROPERTY_CACHE_DIR_OLD = "org.nosco.cache_dir";

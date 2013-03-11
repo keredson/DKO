@@ -218,6 +218,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		return new ClosableIterator<T>() {
 			
 			private File tmpFile = null;
+			private boolean deleteTmpFile = Util.truthy(System.getProperty(Constants.PROPERTY_DELETE_LOCAL_TMP_DATABASES, "true"));
 			private List<Field<?>> qLfields;
 			private List<Field<?>> qRfields;
 			private ClosableIterator<Table> iL;
@@ -225,6 +226,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			private DualIterator di;
 			private Map<Field, String> fieldNameOverridesL;
 			private Map<Field, String> fieldNameOverridesR;
+			private long count = 0;
 
 			{
 			    final boolean qLpk = SoftJoinUtil.doesConditionCoverPK(qL.getType(), joinCondition);
@@ -260,7 +262,9 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 			@Override
 			public boolean hasNext() {
-				return iL.hasNext() || iR.hasNext();
+				boolean ret = count < limit && (iL.hasNext() || iR.hasNext());
+				if (!ret) close();
+				return ret;
 			}
 
 			private void initQuery(DataSource ds) {
@@ -305,6 +309,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 			@Override
 			public T next() {
+				++count;
 				Table left = iL.hasNext() ? iL.next() : null;
 				Table right = iR.hasNext() ? iR.next() : null;
 				return (T) new Join<Table,Table>(left, right);
@@ -318,7 +323,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 			@Override
 			public synchronized void close() {
 				di.close();
-				if (tmpFile.exists()) tmpFile.delete();
+				if (deleteTmpFile && tmpFile.exists()) tmpFile.delete();
 			}
 
 			@Override
@@ -333,9 +338,14 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 				try {
 					tmpFile  = File.createTempFile("dko_local_join_", ".db");
-					tmpFile.deleteOnExit();
-					System.err.println("creating "+ tmpFile.getPath());
-					log.fine("creating "+ tmpFile.getPath());
+					if (deleteTmpFile) {
+						log.fine("created "+ tmpFile.getPath());
+						tmpFile.deleteOnExit();
+					} else {
+						log.warning("created "+ tmpFile.getPath() +" (not scheduled for deletion because "
+								+ Constants.PROPERTY_DELETE_LOCAL_TMP_DATABASES +"="
+								+ System.getProperty(Constants.PROPERTY_DELETE_LOCAL_TMP_DATABASES) +")");
+					}
 					String url = "jdbc:sqlite:" + tmpFile.getPath();
 					DataSource ds = new SingleThreadedDataSource(new JDBCDriverDataSource(Constants.DB_TYPE.SQLITE3, url), 10000, false);
 					return ds;
@@ -484,6 +494,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private static List getDistinctFrom(Field<?> key, String otherTable, DataSource ds) {
+		if (key==null) throw new RuntimeException("key field cannot be null");
 		List ret = new ArrayList();
 		String sql = "select distinct "+ key.NAME +" from "+ otherTable;
 		Connection conn = null;

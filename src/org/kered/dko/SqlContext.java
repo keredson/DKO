@@ -73,20 +73,28 @@ class SqlContext {
 
 	Set<String> getPossibleTableMatches(Class<? extends Table> table) {
 		Set<String> names = new HashSet<String>();
-		for (TableInfo ti : q.tableInfos) {
-			if (table.equals(ti.tableClass)) names.add(ti.tableName);
+		if (q!=null && q.tableInfos!=null) {
+			for (TableInfo ti : q.tableInfos) {
+				if (table.equals(ti.tableClass)) names.add(ti.tableName);
+			}
 		}
-		for (JoinInfo ji : q.joins) {
-			if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
-			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+		if (q!=null && q.joins!=null) {
+			for (JoinInfo ji : q.joins) {
+				if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
+				if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+			}
 		}
-		for (JoinInfo ji : q.joinsToOne) {
-			if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
-			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+		if (q!=null && q.joinsToOne!=null) {
+			for (JoinInfo ji : q.joinsToOne) {
+				if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
+				if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+			}
 		}
-		for (JoinInfo ji : q.joinsToMany) {
-			if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
-			if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+		if (q!=null && q.joinsToMany!=null) {
+			for (JoinInfo ji : q.joinsToMany) {
+				if (table.equals(ji.reffedTableInfo.tableClass)) names.add(ji.reffedTableInfo.tableName);
+				if (table.equals(ji.reffingTableInfo.tableClass)) names.add(ji.reffingTableInfo.tableName);
+			}
 		}
 		return names;
 	}

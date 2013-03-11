@@ -584,6 +584,8 @@ public abstract class Condition {
 		}
 
 		public <T> Binary(final Field<T> field, final String cmp, final Field<T> field2) {
+			if (field==null) throw new RuntimeException("field cannot be null");
+			if (field2==null) throw new RuntimeException("field2 cannot be null");
 			this.field = field;
 			this.cmp = cmp;
 			this.field2 = field2;

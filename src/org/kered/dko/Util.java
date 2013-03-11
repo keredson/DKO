@@ -364,7 +364,9 @@ class Util {
 	static String getTABLE_NAME(final Class<? extends Table> t) {
 		if (Table.class.equals(t)) return "table";
 		try {
-			return (String) t.getField("_TABLE_NAME").get(null);
+			java.lang.reflect.Field tableNameField = t.getDeclaredField("_TABLE_NAME");
+			tableNameField.setAccessible(true);
+			return (String) tableNameField.get(null);
 		} catch (final Exception e) {
 			log.warning(e.toString() +" --- DKO class "+ t.getSimpleName()
 					+" was generated prior to DKO v2.2.0.  falling back to TABLE_NAME()...");

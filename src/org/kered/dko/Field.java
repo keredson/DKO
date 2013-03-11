@@ -116,7 +116,7 @@ public class Field<T> implements Cloneable {
 	public final Class<T> TYPE;
 	final String SQL_TYPE;
 	final String JAVA_NAME;
-	public final Method GETTER;
+	public transient final Method GETTER;
 
 	String boundTable = null;
 	Field<T> unBound = null;

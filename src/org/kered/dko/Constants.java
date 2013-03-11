@@ -244,6 +244,8 @@ public class Constants {
 	@Deprecated
 	static final String PROPERTY_OPTIMIZE_SELECT_FIELDS_OLD = "org.nosco.optimize_select_fields";
 
+	public static final String PROPERTY_DELETE_LOCAL_TMP_DATABASES = "org.kered.dko.delete_local_tmp_databases";
+
 	/**
 	 * A Java property that controls the automatic warning of excessive lazy loading
 	 * (which can seriously degrade both application and database performance).

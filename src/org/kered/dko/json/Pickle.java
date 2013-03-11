@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.kered.dko.Table;
+
 public class Pickle {
 
 	public Pickle() {}
@@ -215,7 +217,8 @@ public class Pickle {
 		}
 		for (String key : keySet) {
 			if (key.startsWith("-")) continue;
-			final Object v = o.get(key);
+			Object v = o.get(key);
+			if (v instanceof JSONObject.Null) v = null;
 			Class<?> fieldClass = cls;
 			final String origKey = key;
 			while (key.startsWith("~")) {
@@ -264,6 +267,9 @@ public class Pickle {
 			} else
 			if (v instanceof JSONObject) {
 				f.set(obj, deserialize(v, seen));
+			} else
+			if (v==null) {
+				// do nothing
 			}
 			else throw new RuntimeException("i don't know how to set a "+ v +" to a "+ f);
 		}
@@ -292,6 +298,21 @@ public class Pickle {
 	}
 
 	private Object buildIt(final Class<?> cls, final JSONObject o, final Set<String> keySet, final Map<Integer, Object> seen) throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, JSONException, SecurityException, ClassNotFoundException, NoSuchFieldException, NoSuchMethodException {
+		if (Class.class.equals(cls) && keySet.contains("name")) {
+			return Class.forName(o.getString("name"));
+		}
+		if (org.kered.dko.Field.class.equals(cls)) {
+			int index = o.getInt("INDEX");
+			String name = o.getString("NAME");
+			String javaName = o.getString("JAVA_NAME");
+			String methodName = "get" + name.substring(0,1).toUpperCase() + name.substring(1);
+			Class table = (Class) buildIt(Class.class, o.getJSONObject("TABLE"), o.getJSONObject("TABLE").keySet(), seen);
+			Class type = (Class) buildIt(Class.class, o.getJSONObject("TYPE"), o.getJSONObject("TYPE").keySet(), seen);
+			String sqlType = o.getString("SQL_TYPE");
+			// Field(final int index, final Class<? extends Table> table, final String name, final String javaName, final String methodName, final Class<T> type, final String sqlType)
+			org.kered.dko.Field f = new org.kered.dko.Field(index, table, name, javaName, methodName, type, sqlType);
+			return f;
+		}
 		final InstanceCreator<?> ic = creators.get(cls);
 		if (ic != null) {
 			final Map<Field, Object> data = new HashMap<Field, Object>();
@@ -330,7 +351,7 @@ public class Pickle {
 			final Set<String> keys = new HashSet<String>();
 			for (final String key : keySet) if (!key.startsWith("-") && !key.startsWith("~")) keys.add(key);
 			if (keys.size() != 1) {
-				throw new RuntimeException("no no-arg constructors found and have too many keys to try to match a 1-arg constructor: "+ keys);
+				throw new RuntimeException("no no-arg constructors found for "+ cls +", and i have too many keys to try to match a 1-arg constructor: "+ keys);
 			}
 			final String key = keys.iterator().next();
 			for (final Constructor<?> c : cls.getDeclaredConstructors()) {

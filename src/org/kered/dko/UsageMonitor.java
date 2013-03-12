@@ -87,6 +87,9 @@ class UsageMonitor<T extends Table> {
 			}			
 		}
 		long threshold = System.currentTimeMillis() - ONE_DAY;
+		if (seenFields==null) {
+			System.err.println("Well, seenFields shouldn't be null here, but it is.  WTF?");
+		}
 		for (Field<?> f : seenFields) {
 			String tableName = Util.getTABLE_NAME(f.TABLE);
 			Map<String, ColumnAccess> columns = used.get(tableName);

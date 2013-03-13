@@ -72,7 +72,10 @@ public class Util {
 				checkQueryExecution(conn);
 				checkColumnAccess(conn);
 			} catch (final SQLException e) {
-				e.printStackTrace();
+				log.warning("I could not confirm the state of the persistence database ("+ PERSISTENCE_DB.getPath() 
+						+"), so the usage monitor will be diabled for this query.  This will not effect its output, "
+						+ "only its speed.  This is the underlying error: "+ e);
+				return null;
 			} finally {
 				try {
 					conn.close();

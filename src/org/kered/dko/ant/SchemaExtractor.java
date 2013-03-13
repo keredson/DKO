@@ -293,7 +293,7 @@ public class SchemaExtractor extends Task {
 				ResultSet rs = stmt.executeQuery("pragma table_info("+ tableName +");");
 				while (rs.next()) {
 					String columnName = rs.getString(2);
-					String columnType = rs.getString(3).toLowerCase();
+					String columnType = rs.getString(3);
 					columns.put(columnName, columnType);
 				}
 			}
@@ -346,10 +346,10 @@ public class SchemaExtractor extends Task {
 				+ "from information_schema.columns order by table_schema, table_name, column_name;");
 		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			final String schema = rs.getString("table_schema").toLowerCase();
-			final String table = rs.getString("table_name").toLowerCase();
-			final String column = rs.getString("column_name").toLowerCase();
-			final String type = rs.getString("data_type").toLowerCase();
+			final String schema = rs.getString("table_schema");
+			final String table = rs.getString("table_name");
+			final String column = rs.getString("column_name");
+			final String type = rs.getString("data_type");
 
 			if (ignoredSchemas.contains(schema))
 				continue;
@@ -638,9 +638,9 @@ public class SchemaExtractor extends Task {
 				"order by a.table_catalog, a.table_name, b.column_name, a.constraint_name;");
 		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
-			final String schema = rs.getString("table_catalog").toLowerCase();
-			final String table = rs.getString("table_name").toLowerCase();
-			final String column = rs.getString("column_name").toLowerCase();
+			final String schema = rs.getString("table_catalog");
+			final String table = rs.getString("table_name");
+			final String column = rs.getString("column_name");
 
 			if (ignoredSchemas.contains(schema)) continue;
 			if (includeSchemas != null && !includeSchemas.contains(schema))
@@ -762,12 +762,12 @@ public class SchemaExtractor extends Task {
 
 		while (rs.next()) {
 			final String constraint_name = rs.getString("constraint_name");
-			final String schema = rs.getString("table_schema").toLowerCase();
-			final String table = rs.getString("table_name").toLowerCase();
-			final String column = rs.getString("column_name").toLowerCase();
-			final String referenced_schema = rs.getString("referenced_table_schema").toLowerCase();
-			final String referenced_table = rs.getString("referenced_table_name").toLowerCase();
-			final String referenced_column = rs.getString("referenced_column_name").toLowerCase();
+			final String schema = rs.getString("table_schema");
+			final String table = rs.getString("table_name");
+			final String column = rs.getString("column_name");
+			final String referenced_schema = rs.getString("referenced_table_schema");
+			final String referenced_table = rs.getString("referenced_table_name");
+			final String referenced_column = rs.getString("referenced_column_name");
 
 			if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
 
@@ -813,12 +813,12 @@ public class SchemaExtractor extends Task {
 
 		while (rs.next()) {
 			final String constraint_name = rs.getString("constraint_name");
-			final String schema = rs.getString("table_schema").toLowerCase();
-			final String table = rs.getString("table_name").toLowerCase();
-			final String column = rs.getString("column_name").toLowerCase();
-			final String referenced_schema = rs.getString("referenced_table_schema").toLowerCase();
-			final String referenced_table = rs.getString("referenced_table_name").toLowerCase();
-			final String referenced_column = rs.getString("referenced_column_name").toLowerCase();
+			final String schema = rs.getString("table_schema");
+			final String table = rs.getString("table_name");
+			final String column = rs.getString("column_name");
+			final String referenced_schema = rs.getString("referenced_table_schema");
+			final String referenced_table = rs.getString("referenced_table_name");
+			final String referenced_column = rs.getString("referenced_column_name");
 
 			if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
 
@@ -863,13 +863,13 @@ public class SchemaExtractor extends Task {
 		final ResultSet rs = s.getResultSet();
 
 		while (rs.next()) {
-			final String constraint_name = rs.getString("fk_name").toLowerCase();
-			final String schema = rs.getString("fktable_schem").toLowerCase();
-			final String table = rs.getString("fktable_name").toLowerCase();
-			final String column = rs.getString("fkcolumn_name").toLowerCase();
-			final String referenced_schema = rs.getString("pktable_schem").toLowerCase();
-			final String referenced_table = rs.getString("pktable_name").toLowerCase();
-			final String referenced_column = rs.getString("pkcolumn_name").toLowerCase();
+			final String constraint_name = rs.getString("fk_name");
+			final String schema = rs.getString("fktable_schem");
+			final String table = rs.getString("fktable_name");
+			final String column = rs.getString("fkcolumn_name");
+			final String referenced_schema = rs.getString("pktable_schem");
+			final String referenced_table = rs.getString("pktable_name");
+			final String referenced_column = rs.getString("pkcolumn_name");
 
 			if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
 

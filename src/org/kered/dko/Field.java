@@ -1153,6 +1153,14 @@ public class Field<T> implements Cloneable {
 			return null;
 		}
 	}
+	
+	/**
+	 * Returns all the tags this field has been tagged with.
+	 */
+	public Set<Tag<?>> getTags() {
+		if (tags==null) return Collections.emptySet();
+		else return new HashSet<Tag<?>>(tags);
+	}
 
 	/**
 	 * Returns true if this field has been tagged by this object;

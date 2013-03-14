@@ -76,31 +76,31 @@ class Util {
 	@SuppressWarnings("unchecked")
 	static <S> S getTypedValueFromRS(final ResultSet rs, final int i, final Field<S> field) throws SQLException {
 		final Class<S> type = field.TYPE;
-		if (type == Byte.class) {
+		if (type==Byte.class || type==byte.class) {
 			final Byte v = Byte.valueOf(rs.getByte(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
-		if (type == Double.class) {
+		if (type==Double.class || type==double.class) {
 			final Double v = Double.valueOf(rs.getDouble(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
-		if (type == Float.class) {
+		if (type==Float.class || type==float.class) {
 			final Float v = Float.valueOf(rs.getFloat(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
-		if (type == Integer.class) {
+		if (type==Integer.class || type==int.class) {
 			final Integer v = Integer.valueOf(rs.getInt(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
-		if (type == Long.class) {
+		if (type==Long.class || type==long.class) {
 			final Long v = Long.valueOf(rs.getLong(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
-		if (type == Short.class) {
+		if (type==Short.class || type==short.class) {
 			final Short v = Short.valueOf(rs.getShort(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
-		if (type == Character.class) {
+		if (type==Character.class || type==char.class) {
 			final String s = rs.getString(i);
 			if (s != null && s.length() > 0) return (S) Character.valueOf(s.charAt(0));
 			else return null;

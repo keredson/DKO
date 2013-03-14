@@ -262,7 +262,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 			@Override
 			public boolean hasNext() {
-				boolean ret = count < limit && (iL.hasNext() || iR.hasNext());
+				boolean ret = (count<limit || limit<0) && (iL.hasNext() || iR.hasNext());
 				if (!ret) close();
 				return ret;
 			}

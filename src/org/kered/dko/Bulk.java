@@ -380,8 +380,8 @@ public class Bulk {
 			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 			final StringBuffer sb = new StringBuffer();
 			sb.append("insert into ");
-			String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()));
-			sb.append((schema==null || "".equals(schema) ? "" : schema+sep) + Util.getTABLE_NAME(table.getClass()));
+			String schema = Context.getSchemaToUse(ds, Util.getSchemaName(table.getClass()));
+			sb.append((schema==null || "".equals(schema) ? "" : schema+sep) + Util.getTableName(table.getClass()));
 			sb.append(" (");
 			sb.append(Util.joinFields(dbType, ", ", fields));
 			sb.append(") values (");
@@ -444,8 +444,8 @@ public class Bulk {
 			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 			final StringBuffer sb = new StringBuffer();
 			sb.append("update ");
-			sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()))
-					+sep+ Util.getTABLE_NAME(table.getClass()));
+			sb.append(Context.getSchemaToUse(ds, Util.getSchemaName(table.getClass()))
+					+sep+ Util.getTableName(table.getClass()));
 			sb.append(" set ");
 			for (int i=0; i<fields.length-pks.size(); ++i) {
 				sb.append(fields[i].getSQL(dbType));
@@ -486,8 +486,8 @@ public class Bulk {
 			final String sep = dbType==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 			final StringBuffer sb = new StringBuffer();
 			sb.append("delete from ");
-			sb.append(Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(table.getClass()))
-					+sep+ Util.getTABLE_NAME(table.getClass()));
+			sb.append(Context.getSchemaToUse(ds, Util.getSchemaName(table.getClass()))
+					+sep+ Util.getTableName(table.getClass()));
 			sb.append(" where ");
 			sb.append(Util.joinFields(dbType, "=? and ", fields));
 			sb.append("=?;");

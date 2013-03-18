@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -28,7 +30,7 @@ import org.kered.dko.datasource.MatryoshkaDataSource;
 import org.kered.dko.json.JSONException;
 import org.kered.dko.json.JSONObject;
 
-class Util {
+public class Util {
 
 	static String derefField(final Field<?> field, final SqlContext context) {
 		if (context == null) return field.getSQL(context);
@@ -41,7 +43,7 @@ class Util {
 		SqlContext tmp = context;
 		while (tmp != null) {
 			for (final TableInfo info : tmp.tableInfos) {
-				selectedTables.add(getSCHEMA_NAME(info.tableClass) +"."+ getTABLE_NAME(info.tableClass));
+				selectedTables.add(getSchemaName(info.tableClass) +"."+ getTableName(info.tableClass));
 				if (info.nameAutogenned && sameTable(field.TABLE, info.tableClass)) {
 					unboundTables.add(info);
 				}
@@ -55,13 +57,13 @@ class Util {
 		} else if (unboundTables.size() > 1) {
 			final List<String> x = new ArrayList<String>();
 			for (final TableInfo info : unboundTables) {
-				x.add(Util.getSCHEMA_NAME(info.tableClass) +"."+ getTABLE_NAME(info.tableClass));
+				x.add(Util.getSchemaName(info.tableClass) +"."+ getTableName(info.tableClass));
 			}
 			throw new RuntimeException("field "+ field +
 					" is ambigious over the tables {"+ join(",", x) +"}");
 		} else {
 			final TableInfo theOne = unboundTables.iterator().next();
-			return (theOne.tableName == null ? getTABLE_NAME(theOne.tableClass) : theOne.tableName)
+			return (theOne.tableName == null ? getTableName(theOne.tableClass) : theOne.tableName)
 					+ "."+ field.getSQL(context);
 		}
 	}
@@ -123,7 +125,7 @@ class Util {
 		if (t1 == null && t2 == null) return true;
 		if (t1 == null || t2 == null) return false;
 		if (t1 == t2) return true;
-		return getSCHEMA_NAME(t1).equals(getSCHEMA_NAME(t2)) && getTABLE_NAME(t1) == getTABLE_NAME(t2);
+		return getSchemaName(t1).equals(getSchemaName(t2)) && getTableName(t1) == getTableName(t2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -361,6 +363,16 @@ class Util {
 		}
 	}
 
+	static Map<Class<?>,String> knownSchemaNames = new ConcurrentHashMap<Class<?>,String>();
+	public static String getSchemaName(final Class<? extends Table> t) {
+		String schema = knownSchemaNames.get(t);
+		if (schema==null) {
+			schema = getSCHEMA_NAME(t);
+			knownSchemaNames.put(t, schema);
+		}
+		return schema;
+	}
+
 	static String getTABLE_NAME(final Class<? extends Table> t) {
 		if (Table.class.equals(t)) return "table";
 		try {
@@ -376,6 +388,17 @@ class Util {
 				throw new RuntimeException(e1);
 			}
 		}
+	}
+
+	static Map<Class<?>,String> knownTableNames = new ConcurrentHashMap<Class<?>,String>();
+	public static String getTableName(final Class<? extends Table> t) {
+		String table = knownTableNames.get(t);
+		if (table==null) {
+			table = getTABLE_NAME(t);
+			knownTableNames.put(t, table);
+		}
+		return table;
+		
 	}
 
 	static DataSource getDefaultDataSource(final Class<? extends Table> type) {

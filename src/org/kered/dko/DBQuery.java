@@ -423,11 +423,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		final String schema = Util.getSCHEMA_NAME(ofType);
+		final String schema = Util.getSchemaName(ofType);
 		if (schema!=null && !"".equals(schema)) {
 			sb.append(Context.getSchemaToUse(ds, schema)).append(sep);
 		}
-		sb.append(Util.getTABLE_NAME(ofType));
+		sb.append(Util.getTableName(ofType));
 		sb.append(" set ");
 		final String[] fields = new String[data.size()];
 		final List<Object> bindings = new ArrayList<Object>();
@@ -488,12 +488,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		q.tableInfos.get(0).tableName = null;
 		Tuple2<String, List<Object>> wcab = q.getWhereClauseAndBindings(context);
 		try {
-			final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+			final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ofType));
 			String schemaWithDot = "".equals(schema) ? "" : schema + ".";
 			if (q.getDBType()==DB_TYPE.MYSQL) {
 				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("MYSQL multi-table delete " +
 						"is not yet supported");
-				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + wcab.a;
+				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps, wcab.b);
@@ -504,7 +504,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			} else if (getDBType()==DB_TYPE.SQLITE3) {
 				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLITE3 multi-table delete " +
 						"is not yet supported");
-				final String sql = "delete from " + schemaWithDot + Util.getTABLE_NAME(ofType) + wcab.a;
+				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps, wcab.b);
@@ -516,7 +516,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLSERVER multi-table delete " +
 						"is not yet supported");
 				if (!"".equals(schemaWithDot)) schemaWithDot = schemaWithDot + ".";
-				final String sql = "delete from "+ schemaWithDot + Util.getTABLE_NAME(ofType) + wcab.a;
+				final String sql = "delete from "+ schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps, wcab.b);
@@ -581,21 +581,21 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private void initTableNameMap(final boolean bindTables) {
 		tableNameMap = new HashMap<String,Set<String>>();
 		for (final TableInfo ti : tableInfos) {
-			final String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+			final String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
 			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTableName(ti.tableClass));
 		}
 		for (JoinInfo join : joins) {
 			TableInfo ti = join.reffingTableInfo;
 			if (ti!=null) {
-				String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+				String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
 				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-				tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+				tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTableName(ti.tableClass));
 			}
 			ti = join.reffedTableInfo;
-			String id = Util.getSCHEMA_NAME(ti.tableClass) +"."+ Util.getTABLE_NAME(ti.tableClass);
+			String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
 			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
-			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTABLE_NAME(ti.tableClass));
+			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTableName(ti.tableClass));
 		}
 	}
 
@@ -694,7 +694,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private String genTableName(final Class<? extends Table> table, final Collection<String> tableNames) {
-		final String name = Util.getTABLE_NAME(table);
+		final String name = Util.getTableName(table);
 		String base = "";
 		for (final String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
 		String proposed = null;
@@ -847,9 +847,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("insert into ");
-		final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ofType));
+		final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ofType));
 		if (schema != null && !"".equals(schema)) sb.append(schema).append(sep);
-		sb.append(Util.getTABLE_NAME(ofType));
+		sb.append(Util.getTableName(ofType));
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
 		final String[] bindStrings = new String[q.data.size()];
@@ -948,8 +948,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (ti.dummyTable != null) {
 				names.add((dbType==DB_TYPE.SQLSERVER ? "#" : "") + ti.dummyTable.name +" "+ ti.tableName);
 			} else {
-				final String schema = Context.getSchemaToUse(ds, Util.getSCHEMA_NAME(ti.tableClass));
-				final String noContextTableName = "".equals(schema) ? Util.getTABLE_NAME(ti.tableClass) : schema+"."+Util.getTABLE_NAME(ti.tableClass);
+				final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ti.tableClass));
+				final String noContextTableName = "".equals(schema) ? Util.getTableName(ti.tableClass) : schema+"."+Util.getTableName(ti.tableClass);
 				final String fullTableName = context==null ? noContextTableName : context.getFullTableName(ti);
 				names.add(fullTableName +" "+ ti.tableName);
 			}
@@ -1068,9 +1068,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			sb.append(fkField.toString());
 			sb.append("/");
 		}
-		sb.append(Util.getSCHEMA_NAME(refingTable.getClass()));
+		sb.append(Util.getSchemaName(refingTable.getClass()));
 		sb.append(".");
-		sb.append(Util.getTABLE_NAME(refingTable.getClass()));
+		sb.append(Util.getTableName(refingTable.getClass()));
 		return sb.toString();
 	}
 

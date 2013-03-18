@@ -91,7 +91,7 @@ class UsageMonitor<T extends Table> {
 			System.err.println("Well, seenFields shouldn't be null here, but it is.  WTF?");
 		}
 		for (Field<?> f : seenFields) {
-			String tableName = Util.getTABLE_NAME(f.TABLE);
+			String tableName = Util.getTableName(f.TABLE);
 			Map<String, ColumnAccess> columns = used.get(tableName);
 			ColumnAccess ca = columns==null ? null : columns.get(f.NAME);
 			if (ca == null) {
@@ -327,7 +327,7 @@ class UsageMonitor<T extends Table> {
 			final List<Field<?>> originalSelectedFields = query.getSelectFields(false);
 			long threshold = qe.getLastSeen() - FORTY_FIVE_DAYS;
 			for (final Field<?> f : originalSelectedFields) {
-				Map<String, ColumnAccess> columns = used.get(Util.getTABLE_NAME(f.TABLE));
+				Map<String, ColumnAccess> columns = used.get(Util.getTableName(f.TABLE));
 				if (columns==null) continue;
 				ColumnAccess ca = columns.get(f.NAME);
 				if (ca==null || ca.getLastSeen() < threshold) {
@@ -426,8 +426,8 @@ class UsageMonitor<T extends Table> {
 								.setId(id)
 								.setHashCode(um.queryHash)
 								.setSchemaName(
-										Util.getSCHEMA_NAME(um.queryType))
-								.setTableName(Util.getTABLE_NAME(um.queryType))
+										Util.getSchemaName(um.queryType))
+								.setTableName(Util.getTableName(um.queryType))
 								.setRowCount(um.rowCount).insert(ds);
 					} else {
 						qs.setRowCount(ma(um.rowCount, qs.getRowCount()));

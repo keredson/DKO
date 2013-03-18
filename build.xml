@@ -456,6 +456,21 @@ public class BuildInfo {
     </java>
   </target>
 
+  <target name="performance-test-core" depends="unit-test-build-mysql">
+    <javac srcdir="test/performance" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
+   	/>
+    <java fork="yes" classname="performance.MicroBenchmarks">
+      <classpath>
+        <pathelement location="bin_test"/>
+        <pathelement location="${lib_nosco_jar}"/>
+        <pathelement location="${dep_junit_jar}"/>
+        <pathelement location="${dep_hsqldb_jar}"/>
+        <pathelement location="${dep_mysql_jar}"/>
+      </classpath>
+    </java>
+  </target>
+
   <target name="unit-test-json" depends="jar">
     <javac srcdir="test/utest" destdir="bin_test" debug="on" 
     	classpath="${lib_nosco_jar}:${all_deps}"

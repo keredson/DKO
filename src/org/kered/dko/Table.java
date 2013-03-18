@@ -30,7 +30,7 @@ public abstract class Table {
 	 */
 	@Deprecated
 	protected String SCHEMA_NAME() {
-		return Util.getSCHEMA_NAME(this.getClass());
+		return Util.getSchemaName(this.getClass());
 	}
 
 	/**
@@ -229,8 +229,8 @@ public abstract class Table {
 
 		public __Alias(final Class<S> table, final String alias) {
 			this.table = table;
-			this.schema_name = Util.getSCHEMA_NAME(table);
-			this.table_name = Util.getTABLE_NAME(table);
+			this.schema_name = Util.getSchemaName(table);
+			this.table_name = Util.getTableName(table);
 			this.alias = alias;
 			Query<S> all = null;
 			try {
@@ -385,7 +385,7 @@ public abstract class Table {
 	}
 
 	String TABLE_NAME(final SqlContext sqlContext) {
-		return Util.getTABLE_NAME(this.getClass());
+		return Util.getTableName(this.getClass());
 	}
 
 }

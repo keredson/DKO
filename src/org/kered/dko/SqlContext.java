@@ -61,13 +61,13 @@ class SqlContext {
 
 	String getFullTableName(final Class<? extends Table> tableClass) {
 		final StringBuilder sb = new StringBuilder();
-		String schema = Util.getSCHEMA_NAME(tableClass);
+		String schema = Util.getSchemaName(tableClass);
 		if (schema != null && !"".equals(schema)) {
 			schema = Context.getSchemaToUse(getRootQuery().getDataSource(), schema);
 			sb.append(schema);
 			sb.append(dbType==Constants.DB_TYPE.SQLSERVER ? ".dbo." : ".");
 		}
-		sb.append(Util.getTABLE_NAME(tableClass));
+		sb.append(Util.getTableName(tableClass));
 		return sb.toString();
 	}
 

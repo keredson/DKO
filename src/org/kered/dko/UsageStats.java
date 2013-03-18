@@ -33,8 +33,8 @@ class UsageStats {
 				qs.setLastSeen(System.currentTimeMillis());
 				Class<? extends Table> type = q1.getType();
 				try {
-					qs.setSchemaName(Util.getSCHEMA_NAME(type));
-					qs.setTableName(Util.getTABLE_NAME(type));
+					qs.setSchemaName(Util.getSchemaName(type));
+					qs.setTableName(Util.getTableName(type));
 				} catch (Exception e) {
 					log.warning("could not get schema or table info from type: "+ type +" --- "+ e);
 				}

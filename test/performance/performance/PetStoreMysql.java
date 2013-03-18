@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.nosco.Bulk;
-import org.nosco.unittest.nosco_test_jpetstore.Category;
-import org.nosco.unittest.nosco_test_jpetstore.Item;
-import org.nosco.unittest.nosco_test_jpetstore.Product;
+import org.kered.dko.Bulk;
+import org.kered.dko.unittest.nosco_test_jpetstore.Category;
+import org.kered.dko.unittest.nosco_test_jpetstore.Item;
+import org.kered.dko.unittest.nosco_test_jpetstore.Product;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 

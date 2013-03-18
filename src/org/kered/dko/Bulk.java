@@ -171,7 +171,7 @@ public class Bulk {
 	 */
 	public <T extends Table> long updateAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
-		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis()-1;
 		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Updater<T>> updaters = new HashMap<String,Updater<T>>();
@@ -179,7 +179,7 @@ public class Bulk {
 			if (t.__NOSCO_UPDATED_VALUES==null) continue;
 			++c;
 			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
-				try { Thread.currentThread().sleep(1000); }
+				try { Thread.sleep(500); }
 				catch (InterruptedException e) { /* ignore */ }
 			}
 			final String key = t.__NOSCO_UPDATED_VALUES.toString();

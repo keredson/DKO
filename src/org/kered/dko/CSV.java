@@ -38,7 +38,7 @@ public class CSV {
 		List<Field<?>> fields = null;
 		for (final T t : items) {
 			if (first) {
-				fields = new ArrayList<Field<?>>(Util.getFIELDS(t.getClass()));
+				fields = new ArrayList<Field<?>>(Util.getFields(t.getClass()));
 				final PK<T> pk = Util.getPK(t);
 				final List<Field<?>> pks = pk==null ? null : pk.GET_FIELDS();
 				if (pks != null) {
@@ -167,7 +167,7 @@ public class CSV {
 							final String[] headers = line.split(",");
 							fields = new Field<?>[headers.length];
 							fieldConstructors  = new Constructor<?>[fields.length];
-							final List<Field<?>> clsFields = Util.getFIELDS(cls);
+							final List<Field<?>> clsFields = Util.getFields(cls);
 							for (int i=0; i<fields.length; ++i) {
 								for (int j=0; j<clsFields.size(); ++j) {
 									if (clsFields.get(j).NAME.equals(headers[i])) {

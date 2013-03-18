@@ -754,7 +754,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
 					for (final Field<?> other : onlySet) {
-						List<Field<?>> fields_ti = ti.innerQuery==null ? Util.getFIELDS(ti.tableClass) : ti.innerQuery.getSelectFields();
+						List<Field<?>> fields_ti = ti.innerQuery==null ? Util.getFields(ti.tableClass) : ti.innerQuery.getSelectFields();
 						for (final Field<?> field : fields_ti) {
 							if (field.sameField(other) && ti.nameAutogenned) {
 								fields.add(bind ? other.from(tableName) : other);
@@ -778,7 +778,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				for (final TableInfo ti : allTableInfos) {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
-					for (final Field<?> field : Util.getFIELDS(ti.tableClass)) {
+					for (final Field<?> field : Util.getFields(ti.tableClass)) {
 						if(deferSet==null || !deferSet.contains(field)) {
 							fields.add(bind ? field.from(tableName) : field);
 							++c;

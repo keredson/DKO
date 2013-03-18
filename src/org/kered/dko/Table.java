@@ -48,7 +48,7 @@ public abstract class Table {
 	 */
 	@Deprecated
 	public List<Field<?>> FIELDS() {
-		return Util.getFIELDS(this.getClass());
+		return Util.getFields(this.getClass());
 	}
 
 	/**
@@ -302,7 +302,7 @@ public abstract class Table {
 	    final int prime = 31;
 	    int result = 1;
 	    final Field.PK<?> pk = Util.getPK(this);
-	    final List<Field<?>> fields = pk == null ? Util.getFIELDS(this.getClass()) : pk.GET_FIELDS();
+	    final List<Field<?>> fields = pk == null ? Util.getFields(this.getClass()) : pk.GET_FIELDS();
 	    for (final Field<?> f : fields) {
 	    	final Object o = this.get(f);
 		    result = prime * result + ((o == null) ? 0 : o.hashCode());
@@ -316,7 +316,7 @@ public abstract class Table {
 		if (other == null) return false;
 		if (!(other instanceof Table)) return false;
 	    final Field.PK<?> pk = Util.getPK(this);
-	    final List<Field<?>> fields = pk == null ? Util.getFIELDS(this.getClass()) : pk.GET_FIELDS();
+	    final List<Field<?>> fields = pk == null ? Util.getFields(this.getClass()) : pk.GET_FIELDS();
 	    for (final Field<?> f : fields) {
 	    	final Object o1 = this.get(f);
 	    	final Object o2 = ((Table)other).get(f);

@@ -163,6 +163,16 @@ public class Util {
 		}
 	}
 
+	static Map<Class<?>,List<Field<?>>> knownClassFields = new ConcurrentHashMap<Class<?>,List<Field<?>>>();
+	public static <T extends Table> List<Field<?>> getFields(final Class<T> t) {
+		List<Field<?>> fields = knownClassFields.get(t);
+		if (fields==null) {
+			fields = getFIELDS(t);
+			knownClassFields.put(t, fields);
+		}
+		return fields;
+	}
+
 	static boolean deepEqual(final Object[] path, final Object[] path2) {
 		if (path == null && path2 == null) return true;
 		if (path == path2) return true;

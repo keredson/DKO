@@ -1389,53 +1389,63 @@ class ClassGenerator {
 		}
 	}
 
-	private Class<? extends Object> getFieldClassType(String type) {
+	static Map<String,Class> columnTypeMap = new LinkedHashMap<String,Class>() {{
+		put("string", String.class);
+		put("varchar", String.class);
+		put("char", Character.class);
+		put("nvarchar", String.class);
+		put("nchar", String.class);
+		put("longtext", String.class);
+		put("text", String.class);
+		put("tinytext", String.class);
+		put("mediumtext", String.class);
+		put("ntext", String.class);
+		put("xml", String.class);
+		put("character varying", String.class);
+		put("int", Integer.class);
+		put("mediumint", Integer.class);
+		put("smallint", Integer.class);
+		put("tinyint", Integer.class);
+		put("bigint", Long.class);
+		put("long", Long.class);
+		put("integer", Integer.class);
+		put("int", Integer.class);
+		put("decimal", Double.class);
+		put("double", Double.class);
+		put("money", Double.class);
+		put("numeric", Double.class);
+		put("float", Double.class);
+		put("real", Float.class);
+		put("blob", Blob.class);
+		put("longblob", Blob.class);
+		put("datetime", Timestamp.class);
+		put("date", Date.class);
+		put("timestamp", Timestamp.class);
+		put("year", Integer.class);
+		put("enum", Integer.class);
+		put("set", String.class);
+		put("bit", Boolean.class);
+		put("binary", java.sql.Blob.class);
+		put("varbinary", java.sql.Blob.class);
+		put("sql_variant", Object.class);
+		put("smalldatetime", Timestamp.class);
+		put("uniqueidentifier", String.class);
+		put("image", java.sql.Blob.class);
+	}};
+	
+	private static Class<? extends Object> getFieldClassType(String type) {
 		type = type.toLowerCase();
-		if ("string".equals(type)) return String.class;
-		if ("varchar".equals(type)) return String.class;
-		if ("char".equals(type)) return Character.class;
-		if ("nvarchar".equals(type)) return String.class;
-		if ("nchar".equals(type)) return String.class;
-		if ("longtext".equals(type)) return String.class;
-		if ("text".equals(type)) return String.class;
-		if ("tinytext".equals(type)) return String.class;
-		if ("mediumtext".equals(type)) return String.class;
-		if ("ntext".equals(type)) return String.class;
-		if ("xml".equals(type)) return String.class;
-		if ("character varying".equals(type)) return String.class;
-		if ("int".equals(type)) return Integer.class;
-		if ("mediumint".equals(type)) return Integer.class;
-		if ("smallint".equals(type)) return Integer.class;
-		if ("tinyint".equals(type)) return Integer.class;
-		if ("bigint".equals(type)) return Long.class;
-		if ("long".equals(type)) return Long.class;
-		if ("integer".equals(type)) return Integer.class;
-		if ("int".equals(type)) return Integer.class;
-		if ("decimal".equals(type)) return Double.class;
-		if ("double".equals(type)) return Double.class;
-		if ("money".equals(type)) return Double.class;
-		if ("numeric".equals(type)) return Double.class;
-		if ("float".equals(type)) return Double.class;
-		if ("real".equals(type)) return Float.class;
-		if ("blob".equals(type)) return Blob.class;
-		if ("longblob".equals(type)) return Blob.class;
-		if ("datetime".equals(type)) return Timestamp.class;
-		if ("date".equals(type)) return Date.class;
-		if ("timestamp".equals(type)) return Timestamp.class;
-		if ("year".equals(type)) return Integer.class;
-		if ("enum".equals(type)) return Integer.class;
-		if ("set".equals(type)) return String.class;
-		if ("bit".equals(type)) return Boolean.class;
-		if ("binary".equals(type)) return java.sql.Blob.class;
-		if ("varbinary".equals(type)) return java.sql.Blob.class;
-		if ("sql_variant".equals(type)) return Object.class;
-		if ("smalldatetime".equals(type)) return Timestamp.class;
-		if ("uniqueidentifier".equals(type)) return String.class;
-		if ("image".equals(type)) return java.sql.Blob.class;
-		System.err.println("unknown field type: "+ type);
-		return null;
+		Class cls = columnTypeMap.get(type);
+		if (cls == null) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("I don't have a Java type mapping for this SQL type: ")
+				.append(type)
+				.append(".  The SQL types I know about are: ")
+				.append(columnTypeMap.keySet());
+			throw new RuntimeException(sb.toString());
+		}
+		return cls;
 	}
-
 
 	private static String underscoreToCamelCase(String s, final boolean capitalizeFirstChar) {
 		if (s==null) return null;

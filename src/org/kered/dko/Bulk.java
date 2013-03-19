@@ -101,14 +101,14 @@ public class Bulk {
 	 */
 	public <T extends Table> long insertAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
-		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis()-1;
 		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
 		for (final T t : iterable) {
 			++c;
 			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
-				try { Thread.currentThread().sleep(1000); }
+				try { Thread.currentThread().sleep(500); }
 				catch (InterruptedException e) { /* ignore */ }
 			}
 			final String key = t.__NOSCO_FETCHED_VALUES.toString();
@@ -523,7 +523,7 @@ public class Bulk {
 	 */
 	public <T extends Table> long insertOrUpdateAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
-		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis()-1;
 		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Map<String, Inserter<T>> inserters = new HashMap<String,Inserter<T>>();
@@ -533,7 +533,7 @@ public class Bulk {
 			if (t.__NOSCO_UPDATED_VALUES==null) continue;
 			++c;
 			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
-				try { Thread.currentThread().sleep(1000); }
+				try { Thread.currentThread().sleep(500); }
 				catch (InterruptedException e) { /* ignore */ }
 			}
 			// we use a string for the key because the bitset could change out from under us
@@ -620,14 +620,14 @@ public class Bulk {
 	 */
 	public <T extends Table> long deleteAll(final Iterable<T> iterable, final StatusCallback callback,
 			final double frequency) throws SQLException {
-		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis()-1;
 		long c = 0;
 		double lastCallback = System.currentTimeMillis() / 1000.0;
 		final Deleter<T> deleter = new Deleter<T>();
 		for (final T t : iterable) {
 			++c;
 			if (rateLimit>0 && c*1000/(System.currentTimeMillis()-start) > rateLimit) {
-				try { Thread.currentThread().sleep(1000); }
+				try { Thread.currentThread().sleep(500); }
 				catch (InterruptedException e) { /* ignore */ }
 			}
 			deleter.push(t);

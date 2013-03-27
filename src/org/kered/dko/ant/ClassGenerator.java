@@ -348,7 +348,7 @@ class ClassGenerator {
 		br.write("\t */\n");
 		br.write("\tpublic static org.kered.dko.Field.PK<"+ className +"> PK = new org.kered.dko.Field.PK<"+ className +">(");
 		for (int i=0; i<pks.length(); ++i) {
-			br.write(pks.getString(i).toUpperCase());
+			br.write(getFieldName(pks.getString(i)));
 			if (i<pks.length()-1) br.write(", ");
 		}
 		br.write(");\n");

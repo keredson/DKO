@@ -46,7 +46,7 @@ public class CodeGenerator extends Task {
 	private File fake_fks = null;
 	private String pkg = null;
 	private String classpath = null;
-	private final String[] stripPrefixes = {};
+	private String[] stripPrefixes = {};
 	private final String[] stripSuffixes = {};
 	private String dataSource = null;
 	private String javacTarget = null;
@@ -79,7 +79,17 @@ public class CodeGenerator extends Task {
 	public void setSrcJarfile(final String s) {
 		this.srcjarfile = new File(s);
 	}
-
+	
+	/**
+	 * Optional set of space-separated prefixes to strip from table names.
+	 * @param s
+	 */
+	public void setStripPrefixes(final String s) {
+		if (s!=null && s.length()>0) {
+			stripPrefixes = s.split(" ");
+		}
+	}
+	
 	/**
 	 * The output directory for the generated java classes.
 	 * @param s

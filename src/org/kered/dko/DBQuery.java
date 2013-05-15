@@ -160,7 +160,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (defaultDS != null) return defaultDS;
 		defaultDS = Util.getDefaultDataSource(ofType);
 		if (defaultDS!=null) return defaultDS;
-		for (TableInfo ti : this.tableInfos) {
+		for (final TableInfo ti : this.tableInfos) {
 			defaultDS = Util.getDefaultDataSource(ti.tableClass);
 			if (defaultDS!=null) return defaultDS;
 		}
@@ -311,9 +311,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public long count() throws SQLException {
 		final SqlContext context = new SqlContext(this);
 		initTableNameMap(true);
-		List<Object> bindings = new ArrayList<Object>();
-		String fromClause = getFromClause(context, bindings);
-		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		final List<Object> bindings = new ArrayList<Object>();
+		final String fromClause = getFromClause(context, bindings);
+		final Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
 		bindings.addAll(wcab.b);
 		final String sql = "select count(1)"+ fromClause + wcab.a;
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
@@ -433,13 +433,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final List<Object> bindings = new ArrayList<Object>();
 		int i=0;
 		for (final Entry<Field<?>, Object> entry : data.entrySet()) {
-			Field<?> field = entry.getKey();
-			Object other = entry.getValue();
+			final Field<?> field = entry.getKey();
+			final Object other = entry.getValue();
 			if (other instanceof Field) {
 				fields[i++] = field.getSQL(context)+"="+((Field)other).getSQL(context);
 				bindings.add(other);
 			} else if (other instanceof SQLFunction) {
-				StringBuffer sb2 = new StringBuffer();
+				final StringBuffer sb2 = new StringBuffer();
 				sb2.append(field.getSQL(context)).append("=");
 				((SQLFunction)other).getSQL(sb2, bindings, context);
 				fields[i++] = sb2.toString();
@@ -451,7 +451,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		sb.append(Util.join(", ", fields));
 		sb.append(" ");
 		initTableNameMap(false);
-		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		final Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
 		sb.append(wcab.a);
 		bindings.addAll(wcab.b);
 		final String sql = sb.toString();
@@ -486,7 +486,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		q.initTableNameMap(true);
 		// this forces the table field dereferencing to use the full table name, not the alias (which is not allowed on deletes)
 		q.tableInfos.get(0).tableName = null;
-		Tuple2<String, List<Object>> wcab = q.getWhereClauseAndBindings(context);
+		final Tuple2<String, List<Object>> wcab = q.getWhereClauseAndBindings(context);
 		try {
 			final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ofType));
 			String schemaWithDot = "".equals(schema) ? "" : schema + ".";
@@ -585,15 +585,15 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
 			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTableName(ti.tableClass));
 		}
-		for (JoinInfo join : joins) {
+		for (final JoinInfo join : joins) {
 			TableInfo ti = join.reffingTableInfo;
 			if (ti!=null) {
-				String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
+				final String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
 				if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
 				tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTableName(ti.tableClass));
 			}
 			ti = join.reffedTableInfo;
-			String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
+			final String id = Util.getSchemaName(ti.tableClass) +"."+ Util.getTableName(ti.tableClass);
 			if (!tableNameMap.containsKey(id)) tableNameMap.put(id, new HashSet<String>());
 			tableNameMap.get(id).add(bindTables ? ti.tableName : Util.getTableName(ti.tableClass));
 		}
@@ -601,10 +601,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	/**
 	 * @param context
-	 * @param bindings2 
+	 * @param bindings2
 	 * @return
 	 */
-	String getJoinClause(final SqlContext context, List<Object> bindings) {
+	String getJoinClause(final SqlContext context, final List<Object> bindings) {
 		final StringBuffer sb = new StringBuffer();
 		DB_TYPE dbType = context == null ? null : context.dbType;
 		if (dbType == null) dbType = getDBType();
@@ -749,12 +749,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			final List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
 			if(onlySet!=null) {
-				LinkedHashSet<Field<?>> unusedOnlySet = new LinkedHashSet<Field<?>>(onlySet);
+				final LinkedHashSet<Field<?>> unusedOnlySet = new LinkedHashSet<Field<?>>(onlySet);
 				for (final TableInfo ti : allTableInfos) {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
 					for (final Field<?> other : onlySet) {
-						List<Field<?>> fields_ti = ti.innerQuery==null ? Util.getFields(ti.tableClass) : ti.innerQuery.getSelectFields();
+						final List<Field<?>> fields_ti = ti.innerQuery==null ? Util.getFields(ti.tableClass) : ti.innerQuery.getSelectFields();
 						for (final Field<?> field : fields_ti) {
 							if (field.sameField(other) && ti.nameAutogenned) {
 								fields.add(bind ? other.from(tableName) : other);
@@ -853,7 +853,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		sb.append(" (");
 		final String[] fields = new String[q.data.size()];
 		final String[] bindStrings = new String[q.data.size()];
-		List<Object> bindings = new ArrayList<Object>();
+		final List<Object> bindings = new ArrayList<Object>();
 		int i=0;
 		for (final Entry<Field<?>, Object> entry : q.data.entrySet()) {
 			fields[i] = entry.getKey().getSQL(context);
@@ -1163,7 +1163,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	}
 
-	String getFromClause(final SqlContext context, List<Object> bindings) {
+	String getFromClause(final SqlContext context, final List<Object> bindings) {
 		final List<String> tableNames = getTableNameList(context);
 		final String firstTableName = tableNames.get(0);
 		final StringBuilder sb = new StringBuilder();
@@ -1191,7 +1191,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	//@Override
 	public <R> Map<R, Map<Field<Number>,Number>> sumBy(final Field<R> byField, final Field<? extends Number>... sumFields)
 			throws SQLException {
-		String function = "sum";
+		final String function = "sum";
 		final Map<R, Map<Field<Number>, Number>> result = terminalAggFunctionBy(
 				byField, function, sumFields);
 		return result;
@@ -1230,13 +1230,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private <R,S> Map<R, Map<Field<S>, S>> terminalAggFunctionBy(
-			final Field<R> byField, String function,
+			final Field<R> byField, final String function,
 			final Field<?>... sumFields) throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		List<Object> bindings = new ArrayList<Object>();
-		String fromClause = getFromClause(context, bindings);
+		final List<Object> bindings = new ArrayList<Object>();
+		final String fromClause = getFromClause(context, bindings);
 		initTableNameMap(true);
-		Tuple2<String, List<Object>> wcab = this.getWhereClauseAndBindings(context);
+		final Tuple2<String, List<Object>> wcab = this.getWhereClauseAndBindings(context);
 		bindings.addAll(wcab.b);
 		String sql = fromClause + wcab.a;
 		String sums = "";
@@ -1272,27 +1272,27 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public <S extends Number> S sum(final Field<S> sumField) throws SQLException {
-		String function = "sum";
+		final String function = "sum";
 		final S ret = terminalAggFunction(sumField, function);
 		return ret;
 	}
 
 	@Override
 	public <S extends Number> S average(final Field<S> sumField) throws SQLException {
-		String function = "avg";
+		final String function = "avg";
 		final S ret = terminalAggFunction(sumField, function);
 		return ret;
 	}
 
 	@Override
-	public <S extends Comparable> S max(Field<S> f) throws SQLException {
-		String function = "max";
+	public <S extends Comparable> S max(final Field<S> f) throws SQLException {
+		final String function = "max";
 		final S ret = terminalAggFunction(f, function);
 		return ret;
 	}
 
 	@Override
-	public <R, S extends Comparable> Map<R, S> maxBy(Field<S> maxField, Field<R> byField) throws SQLException {
+	public <R, S extends Comparable> Map<R, S> maxBy(final Field<S> maxField, final Field<R> byField) throws SQLException {
 		final Map<R, S> ret = new LinkedHashMap<R, S>();
 		for (final Entry<R, Map<Field<Comparable>, Comparable>> e : maxBy(byField, maxField).entrySet()) {
 			ret.put(e.getKey(), (S) e.getValue().get(maxField));
@@ -1301,14 +1301,14 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public <S extends Comparable> S min(Field<S> f) throws SQLException {
-		String function = "min";
+	public <S extends Comparable> S min(final Field<S> f) throws SQLException {
+		final String function = "min";
 		final S ret = terminalAggFunction(f, function);
 		return ret;
 	}
 
 	@Override
-	public <R, S extends Comparable> Map<R, S> minBy(Field<S> minField, Field<R> byField) throws SQLException {
+	public <R, S extends Comparable> Map<R, S> minBy(final Field<S> minField, final Field<R> byField) throws SQLException {
 		final Map<R, S> ret = new LinkedHashMap<R, S>();
 		for (final Entry<R, Map<Field<Comparable>, Comparable>> e : maxBy(byField, minField).entrySet()) {
 			ret.put(e.getKey(), (S) e.getValue().get(minField));
@@ -1317,12 +1317,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	private <S> S terminalAggFunction(final Field<S> sumField,
-			String function) throws SQLException {
+			final String function) throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		List<Object> bindings = new ArrayList<Object>();
-		String fromClause = getFromClause(context, bindings);
+		final List<Object> bindings = new ArrayList<Object>();
+		final String fromClause = getFromClause(context, bindings);
 		initTableNameMap(true);
-		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		final Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
 		bindings.addAll(wcab.b);
 		String sql = fromClause + wcab.a;
 		sql = "select "+ function +"("+ Util.derefField(sumField, context) +")"+ sql;
@@ -1349,10 +1349,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public <S> Map<S, Integer> countBy(final Field<S> byField) throws SQLException {
 		final SqlContext context = new SqlContext(this);
-		List<Object> bindings = new ArrayList<Object>();
-		String fromClause = getFromClause(context, bindings);
+		final List<Object> bindings = new ArrayList<Object>();
+		final String fromClause = getFromClause(context, bindings);
 		initTableNameMap(true);
-		Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
+		final Tuple2<String, List<Object>> wcab = getWhereClauseAndBindings(context);
 		bindings.addAll(wcab.b);
 		String sql = fromClause + wcab.a;
 		sql = "select "+ Util.derefField(byField, context)
@@ -1716,19 +1716,19 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> alsoSelect(Field<?>... fields) {
-		Collection<Field<?>> fs = new ArrayList<Field<?>>();
-		for (Field<?> f : fields) fs.add(f);
+	public Query<T> alsoSelect(final Field<?>... fields) {
+		final Collection<Field<?>> fs = new ArrayList<Field<?>>();
+		for (final Field<?> f : fields) fs.add(f);
 		return alsoSelect(fs);
 	}
 
 	@Override
-	public Query<T> alsoSelect(Collection<Field<?>> fields) {
+	public Query<T> alsoSelect(final Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		if (onlySet==null) {
 			q.onlySet = new LinkedHashSet<Field<?>>();
-			Set<Field<?>> left = new LinkedHashSet<Field<?>>(fields);
-			for (Field<?> defaultField : this.getSelectFields()) {
+			final Set<Field<?>> left = new LinkedHashSet<Field<?>>(fields);
+			for (final Field<?> defaultField : this.getSelectFields()) {
 				boolean foundMatch = false;
 				for (final Field<?> field : fields) {
 					if (field.sameField(defaultField)) {
@@ -1745,7 +1745,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				}
 				if (!foundMatch) q.onlySet.add(defaultField);
 			}
-			for (Field<?> field : left) {
+			for (final Field<?> field : left) {
 				if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 					throw new RuntimeException("cannot use bound fields " +
 							"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
@@ -1755,7 +1755,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			}
 		} else {
 			q.onlySet = new LinkedHashSet<Field<?>>(onlySet);
-			for (Field<?> field : fields) {
+			for (final Field<?> field : fields) {
 				if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
 					throw new RuntimeException("cannot use bound fields " +
 							"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
@@ -1766,45 +1766,45 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 		return q;
 	}
-	
-	public <S> Field<S> asInnerQueryOf(Field<S> field) {
+
+	public <S> Field<S> asInnerQueryOf(final Field<S> field) {
 		return new SubQueryField<T,S>(field, (DBQuery<T>) this.onlyFields(field));
 	}
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 		sb.append("DBQuery<").append(this.getType().getSimpleName()).append(">");
 		sb.append("#").append(Integer.toHexString(this.hashCode()));
 		return sb.toString();
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> crossJoin(Query<S> other) {
+	public <S extends Table> Query<Join<T, S>> crossJoin(final Query<S> other) {
 		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
 		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "cross join", null);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> leftJoin(Query<S> other, Condition on) {
+	public <S extends Table> Query<Join<T, S>> leftJoin(final Query<S> other, final Condition on) {
 		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
 		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "left join", on);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> rightJoin(Query<S> other, Condition on) {
+	public <S extends Table> Query<Join<T, S>> rightJoin(final Query<S> other, final Condition on) {
 		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
 		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "right join", on);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> innerJoin(Query<S> other, Condition on) {
+	public <S extends Table> Query<Join<T, S>> innerJoin(final Query<S> other, final Condition on) {
 		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
 		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "inner join", on);
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> outerJoin(Query<S> other, Condition on) {
+	public <S extends Table> Query<Join<T, S>> outerJoin(final Query<S> other, final Condition on) {
 		if (!(other instanceof DBQuery<?>) || !Util.sameDataSource(this, other)) return super.crossJoin(other);
 		return new DBQuery<Join<T,S>>(Join.class, this, (DBQuery<S>) other, null, "outer join", on);
 	}

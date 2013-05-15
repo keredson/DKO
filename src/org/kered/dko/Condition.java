@@ -284,7 +284,7 @@ public abstract class Condition {
 
 		List<Condition> conditions = new ArrayList<Condition>();
 
-		public And(Condition cnd, final Condition[] conditions) {
+		public And(final Condition cnd, final Condition[] conditions) {
 			this.conditions.add(cnd);
 			for (final Condition condition : conditions) {
 				if (condition instanceof And) {
@@ -346,9 +346,9 @@ public abstract class Condition {
 			}
 		}
 
-		void visit(Visitor v) {
+		void visit(final Visitor v) {
 			v.visited(this);
-			for (Condition condition : conditions) condition.visit(v);
+			for (final Condition condition : conditions) condition.visit(v);
 		}
 
 	}
@@ -406,9 +406,9 @@ public abstract class Condition {
 			}
 		}
 
-		void visit(Visitor v) {
+		void visit(final Visitor v) {
 			v.visited(this);
-			for (Condition condition : conditions) condition.visit(v);
+			for (final Condition condition : conditions) condition.visit(v);
 		}
 
 	}
@@ -452,7 +452,7 @@ public abstract class Condition {
 			condition._postExecute(context, conn);
 		}
 
-		void visit(Visitor v) {
+		void visit(final Visitor v) {
 			v.visited(this);
 			condition.visit(v);
 		}
@@ -527,8 +527,9 @@ public abstract class Condition {
 			Comparable o3 = null;
 			if (v3 instanceof Field) o3 = (Comparable) t.get((Field<?>) v3);
 			else if (v3 instanceof Comparable) o3 = (Comparable) v3;
+			// SQL between in inclusive
 			if (o2 != null && o2.compareTo(o1) > 0) return false;
-			if (o3 != null && o3.compareTo(o1) <= 0) return false;
+			if (o3 != null && o3.compareTo(o1) < 0) return false;
 			return true;
 		}
 
@@ -574,7 +575,7 @@ public abstract class Condition {
 		final String cmp;
 		private DBRowIterator<?> s;
 		private SQLFunction function;
-		
+
 		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
 			// note "v" should be of type T here - set to object to work around
 			// this bug: http://stackoverflow.com/questions/5361513/reference-is-ambiguous-with-generics
@@ -703,16 +704,16 @@ public abstract class Condition {
 			if ((o1 instanceof SQLFunction) || (o2 instanceof SQLFunction)) {
 				throw new RuntimeException("Condition checking of functions cached queries not yet supported.");
 			}
-			Object v1 = o1 instanceof Field ? t.get((Field) o1) : o1;
-			Object v2 = o2 instanceof Field ? t.get((Field) o2) : o2;
+			final Object v1 = o1 instanceof Field ? t.get((Field) o1) : o1;
+			final Object v2 = o2 instanceof Field ? t.get((Field) o2) : o2;
 			return matches(v1, v2);
 		}
-		
-		boolean matches(Object v1, Object v2) {
+
+		boolean matches(final Object v1, final Object v2) {
 			throw new RuntimeException("In memory checking of this condition type is not supported yet.");
 		}
 
-		Object deO(Table t, Object o) {
+		Object deO(final Table t, final Object o) {
 			if (o instanceof Field) return t.get((Field) o);
 			return o;
 		}
@@ -868,11 +869,11 @@ public abstract class Condition {
 	void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
 		// default to do nothing
 	}
-	
-	void visit(Visitor v) {
+
+	void visit(final Visitor v) {
 		v.visited(this);
 	}
-	
+
 	static interface Visitor {
 		void visited(Condition c);
 	}

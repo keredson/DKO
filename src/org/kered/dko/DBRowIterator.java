@@ -6,7 +6,9 @@ import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +36,6 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 
 	private static final Logger log = Logger.getLogger("org.kered.dko.DBRowIterator");
 
-	private String sql;
 	final DBQuery<T> query;
 	private PreparedStatement ps;
 	private ResultSet rs;
@@ -51,7 +52,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	private boolean initted = false;
 	long count = 0;
 
-	private Constructor<T> joinConstructor = null;
+	private final Constructor<T> joinConstructor = null;
 
 	private boolean finishedNatually = false;
 
@@ -79,12 +80,14 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 
 	void init() {
 		// old iterator method before merging
+		String sql = null;
 		try {
 			final Tuple2<Connection,Boolean> connInfo = DBQuery.getConnR(ds);
 			conn = connInfo.a;
 			shouldCloseConnection  = connInfo.b;
 			context  = new SqlContext(query);
 			final Tuple2<String, List<Object>> ret = getSQL(context);
+			sql = ret.a;
 			Util.log(sql, ret.b);
 			query._preExecute(context, conn);
 			ps = conn.prepareStatement(ret.a);
@@ -125,7 +128,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
 			sb.append(" top ").append(query.top).append(" ");
 		}
-		List<Object> bindings = new ArrayList<Object>();
+		final List<Object> bindings = new ArrayList<Object>();
 		if (query.globallyAppliedSelectFunction == null) {
 			sb.append(Util.joinFields(context, ", ", selectedBoundFields, bindings));
 		} else {
@@ -165,8 +168,8 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 							"in the inner query)");
 		}
 
-		sql = sb.toString();
-		return new Tuple2<String,List<Object>>(sb.toString(), bindings);
+		final String sql = sb.toString();
+		return new Tuple2<String,List<Object>>(sql, bindings);
 	}
 
 	static Field<?>[] toArray(final List<Field<?>> fields) {
@@ -187,7 +190,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		if (!done && nextRows.isEmpty()) {
 			try {
 				readNextRows(BATCH_SIZE);
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -244,10 +247,10 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			if (!finishedNatually && rs!=null && !rs.isClosed()) {
 				ps.cancel();
 			}
-		} catch (SQLException e2) {
+		} catch (final SQLException e2) {
 			// some drivers don't like ps.cancel().  ignore them.
 			// e2.printStackTrace();
-		} catch (AbstractMethodError e) {
+		} catch (final AbstractMethodError e) {
 			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
 				// ignore - bad jdbc driver
 			} else {
@@ -256,9 +259,9 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 		try {
 			if (rs!=null && !rs.isClosed()) rs.close();
-		} catch (SQLException e2) {
+		} catch (final SQLException e2) {
 			e2.printStackTrace();
-		} catch (AbstractMethodError e) {
+		} catch (final AbstractMethodError e) {
 			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
 				// ignore - bad jdbc driver
 			} else {
@@ -267,9 +270,9 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 		try {
 			if (ps!=null && !ps.isClosed()) ps.close();
-		} catch (SQLException e1) {
+		} catch (final SQLException e1) {
 			e1.printStackTrace();
-		} catch (AbstractMethodError e) {
+		} catch (final AbstractMethodError e) {
 			if ("org.sqlite.RS".equals(rs.getClass().getName())) {
 				// ignore - bad jdbc driver
 			} else {
@@ -293,6 +296,69 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
+	}
+
+	public String explainAsText() throws SQLException {
+		if (initted) throw new RuntimeException("cannot explain a query you've already started iterating through!");
+		final Tuple2<Connection,Boolean> connInfo = DBQuery.getConnR(ds);
+		conn = connInfo.a;
+		shouldCloseConnection  = connInfo.b;
+		context  = new SqlContext(query);
+		final Tuple2<String, List<Object>> ret = getSQL(context);
+		String sql = ret.a;
+		final List<Object> bindings = ret.b;
+		if (context.dbType != Constants.DB_TYPE.SQLSERVER) {
+			if (context.dbType == Constants.DB_TYPE.SQLITE3) {
+				sql = "explain query plan " + sql;
+			} else {
+				sql = "explain " + sql;
+			}
+		}
+		Util.log(sql, ret.b);
+		query._preExecute(context, conn);
+		ps = conn.prepareStatement(sql);
+		if (context.dbType == Constants.DB_TYPE.SQLSERVER) {
+			final Statement stmt = conn.createStatement();
+			stmt.execute("SET SHOWPLAN_TEXT on");
+			//stmt.execute("SET NOEXEC on");
+			stmt.close();
+		}
+		query.setBindings(ps, ret.b);
+		ps.execute();
+		rs = ps.getResultSet();
+//		System.err.println("rs: "+ rs);
+		if (context.dbType==Constants.DB_TYPE.SQLSERVER) {
+//			System.err.println("ps.getMoreResults(): " + ps.getMoreResults());
+//			rs = ps.getResultSet(); // sqlserver returns the explanation as the second result
+//			System.err.println("rs: "+ rs);
+			final Statement stmt = conn.createStatement();
+			stmt.execute("SET SHOWPLAN_TEXT off");
+			//stmt.execute("SET NOEXEC off");
+			stmt.close();
+		}
+		final StringBuffer sb = new StringBuffer();
+		sb.append("--------------------------------------------------------------------------------------------\n");
+		final String msg = sql + (bindings != null && bindings.size() > 0 ? " -- ["+ Util.join("|", bindings) +"]" : "");
+		sb.append(msg).append("\n");
+		sb.append("--------------------------------------------------------------------------------------------\n");
+		if (rs!=null) {
+			final ResultSetMetaData metaData = rs.getMetaData();
+			final int columnCount = metaData==null ? 1 : metaData.getColumnCount();
+			while (rs.next()) {
+				for (int i=0; i<columnCount; ++i) {
+					final Object o = rs.getObject(i+1);
+					sb.append(o==null ? "[null]" : o.toString()).append(" ");
+				}
+				sb.append("\n");
+			}
+		} else {
+			sb.append("Querying the execution plan of this query returned a null ResultSet.\n");
+			if (context.dbType==Constants.DB_TYPE.SQLSERVER) {
+				sb.append("This is a known issue with SQLSERVER.\n");
+			}
+		}
+		close();
+		return sb.toString();
 	}
 
 }

@@ -548,7 +548,7 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S extends Table> Query<Join<T, S>> crossJoin(Query<S> other) {
+	public <S extends Table> Query<Join<T, S>> crossJoin(final Query<S> other) {
 		return new LocalJoin(Constants.JOIN_TYPE.CROSS, Join.class, this, other, null);
 	}
 
@@ -630,9 +630,9 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S extends Comparable> S max(Field<S> f) throws SQLException {
+	public <S extends Comparable> S max(final Field<S> f) throws SQLException {
 		S max = null;
-		for (S s : this.asIterableOf(f)) {
+		for (final S s : this.asIterableOf(f)) {
 			if (max==null || max.compareTo(s)<0) {
 				max = s;
 			}
@@ -641,13 +641,13 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <R, S extends Comparable> Map<R, S> maxBy(Field<S> maxField, Field<R> byField)
+	public <R, S extends Comparable> Map<R, S> maxBy(final Field<S> maxField, final Field<R> byField)
 			throws SQLException {
-		Map<R,S> maxes = new HashMap<R,S>();
-		for (T t : this) {
-			R r = t.get(byField);
-			S max = maxes.get(r);
-			S s = t.get(maxField);
+		final Map<R,S> maxes = new HashMap<R,S>();
+		for (final T t : this) {
+			final R r = t.get(byField);
+			final S max = maxes.get(r);
+			final S s = t.get(maxField);
 			if (max==null || max.compareTo(s)<0) {
 				maxes.put(r, s);
 			}
@@ -656,9 +656,9 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <S extends Comparable> S min(Field<S> f) throws SQLException {
+	public <S extends Comparable> S min(final Field<S> f) throws SQLException {
 		S min = null;
-		for (S s : this.asIterableOf(f)) {
+		for (final S s : this.asIterableOf(f)) {
 			if (min==null || min.compareTo(s)>0) {
 				min = s;
 			}
@@ -667,13 +667,13 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public <R, S extends Comparable> Map<R, S> minBy(Field<S> minField, Field<R> byField)
+	public <R, S extends Comparable> Map<R, S> minBy(final Field<S> minField, final Field<R> byField)
 			throws SQLException {
-		Map<R,S> mins = new HashMap<R,S>();
-		for (T t : this) {
-			R r = t.get(byField);
-			S min = mins.get(r);
-			S s = t.get(minField);
+		final Map<R,S> mins = new HashMap<R,S>();
+		for (final T t : this) {
+			final R r = t.get(byField);
+			final S min = mins.get(r);
+			final S s = t.get(minField);
 			if (min==null || min.compareTo(s)>0) {
 				mins.put(r, s);
 			}
@@ -687,38 +687,43 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Iterable<T> snapshot(File f) {
+	public Iterable<T> snapshot(final File f) {
 		return new QuerySnapshot<T>(this, f);
 	}
 
 	@Override
-	public Query<T> select(Field<?>... fields) {
+	public Query<T> select(final Field<?>... fields) {
 		return onlyFields(fields);
 	}
 
 	@Override
-	public Query<T> select(Collection<Field<?>> fields) {
+	public Query<T> select(final Collection<Field<?>> fields) {
 		return onlyFields(fields);
 	}
 
 	@Override
-	public Query<T> alsoSelect(Field<?>... fields) {
+	public Query<T> alsoSelect(final Field<?>... fields) {
 		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
 	}
-	
+
 	@Override
-	public Query<T> alsoSelect(Collection<Field<?>> fields) {
+	public Query<T> alsoSelect(final Collection<Field<?>> fields) {
 		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
 	}
-	
+
 //	@Override
 //	public <S extends Table> Query<T> alsoSelect(Query<S> q) {
 //		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
 //	}
 
 	@Override
-	public <S> Field<S> asInnerQueryOf(Field<S> field) {
+	public <S> Field<S> asInnerQueryOf(final Field<S> field) {
 		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
+	}
+
+	@Override
+	public String explainAsText() throws SQLException {
+		return this.getClass().getSimpleName() + " does not implement explainAsText().";
 	}
 
 }

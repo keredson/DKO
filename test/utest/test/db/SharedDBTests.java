@@ -60,7 +60,7 @@ public class SharedDBTests extends TestCase {
 	ConnectionCountingDataSource ccds = null;
 
 	public static void printTestName() {
-		StackTraceElement[] st = Thread.currentThread().getStackTrace();
+		final StackTraceElement[] st = Thread.currentThread().getStackTrace();
 		System.err.println("------------============[ "+ st[2].getMethodName() +" ]============------------");
 	}
 
@@ -428,7 +428,7 @@ public class SharedDBTests extends TestCase {
     	Collections.sort(as);
     	Collections.sort(bs);
     	final List<RowChange<Item>> diff = Diff.diffActualized(as, bs);
-    	for (RowChange<Item> rc : diff) {
+    	for (final RowChange<Item> rc : diff) {
     		System.err.println(rc);
     	}
     	assertEquals(0, diff.size());
@@ -806,13 +806,13 @@ public class SharedDBTests extends TestCase {
 
     public void testFKSetThenGet() {
 	System.err.println("testFKSetThenGet");
-    	Item item = new Item();
+    	final Item item = new Item();
 	System.err.println("item" + item);
-    	Product product = new Product().setProductid("dsfhlkljfds");
+    	final Product product = new Product().setProductid("dsfhlkljfds");
 	System.err.println("product" + product);
     	assertNotNull(product);
     	item.setProductidFK(product);
-    	Product p2 = item.getProductidFK();
+    	final Product p2 = item.getProductidFK();
 	System.err.println("p2" + p2);
     	assertNotNull(p2);
     	assertEquals(product.getProductid(), p2.getProductid());
@@ -854,11 +854,11 @@ public class SharedDBTests extends TestCase {
 		printTestName();
     	final Product p = Product.ALL.first();
     	new Item().setItemid("test-789").setProductid(p.getProductid()).insert(ds);
-		Undoer u = Context.getVMContext().overrideDatabaseName(ds, "nosco_test_jpetstore", "bad_db_name");
+		final Undoer u = Context.getVMContext().overrideDatabaseName(ds, "nosco_test_jpetstore", "bad_db_name");
     	try {
     		Item.ALL.use(ds).where(Item.ITEMID.eq("test-789")).delete();
     		assertTrue(false); // should not get here
-    	} catch (SQLException e) {
+    	} catch (final SQLException e) {
     		u.undo();
     		Item.ALL.use(ds).where(Item.ITEMID.eq("test-789")).delete();
     	}
@@ -866,7 +866,7 @@ public class SharedDBTests extends TestCase {
 
     public void testCrossDBJoin() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.use(ods).count();
 		final long c2 = Product.ALL.count();
 		final Query<Join<Item, Product>> q = Item.ALL.use(ods).crossJoin(Product.class);
@@ -879,7 +879,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBLeftJoin() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.count();
 		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		for (final Join<Item, Supplier> x : q.top(64)) {
@@ -887,10 +887,10 @@ public class SharedDBTests extends TestCase {
 		}
 		assertEquals(c1,  q.count());
 	}
-    
+
 	public void testCDBRightJoin() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.count();
 		final Query<Join<Supplier, Item>> q = Supplier.ALL.use(ods).rightJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		for (final Join<Supplier, Item> x : q.top(64)) {
@@ -901,7 +901,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBInnerJoin() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.where(Item.SUPPLIER.isNotNull()).count();
 		final Query<Join<Supplier, Item>> q = Supplier.ALL.use(ods).innerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		assertEquals(c1,  q.count());
@@ -912,7 +912,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBLeftJoinAlias() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.count();
 		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).leftJoin(Supplier.as("something"), Item.SUPPLIER.eq(Supplier.SUPPID));
 		for (final Join<Item, Supplier> x : q.top(64)) {
@@ -923,12 +923,12 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBCrossJoinX2() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.count();
 		final long c2 = Supplier.ALL.count();
 		final long c3 = Product.ALL.count();
 		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).crossJoin(Supplier.class);
-		Query<Join<Join<Item, Supplier>, Product>> q2 = q.crossJoin(Product.class);
+		final Query<Join<Join<Item, Supplier>, Product>> q2 = q.crossJoin(Product.class);
 		int c = 0;
 		for (final Join<Join<Item, Supplier>, Product> x : q2) {
 			System.err.println(x);
@@ -936,17 +936,17 @@ public class SharedDBTests extends TestCase {
 		}
 		assertEquals(c1*c2*c3,  c);
 	}
-    
+
 	public void testCDBCrossJoinX3() throws SQLException {
 		printTestName();
-		DataSource ods = new PassThruDS(ds);
+		final DataSource ods = new PassThruDS(ds);
 		final long c1 = Item.ALL.count();
 		final long c2 = Supplier.ALL.count();
 		final long c3 = Product.ALL.count();
 		final long c4 = Category.ALL.count();
 		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).crossJoin(Supplier.class);
-		Query<Join<Join<Item, Supplier>, Product>> q2 = q.crossJoin(Product.class);
-		Query<Join<Join<Join<Item, Supplier>, Product>, Category>> q3 = q2.crossJoin(Category.class);
+		final Query<Join<Join<Item, Supplier>, Product>> q2 = q.crossJoin(Product.class);
+		final Query<Join<Join<Join<Item, Supplier>, Product>, Category>> q3 = q2.crossJoin(Category.class);
 		int c = 0;
 		for (final Join<Join<Join<Item, Supplier>, Product>, Category> x : q3) {
 			if (c<64) System.err.println(x);
@@ -957,10 +957,10 @@ public class SharedDBTests extends TestCase {
 
 	public void testSnapshot() throws SQLException {
 		printTestName();
-		Set<Item> items = new HashSet<Item>(Item.ALL.asList());
-		Iterable<Item> snapshot = Item.ALL.snapshot();
-		Set<Item> items2 = new HashSet<Item>();
-		for (Item item : snapshot) items2.add(item);
+		final Set<Item> items = new HashSet<Item>(Item.ALL.asList());
+		final Iterable<Item> snapshot = Item.ALL.snapshot();
+		final Set<Item> items2 = new HashSet<Item>();
+		for (final Item item : snapshot) items2.add(item);
 		assertEquals(items.size(), items2.size());
 		items.removeAll(items2);
 		assertEquals(0, items.size());
@@ -976,9 +976,9 @@ public class SharedDBTests extends TestCase {
 
 	public void testInnerQuerySelect() throws SQLException {
 		printTestName();
-		Field<String> field = Product.ALL.max().asInnerQueryOf(Product.PRODUCTID);
-		Query<Item> items = Item.ALL.alsoSelect(field);
-		for (Item item : items) {
+		final Field<String> field = Product.ALL.max().asInnerQueryOf(Product.PRODUCTID);
+		final Query<Item> items = Item.ALL.alsoSelect(field);
+		for (final Item item : items) {
 			System.err.println(field +" = "+ item.get(field));
 			assertNotNull(item.get(field));
 		}
@@ -986,10 +986,10 @@ public class SharedDBTests extends TestCase {
 
 	public void testInnerQuerySelect2() throws SQLException {
 		printTestName();
-		Field<Double> avg = Item.ALL.avg().where(Item.SUPPLIER.eq(Supplier.SUPPID))
+		final Field<Double> avg = Item.ALL.avg().where(Item.SUPPLIER.eq(Supplier.SUPPID))
 				.asInnerQueryOf(Item.UNITCOST);
-		Query<Supplier> suppliers = Supplier.ALL.alsoSelect(avg);
-		for (Supplier supplier : suppliers) {
+		final Query<Supplier> suppliers = Supplier.ALL.alsoSelect(avg);
+		for (final Supplier supplier : suppliers) {
 			System.err.println(supplier +" average cost: $"+ supplier.get(avg));
 			if ("XYZ Pets".equals(supplier.getName())) {
 				assertNotNull(supplier.get(avg));
@@ -999,41 +999,41 @@ public class SharedDBTests extends TestCase {
 
 	public void testTag() throws SQLException {
 		printTestName();
-		Tag<String> tag = new Field.Tag<String>();
+		final Tag<String> tag = new Field.Tag<String>();
 		System.err.println("tag: "+ tag);
-		Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
-		Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
-		Field<String> taggedField = tag.findField(q);
+		final Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
+		final Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
+		final Field<String> taggedField = tag.findField(q);
 		System.err.println("taggedField: "+ taggedField);
-		for (Item item : q) {
-			String value = item.get(taggedField);
+		for (final Item item : q) {
+			final String value = item.get(taggedField);
 			assertNotNull(value);
 		}
 	}
 
 	public void testTag2() throws SQLException {
 		printTestName();
-		Tag<String> tag = new Field.Tag<String>();
+		final Tag<String> tag = new Field.Tag<String>();
 		System.err.println("tag: "+ tag);
-		Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
-		Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
-		Collection<Field<String>> taggedFields = tag.findFields(q);
+		final Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
+		final Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
+		final Collection<Field<String>> taggedFields = tag.findFields(q);
 		assertEquals(1, taggedFields.size());
-		Field<String> taggedField = taggedFields.iterator().next();
+		final Field<String> taggedField = taggedFields.iterator().next();
 		System.err.println("taggedField: "+ taggedField);
-		for (Item item : q) {
-			String value = item.get(taggedField);
+		for (final Item item : q) {
+			final String value = item.get(taggedField);
 			assertNotNull(value);
 		}
 	}
 
 	public void testClearTag() throws SQLException {
 		printTestName();
-		Tag<String> tag = new Field.Tag<String>();
+		final Tag<String> tag = new Field.Tag<String>();
 		System.err.println("tag: "+ tag);
-		Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
+		final Field<String> taggedFieldSrc = Item.ITEMID.tag(tag);
 		Query<Item> q = Item.ALL.alsoSelect(taggedFieldSrc);
-		Field<String> taggedField = tag.findField(q);
+		final Field<String> taggedField = tag.findField(q);
 		System.err.println("taggedField: "+ taggedField);
 		assertNotNull(taggedField);
 		q = tag.clearFrom(q);
@@ -1043,7 +1043,7 @@ public class SharedDBTests extends TestCase {
     public void testJoinInnerQuery() throws SQLException {
 		printTestName();
 		final long c1 = Item.ALL.count();
-		Query<Product> jq = Product.ALL;
+		final Query<Product> jq = Product.ALL;
 		final long c2 = jq.count();
 		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(jq);
 		assertEquals(c1 * c2,  q.count());
@@ -1059,7 +1059,7 @@ public class SharedDBTests extends TestCase {
     public void testJoinInnerQuery2() throws SQLException {
 		printTestName();
 		final long c1 = Item.ALL.count();
-		Query<Product> jq = Product.ALL.where(Product.PRODUCTID.like("FL%"));
+		final Query<Product> jq = Product.ALL.where(Product.PRODUCTID.like("FL%"));
 		final long c2 = jq.count();
 		final Query<Join<Item, Product>> q = Item.ALL.crossJoin(jq);
 		assertEquals(c1 * c2,  q.count());
@@ -1079,18 +1079,23 @@ public class SharedDBTests extends TestCase {
 		final Query<Join<Item, Supplier>> q2 = Item.ALL.leftJoin(Supplier.ALL, Item.SUPPLIER.eq(Supplier.SUPPID));
 		assertEquals(c1, q.count());
 		assertEquals(c1, q2.count());
-		List<Join<Item, Supplier>> i1 = q.asList();
-		List<Join<Item, Supplier>> i2 = q2.asList();
+		final List<Join<Item, Supplier>> i1 = q.asList();
+		final List<Join<Item, Supplier>> i2 = q2.asList();
 		assertEquals(i1.size(), i2.size());
 		for (int x=0; x<i1.size(); ++x) {
-			Join<Item, Supplier> a = i1.get(x);
-			Join<Item, Supplier> b = i2.get(x);
+			final Join<Item, Supplier> a = i1.get(x);
+			final Join<Item, Supplier> b = i2.get(x);
 			System.err.println("a: "+ a);
 			System.err.println("b: "+ b);
 			assertNotNull(a);
 			assertNotNull(b);
 			assertTrue(a.equals(b));
 		}
+	}
+
+	public void testExplain() throws SQLException {
+		printTestName();
+		System.err.println(Item.ALL.explainAsText());
 	}
 
 }

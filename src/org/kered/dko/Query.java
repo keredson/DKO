@@ -241,7 +241,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> alsoSelect(Collection<Field<?>> fields);
 
 //	/**
-//	 * Add the following inner query to the select statement.  Please note that if the query is not a valid inner query a SQLException 
+//	 * Add the following inner query to the select statement.  Please note that if the query is not a valid inner query a SQLException
 //	 * will be thrown when it's evaluated.  Generally speaking any query that returns only one row containing one column is valid.
 //	 * For example {@code MyTable.ALL.onlyFields(MyTable.A_FIELD).max()} would return be a valid inner query.<br>
 //	 * @param fields
@@ -632,7 +632,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> toMemory();
 
 	/**
-	 * Evaluates this query, serializes it to disk (a temporary file that is deleted 
+	 * Evaluates this query, serializes it to disk (a temporary file that is deleted
 	 * on this object's GC or on VM exit), and returns to you an Iterable backed by
 	 * the snapshot.
 	 * @return
@@ -640,7 +640,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Iterable<T> snapshot();
 
 	/**
-	 * Evaluates this query, serializes it to disk (to the file provided), and returns 
+	 * Evaluates this query, serializes it to disk (to the file provided), and returns
 	 * to you an Iterable backed by the snapshot.  If the file in a directory a temporary
 	 * file will be created in that directory and deleted on this object's GC or on VM exit.
 	 * @return
@@ -679,7 +679,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Iterable<Object[]> asIterableOfObjectArrays();
 
 	/**
-	 * Returns this query as a special field object which can then be passed into some other query's 
+	 * Returns this query as a special field object which can then be passed into some other query's
 	 * alsoSelect(Field...) method.  Once the outer query returns you a row object you can use this
 	 * field instance to get the value returned from the database with {@code row.get(field)}.
 	 * @param field what to select from the inner query
@@ -918,5 +918,13 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public Class<T> getType();
+
+	/**
+	 * Calls the database's explain or showplan method.  Returns whatever text is generated.
+	 * NOEXEC is set for databases that support it.
+	 * The DKO generated SQL is prepended to the output.
+	 * @return
+	 */
+	public String explainAsText() throws SQLException;
 
 }

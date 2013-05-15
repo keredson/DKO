@@ -1824,4 +1824,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 //		return q;
 //	}
 
+	@Override
+	public String explainAsText() throws SQLException {
+		final DBRowIterator<T> i = new DBRowIterator<T>(this, false);
+		return i.explainAsText();
+	}
+
 }

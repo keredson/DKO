@@ -66,7 +66,7 @@ class ClassGenerator {
 		final String[] stripSuffixes, final String metadataFile, final Map<String, String> schemaAliases,
 		final File fakeFKsFile, final String typeMappingsFile, final String dataSource,
 		final String callbackPackage, final JSONObject enums, final boolean useDetailedToString,
-		final boolean genGson, String allConstType, String allConstFactory)
+		final boolean genGson, final String allConstType, final String allConstFactory)
 				throws IOException, JSONException {
 
 		BufferedReader br = new BufferedReader(new FileReader(metadataFile));
@@ -247,7 +247,7 @@ class ClassGenerator {
 		file.delete();
 	}
 
-	static String splitCamelCase(String s) {
+	static String splitCamelCase(final String s) {
 		   return s.replaceAll(
 		      String.format("%s|%s|%s",
 		         "(?<=[A-Z])(?=[A-Z][a-z])",
@@ -394,7 +394,7 @@ class ClassGenerator {
 				final String pkType = getFieldType(pkgName, table, pk, columns.getString(pk));
 				br.write("\tpublic enum PKS implements Table.__SimplePrimaryKey<"+ className +", "+ pkType +"> {\n\n");
 				int count = 0;
-				Set<String> usedNames = new HashSet<String>();
+				final Set<String> usedNames = new HashSet<String>();
 				for (final String name : instances.keySet()) {
 					++ count;
 					String value = instances.optJSONArray(name).getString(0);
@@ -540,7 +540,7 @@ class ClassGenerator {
 			br.write(genFKName(fk.columns.keySet(), referencedTable) + ",");
 		}
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
-		
+
 		// write the fetched values bitset
 		br.write("\t\t{ __NOSCO_FETCHED_VALUES = new java.util.BitSet(); }\n\n");
 
@@ -1140,8 +1140,8 @@ class ClassGenerator {
 		br.write("\t\tfinal int prime = 31;\n");
 		br.write("\t\tint result = 1;\n");
 		for (final String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
-			br.write("\t\tresult = prime * result + (("+ getInstanceFieldName(column)
-					+" == null) ? 0 : "+ getInstanceFieldName(column) +".hashCode());\n");
+			br.write("\t\tresult = prime * result + ((get"+ getInstanceMethodName(column)
+					+"() == null) ? 0 : "+ getInstanceFieldName(column) +".hashCode());\n");
 		}
 		br.write("\t\treturn result;\n");
 		br.write("\t}\n\n");
@@ -1432,12 +1432,12 @@ class ClassGenerator {
 		put("uniqueidentifier", String.class);
 		put("image", java.sql.Blob.class);
 	}};
-	
+
 	private static Class<? extends Object> getFieldClassType(String type) {
 		type = type.toLowerCase();
-		Class cls = columnTypeMap.get(type);
+		final Class cls = columnTypeMap.get(type);
 		if (cls == null) {
-			StringBuffer sb = new StringBuffer();
+			final StringBuffer sb = new StringBuffer();
 			sb.append("I don't have a Java type mapping for this SQL type: ")
 				.append(type)
 				.append(".  The SQL types I know about are: ")

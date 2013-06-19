@@ -378,7 +378,7 @@ public abstract class SQLFunction<T> {
 						final SQLFunction<?> f = (SQLFunction<?>) o;
 						f.getSQL(sb, bindings, context);
 					} else if (o instanceof CALENDAR) {
-						sb.append(o.toString());
+						((CALENDAR)o).getSQL(sb, context);
 					} else {
 						sb.append("?");
 						bindings.add(o);

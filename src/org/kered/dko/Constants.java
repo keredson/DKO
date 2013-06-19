@@ -43,7 +43,15 @@ public class Constants {
 		WEEK,
 		MONTH,
 		QUARTER,
-		YEAR,
+		YEAR,;
+
+		public void getSQL(final StringBuffer sb, final SqlContext context) {
+			if (context != null && context.dbType == DB_TYPE.HSQL) {
+				sb.append("'"+ this.toString().toLowerCase() +"'");
+			} else {
+				sb.append(this.toString());
+			}
+		}
 	}
 
 	/**

@@ -111,7 +111,7 @@ public abstract class Condition {
 			PreparedStatement ps = null;
 			try {
 				stmt = conn.createStatement();
-				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +", PRIMARY KEY (id))";
+				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +")";
 				Util.log(sql, null);
 				stmt.execute(sql);
 				ps = conn.prepareStatement("insert into "+ tmpTableName +" values (?)");
@@ -128,6 +128,9 @@ public abstract class Condition {
 						added += x;
 					}
 				}
+				final String createIndex = "CREATE INDEX "+ tmpTableName +"_IDX ON "+ tmpTableName +" (id)";
+				Util.log(createIndex, null);
+				stmt.execute(createIndex);
 			} catch (final SQLException e) {
 				throw e;
 			} finally {

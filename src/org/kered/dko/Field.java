@@ -67,7 +67,7 @@ public class Field<T> implements Cloneable {
 		return sb.toString();
 	}
 
-	protected String getSQL(final SqlContext context, List<Object> bindings) {
+	protected String getSQL(final SqlContext context, final List<Object> bindings) {
 		final StringBuffer sb = new StringBuffer();
 		getSQL(sb, bindings, context);
 		return sb.toString();
@@ -80,7 +80,7 @@ public class Field<T> implements Cloneable {
 		getSQL(sb, context==null ? Constants.DB_TYPE.SQL92 : context.dbType);
 	}
 
-	protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+	protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 		getSQL(sb, context);
 	}
 
@@ -145,7 +145,7 @@ public class Field<T> implements Cloneable {
 		Method getter = null;
 		try {
 			getter = TABLE.getMethod(methodName, (Class<?>[]) null);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 		GETTER = getter;
@@ -247,6 +247,26 @@ public class Field<T> implements Cloneable {
 	}
 
 	/**
+	 * Creates a condition representing this field "like" the value in the corresponding field.
+	 * Interpretation varies by database.
+	 * @param v
+	 * @return
+	 */
+	public Condition like(final Field<T> v) {
+		return new Binary(this, " like ", v);
+	}
+
+	/**
+	 * Creates a condition representing this field "like" the value of the given SQL function.
+	 * Interpretation varies by database.
+	 * @param v
+	 * @return
+	 */
+	public Condition like(final SQLFunction v) {
+		return new Binary(this, " like ", v);
+	}
+
+	/**
 	 * Creates a condition representing this field less than the literal value of the parameter.
 	 * @param v
 	 * @return
@@ -254,7 +274,7 @@ public class Field<T> implements Cloneable {
 	public Condition lt(final T v) {
 		return new Binary2(this, "<", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) < 0;
 			}
@@ -269,7 +289,7 @@ public class Field<T> implements Cloneable {
 	public Condition lt(final Field<T> v) {
 		return new Binary2(this, "<", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) < 0;
 			}
@@ -293,7 +313,7 @@ public class Field<T> implements Cloneable {
 	public Condition lte(final T v) {
 		return new Binary2(this, "<=", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) <= 0;
 			}
@@ -308,7 +328,7 @@ public class Field<T> implements Cloneable {
 	public Condition lte(final Field<T> v) {
 		return new Binary2(this, "<=", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) <= 0;
 			}
@@ -332,7 +352,7 @@ public class Field<T> implements Cloneable {
 	public Condition gt(final T v) {
 		return new Binary2(this, ">", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) > 0;
 			}
@@ -347,7 +367,7 @@ public class Field<T> implements Cloneable {
 	public Condition gt(final Field<T> v) {
 		return new Binary2(this, ">", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) > 0;
 			}
@@ -371,7 +391,7 @@ public class Field<T> implements Cloneable {
 	public Condition gte(final T v) {
 		return new Binary2(this, ">=", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) >= 0;
 			}
@@ -386,7 +406,7 @@ public class Field<T> implements Cloneable {
 	public Condition gte(final Field<T> v) {
 		return new Binary2(this, ">=", v) {
 			@Override
-			boolean matches(Object v1, Object v2) {
+			boolean matches(final Object v1, final Object v2) {
 				if (v1==null) return false;
 				return ((Comparable<T>)v1).compareTo((T) v2) >= 0;
 			}
@@ -1099,7 +1119,7 @@ public class Field<T> implements Cloneable {
 		}
 	}
 
-	Field<T>  from(TableInfo tableInfo) {
+	Field<T>  from(final TableInfo tableInfo) {
 		try {
 			@SuppressWarnings("unchecked")
 			final
@@ -1153,7 +1173,7 @@ public class Field<T> implements Cloneable {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns all the tags this field has been tagged with.
 	 */
@@ -1275,14 +1295,14 @@ public class Field<T> implements Cloneable {
 			return false;
 		return true;
 	}
-	
+
 	/**
-	 * Tags are useful if you have multiple data types that have enough similarity where they can be 
+	 * Tags are useful if you have multiple data types that have enough similarity where they can be
 	 * interchanged in certain circumstances but not similar enough to be represented by the same
 	 * classes.  For example:  Assume you have a vet office, and you track both customers and pets.
-	 * You'll likely have different tables representing each, but you want to have only one 
+	 * You'll likely have different tables representing each, but you want to have only one
 	 * averageAge() function.  You could do the following:
-	 * 
+	 *
 	 * <pre> {@code
 	 * final static Tag<Double> AGE = new Tag<Double>();
 	 * public double averageAge(Query<?> q) {
@@ -1293,18 +1313,18 @@ public class Field<T> implements Cloneable {
 	 *     }
 	 *     return sum / count;
 	 * }}</pre>
-	 *  
+	 *
 	 * You can then use it with multiple source queries like this:
-	 *  
+	 *
 	 * <pre> {@code
 	 * double avgPetAge = averageAge(Pet.ALL.alsoSelect(Pet.AGE.tag(AGE)));
 	 * double avgCustAge = averageAge(Customer.ALL.alsoSelect(Customer.AGE.tag(AGE)));
 	 * }</pre>
-	 *  
+	 *
 	 * @param <S>
 	 */
 	public static class Tag<S> {
-		
+
 		private final Object key;
 
 		/**
@@ -1313,27 +1333,27 @@ public class Field<T> implements Cloneable {
 		public Tag() {
 			key = UUID.randomUUID();
 		}
-		
+
 		/**
 		 * Generates a tag only as unique as the key you pass it.
 		 * (two tags made from the same key have equal hashCode() and equals() methods)
 		 * @param key
 		 */
-		public Tag(Object key) {
+		public Tag(final Object key) {
 			this.key = key;
 		}
-		
+
 		/**
-		 * Searches the given query for a field tagged with this tag.  Returns the field 
-		 * if found.  Null if not found.  Throws a RuntimeException if more than one 
-		 * field in this query is tagged with this tag. 
+		 * Searches the given query for a field tagged with this tag.  Returns the field
+		 * if found.  Null if not found.  Throws a RuntimeException if more than one
+		 * field in this query is tagged with this tag.
 		 * @param q
 		 * @return
 		 */
-		public Field<S> findField(Query<?> q) {
+		public Field<S> findField(final Query<?> q) {
 			Field<S> ret = null;
-			List<Field<?>> fields = q.getSelectFields();
-			for (Field<?> field : fields) {
+			final List<Field<?>> fields = q.getSelectFields();
+			for (final Field<?> field : fields) {
 				if (field.hasTag(this)) {
 					if (ret!=null) throw new RuntimeException("More than one field in this query has been tagged with this tag: {"+ ret +" && "+ field +"}");
 					ret = (Field<S>) field;
@@ -1348,21 +1368,21 @@ public class Field<T> implements Cloneable {
 		 * @param q
 		 * @return
 		 */
-		public Collection<Field<S>> findFields(Query<?> q) {
-			Collection<Field<S>> ret = new LinkedHashSet<Field<S>>();
-			List<Field<?>> fields = q.getSelectFields();
-			for (Field<?> field : fields) {
+		public Collection<Field<S>> findFields(final Query<?> q) {
+			final Collection<Field<S>> ret = new LinkedHashSet<Field<S>>();
+			final List<Field<?>> fields = q.getSelectFields();
+			for (final Field<?> field : fields) {
 				if (field.hasTag(this)) {
 					ret.add((Field<S>) field);
 				}
 			}
 			return ret;
 		}
-		
-		public <S extends Table> Query<S> clearFrom(Query<S> q) {
-			List<Field<?>> fields = new ArrayList<Field<?>>(q.getSelectFields());
+
+		public <S extends Table> Query<S> clearFrom(final Query<S> q) {
+			final List<Field<?>> fields = new ArrayList<Field<?>>(q.getSelectFields());
 			for (int i=0; i<fields.size(); ++i) {
-				Field<?> field = fields.get(i);
+				final Field<?> field = fields.get(i);
 				if (field.hasTag(this)) {
 					fields.set(i, field.untag((Tag) this));
 				}
@@ -1379,14 +1399,14 @@ public class Field<T> implements Cloneable {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj)
 				return true;
 			if (obj == null)
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			Tag other = (Tag) obj;
+			final Tag other = (Tag) obj;
 			if (key == null) {
 				if (other.key != null)
 					return false;
@@ -1399,7 +1419,7 @@ public class Field<T> implements Cloneable {
 		public String toString() {
 			return "Tag[" + key + "]";
 		}
-		
+
 	}
 
 }

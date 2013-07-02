@@ -407,7 +407,7 @@ public class SchemaExtractor extends Task {
 
 		final List<String> dbs = new ArrayList<String>();
 		final Statement s = conn.createStatement();
-		s.execute("SELECT NAME FROM SYS.DATABASES ORDER BY NAME;");
+		s.execute("SELECT name FROM sys.databases ORDER BY name;");
 		final ResultSet rs = s.getResultSet();
 		while (rs.next()) {
 			final String schema = rs.getString("NAME");

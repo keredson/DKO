@@ -36,7 +36,7 @@ class TableInfo implements Cloneable {
 		dummyTable  = alias.dummyTable;
 	}
 
-	public TableInfo(DBQuery<? extends Table> innerQuery, final String tableName, final FK[] path) {
+	public TableInfo(final DBQuery<? extends Table> innerQuery, final String tableName, final FK[] path) {
 		this.tableClass = innerQuery.getType();
 		this.innerQuery = innerQuery;
 		this.tableName = tableName;

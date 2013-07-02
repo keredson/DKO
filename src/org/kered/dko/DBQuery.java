@@ -64,6 +64,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DataSource defaultDS = null;
 	String globallyAppliedSelectFunction = null;
 	DB_TYPE dbType = null;
+	private boolean includeCrossInSelect = false;
 	private boolean onlySelectFromFirstTableAndJoins = true;
 
 	private TableInfo addTable(final Class<? extends Table> table) {
@@ -722,7 +723,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			all.add(join.reffingTableInfo);
 			join.reffingTableInfo.position = position++;
 		}
-		while (it.hasNext()) {
+		while (includeCrossInSelect && it.hasNext()) {
 			final TableInfo ti = it.next();
 			all.add(ti);
 			ti.position = position++;
@@ -1399,8 +1400,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.getDefaultDataSource(tableClass);
 		final DBQuery<T> q = new DBQuery<T>(this);
 		try {
-			final Table table = tableClass.getConstructor().newInstance();
-			q.addTable(tableClass);
+			final TableInfo tableInfo = q.addTable(tableClass);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -1416,7 +1416,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						+" already exists in this query");
 			}
 			q.usedTableNames.add(tableAlias.alias);
-			q.tableInfos.add(new TableInfo(tableAlias, null));
+			final TableInfo tableInfo = new TableInfo(tableAlias, null);
+			q.tableInfos.add(tableInfo);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -1498,6 +1499,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Iterable<Map<Field<?>, Object>> asIterableOfMaps() {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySelectFromFirstTableAndJoins  = false;
+		q.includeCrossInSelect = true;
 		return new SelectAsMapIterable<T>(q);
 	}
 
@@ -1505,6 +1507,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Iterable<Object[]> asIterableOfObjectArrays() {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.onlySelectFromFirstTableAndJoins  = false;
+		q.includeCrossInSelect = true;
 		return new Iterable<Object[]>() {
 			@Override
 			public Iterator<Object[]> iterator() {

@@ -53,8 +53,8 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 	SelectFromOAI(final DBQuery<T> dbQuery) {
 		this(dbQuery, true);
 	}
-	
-	SelectFromOAI(final DBQuery<T> dbQuery, PeekableClosableIterator<Object[]> src) {
+
+	SelectFromOAI(final DBQuery<T> dbQuery, final PeekableClosableIterator<Object[]> src) {
 		this.src = src;
 		query = dbQuery;
 		usageMonitor = null;
@@ -63,9 +63,9 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 		selectedFields = DBRowIterator.toArray(selectFieldsList);
 		init();
 	}
-	
+
 	SelectFromOAI(final DBQuery<T> dbQuery, final boolean useWarnings) {
-		DBRowIterator<T> dbRowIterator = new DBRowIterator<T>(dbQuery, useWarnings);
+		final DBRowIterator<T> dbRowIterator = new DBRowIterator<T>(dbQuery, useWarnings);
 		src = dbRowIterator;
 		ds = dbRowIterator.ds;
 		query = dbRowIterator.query;
@@ -74,8 +74,8 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 		allTableInfos = query.getAllTableInfos();
 		init();
 	}
-	
-	SelectFromOAI(Query<T> q, PeekableClosableIterator<Object[]> src) {
+
+	SelectFromOAI(final Query<T> q, final PeekableClosableIterator<Object[]> src) {
 		this.src = src;
 		query = new DBQuery<T>(q.getType()).onlyFields(q.getSelectFields());
 		usageMonitor = null;

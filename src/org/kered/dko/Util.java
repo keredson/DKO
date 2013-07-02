@@ -324,7 +324,7 @@ public class Util {
 		return true;
 	}
 
-	static String joinFields(final SqlContext context, final String s, final Field[] c, List<Object> bindings) {
+	static String joinFields(final SqlContext context, final String s, final Field[] c, final List<Object> bindings) {
 		if(c==null || c.length==0) return "";
 	    final StringBuilder sb = new StringBuilder();
 	    for (final Field<?> o : c) {
@@ -386,7 +386,7 @@ public class Util {
 	static String getTABLE_NAME(final Class<? extends Table> t) {
 		if (Table.class.equals(t)) return "table";
 		try {
-			java.lang.reflect.Field tableNameField = t.getDeclaredField("_TABLE_NAME");
+			final java.lang.reflect.Field tableNameField = t.getDeclaredField("_TABLE_NAME");
 			tableNameField.setAccessible(true);
 			return (String) tableNameField.get(null);
 		} catch (final Exception e) {
@@ -408,7 +408,7 @@ public class Util {
 			knownTableNames.put(t, table);
 		}
 		return table;
-		
+
 	}
 
 	static DataSource getDefaultDataSource(final Class<? extends Table> type) {
@@ -490,10 +490,11 @@ public class Util {
 	    return ds;
 	}
 
-	static void setBindingWithTypeFixes(final PreparedStatement ps, int i, Object o) throws SQLException {
+	static void setBindingWithTypeFixes(final PreparedStatement ps, final int i, final Object o) throws SQLException {
+		//System.err.println("setBindingWithTypeFixes "+ i+ " "+ o +" "+ (o==null ? null : o.getClass()));
 		if (o instanceof Character) {
 			//System.err.println("ps.getClass().toString() "+ ps.getClass().toString() +" "+ ps.getClass().toString().hashCode());
-			int psHash = ps.getClass().toString().hashCode();
+			final int psHash = ps.getClass().toString().hashCode();
 			if (psHash==-18396152 || psHash==-592363600) {
 				// blacklist this stupid fucking POS PreparedStatement impl...
 				ps.setBytes(i, o.toString().getBytes());

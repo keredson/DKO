@@ -27,19 +27,19 @@ class UsageStats {
 		if (qs==null) {
 			try {
 				qs = new QuerySize();
-				qs.setId(hashCode);
+				qs.setId((long) hashCode);
 				qs.setHashCode(hashCode);
 				qs.setRowCount(q1.count());
 				qs.setLastSeen(System.currentTimeMillis());
-				Class<? extends Table> type = q1.getType();
+				final Class<? extends Table> type = q1.getType();
 				try {
 					qs.setSchemaName(Util.getSchemaName(type));
 					qs.setTableName(Util.getTableName(type));
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					log.warning("could not get schema or table info from type: "+ type +" --- "+ e);
 				}
 				qs.save();
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				log.warning("could not get count (reverting to median): "+ e);
 				return (long) (median + Math.random()*10);
 			}

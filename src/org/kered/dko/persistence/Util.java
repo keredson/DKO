@@ -17,7 +17,7 @@ import org.kered.dko.datasource.SingleThreadedDataSource;
 public class Util {
 
     static final String CREATE_QS = "CREATE TABLE query_size (last_seen BIGINT, schema_name TEXT, table_name TEXT, id INTEGER PRIMARY KEY, hash_code int, row_count bigint);";
-    static final String CREATE_CA = "CREATE TABLE column_access (id INTEGER PRIMARY KEY, query_execution_id int, table_name TEXT, column_name TEXT, last_seen bigint);";
+    static final String CREATE_CA = "CREATE TABLE column_access (id INTEGER PRIMARY KEY, query_execution_id long, table_name TEXT, column_name TEXT, last_seen bigint);";
     static final String CREATE_CA_I = "CREATE INDEX caqe ON column_access(query_execution_id ASC);";
     static final String CREATE_QE = "CREATE TABLE query_execution (id INTEGER PRIMARY KEY, query_hash int, stack_hash int, last_seen bigint, description text);";
     static final String CREATE_QE_I1 = "CREATE INDEX qeqh ON query_execution(query_hash ASC);";
@@ -26,12 +26,12 @@ public class Util {
 	static DataSource ds = null;
 	private static File dbPath = null;
 	private static final Logger log = Logger.getLogger("org.kered.dko.persistence.Util");
-	
-	public static void setPersistenceDatabasePath(File f) {
+
+	public static void setPersistenceDatabasePath(final File f) {
 		dbPath = f;
 		ds = null;
 	}
-	
+
 	static boolean warnedNoSqlite3 = false;
 
 	public static DataSource getDS() {
@@ -72,7 +72,7 @@ public class Util {
 				checkQueryExecution(conn);
 				checkColumnAccess(conn);
 			} catch (final SQLException e) {
-				log.warning("I could not confirm the state of the persistence database ("+ PERSISTENCE_DB.getPath() 
+				log.warning("I could not confirm the state of the persistence database ("+ PERSISTENCE_DB.getPath()
 						+"), so the usage monitor will be diabled for this query.  This will not effect its output, "
 						+ "only its speed.  This is the underlying error: "+ e);
 				return null;
@@ -85,7 +85,7 @@ public class Util {
 			}
 			ds = new SingleThreadedDataSource(new JDBCDriverDataSource(
 					Constants.DB_TYPE.SQLITE3, url), 10000, true);
-			
+
 //			try {
 //				Package pkg = Class.forName("org.kered.dko.persistence.QuerySize").getPackage();
 //				Context[] contexts = {Context.getVMContext(), Context.getThreadContext(), Context.getThreadGroupContext() };
@@ -100,7 +100,7 @@ public class Util {
 		return ds;
 	}
 
-	private static void checkQueryExecution(Connection conn) throws SQLException {
+	private static void checkQueryExecution(final Connection conn) throws SQLException {
 		final Statement stmt = conn.createStatement();
 		try {
 			final ResultSet rs = stmt.executeQuery("select count(1) from query_execution");
@@ -116,7 +116,7 @@ public class Util {
 		stmt.close();
 	}
 
-	private static void checkColumnAccess(Connection conn) throws SQLException {
+	private static void checkColumnAccess(final Connection conn) throws SQLException {
 		final Statement stmt = conn.createStatement();
 		try {
 			final ResultSet rs = stmt.executeQuery("select count(1) from column_access");
@@ -131,7 +131,7 @@ public class Util {
 		stmt.close();
 	}
 
-	private static void checkQuerySize(Connection conn) throws SQLException {
+	private static void checkQuerySize(final Connection conn) throws SQLException {
 		final Statement stmt = conn.createStatement();
 		try {
 			final ResultSet rs = stmt.executeQuery("select count(1) from query_size");

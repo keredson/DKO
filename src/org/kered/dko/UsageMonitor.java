@@ -46,12 +46,12 @@ class UsageMonitor<T extends Table> {
 	public long rowCount = 0;
 	private final int queryHash;
 	private final Class<T> queryType;
-	private int stackHash;
+	private final int stackHash;
 	private QueryExecution qe;
 	private Set<Field<?>> selectedFieldSet;
-	private Set<Field<?>> seenFields = new HashSet<Field<?>>();
-	private DataSource ds;
-	private boolean newQE;
+	private final Set<Field<?>> seenFields = new HashSet<Field<?>>();
+	private final DataSource ds;
+	private final boolean newQE;
 	private boolean shutdown = false;
 	private static long warnBadFKUsageCount = 0;
 
@@ -67,7 +67,7 @@ class UsageMonitor<T extends Table> {
 			log.severe(t.toString());
 		}
 	}
-	
+
 	@Override
 	protected void finalize() throws Throwable {
 		shutdown();
@@ -81,18 +81,18 @@ class UsageMonitor<T extends Table> {
 		} else {
 			try {
 				used = ColumnAccess.ALL.where(ColumnAccess.QUERY_EXECUTION_ID.eq(qe==null ? null : qe.getId())).mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				e.printStackTrace();
 				used = new HashMap<String, Map<String, ColumnAccess>>();
-			}			
+			}
 		}
-		long threshold = System.currentTimeMillis() - ONE_DAY;
+		final long threshold = System.currentTimeMillis() - ONE_DAY;
 		if (seenFields==null) {
 			System.err.println("Well, seenFields shouldn't be null here, but it is.  WTF?");
 		}
-		for (Field<?> f : seenFields) {
-			String tableName = Util.getTableName(f.TABLE);
-			Map<String, ColumnAccess> columns = used.get(tableName);
+		for (final Field<?> f : seenFields) {
+			final String tableName = Util.getTableName(f.TABLE);
+			final Map<String, ColumnAccess> columns = used.get(tableName);
 			ColumnAccess ca = columns==null ? null : columns.get(f.NAME);
 			if (ca == null) {
 				ca = new ColumnAccess()
@@ -102,14 +102,14 @@ class UsageMonitor<T extends Table> {
 					.setLastSeen(System.currentTimeMillis());
 				try {
 					ca.insert(ds);
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			} else if (ca.getLastSeen() < threshold) {
 				ca.setLastSeen(System.currentTimeMillis());
 				try {
 					ca.update(ds);
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			}
@@ -134,9 +134,9 @@ class UsageMonitor<T extends Table> {
 			log.info(msg);
 		}
 	}
-	
+
 	static <T extends Table> UsageMonitor build(final DBQuery<T> query) {
-		Class<T> type = query.getType();
+		final Class<T> type = query.getType();
 		if (QueryExecution.class.equals(type)) return null;
 		if (QuerySize.class.equals(type)) return null;
 		if (ColumnAccess.class.equals(type)) return null;
@@ -145,7 +145,7 @@ class UsageMonitor<T extends Table> {
 	}
 
 	private UsageMonitor(final DBQuery<T> query) {
-		
+
 		ds = org.kered.dko.persistence.Util.getDS();
 
 		// grab the current stack trace
@@ -171,23 +171,23 @@ class UsageMonitor<T extends Table> {
 			.setLastSeen(System.currentTimeMillis());
 			try {
 				qe.insert(ds);
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		// update last_seen if older than a day 
+		// update last_seen if older than a day
 		if (qe!=null && (qe.getLastSeen()==null || qe.getLastSeen() < System.currentTimeMillis() - ONE_DAY)) {
 			qe.setLastSeen(System.currentTimeMillis());
 			try {
 				qe.update(ds);
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 		this.query = query;
 		this.queryType = query.getType();
         //System.err.println("queryHash "+ queryHash +" "+ query.hashCode());
@@ -308,7 +308,7 @@ class UsageMonitor<T extends Table> {
 	void setSelectedFields(final Field<?>[] selectedFields) {
 		if (selectedFields==null) throw new IllegalArgumentException("selectedFields cannot be null");
 		this.selectedFieldSet = new HashSet<Field<?>>();
-		for (Field<?> f : selectedFields) selectedFieldSet.add(f);
+		for (final Field<?> f : selectedFields) selectedFieldSet.add(f);
 	}
 
 	DBQuery<T> getSelectOptimizedQuery() {
@@ -319,17 +319,17 @@ class UsageMonitor<T extends Table> {
 				return query;
 			}
 			if (newQE) return query;
-			
-			Map<String, Map<String, ColumnAccess>> used = qe.getColumnAccessSet().mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
+
+			final Map<String, Map<String, ColumnAccess>> used = qe.getColumnAccessSet().mapBy(ColumnAccess.TABLE_NAME, ColumnAccess.COLUMN_NAME);
 			//final Map<Field<?>,Long> used = qc.get(stackTraceHashString);
 			//System.err.println("used "+ used +" @ "+ this.queryHash);
 			final Set<Field<?>> deffer = new HashSet<Field<?>>();
 			final List<Field<?>> originalSelectedFields = query.getSelectFields(false);
-			long threshold = qe.getLastSeen() - FORTY_FIVE_DAYS;
+			final long threshold = qe.getLastSeen() - FORTY_FIVE_DAYS;
 			for (final Field<?> f : originalSelectedFields) {
-				Map<String, ColumnAccess> columns = used.get(Util.getTableName(f.TABLE));
+				final Map<String, ColumnAccess> columns = used.get(Util.getTableName(f.TABLE));
 				if (columns==null) continue;
-				ColumnAccess ca = columns.get(f.NAME);
+				final ColumnAccess ca = columns.get(f.NAME);
 				if (ca==null || ca.getLastSeen() < threshold) {
 					deffer.add(f);
 				}
@@ -343,7 +343,7 @@ class UsageMonitor<T extends Table> {
 			//System.err.println("getOptimizedQuery optimized!");
 			this.selectOptimized  = true;
 			return (DBQuery<T>) query.deferFields(deffer);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			e.printStackTrace();
 			return query;
 		} finally {
@@ -409,13 +409,13 @@ class UsageMonitor<T extends Table> {
 			while (true) {
 				try {
 					final UsageMonitor um = querySizes.take();
-					DataSource ds = org.kered.dko.persistence.Util.getDS();
+					final DataSource ds = org.kered.dko.persistence.Util.getDS();
 					if (ds==null) {
 						log.warning("I could not load the usage monitor's datasource, so I'm stopping collecting performance metrics.");
 						return;
 					}
 					// final int id = Math.abs(um.queryHashCode);
-					final int id = um.queryHash;
+					final long id = um.queryHash;
 					final QuerySize qs = QuerySize.ALL.use(ds).get(
 							QuerySize.ID.eq(id));
 					// if (qs!=null && qs.getHashCode()!=hash) {

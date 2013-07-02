@@ -32,12 +32,12 @@ public class TestUsageMonitor extends TestCase {
 			f = File.createTempFile("dko_persistence_unit_test_", ".db");
 			System.err.println(f);
 			Util.setPersistenceDatabasePath(f);
-			MysqlDataSource ds = new MysqlDataSource();
+			final MysqlDataSource ds = new MysqlDataSource();
 			ds.setUser("root");
 			ds.setDatabaseName("nosco_test_jpetstore");
-			Context vmContext = Context.getVMContext();
+			final Context vmContext = Context.getVMContext();
 			vmContext.setDataSource(ds).setAutoUndo(false);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -54,23 +54,23 @@ public class TestUsageMonitor extends TestCase {
 
 	public void testQueryExecutionCreate() throws Exception {
 		SharedDBTests.printTestName();
-		long baseCount = QueryExecution.ALL.count();
+		final long baseCount = QueryExecution.ALL.count();
 		Item.ALL.asList();
 		assertEquals(baseCount+1, QueryExecution.ALL.count());
 	}
 
 	public void testQueryExecutionCreateLoop() throws Exception {
 		SharedDBTests.printTestName();
-		long baseCount = QueryExecution.ALL.count();
+		final long baseCount = QueryExecution.ALL.count();
 		for (int i=0; i<5; ++i) Item.ALL.asList();
 		assertEquals(baseCount+1, QueryExecution.ALL.count());
 	}
 
 	public void testColumnAccessCreate() throws Exception {
 		SharedDBTests.printTestName();
-		long baseCount = ColumnAccess.ALL.count();
+		final long baseCount = ColumnAccess.ALL.count();
 		Item example = null;
-		for (Item item : Item.ALL) {
+		for (final Item item : Item.ALL) {
 			item.getAttr3();
 			example = item;
 		}
@@ -80,11 +80,12 @@ public class TestUsageMonitor extends TestCase {
 
 	public void testColumnAccessCreateLoop() throws Exception {
 		SharedDBTests.printTestName();
-		long baseCount = ColumnAccess.ALL.count();
+		final long baseCount = ColumnAccess.ALL.count();
 		for (int i=0; i<5; ++i) {
 			Item example = null;
-			for (Item item : Item.ALL) {
+			for (final Item item : Item.ALL) {
 				item.getAttr3();
+//				item.getAttr2();
 				example = item;
 			}
 			shutdownUsageMonitor(example);
@@ -92,11 +93,11 @@ public class TestUsageMonitor extends TestCase {
 		assertEquals(baseCount+1, ColumnAccess.ALL.count());
 	}
 
-	private void shutdownUsageMonitor(Item example) throws Exception {
-		Field umf = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
+	private void shutdownUsageMonitor(final Item example) throws Exception {
+		final Field umf = Table.class.getDeclaredField("__NOSCO_USAGE_MONITOR");
 		umf.setAccessible(true);
-		Object um = umf.get(example);
-		Method shutdown = Class.forName("org.kered.dko.UsageMonitor").getDeclaredMethod("shutdown");
+		final Object um = umf.get(example);
+		final Method shutdown = Class.forName("org.kered.dko.UsageMonitor").getDeclaredMethod("shutdown");
 		shutdown.setAccessible(true);
 		shutdown.invoke(um);
 	}

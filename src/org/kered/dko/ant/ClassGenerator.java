@@ -999,15 +999,16 @@ class ClassGenerator {
 		}
 		br.write("\t\tMap<Field<?>,Object> updates = new HashMap<Field<?>,Object>();\n");
 		for (final String column : columns.keySet()) {
-			br.write("\t\tupdates.put("+ getFieldName(column) +", "
+			br.write("\t\tif ("+ getInstanceFieldName(column) +"!=null) updates.put("+ getFieldName(column) +", "
 		+ convertToOriginalType(pkgName, table, column, columns.getString(column), getInstanceFieldName(column)) +");\n");
 		}
 		br.write("\t\tquery = query.set(updates);\n");
-		br.write("\t\tObject _pk = query.insert();\n");
+		br.write("\t\tObject _rowid = query.insert();\n");
+		// this rowid code doesn't work if the pk isn't the autogenned id
 		if (pkSet.size() == 1) {
 			final String column = pkSet.iterator().next();
 			final String type = getFieldType(pkgName, table, column, columns.getString(column));
-			br.write("\t\tif (_pk!=null) "+ getInstanceFieldName(column) +" = ("+ type +")_pk;\n");
+			br.write("\t\tif (_rowid!=null) "+ getInstanceFieldName(column) +" = ("+ type +")_rowid;\n");
 		}
 		br.write("\t\tif (__NOSCO_CALLBACK_INSERT_POST!=null) "
 				+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"

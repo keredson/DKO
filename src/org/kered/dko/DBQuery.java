@@ -872,9 +872,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Connection conn = info.a;
 		try {
 			if (getDBType()==DB_TYPE.MYSQL) {
+				// mysql doesn't clear this var if no auto-increment field exists.
+				// set it to a known value so we can test if it was changed by
+				// our insert.
 				final Statement s = conn.createStatement();
 				try {
-					s.execute("SELECT LAST_INSERT_ID(-1)");
+					s.execute("SELECT LAST_INSERT_ID(0)");
 				} finally {
 					s.close();
 				}
@@ -895,9 +898,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						final ResultSet rs = s.getResultSet();
 						try {
 							if (rs.next()) {
-								final int pk = rs.getInt(1);
+								final long pk = rs.getLong(1);
 								System.err.println("LAST_INSERT_ID() == "+ pk);
-								if (pk!=-1) return pk;
+								if (pk!=0) return pk;
 							}
 						} finally {
 							rs.close();
@@ -913,7 +916,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						final ResultSet rs = s.getResultSet();
 						try {
 							if (rs.next()) {
-								final int pk = rs.getInt(1);
+								final long pk = rs.getLong(1);
 								return pk;
 							}
 						} finally {

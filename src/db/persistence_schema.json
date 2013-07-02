@@ -9,20 +9,20 @@
             "last_seen": "bigint",
             "schema_name": "text",
             "table_name": "text",
-            "id": "integer",
+            "id": "long",
             "hash_code": "int",
             "row_count": "bigint"
         },
         "column_access": {
-            "id": "integer",
-            "query_execution_id": "int",
+            "id": "long",
+            "query_execution_id": "long",
             "table_name": "text",
             "column_name": "text",
             "last_seen": "bigint"
         },
         "query_execution": {
             "description": "text",
-            "id": "integer",
+            "id": "long",
             "query_hash": "int",
             "stack_hash": "int",
             "last_seen": "bigint"

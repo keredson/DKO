@@ -111,7 +111,8 @@ public abstract class Condition {
 			PreparedStatement ps = null;
 			try {
 				stmt = conn.createStatement();
-				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type +")";
+				final String collate = Util.isCollateType(type) ? " COLLATE database_default" : "";
+				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type + collate +")";
 				Util.log(sql, null);
 				stmt.execute(sql);
 				ps = conn.prepareStatement("insert into "+ tmpTableName +" values (?)");

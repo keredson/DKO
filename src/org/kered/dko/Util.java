@@ -509,4 +509,13 @@ public class Util {
 		else ps.setObject(i, o);
 	}
 
+	static String[] collateTypes = {"char", "varchar", "text", "nchar", "nvarchar", "ntext"};
+	public static boolean isCollateType(String type) {
+		type = type.toLowerCase();
+		for (final String ctype : collateTypes) {
+			if (type.startsWith(ctype)) return true;
+		}
+		return false;
+	}
+
 }

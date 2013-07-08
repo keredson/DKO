@@ -882,4 +882,67 @@ public abstract class Condition {
 		void visited(Condition c);
 	}
 
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final T a, final T c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final Field<T> a, final T c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final SQLFunction a, final T c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final T a, final Field<T> c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final T a, final SQLFunction c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final Field<T> a, final Field<T> c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final Field<T> a, final SQLFunction c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final SQLFunction a, final Field<T> c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
+	/**
+	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
+	 */
+	public static <T> Condition between(T b, final SQLFunction a, final SQLFunction c) {
+		return new Ternary(b, " between ", a, " and ",  c);
+	}
+
 }

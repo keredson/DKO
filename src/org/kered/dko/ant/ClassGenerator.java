@@ -1420,6 +1420,7 @@ class ClassGenerator {
 		put("blob", Blob.class);
 		put("longblob", Blob.class);
 		put("datetime", Timestamp.class);
+		put("datetime2", Timestamp.class);
 		put("date", Date.class);
 		put("timestamp", Timestamp.class);
 		put("year", Integer.class);

@@ -111,9 +111,12 @@ public class Util {
 			final Blob blob = rs.getBlob(i);
 			return (S) blob;
 		}
+		if (type == Timestamp.class) {
+			final Timestamp ts = rs.getTimestamp(i);
+			return (S) ts;
+		}
 		Object o = rs.getObject(i);
 		if (o instanceof Short) o = ((Short)o).intValue();
-		if (o instanceof Long && "datetime".equals(field.SQL_TYPE)) o = new Timestamp((Long) o);
 		return (S) o;
 	}
 

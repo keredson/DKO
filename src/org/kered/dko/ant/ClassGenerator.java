@@ -259,9 +259,7 @@ class ClassGenerator {
 		}
 
 	private static String getFieldName(String column) {
-		if (!column.contains("_") && column.matches(".*[A-Z].*") && column.matches(".*[a-z].*")) {
-			column = splitCamelCase(column);
-		}
+		column = splitIfCamelCase(column);
 		column = column
 			.replace("%", "_PERCENT")
 			.replace("-", "_DASH_")
@@ -269,6 +267,21 @@ class ClassGenerator {
 			.toUpperCase();
 		if (Constants.INVALID_FIELD_NAMES.contains(column)) return ""+ column +"_FIELD";
 		return column;
+	}
+
+	private static String splitIfCamelCase(String column) {
+		if (shouldSplitCamelCase(column)) {
+			column = splitCamelCase(column);
+		}
+		return column;
+	}
+
+	private static boolean shouldSplitCamelCase(String column) {
+		return !column.contains("_") 
+				&& !column.contains(" ") 
+				&& !column.contains("-") 
+				&& column.matches(".*[A-Z].*") 
+				&& column.matches(".*[a-z].*");
 	}
 
 	private static String getFieldName(final Collection<String> columns) {
@@ -398,7 +411,7 @@ class ClassGenerator {
 				for (final String name : instances.keySet()) {
 					++ count;
 					String value = instances.optJSONArray(name).getString(0);
-					String javaName = name.toUpperCase().replaceAll("\\W", "_");
+					String javaName = splitIfCamelCase(name).toUpperCase().replaceAll("\\W", "_");
 					if (Character.isDigit(javaName.charAt(0))) javaName = "_"+javaName;
 					if (usedNames.contains(javaName)) {
 						javaName = javaName +"_"+ value.toUpperCase().replaceAll("\\W", "_");

@@ -509,6 +509,9 @@ public class Util {
 			}
 		}
 		else if (o instanceof Blob) ps.setBlob(i, (Blob) o);
+		else if (o != null && "org.codehaus.groovy.runtime.GStringImpl".equals(o.getClass().getName())) {
+			ps.setObject(i, o.toString());
+		}
 		else ps.setObject(i, o);
 	}
 

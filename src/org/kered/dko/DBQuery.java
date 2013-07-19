@@ -2,8 +2,6 @@ package org.kered.dko;
 
 import static org.kered.dko.Constants.DIRECTION.ASCENDING;
 
-import java.io.File;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,6 +64,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	DB_TYPE dbType = null;
 	private boolean includeCrossInSelect = false;
 	private boolean onlySelectFromFirstTableAndJoins = true;
+	List<Union<T>> unions = null;
 
 	private TableInfo addTable(final Class<? extends Table> table) {
 		final String tableName = genTableName(table, usedTableNames);
@@ -131,6 +130,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		dbType = q.dbType;
 		defaultDS = q.defaultDS;
 		onlySelectFromFirstTableAndJoins = q.onlySelectFromFirstTableAndJoins;
+		if (q.unions!=null) {
+			unions = new ArrayList<Union<T>>(q.unions);
+		}
 	}
 
 	DBQuery(final Class<T> tableClass) {
@@ -1773,6 +1775,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return q;
 	}
 
+	@Override
 	public <S> Field<S> asInnerQueryOf(final Field<S> field) {
 		return new SubQueryField<T,S>(field, (DBQuery<T>) this.onlyFields(field));
 	}
@@ -1834,6 +1837,36 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public String explainAsText() throws SQLException {
 		final DBRowIterator<T> i = new DBRowIterator<T>(this, false);
 		return i.explainAsText();
+	}
+
+	static class Union<T extends Table> {
+		final DBQuery<T> q;
+		final boolean all;
+
+		Union(DBQuery<T> q, boolean all) {
+			this.q = q;
+			this.all = all;
+		}
+	}
+
+	@Override
+	public Query<T> union(Query<T> other) {
+		return union(other, false);
+	}
+
+	private Query<T> union(Query<T> other, boolean all) {
+		if (!(other instanceof DBQuery)) {
+			throw new RuntimeException("Cannot union a database-backed query to a non-database-backed query.");
+		}
+		DBQuery<T> q = new DBQuery<T>(this);
+		if (q.unions == null) q.unions = new ArrayList<Union<T>>();
+		q.unions.add(new Union<T>((DBQuery<T>) other, all));
+		return q;
+	}
+
+	@Override
+	public Query<T> unionAll(Query<T> other) {
+		return union(other, true);
 	}
 
 }

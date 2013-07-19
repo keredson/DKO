@@ -726,4 +726,14 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return this.getClass().getSimpleName() + " does not implement explainAsText().";
 	}
 
+	@Override
+	public Query<T> union(Query<T> other) {
+		throw new UnsupportedOperationException(" does not implement union().");
+	}
+
+	@Override
+	public Query<T> unionAll(Query<T> other) {
+		throw new UnsupportedOperationException(" does not implement union().");
+	}
+
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -296,6 +295,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	/**
 	 * @deprecated use delete()
 	 */
+	@Deprecated
 	public int deleteAll() throws SQLException;
 
 //	/**
@@ -500,6 +500,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @throws SQLException
 	 * @deprecated Use {@link #collectBy(Field&lt;S&gt;)} instead
 	 */
+	@Deprecated
 	public <S> Map<S, Collection<T>> multiMapBy(Field<S> byField) throws SQLException;
 
 	/**
@@ -611,6 +612,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 * @deprecated Use {@link #asIterableOf(Field<S>)} instead
 	 */
+	@Deprecated
 	public <S> Iterable<S> select(Field<S> field);
 
 	/**
@@ -926,5 +928,19 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @return
 	 */
 	public String explainAsText() throws SQLException;
+
+	/**
+	 * Unions this query to the given query with the SQL UNION command.
+	 * @param other
+	 * @return the unioned query
+	 */
+	public Query<T> union(Query<T> other);
+
+	/**
+	 * Unions this query to the given query with the SQL UNION ALL command.
+	 * @param other
+	 * @return the unioned query
+	 */
+	public Query<T> unionAll(Query<T> other);
 
 }

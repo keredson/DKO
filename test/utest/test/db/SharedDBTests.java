@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1096,6 +1095,45 @@ public class SharedDBTests extends TestCase {
 	public void testExplain() throws SQLException {
 		printTestName();
 		System.err.println(Item.ALL.explainAsText());
+	}
+
+	public void testUnion() throws SQLException {
+		printTestName();
+		List<Item> items = Item.ALL.where(Item.ITEMID.eq("EST-1"))
+			.union(Item.ALL.where(Item.ITEMID.eq("EST-10")))
+			.asList();
+		assertEquals(2, items.size());
+		assertEquals("EST-1", items.get(0).getItemid());
+		assertEquals("EST-10", items.get(1).getItemid());
+	}
+
+	public void testUnionWithDups() throws SQLException {
+		printTestName();
+		List<Item> items = Item.ALL.where(Item.ITEMID.eq("EST-1"))
+			.union(Item.ALL.where(Item.ITEMID.eq("EST-1")))
+			.asList();
+		assertEquals(1, items.size());
+		assertEquals("EST-1", items.get(0).getItemid());
+	}
+
+	public void testUnionAll() throws SQLException {
+		printTestName();
+		List<Item> items = Item.ALL.where(Item.ITEMID.eq("EST-1"))
+			.unionAll(Item.ALL.where(Item.ITEMID.eq("EST-1")))
+			.asList();
+		assertEquals(2, items.size());
+		assertEquals("EST-1", items.get(0).getItemid());
+		assertEquals("EST-1", items.get(1).getItemid());
+	}
+
+	public void testUnionInInnerQuery() throws SQLException {
+		printTestName();
+		Query<Item> union = Item.ALL.where(Item.ITEMID.eq("EST-1")).onlyFields(Item.ITEMID)
+			.union(Item.ALL.where(Item.ITEMID.eq("EST-10")).onlyFields(Item.ITEMID));
+		List<Item> items = Item.ALL.where(Item.ITEMID.in(union)).asList();
+		assertEquals(2, items.size());
+		assertEquals("EST-1", items.get(0).getItemid());
+		assertEquals("EST-10", items.get(1).getItemid());
 	}
 
 }

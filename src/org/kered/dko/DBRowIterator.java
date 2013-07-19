@@ -60,7 +60,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		this(dbQuery, true);
 	}
 	DBRowIterator(final DBQuery<T> dbQuery, final boolean useWarnings) {
-		if (useWarnings && Context.usageWarningsEnabled()) {
+		if (useWarnings && Context.usageWarningsEnabled() && dbQuery.unions == null) {
 			// make sure usage monitor has loaded stats for all the tables we care about
 //			for (final TableInfo tableInfo : dbQuery.getAllTableInfos()) {
 //				UsageMonitor.loadStatsFor(tableInfo.tableClass);
@@ -123,25 +123,16 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
 		selectedBoundFields = toArray(query.getSelectFields(true));
 		final StringBuffer sb = new StringBuffer();
-		sb.append("select ");
-		if (query.distinct) sb.append("distinct ");
-		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
-			sb.append(" top ").append(query.top).append(" ");
-		}
 		final List<Object> bindings = new ArrayList<Object>();
-		if (query.globallyAppliedSelectFunction == null) {
-			sb.append(Util.joinFields(context, ", ", selectedBoundFields, bindings));
-		} else {
-			final String[] x = new String[selectedBoundFields.length];
-			for (int i=0; i < x.length; ++i) {
-				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i].getSQL(context, bindings) +")";
+		appendSelectFromWhere(query, selectedBoundFields, context, sb, bindings);
+		if (query.unions != null) {
+			for (DBQuery.Union<T> union : query.unions) {
+				sb.append(" UNION ");
+				if (union.all) sb.append("ALL ");
+				Field<?>[] selectedBoundFieldsOther = toArray(union.q.getSelectFields(true));
+				appendSelectFromWhere(union.q, selectedBoundFieldsOther, context, sb, bindings);
 			}
-			sb.append(Util.join(", ", x));
 		}
-		sb.append(query.getFromClause(context, bindings));
-		final Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
-		bindings.addAll(ret.b);
-		sb.append(ret.a);
 
 		final List<DIRECTION> directions = query.getOrderByDirections();
 		final List<Field<?>> fields = query.getOrderByFields();
@@ -172,6 +163,28 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		return new Tuple2<String,List<Object>>(sql, bindings);
 	}
 
+	private static <T extends Table> void appendSelectFromWhere(DBQuery<T> query, final Field<?>[] selectedBoundFields,
+			final SqlContext context, final StringBuffer sb, List<Object> bindings) {
+		sb.append("select ");
+		if (query.distinct) sb.append("distinct ");
+		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
+			sb.append(" top ").append(query.top).append(" ");
+		}
+		if (query.globallyAppliedSelectFunction == null) {
+			sb.append(Util.joinFields(context, ", ", selectedBoundFields, bindings));
+		} else {
+			final String[] x = new String[selectedBoundFields.length];
+			for (int i=0; i < x.length; ++i) {
+				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i].getSQL(context, bindings) +")";
+			}
+			sb.append(Util.join(", ", x));
+		}
+		sb.append(query.getFromClause(context, bindings));
+		final Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
+		bindings.addAll(ret.b);
+		sb.append(ret.a);
+	}
+
 	static Field<?>[] toArray(final List<Field<?>> fields) {
 		final Field<?>[] ret = new Field<?>[fields.size()];
 		int i = 0;
@@ -181,11 +194,13 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		return ret;
 	}
 
+	@Override
 	public Object[] next() {
 		peek();
 		return nextRows.poll();
 	}
 
+	@Override
 	public Object[] peek() {
 		if (!done && nextRows.isEmpty()) {
 			try {

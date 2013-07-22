@@ -1136,4 +1136,15 @@ public class SharedDBTests extends TestCase {
 		assertEquals("EST-10", items.get(1).getItemid());
 	}
 
+	public void testUnionSharedOnlyFields() throws SQLException {
+		printTestName();
+		Query<Item> union = Item.ALL.where(Item.ITEMID.eq("EST-1"))
+				.union(Item.ALL.where(Item.ITEMID.eq("EST-10")))
+				.onlyFields(Item.ITEMID);
+			List<Item> items = Item.ALL.where(Item.ITEMID.in(union)).asList();
+			assertEquals(2, items.size());
+			assertEquals("EST-1", items.get(0).getItemid());
+			assertEquals("EST-10", items.get(1).getItemid());
+	}
+
 }

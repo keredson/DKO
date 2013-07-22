@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -369,37 +370,26 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> deferFields(final Field<?>... fields) {
-		final DBQuery<T> q = new DBQuery<T>(this);
-		q.deferSet = new HashSet<Field<?>>();
-		if (deferSet!=null) q.deferSet.addAll(deferSet);
-		for (final Field<?> field : fields) {
-			q.deferSet.add(field);
-		}
-		return q;
+		return deferFields(Arrays.asList(fields));
 	}
 
 	@Override
-	public Query<T> deferFields(final Collection<Field<?>> fields) {
+	public DBQuery<T> deferFields(final Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.deferSet = new HashSet<Field<?>>();
 		if (deferSet!=null) q.deferSet.addAll(deferSet);
 		q.deferSet.addAll(fields);
+		if (q.unions != null) {
+			for (Union<T> u : unions) {
+				u.q = u.q.deferFields(fields);
+			}
+		}
 		return q;
 	}
 
 	@Override
 	public Query<T> onlyFields(final Field<?>... fields) {
-		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = new LinkedHashSet<Field<?>>();
-		for (final Field<?> field : fields) {
-			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-				throw new RuntimeException("cannot use bound fields " +
-						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-						"primary/first table");
-			}
-			q.onlySet.add(field);
-		}
-		return q;
+		return onlyFields(Arrays.asList(fields));
 	}
 
 	@Override
@@ -413,6 +403,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						"primary/first table");
 			}
 			q.onlySet.add(field);
+		}
+		if (q.unions != null) {
+			for (Union<T> u : unions) {
+				u.q = u.q.onlyFields(fields);
+			}
 		}
 		return q;
 	}
@@ -1840,7 +1835,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	static class Union<T extends Table> {
-		final DBQuery<T> q;
+		DBQuery<T> q;
 		final boolean all;
 
 		Union(DBQuery<T> q, boolean all) {

@@ -141,7 +141,12 @@ class UsageMonitor<T extends Table> {
 		if (QuerySize.class.equals(type)) return null;
 		if (ColumnAccess.class.equals(type)) return null;
 		if (org.kered.dko.persistence.Util.getDS()==null) return null;
-		return new UsageMonitor<T>(query);
+		try {
+			return new UsageMonitor<T>(query);
+		} catch(Throwable e) {
+			log.warning("usage monitor disabled for this query because: "+ e.getMessage());
+			return null;
+		}
 	}
 
 	private UsageMonitor(final DBQuery<T> query) {
@@ -342,7 +347,7 @@ class UsageMonitor<T extends Table> {
 			}
 			//System.err.println("getOptimizedQuery optimized!");
 			this.selectOptimized  = true;
-			return (DBQuery<T>) query.deferFields(deffer);
+			return query.deferFields(deffer);
 		} catch (final SQLException e) {
 			e.printStackTrace();
 			return query;

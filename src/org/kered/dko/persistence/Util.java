@@ -78,7 +78,7 @@ public class Util {
 				return null;
 			} finally {
 				try {
-					conn.close();
+					if (conn!=null) conn.close();
 				} catch (final SQLException e) {
 					e.printStackTrace();
 				}

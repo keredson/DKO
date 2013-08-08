@@ -523,7 +523,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				ps.close();
 				return count;
 			} else {
-				final String sql = "delete from "+ Util.join(", ", q.getTableNameList()) + wcab.a;
+				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLITE3 multi-table delete " +
+						"is not yet supported");
+				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
 				final PreparedStatement ps = conn.prepareStatement(sql);
 				q.setBindings(ps, wcab.b);
@@ -935,10 +937,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return null;
 	}
 
-	List<String> getTableNameList() {
-		return getTableNameList(null);
-	}
-
 	List<String> getTableNameList(final SqlContext context) {
 		final DBQuery<?> rootQuery = context == null ? this : context.getRootQuery();
 		final DataSource ds = rootQuery.getDataSource();
@@ -952,7 +950,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ti.tableClass));
 				final String noContextTableName = "".equals(schema) ? Util.getTableName(ti.tableClass) : schema+"."+Util.getTableName(ti.tableClass);
 				final String fullTableName = context==null ? noContextTableName : context.getFullTableName(ti);
-				names.add(fullTableName +" "+ ti.tableName);
+				String tblNameWithAlias = fullTableName +(ti.tableName==null ? "" : " "+ ti.tableName);
+				names.add(tblNameWithAlias);
 			}
 		}
 		//System.err.println(names);

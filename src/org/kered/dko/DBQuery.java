@@ -523,7 +523,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				ps.close();
 				return count;
 			} else {
-				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("SQLITE3 multi-table delete " +
+				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("multi-table delete " +
 						"is not yet supported");
 				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);

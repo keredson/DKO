@@ -140,8 +140,8 @@ class UsageMonitor<T extends Table> {
 		if (QueryExecution.class.equals(type)) return null;
 		if (QuerySize.class.equals(type)) return null;
 		if (ColumnAccess.class.equals(type)) return null;
-		if (org.kered.dko.persistence.Util.getDS()==null) return null;
 		try {
+			if (org.kered.dko.persistence.Util.getDS()==null) return null;
 			return new UsageMonitor<T>(query);
 		} catch(Throwable e) {
 			log.warning("usage monitor disabled for this query because: "+ e.getMessage());

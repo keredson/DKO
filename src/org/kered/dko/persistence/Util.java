@@ -58,8 +58,12 @@ public class Util {
 			if (dbPath != null) {
 				PERSISTENCE_DB = dbPath;
 			} else if (path == null) {
-				final File BASE_DIR = new File(
-						System.getProperty("user.home"));
+				String userHome = System.getProperty("user.home");
+				if (userHome==null || "?".equals(userHome)) {
+					throw new RuntimeException("System property 'user.home' not set.  "
+						+ "This is a known bug in some versions of the JDK.  See JDK-6972329.");
+				}
+				final File BASE_DIR = new File(userHome);
 				PERSISTENCE_DB = new File(BASE_DIR, ".dko_persistence.db");
 			} else {
 				PERSISTENCE_DB = new File(path);

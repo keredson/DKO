@@ -943,4 +943,12 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Query<T> unionAll(Query<T> other);
 
+	/**
+	 * Sets the number of seconds to pass to the JDBC the driver to wait for a query to execute.
+	 * If the limit is exceeded, a SQLException is thrown.
+	 * @param other
+	 * @return the unioned query
+	 */
+	public Query<T> setQueryTimeout(int seconds);
+
 }

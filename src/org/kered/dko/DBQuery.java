@@ -66,6 +66,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private boolean includeCrossInSelect = false;
 	private boolean onlySelectFromFirstTableAndJoins = true;
 	List<Union<T>> unions = null;
+	private Integer timeout = null;
 
 	private TableInfo addTable(final Class<? extends Table> table) {
 		final String tableName = genTableName(table, usedTableNames);
@@ -134,6 +135,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (q.unions!=null) {
 			unions = new ArrayList<Union<T>>(q.unions);
 		}
+		timeout = q.timeout;
 	}
 
 	DBQuery(final Class<T> tableClass) {
@@ -325,7 +327,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, bindings);
 		PreparedStatement ps;
 		try {
-			ps = conn.prepareStatement(sql);
+			ps = createPS(sql, conn);
 			setBindings(ps, bindings);
 			_preExecute(context, conn);
 			ps.execute();
@@ -458,7 +460,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> info = getConnRW(ds);
 		final Connection conn = info.a;
 		try {
-			final PreparedStatement ps = conn.prepareStatement(sql);
+			final PreparedStatement ps = createPS(sql, conn);
 			setBindings(ps, bindings);
 			_preExecute(context, conn);
 			ps.execute();
@@ -493,7 +495,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						"is not yet supported");
 				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
-				final PreparedStatement ps = conn.prepareStatement(sql);
+				final PreparedStatement ps = createPS(sql, conn);
 				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
@@ -504,7 +506,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						"is not yet supported");
 				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
-				final PreparedStatement ps = conn.prepareStatement(sql);
+				final PreparedStatement ps = createPS(sql, conn);
 				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
@@ -516,7 +518,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				if (!"".equals(schemaWithDot)) schemaWithDot = schemaWithDot + ".";
 				final String sql = "delete from "+ schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
-				final PreparedStatement ps = conn.prepareStatement(sql);
+				final PreparedStatement ps = createPS(sql, conn);
 				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
@@ -527,7 +529,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 						"is not yet supported");
 				final String sql = "delete from " + schemaWithDot + Util.getTableName(ofType) + wcab.a;
 				Util.log(sql, wcab.b);
-				final PreparedStatement ps = conn.prepareStatement(sql);
+				final PreparedStatement ps = createPS(sql, conn);
 				q.setBindings(ps, wcab.b);
 				ps.execute();
 				final int count = ps.getUpdateCount();
@@ -882,7 +884,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					s.close();
 				}
 			}
-			final PreparedStatement ps = conn.prepareStatement(sql);
+			final PreparedStatement ps = createPS(sql, conn);
 			q.setBindings(ps, bindings);
 			_preExecute(context, conn);
 			ps.execute();
@@ -935,6 +937,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 
 		return null;
+	}
+
+	PreparedStatement createPS(final String sql, final Connection conn)
+			throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(sql);
+		if (timeout != null) ps.setQueryTimeout(timeout);
+		return ps;
 	}
 
 	List<String> getTableNameList(final SqlContext context) {
@@ -1249,7 +1258,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, null);
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
-		final PreparedStatement ps = conn.prepareStatement(sql);
+		final PreparedStatement ps = createPS(sql, conn);
 		setBindings(ps, bindings);
 		ps.execute();
 		final ResultSet rs = ps.getResultSet();
@@ -1329,7 +1338,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, null);
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
-		final PreparedStatement ps = conn.prepareStatement(sql);
+		final PreparedStatement ps = createPS(sql, conn);
 		setBindings(ps, bindings);
 		_preExecute(context, conn);
 		ps.execute();
@@ -1361,7 +1370,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, null);
 		final Tuple2<Connection,Boolean> connInfo = getConnR(getDataSource());
 		final Connection conn = connInfo.a;
-		final PreparedStatement ps = conn.prepareStatement(sql);
+		final PreparedStatement ps = createPS(sql, conn);
 		setBindings(ps, bindings);
 		_preExecute(context, conn);
 		ps.execute();
@@ -1861,6 +1870,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public Query<T> unionAll(Query<T> other) {
 		return union(other, true);
+	}
+
+	@Override
+	public Query<T> setQueryTimeout(int seconds) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.timeout = seconds;
+		return q;
 	}
 
 }

@@ -736,4 +736,9 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		throw new UnsupportedOperationException(" does not implement union().");
 	}
 
+	@Override
+	public Query<T> setQueryTimeout(int seconds) {
+		return this;
+	}
+
 }

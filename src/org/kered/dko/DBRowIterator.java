@@ -90,7 +90,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			sql = ret.a;
 			Util.log(sql, ret.b);
 			query._preExecute(context, conn);
-			ps = conn.prepareStatement(ret.a);
+			ps = query.createPS(ret.a, conn);
 			query.setBindings(ps, ret.b);
 			ps.execute();
 			rs = ps.getResultSet();
@@ -331,7 +331,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 		Util.log(sql, ret.b);
 		query._preExecute(context, conn);
-		ps = conn.prepareStatement(sql);
+		ps = query.createPS(sql, conn);
 		if (context.dbType == Constants.DB_TYPE.SQLSERVER) {
 			final Statement stmt = conn.createStatement();
 			stmt.execute("SET SHOWPLAN_TEXT on");

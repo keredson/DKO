@@ -158,13 +158,34 @@ public class SchemaExtractor extends Task {
 		}
 	}
 
+	public Map<String,Map<String,Map<String,String>>> getDatabaseTableColumnTypes() throws SQLException {
+		System.err.println("connecting to "+ url);
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url, username, password);
+			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
+			return schemas;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (conn!=null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	@Override
 	public void execute() {
 
-		Connection conn;
+		Connection conn = null;
 		try {
 
 			System.err.println("connecting to "+ url);
-			conn = DriverManager.getConnection (url, username, password);
+			conn = DriverManager.getConnection(url, username, password);
 			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
 			final Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);
 			final Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
@@ -201,8 +222,6 @@ public class SchemaExtractor extends Task {
 				w2.close();
 			}
 
-
-
 		} catch (final SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -212,8 +231,15 @@ public class SchemaExtractor extends Task {
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			if (conn!=null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-
 
 	}
 

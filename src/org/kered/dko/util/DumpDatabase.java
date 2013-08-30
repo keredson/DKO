@@ -8,6 +8,12 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,9 +117,9 @@ public class DumpDatabase {
 		final JComboBox<String> dbTypeSelectBox = new JComboBox<String>(databaseTypes);
 		dbTypeSelectBox.setBorder(new EmptyBorder(5, 10, 5, 10));
 		card.add(dbTypeSelectBox);
-		server = new JTextField("jdbc:sqlserver://127.0.0.1:1433");
+		server = new JTextField("jdbc:sqlserver://server:1433");
 		server.setBorder(new EmptyBorder(2, 10, 2, 10));
-		username = new JTextField("username");
+		username = new JTextField("sa");
 		username.setBorder(new EmptyBorder(2, 10, 2, 10));
 		password = new JPasswordField("password");
 		password.setBorder(new EmptyBorder(2, 10, 2, 10));
@@ -299,9 +305,61 @@ public class DumpDatabase {
 	    card.add(scroll);
 
 		card.add(Box.createRigidArea(new Dimension(0,10)));
-		final JButton open = new JButton("Dump");
-		open.setAlignmentX(Component.CENTER_ALIGNMENT);
-		card.add(open);
+		final JButton dump = new JButton("Dump");
+		dump.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						Connection srcConn = null;
+						Connection destConn = null;
+						Statement srcStmt = null;
+						try {
+							destConn = DriverManager.getConnection("jdbc:sqlite:"+ file.getAbsolutePath());
+							srcConn = DriverManager.getConnection(server.getText(), username.getText(),
+									new String(password.getPassword()));
+							srcStmt = srcConn.createStatement();
+							ResultSet rs = srcStmt.executeQuery(query.getText());
+							ResultSetMetaData metaData = rs.getMetaData();
+							for (int i=0; i<metaData.getColumnCount(); ++i) {
+								System.out.println(metaData.getColumnName(i+1));
+							}
+							while (rs.next()) {
+
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
+						} finally {
+							if (srcStmt!=null) {
+								try {
+									srcStmt.close();
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+							if (srcConn!=null) {
+								try {
+									srcConn.close();
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+							if (destConn!=null) {
+								try {
+									destConn.close();
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+
+					}
+				}).start();
+			}
+		});
+		dump.setAlignmentX(Component.CENTER_ALIGNMENT);
+		card.add(dump);
 		card.add(Box.createRigidArea(new Dimension(0,5)));
 
 		final NextListener nexter = new NextListener() {

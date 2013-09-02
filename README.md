@@ -41,7 +41,7 @@ The constant `Bug.ALL` is of type `Query<Bug>`, as is `Bug.ALL.limit(100)`.  And
 
 The class `Bug` is generated (please don't freak out) direct from your database schema.  Is generated code 
 evil?  Usually yes, but not always.  It's evil if you generate it, modify it and check it into your VCS.  But if it's a 
-build artifact (like your `.class` files) that are never touched by human hands (or git)... then it's OK.  And that's
+build artifact (like your `.class` files) that is never touched by human hands (or git)... then it's OK.  And that's
 what we do here.  (In fact the ONLY way to generate code with DKO is through an Ant task.)
 
 Another example:

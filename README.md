@@ -140,7 +140,7 @@ History
 -------
 The idea of DKO started in 2006 when I first used [Django](https://www.djangoproject.com), 
 liked their query API and thought "jeez I wish
-Java had this".  (I had spend the previous six years as a corporate Java developer)
+Java had this".  (I had spent the previous six years as a corporate Java developer)
 But I quickly fell in love with Python, so I never pursued it.
 Then in 2010 I was thrown back into the Java world when I started at 
 [Two Sigma Investments](http://www.twosigma.com).  I was appalled by our internal use of Hibernate

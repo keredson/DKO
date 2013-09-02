@@ -15,7 +15,7 @@ Well that's just nonsense.  It may work for a 100 entry blog implementation, but
 millions of new rows daily with it (or at least not without a world of pain getting there).  Your database is a shared
 resource on a different
 machine, not an in-memory entity.  And ignoring your schema is a great way to accidentally DOS your database with
-millions of "select * from x where id=35476753" style queries.
+millions of "`select * from x where id=35476753`" style queries.
 
 Plus: **SQL is not the devil!**  It's one of computer science's most successful languages!  The devil 
 is SQL built by string concatenation.  And string identifiers.  And a lack of typing.  And a lack of streaming.
@@ -43,6 +43,8 @@ The class `Bug` is generated (please don't freak out) direct from your database 
 evil?  Usually yes, but not always.  It's evil if you generate it, modify it and check it into your VCS.  But if it's a 
 build artifact (like your `.class` files) that are never touched by human hands (or git)... then it's OK.  And that's
 what we do here.  (In fact the ONLY way to generate code with DKO is through an Ant task.)
+
+Another example:
 
     for (Bug bug : Bug.ALL.where(Bug.REPORTER.eq(Bug.ASSIGNEE))) {
       // people work on their own bugs a lot
@@ -77,7 +79,7 @@ BTW, that works both ways:
     Query<User> q = User.ALL
         .with(Bug.FK_REPORTER_USER)
         .where(Bug.ESTIMATED_TIME.gt(4.5)) // hours
-    // one joined (streaming over `User`) query happens here
+    // only one joined query (streaming over User) happens here
     for (User user : q) {
         // no second query here!
         for (Bug bug : user.getReporterUserSet()) {
@@ -96,17 +98,18 @@ Nor are they limited to one level deep:
     Bug bug = Bug.ALL.with(Bug.FK_REPORTER_USER, User.FK_MANAGER).first();
     System.out.println(bug.getReporterFK().getManagerFK().getName());
 
-Server-side updates of course:
+Server-side updates are supported of course:
 
     long count = Bug.ALL
         .where(Bug.LAST_UPDATED.lt(new Date(2010,06,30)))
         .set(Bug.PRIORITY, 0)
         .update();
 
-You get the drill.  Virtually all SQL operations you care about are supported.  Here are some highlights:
+As are deletes, inserts, etc.  You get the drill.  Virtually all SQL operations you care about are supported.  Here are some highlights:
 
  - Transactions
  - SQL Functions
+ - Joins (FK based and non-FK based)
  - Inner Queries
  - Temp Tables
  - Aggregation / Counting
@@ -121,9 +124,13 @@ Plus some nice touches:
  - Reads (outside transactions) default to database mirrors (if you have them).
  - Selected columns that go unused are optimized away in future runs.
  - DKOs warn you if you're needlessly killing your database (like when you forget a `.with(FK)`).
+ - Lots of helper functions... (Want a `Map<Integer,Bug>` from some field to your object?  Can do!)
 
-And they scale very well.  Measured performance is >98% of raw JDBC for the largest SQL Server databases money can 
+And DKOs scale very well.  Measured performance is >98% of raw JDBC for the largest SQL Server databases money can 
 buy.  And they're small enough to power Android apps (using SQLite).
+
+Plus, and I can't stress this enough:  The code is **boringly simple**.  No byte-code rewriting.  No twenty-layers-of-reflection
+hell.  When you want to know what's going on you don't need a PhD.  Only a debugger.
 
 To learn more, see [DKOs - The Book](http://nosco.googlecode.com/hg/doc/dkos-the-book/dkos-the-book.html).
 

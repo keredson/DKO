@@ -114,7 +114,7 @@ public class DumpDatabase {
 		question.setBorder(new EmptyBorder(5, 10, 5, 10));
 		card.add(question);
 		String[] databaseTypes = {"SQL Server"};
-		final JComboBox<String> dbTypeSelectBox = new JComboBox<String>(databaseTypes);
+		final JComboBox dbTypeSelectBox = new JComboBox(databaseTypes);
 		dbTypeSelectBox.setBorder(new EmptyBorder(5, 10, 5, 10));
 		card.add(dbTypeSelectBox);
 		server = new JTextField("jdbc:sqlserver://server:1433");
@@ -214,13 +214,13 @@ public class DumpDatabase {
 		title.setBorder(new EmptyBorder(15, 20, 15, 20));
 		card.add(title);
 
-		final JComboBox<String> schemaSelectBox = new JComboBox<String>();
+		final JComboBox schemaSelectBox = new JComboBox();
 		schemaSelectBox.setBorder(new EmptyBorder(5, 10, 5, 10));
 		schemaSelectBox.setMaximumSize(new Dimension(schemaSelectBox.getMaximumSize().width,
 				schemaSelectBox.getPreferredSize().height));
 		card.add(schemaSelectBox);
 
-		final JComboBox<String> tableSelectBox = new JComboBox<String>();
+		final JComboBox tableSelectBox = new JComboBox();
 		tableSelectBox.setBorder(new EmptyBorder(5, 10, 5, 10));
 		tableSelectBox.setMaximumSize(new Dimension(tableSelectBox.getMaximumSize().width,
 				tableSelectBox.getPreferredSize().height));
@@ -232,7 +232,7 @@ public class DumpDatabase {
 				Object schema = schemaSelectBox.getSelectedItem();
 				Map<String, Map<String, String>> tableData = schemas==null ? null : schemas.get(schema);
 				Set<String> tables = tableData==null ? new HashSet<String>() : tableData.keySet();
-				tableSelectBox.setModel(new DefaultComboBoxModel<String>(tables.toArray(new String[0])));
+				tableSelectBox.setModel(new DefaultComboBoxModel(tables.toArray(new String[0])));
 				tableSelectBox.setSelectedIndex(tableSelectBox.getSelectedIndex());
 			}
 		});
@@ -374,7 +374,7 @@ public class DumpDatabase {
 						schemaList.add(schema);
 					}
 				}
-				schemaSelectBox.setModel(new DefaultComboBoxModel<String>(schemaList.toArray(new String[0])));
+				schemaSelectBox.setModel(new DefaultComboBoxModel(schemaList.toArray(new String[0])));
 				schemaSelectBox.setSelectedIndex(schemaSelectBox.getSelectedIndex());
 				next.setVisible(false);
 				finish.setVisible(true);

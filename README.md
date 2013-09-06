@@ -105,7 +105,8 @@ Server-side updates are supported of course:
         .set(Bug.PRIORITY, 0)
         .update();
 
-As are deletes, inserts, etc.  You get the drill.  Virtually all SQL operations you care about are supported.  Here are some highlights:
+As are deletes, inserts, etc.  You get the drill.  Virtually all SQL operations you care about are supported.  Here 
+are some highlights:
 
  - Transactions
  - SQL Functions
@@ -129,7 +130,8 @@ Plus some nice touches:
 And DKOs scale very well.  Measured performance is >98% of raw JDBC for the largest SQL Server databases money can 
 buy.  And they're small enough to power Android apps (using SQLite).
 
-Plus, and I can't stress this enough:  The code is **boringly simple**.  No byte-code rewriting.  No twenty-layers-of-reflection
+Plus, and I can't stress this enough:  The code is **boringly simple**.  Plain objects with plain variables.  No 
+byte-code rewriting.  No twenty-layers-of-reflection
 hell.  When you want to know what's going on you don't need a PhD.  Only a debugger.
 
 To learn more, see [DKOs - The Book](http://nosco.googlecode.com/hg/doc/dkos-the-book/dkos-the-book.html).
@@ -143,13 +145,15 @@ liked their query API and thought "jeez I wish
 Java had this".  (I had spent the previous six years as a corporate Java developer)
 But I quickly fell in love with Python, so I never pursued it.
 Then in 2010 I was thrown back into the Java world when I started at 
-[Two Sigma Investments](http://www.twosigma.com).  I was appalled by our internal use of Hibernate
+[REDACTED].  I was appalled by our internal use of Hibernate
 (35k lines of XML config files alone!), so I implemented DKO as an external open-source project to prove out the 
-concept.  It worked, I brought it in, and it has been in widespread internal use for greater than two years now.  It powers hundreds of daily 
-production-critical jobs and processes, the vast majority *not* written by me, and without any sort of internal mandate for its use.
+concept.  It worked, I brought it in, and it has been in widespread internal use for greater than two years now.  It 
+powers hundreds of daily 
+production-critical jobs and processes, the vast majority *not* written by me (and without any sort of internal mandate
+for its use), and is the preferred go-to API for database access in the office by developers and data analysts alike.
 
 The original name of DKOs was [Nosco](https://code.google.com/p/nosco) (Latin for "get to know", hence 
 "Data Knowledge Objects"), but someone pointed out that that rhymed with "bosco", and I couldn't have that.  :)
 
-Note: *Two Sigma in no way endorses DKOs.  Opinions stated here are mine and mine alone.*
+Note: *[REDACTED] in no way endorses DKOs.  Opinions stated here are mine and mine alone.*
 

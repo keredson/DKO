@@ -765,7 +765,7 @@ public class SchemaExtractor extends Task {
 		final Connection conn) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getForeignKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getForeignKeysHSQL(conn);
-		if (dbType == DB_TYPE.SQLITE3) return getNoForeignKeys(conn);
+		if (dbType == DB_TYPE.SQLITE3) return getForeignKeysSQLITE3(conn);
 		return getForeignKeysMySQL(conn);
 	}
 
@@ -919,6 +919,76 @@ public class SchemaExtractor extends Task {
 
 		return foreignKeys;
 	}
+
+	private Map<String, Map<String,Object>> getForeignKeysSQLITE3(
+			final Connection conn) throws SQLException {
+		    final Map<String, Map<String, Object>> foreignKeys =
+				new LinkedHashMap<String, Map<String,Object>>();
+
+			final DatabaseMetaData metadata = conn.getMetaData();
+			
+			final ResultSet tableRS = metadata.getTables(null, null, null, null);
+			Map<String,Map<String,List<String>>> cats = new LinkedHashMap<String,Map<String,List<String>>>();
+			while (tableRS.next()) {
+				final String catName = tableRS.getString("TABLE_CAT");
+				final String schemaName = tableRS.getString("TABLE_SCHEM");
+				final String tableName = tableRS.getString("TABLE_NAME");
+				Map<String, List<String>> schemas = cats.get(catName);
+				if (schemas==null) {
+					schemas = new LinkedHashMap<String, List<String>>();
+					cats.put(catName, schemas);
+				}
+				List<String> tables = schemas.get(schemaName);
+				if (tables==null) {
+					tables = new ArrayList<String>();
+					schemas.put(schemaName, tables);
+				}
+				tables.add(tableName);
+			}
+
+			int c = 0;
+			
+			for (Entry<String, Map<String, List<String>>> e1 : cats.entrySet()) {
+				String catName = e1.getKey();
+				for (Entry<String, List<String>> e2 : e1.getValue().entrySet()) {
+					String schema = e2.getKey();
+					if (schema==null) schema = "";
+					for (String table : e2.getValue()) {
+						ResultSet rs = metadata.getImportedKeys(catName, schema, table);
+						while (rs.next()) {
+							String constraint_name = rs.getString("FK_NAME");
+							if (constraint_name==null || "".equals(constraint_name)) {
+								constraint_name = "FK_"+ (++c);
+							}
+							final String column = rs.getString("FKCOLUMN_NAME");
+							String referenced_schema = rs.getString("PKTABLE_SCHEM");
+							if (referenced_schema==null) referenced_schema = "";
+							final String referenced_table = rs.getString("PKTABLE_NAME");
+							final String referenced_column = rs.getString("PKCOLUMN_NAME");
+							System.out.println(referenced_table);
+
+							if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
+							
+							Map<String, Object> fk = foreignKeys.get(constraint_name);
+							if (fk == null) {
+								fk = new LinkedHashMap<String, Object>();
+								final String[] reffing = { schema, table };
+								fk.put("reffing", reffing);
+								final String[] reffed = { referenced_schema, referenced_table };
+								fk.put("reffed", reffed);
+								foreignKeys.put(constraint_name, fk);
+								fk.put("columns", new LinkedHashMap<String, String>());
+								Map<String,String> columns = (Map<String,String>) fk.get("columns");
+								columns.put(column, referenced_column);
+								foreignKeys.put(constraint_name, fk);
+							}
+						}
+					}
+				}
+			}
+
+			return foreignKeys;
+		}
 
 }
 

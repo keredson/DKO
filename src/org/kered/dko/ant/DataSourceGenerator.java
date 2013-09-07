@@ -19,6 +19,7 @@ class DataSourceGenerator {
 
 	public static String getDataSourceName(final String dataSource) {
 		if (dataSource == null) return null;
+		if (!dataSource.contains("=")) return "_DefaultDS";
 		final String[] x = dataSource.split("=");
 		String name = x[0].trim();
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -26,14 +27,14 @@ class DataSourceGenerator {
 	}
 
 	public static String getClassName(final String dataSource) {
-		final String[] x = dataSource.split("=");
-		final String cls = x[1].substring(0, x[1].lastIndexOf(".")).trim();
+		String part2 = dataSource.contains("=") ? dataSource.split("=")[1] : dataSource;
+		final String cls = part2.substring(0, part2.lastIndexOf(".")).trim();
 		return cls;
 	}
 
 	public static String getMethodName(final String dataSource) {
-		final String[] x = dataSource.split("=");
-		String method = x[1].substring(x[1].lastIndexOf(".")+1).trim();
+		String part2 = dataSource.contains("=") ? dataSource.split("=")[1] : dataSource;
+		String method = part2.substring(part2.lastIndexOf(".")+1).trim();
 		while (method.endsWith("(") || method.endsWith(")") || method.endsWith(" ") || method.endsWith(";")) {
 			method = method.substring(0, method.length() - 1);
 		}

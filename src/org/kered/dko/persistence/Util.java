@@ -112,7 +112,7 @@ public class Util {
 			rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
-			log.info(CREATE_QE);
+			log.fine(CREATE_QE);
 			stmt.executeUpdate(CREATE_QE);
 			stmt.executeUpdate(CREATE_QE_I1);
 			stmt.executeUpdate(CREATE_QE_I2);
@@ -128,7 +128,7 @@ public class Util {
 			rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
-			log.info(CREATE_CA);
+			log.fine(CREATE_CA);
 			stmt.executeUpdate(CREATE_CA);
 			stmt.executeUpdate(CREATE_CA_I);
 		}
@@ -143,7 +143,7 @@ public class Util {
 			rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
-			log.info(CREATE_QS);
+			log.fine(CREATE_QS);
 			stmt.executeUpdate(CREATE_QS);
 		}
 		stmt.close();

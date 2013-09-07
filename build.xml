@@ -12,7 +12,7 @@
   <property name="dist"  location="dist"/>
   <property name="reports"  location="reports"/>
 
-  <property name="lib_nosco_jar"  location="lib/nosco.jar"/>
+  <property name="lib_nosco_jar"  location="lib/dko.jar"/>
 
   <property name="dep_junit_jar"  location="deps/junit.jar"/>
   <property name="dep_hsqldb_jar"  location="deps/hsqldb.jar"/>

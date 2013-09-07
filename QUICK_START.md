@@ -11,6 +11,18 @@ DKOs are easy to try out.  Here are the steps:
  5. Code!
 
 
+Build the DKO Library
+---------------------
+
+Run:
+
+    $ git clone https://github.com/keredson/DKO.git
+    $ cd DKO
+    $ ant
+
+Copy `lib/dko.jar` to your project's `lib` directory.
+
+
 Extract Your Database Schema
 ----------------------------
 

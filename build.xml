@@ -60,6 +60,10 @@
         <arg value="id"/>
         <arg value="-t"/>
     </exec>
+    <exec executable="git" outputproperty="git_tag">
+        <arg value="describe"/>
+        <arg value="--tags"/>
+    </exec>
   </target>
 
   <target name="compile" depends="init"
@@ -79,6 +83,7 @@ public class BuildInfo {
 	public static final String HG_ID = "${hg_id}";
 	public static final String HG_BRANCH = "${hg_branch}";
 	public static final String HG_TAG = "${hg_tag}";
+	public static final String GIT_TAG = "${git_tag}";
 	public static final String TODAY = "${TODAY}";
 	public static final String DESCRIPTION = "DKO "+ HG_TAG +" ("+ HG_ID +")";
 }
@@ -113,7 +118,7 @@ public class BuildInfo {
     <mkdir dir="${dist}/lib"/>
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/lib/nosco-${DSTAMP}-${hg_branch}-${hg_tag}-${hg_id}.jar">
+    <jar jarfile="${dist}/lib/dko-${git_tag}.jar">
       <fileset dir="${build}" />
       <fileset dir="${src}" includes="**/*.java"/>
     </jar>

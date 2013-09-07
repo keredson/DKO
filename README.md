@@ -28,6 +28,8 @@ DKOs addresses all these issues:
  - It doesn't use string identifiers for tables/columns/etc.
  - It doesn't hide from you the fact that it's hitting a database (or what SQL it's running).
 
+Want to get started right now?  Try the [Quick Start Guide](QUICK_START.md).
+
 The Nickel Tour
 ---------------
 Hello world...

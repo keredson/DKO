@@ -10,7 +10,7 @@ DKOs are easy to try out.  Here are the steps:
  4. Run the generate task.
  5. Code!
 
-A working example of this is in `examples/helloworld`.
+A working example is in `examples/helloworld` - [README](examples/helloworld/README.md).
 
 Build the DKO Library
 ---------------------

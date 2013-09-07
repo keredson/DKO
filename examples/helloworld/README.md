@@ -2,7 +2,7 @@
 Hello World Example
 ===================
 
-*Build the DKO project first, or this won't work!  `../../lib.dko.jar` should exist.* 
+*Build the DKO project first, or this won't work!  `../../lib/dko.jar` should exist.* 
 
 The SQLite3 file `helloworld.sqlite3` is the database in this example.  If you have 
 [Sqlite Database Browser](http://sourceforge.net/projects/sqlitebrowser/) installed

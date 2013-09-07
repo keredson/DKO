@@ -1,0 +1,33 @@
+<project name="helloworld" default="compile" basedir=".">
+
+  <property name="dko_jar"  location="../../lib/dko.jar"/>
+  <property name="sqlite_jar"  location="../../deps/sqlite-jdbc.jar"/>
+
+    <target name="extract-schemas" depends="">
+        <taskdef name="dkoextractschemas" 
+                 classname="org.kered.dko.ant.SchemaExtractor" 
+                 classpath="${dko_jar}:${sqlite_jar}" />
+        <dkoextractschemas
+            url="jdbc:sqlite:helloworld.sqlite3"
+            out="schemas.json" />
+    </target>
+
+    <target name="dko-pre-compile" depends="">
+        <taskdef name="dkogen" 
+                 classname="org.kered.dko.ant.CodeGenerator" 
+                 classpath="${dko_jar}"/>
+        <dkogen package="com.mycompany.dko" 
+                schemas="schemas.json"
+                javaoutputdir="gensrcdko"
+                datasource="HelloWorld.getDS();" />
+    </target>
+
+    <target name="compile" depends="dko-pre-compile">
+        <mkdir dir="bin"/>
+        <javac srcdir="src:gensrcdko" destdir="bin" debug="on" 
+            classpath="${dko_jar}:${sqlite_jar}"
+       />
+    </target>
+
+</project>
+

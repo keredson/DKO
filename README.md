@@ -27,7 +27,15 @@ DKOs addresses all these issues:
  - It embraces SQL (rather than replaces it).
  - It doesn't use string identifiers for tables/columns/etc.
  - It doesn't hide from you the fact that it's hitting a database (or what SQL it's running).
+ 
+DKOs support the following databases:
 
+ - Microsoft SQL Server
+ - MySQL
+ - PostgreSQL
+ - HSQL
+ - SQLite3
+ 
 Want to get started right now?  Try the [Quick Start Guide](QUICK_START.md).
 
 The Nickel Tour

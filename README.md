@@ -28,15 +28,21 @@ DKOs addresses all these issues:
  - It doesn't use string identifiers for tables/columns/etc.
  - It doesn't hide from you the fact that it's hitting a database (or what SQL it's running).
  
-DKOs support the following databases:
-
- - Microsoft SQL Server
- - MySQL
- - PostgreSQL
- - HSQL
- - SQLite3
- 
 Want to get started right now?  Try the [Quick Start Guide](QUICK_START.md).
+
+Supported Databases
+-------------------
+DKOs fully support the following database engines:
+
+ - [Microsoft SQL Server](http://www.microsoft.com/en-us/sqlserver/default.aspx)
+ - [MySQL](http://www.mysql.com/)
+ - [PostgreSQL](http://www.postgresql.org/)
+ - [HSQL](http://hsqldb.org/)
+ - [SQLite3](http://www.sqlite.org/)
+
+Please contact me if your database is not on this list.  It's usually ~2-3 hours work to add support (assuming I
+have a working instance to test against).
+
 
 The Nickel Tour
 ---------------

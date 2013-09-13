@@ -302,6 +302,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			}
 		} catch (final AbstractMethodError e) {
 			/* ignore - mysql doesn't implement this method */
+		} catch (final java.sql.SQLFeatureNotSupportedException e) {
+			/* ignore - postgres doesn't implement this method */
 		}
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}

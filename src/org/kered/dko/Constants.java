@@ -102,10 +102,13 @@ public class Constants {
 				cache.put(ds, MYSQL);
 				return MYSQL;
 			}
-
 			if (className.contains("org.sqlite")) {
 				cache.put(ds, SQLITE3);
 				return SQLITE3;
+			}
+			if (className.contains("org.postgresql")) {
+				cache.put(ds, POSTGRES);
+				return POSTGRES;
 			}
 
 			// attempt to detect from a connection

@@ -1417,6 +1417,7 @@ class ClassGenerator {
 		put("xml", String.class);
 		put("character varying", String.class);
 		put("int", Integer.class);
+		put("int4", Integer.class);
 		put("mediumint", Integer.class);
 		put("smallint", Integer.class);
 		put("tinyint", Integer.class);
@@ -1440,6 +1441,8 @@ class ClassGenerator {
 		put("enum", Integer.class);
 		put("set", String.class);
 		put("bit", Boolean.class);
+		put("bool", Boolean.class);
+		put("boolean", Boolean.class);
 		put("binary", java.sql.Blob.class);
 		put("varbinary", java.sql.Blob.class);
 		put("sql_variant", Object.class);

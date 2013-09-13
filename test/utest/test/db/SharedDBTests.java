@@ -853,7 +853,7 @@ public class SharedDBTests extends TestCase {
 		printTestName();
     	final Product p = Product.ALL.first();
     	new Item().setItemid("test-789").setProductid(p.getProductid()).insert(ds);
-		final Undoer u = Context.getVMContext().overrideDatabaseName(ds, "nosco_test_jpetstore", "bad_db_name");
+		final Undoer u = Context.getVMContext().overrideDatabaseName(ds, Item._SCHEMA_NAME, "bad_db_name");
     	try {
     		Item.ALL.use(ds).where(Item.ITEMID.eq("test-789")).delete();
     		assertTrue(false); // should not get here

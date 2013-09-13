@@ -33,7 +33,7 @@ public abstract class SQLFunction<T> {
 	 */
 	public static <T> SQLFunction<Boolean> IFNULL(final Field<? extends T> f, final T v) {
 		final Object[] oa = new Object[] {f, v};
-		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
+		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", "COALESCE", oa);
 	}
 
 	/**
@@ -44,7 +44,7 @@ public abstract class SQLFunction<T> {
 	 */
 	public static <T> SQLFunction<Boolean> IFNULL(final SQLFunction<? extends T> f, final T v) {
 		final Object[] oa = new Object[] {f, v};
-		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", oa);
+		return new Custom<Boolean>(", ", "ifnull", "isnull", "ifnull", "coalesce", oa);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public abstract class SQLFunction<T> {
 	 */
 	public static SQLFunction<java.sql.Date> NOW() {
 		final Object[] oa = new Object[] {};
-		return new Custom<java.sql.Date>(", ", "now", "getdate", "now", oa);
+		return new Custom<java.sql.Date>(", ", "now", "getdate", "now", "now", oa);
 	}
 
 	/**
@@ -140,6 +140,8 @@ public abstract class SQLFunction<T> {
 				} else if ((dbType == DB_TYPE.HSQL)) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")");
 					bindings.add(count);
+				} else if ((dbType == DB_TYPE.POSTGRES)) {
+					sb.append(""+ sql +" + INTERVAL '"+ count +" " + component +"'");
 				} else {
 					sb.append("dateadd(" + component +", ?, "+ sql +")");
 					bindings.add(count);
@@ -302,6 +304,7 @@ public abstract class SQLFunction<T> {
 		private final String mysql;
 		private final String sqlserver;
 		private final String hsql;
+		private final String postgres;
 		private Object[] objects = null;
 		private final String sql = null;
 		private final List<Object> bindings = new ArrayList<Object>();
@@ -315,6 +318,7 @@ public abstract class SQLFunction<T> {
 			this.mysql = func;
 			this.sqlserver = func;
 			this.hsql = func;
+			this.postgres = func;
 		}
 
 		/**
@@ -329,6 +333,7 @@ public abstract class SQLFunction<T> {
 			this.mysql = func;
 			this.sqlserver = func;
 			this.hsql = func;
+			this.postgres = func;
 			this.objects = objects;
 		}
 
@@ -336,6 +341,7 @@ public abstract class SQLFunction<T> {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
+			this.postgres = null;
 		}
 
 		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final Object[] objects) {
@@ -343,6 +349,16 @@ public abstract class SQLFunction<T> {
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
+			this.postgres = null;
+			this.objects  = objects;
+		}
+
+		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final String postgres, final Object[] objects) {
+			this.sep = sep;
+			this.mysql = mysql;
+			this.sqlserver = sqlserver;
+			this.hsql = hsql;
+			this.postgres = postgres;
 			this.objects  = objects;
 		}
 
@@ -350,6 +366,7 @@ public abstract class SQLFunction<T> {
 			this.sqlserver = null;
 			this.hsql = null;
 			this.mysql = null;
+			this.postgres = null;
 			this.sep = sep;
 			this.objects = new Object[] {o1, o2};
 		}
@@ -363,6 +380,7 @@ public abstract class SQLFunction<T> {
 				case SQLSERVER:	sb.append(sqlserver==null ? "" : sqlserver); break;
 				case HSQL:		sb.append(hsql==null ? "" : hsql); break;
 				case SQLITE3:		sb.append(hsql==null ? "" : hsql); break;
+				case POSTGRES:		sb.append(postgres==null ? "" : postgres); break;
 				default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
 				}
 			} else {

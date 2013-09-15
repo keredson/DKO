@@ -20,8 +20,9 @@
   <property name="dep_mssql_jar"  location="deps/mssql-sqljdbc.jar"/>
   <property name="dep_sqlite_jar"  location="deps/sqlite-jdbc.jar"/>
   <property name="dep_postgresql_jar"  location="deps/postgresql-jdbc4.jar"/>
+  <property name="dep_oracle_jar"  location="deps/oracle-jdbc.jar"/>
   <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
-  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:${dep_postgresql_jar}"/>
+  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:${dep_postgresql_jar}:${dep_oracle_jar}"/>
 
 
   <!-- ========[ END PROPS ]======== -->
@@ -596,6 +597,74 @@ public class BuildInfo {
   </target>
 
   <!-- ========[ END UNIT TEST POSTGRESQL ]======== -->
+
+
+
+
+  <!-- ========[ BEGIN UNIT TEST ORACLE ]======== -->
+  
+  <available file="bin/unit_test_oracle_schema.json" property="exists.unit_test_oracle_schema"/>
+  <target name="unit-test-extract-schema-oracle" depends="jar" unless="${exists.unit_test_oracle_schema}">
+    <java classname="org.kered.dko.junk.OracleLoadTestSchema" classpath="${lib_nosco_jar}:${dep_oracle_jar}" fork="true" />
+    <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_oracle_jar}"/>
+    <noscoextractschema
+    	url="jdbc:oracle:thin:nosco_test_jpetstore/password@localhost:1521:orcl"
+    	username="nosco_test_jpetstore"
+    	password="password"
+    	schemas="NOSCO_TEST_JPETSTORE"
+    	out="bin/unit_test_oracle_schema.json"
+    />
+  </target>
+  
+  <target name="unit-test-gen-src-oracle" depends="unit-test-extract-schema-oracle">
+    <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
+    <dkogen package="org.kered.dko.unittest" 
+      debug="true"
+      javaoutputdir="gensrc"
+      jarfile="bin/unittest.jar"
+      schemas="bin/unit_test_oracle_schema.json"
+      aliases="public as nosco_test_jpetstore"
+      callbackPackage="test.db.callback"
+    />
+    <javac srcdir="gensrc" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}"
+   	/>
+  </target>
+
+  <target name="unit-test-build-oracle" depends="unit-test-gen-src-oracle">
+    <javac srcdir="test/utest" destdir="bin_test" debug="on" 
+    	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}:bin_test"
+   	/>
+    <mkdir dir="lib"/>
+    <jar jarfile="lib/test.jar" basedir="bin_test"/>
+  </target>
+
+  <target name="unit-test-oracle" depends="unit-test-build-oracle">
+    <junit printsummary="yes" haltonfailure="no" fork="yes">
+      <classpath>
+        <pathelement location="lib/test.jar"/>
+        <pathelement location="${lib_nosco_jar}"/>
+        <pathelement location="${dep_junit_jar}"/>
+        <pathelement location="${dep_hsqldb_jar}"/>
+        <pathelement location="${dep_mysql_jar}"/>
+        <pathelement location="${dep_sqlite_jar}"/>
+        <pathelement location="${dep_postgresql_jar}"/>
+        <pathelement location="${dep_oracle_jar}"/>
+      </classpath>
+      <!--jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=41337,server=y,suspend=y"/-->
+      <jvmarg value="-Dorg.nosco.log_sql=true"/>
+      <formatter type="plain"/>
+      <batchtest fork="yes" todir="${reports}">
+        <fileset dir="test/utest">
+          <include name="**/*TestOracle*.java"/>
+          <include name="**/TestUsageMonitor.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!-- ========[ END UNIT TEST ORACLE ]======== -->
 
 
 

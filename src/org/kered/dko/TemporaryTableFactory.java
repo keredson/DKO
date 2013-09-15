@@ -137,7 +137,10 @@ class TemporaryTableFactory {
 				stmt = conn.createStatement();
 				final StringBuffer sqlSb = new StringBuffer();
 				final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
-				sqlSb.append("CREATE "+ (context.dbType==Constants.DB_TYPE.SQLSERVER ? "" : "TEMPORARY ") +"TABLE "+ tableName + "(");
+				String fluff = "";
+				if (context.dbType==Constants.DB_TYPE.SQLSERVER) fluff = "TEMPORARY ";
+				if (context.dbType==Constants.DB_TYPE.ORACLE) fluff = "GLOBAL TEMPORARY ";
+				sqlSb.append("CREATE "+ fluff +"TABLE "+ tableName + "(");
 				final List<String> placeholders = new ArrayList<String>();
 				for (int i=0; i<fields.size(); ++i) {
 					final Field<?> field = fields.get(i);

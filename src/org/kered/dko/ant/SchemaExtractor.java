@@ -104,6 +104,10 @@ public class SchemaExtractor extends Task {
 			final Driver d = (Driver) Class.forName("org.postgresql.Driver").newInstance();
 			dbType = DB_TYPE.POSTGRES;
 		}
+		if (url.startsWith("jdbc:oracle")) {
+			final Driver d = (Driver) Class.forName("oracle.jdbc.OracleDriver").newInstance();
+			dbType = DB_TYPE.ORACLE;
+		}
 	}
 
 	public void setUsername(final String s) {
@@ -287,7 +291,41 @@ public class SchemaExtractor extends Task {
 		if (dbType == DB_TYPE.SQLSERVER) return getSchemasMSSQL(conn);
 		if (dbType == DB_TYPE.SQLITE3) return getSchemasSQLITE3(conn);
 		if (dbType == DB_TYPE.POSTGRES) return getSchemasPostgreSQL(conn);
+		if (dbType == DB_TYPE.ORACLE) return getSchemasJDBC(conn);
 		else return getSchemasSQL92(conn);
+	}
+
+	private Map<String, Map<String, Map<String, String>>> getSchemasJDBC(
+			final Connection conn) throws SQLException {
+		final Map<String, Map<String, Map<String, String>>> schemas = new LinkedHashMap<String, Map<String, Map<String, String>>>();
+		final DatabaseMetaData metadata = conn.getMetaData();
+		final ResultSet columnRS = metadata.getColumns(null, null, null, null);
+		while (columnRS.next()) {
+			final String catalog = columnRS.getString("TABLE_CAT");
+			String schema = columnRS.getString("TABLE_SCHEM");
+			if (schema == null) schema = "";
+			if (includeSchemas!=null && !includeSchemas.contains(schema)) continue;
+			final String tableName = columnRS.getString("TABLE_NAME");
+			//final String tableType = columnRS.getString("TABLE_TYPE");
+			final String columnName = columnRS.getString("COLUMN_NAME");
+			final String columnType = columnRS.getString("TYPE_NAME");
+			//System.out.println("found column: "+ schema +" "+ tableName +" "+ tableType +" "+ columnName +" "+ columnType);
+			//if (!"TABLE".equals(tableType)) continue;
+			Map<String, Map<String, String>> tables = schemas.get(schema);
+			if (tables == null) {
+				System.out.println("found schema: "+ schema);
+				tables = new LinkedHashMap<String, Map<String, String>>();
+				schemas.put(schema, tables);
+			}
+			Map<String, String> columns = tables.get(tableName);
+			if (columns == null) {
+				System.out.println("found table: "+ tableName);
+				columns = new LinkedHashMap<String, String>();
+				tables.put(tableName, columns);
+			}
+			columns.put(columnName, columnType);
+		}
+		return schemas;
 	}
 
 	private Map<String, Map<String, Map<String, String>>> getSchemasSQLITE3(
@@ -363,7 +401,6 @@ public class SchemaExtractor extends Task {
 				tables.put(tableName, columns);
 			}
 			columns.put(columnName, columnType);
-
 		}
 		return schemas;
 	}
@@ -512,7 +549,8 @@ public class SchemaExtractor extends Task {
 		if (dbType == DB_TYPE.SQLSERVER) return getPrimaryKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getPrimaryKeysHSQL(conn);
 		if (dbType == DB_TYPE.SQLITE3) return getPrimaryKeysSQLITE3(conn);
-		if (dbType == DB_TYPE.POSTGRES) return getPrimaryKeysPostgreSQL(conn);
+		if (dbType == DB_TYPE.POSTGRES) return getPrimaryKeysJDBC(conn);
+		if (dbType == DB_TYPE.ORACLE) return getPrimaryKeysJDBC(conn);
 		return getPrimaryKeysMySQL(conn);
 	}
 
@@ -558,7 +596,7 @@ public class SchemaExtractor extends Task {
 		return pks;
 	}
 
-	private Map<String, Map<String, Set<String>>> getPrimaryKeysPostgreSQL(
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysJDBC(
 			final Connection conn) throws SQLException {
 		final Map<String, Map<String, Set<String>>> pks = new LinkedHashMap<String, Map<String, Set<String>>>();
 		final DatabaseMetaData metadata = conn.getMetaData();
@@ -570,6 +608,7 @@ public class SchemaExtractor extends Task {
 			final String columnName = rs.getString("COLUMN_NAME");
 			final String pkName = rs.getString("PK_NAME");
 			if ("pg_toast".equals(schema)) continue;
+			if (includeSchemas!=null && !includeSchemas.contains(schema)) continue;
 			Map<String, Set<String>> tables = pks.get(schema);
 			if (tables == null) {
 				tables = new LinkedHashMap<String, Set<String>>();
@@ -774,8 +813,10 @@ public class SchemaExtractor extends Task {
 		if (dbType == DB_TYPE.SQLSERVER) return getForeignKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getForeignKeysHSQL(conn);
 		if (dbType == DB_TYPE.SQLITE3) return getForeignKeysJDBC(conn);
+		if (dbType == DB_TYPE.MYSQL) return getForeignKeysMySQL(conn);
 		if (dbType == DB_TYPE.POSTGRES) return getForeignKeysJDBC(conn);
-		return getForeignKeysMySQL(conn);
+		if (dbType == DB_TYPE.ORACLE) return getForeignKeysJDBC(conn);
+		return getForeignKeysJDBC(conn);
 	}
 
 	private Map<String, Map<String, Object>> getNoForeignKeys(final Connection conn) {
@@ -941,6 +982,7 @@ public class SchemaExtractor extends Task {
 			while (tableRS.next()) {
 				final String catName = tableRS.getString("TABLE_CAT");
 				final String schemaName = tableRS.getString("TABLE_SCHEM");
+				if (includeSchemas!=null && !includeSchemas.contains(schemaName)) continue;
 				final String tableName = tableRS.getString("TABLE_NAME");
 				Map<String, List<String>> schemas = cats.get(catName);
 				if (schemas==null) {
@@ -954,6 +996,7 @@ public class SchemaExtractor extends Task {
 				}
 				tables.add(tableName);
 			}
+			tableRS.close();
 
 			int c = 0;
 			
@@ -974,7 +1017,7 @@ public class SchemaExtractor extends Task {
 							if (referenced_schema==null) referenced_schema = "";
 							final String referenced_table = rs.getString("PKTABLE_NAME");
 							final String referenced_column = rs.getString("PKCOLUMN_NAME");
-							System.out.println(referenced_table);
+							System.out.println("found FK: "+ table +" => "+ referenced_table);
 
 							if (!includeTable(schema, table) || !includeTable(referenced_schema, referenced_table)) continue;
 							
@@ -992,6 +1035,7 @@ public class SchemaExtractor extends Task {
 								foreignKeys.put(constraint_name, fk);
 							}
 						}
+						rs.close();
 					}
 				}
 			}

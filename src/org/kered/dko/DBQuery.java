@@ -304,6 +304,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			/* ignore - mysql doesn't implement this method */
 		} catch (final java.sql.SQLFeatureNotSupportedException e) {
 			/* ignore - postgres doesn't implement this method */
+		} catch (final java.sql.SQLException e) {
+			if ("Object does not wrap anything with requested interface".equals(e.getMessage())) {
+				/* ignore - why does oracle throw this instead of returning false?!? */
+			} else {
+				throw e;
+			}
 		}
 		return new Tuple2<Connection,Boolean>(ds.getConnection(), true);
 	}
@@ -567,6 +573,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	Tuple2<String,List<Object>> getWhereClauseAndBindings(final SqlContext context) {
 		final StringBuffer sb = new StringBuffer();
 		final List<Object> bindings = new ArrayList<Object>();
+		List<Condition> conditions = this.conditions;
+		if (context.dbType==DB_TYPE.ORACLE && top>0) {
+			conditions = conditions==null ? new ArrayList<Condition>() : new ArrayList<Condition>(conditions);
+			conditions.add(new Condition.Binary2(new SQLFunction.SQLLiteral("rownum"), "<", top));
+		}
 		if (conditions!=null && conditions.size()>0) {
 			sb.append(" where");
 			final String[] tmp = new String[conditions.size()];

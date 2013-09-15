@@ -112,6 +112,7 @@ public abstract class Condition {
 			try {
 				stmt = conn.createStatement();
 				final String collate = Util.isCollateType(type) ? " COLLATE database_default" : "";
+				
 				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type + collate +")";
 				Util.log(sql, null);
 				stmt.execute(sql);
@@ -731,6 +732,8 @@ public abstract class Condition {
 			} else if (o1 instanceof Field) {
 				final Field<?> f = (Field<?>) o1;
 				sb.append(Util.derefField(f, context));
+			} else if (o1 instanceof SQLFunction.SQLLiteral) {
+				sb.append(((SQLFunction.SQLLiteral)o1).sql);
 			} else {
 				sb.append("?");
 				bindings.add(o1);
@@ -742,6 +745,8 @@ public abstract class Condition {
 			} else if (o2 instanceof Field) {
 				final Field<?> f = (Field<?>) o2;
 				sb.append(Util.derefField(f, context));
+			} else if (o2 instanceof SQLFunction.SQLLiteral) {
+				sb.append(((SQLFunction.SQLLiteral)o2).sql);
 			} else {
 				sb.append("?");
 				bindings.add(o2);

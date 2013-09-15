@@ -1406,6 +1406,7 @@ class ClassGenerator {
 	static Map<String,Class> columnTypeMap = new LinkedHashMap<String,Class>() {{
 		put("string", String.class);
 		put("varchar", String.class);
+		put("varchar2", String.class);
 		put("char", Character.class);
 		put("nvarchar", String.class);
 		put("nchar", String.class);
@@ -1431,6 +1432,7 @@ class ClassGenerator {
 		put("numeric", Double.class);
 		put("float", Double.class);
 		put("real", Float.class);
+		put("number", Float.class);
 		put("blob", Blob.class);
 		put("longblob", Blob.class);
 		put("datetime", Timestamp.class);

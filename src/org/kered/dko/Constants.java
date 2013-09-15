@@ -110,6 +110,10 @@ public class Constants {
 				cache.put(ds, POSTGRES);
 				return POSTGRES;
 			}
+			if (className.startsWith("oracle.jdbc")) {
+				cache.put(ds, ORACLE);
+				return ORACLE;
+			}
 
 			// attempt to detect from a connection
 			Connection conn = null;
@@ -148,6 +152,7 @@ public class Constants {
 			if (className.contains("SQLServer")) return SQLSERVER;
 			if (className.contains("SQLDroidConnection")) return SQLITE3;
 			if (className.contains("SQLiteJDBC")) return SQLITE3;
+			if (className.startsWith("oracle")) return ORACLE;
 
 			// try from the jdbc metadata
 			final DatabaseMetaData metaData = conn.getMetaData();

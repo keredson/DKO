@@ -305,6 +305,7 @@ public abstract class SQLFunction<T> {
 		private final String sqlserver;
 		private final String hsql;
 		private final String postgres;
+		private final String oracle;
 		private Object[] objects = null;
 		private final String sql = null;
 		private final List<Object> bindings = new ArrayList<Object>();
@@ -319,6 +320,7 @@ public abstract class SQLFunction<T> {
 			this.sqlserver = func;
 			this.hsql = func;
 			this.postgres = func;
+			this.oracle = func;
 		}
 
 		/**
@@ -334,6 +336,7 @@ public abstract class SQLFunction<T> {
 			this.sqlserver = func;
 			this.hsql = func;
 			this.postgres = func;
+			this.oracle = func;
 			this.objects = objects;
 		}
 
@@ -342,6 +345,7 @@ public abstract class SQLFunction<T> {
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
 			this.postgres = null;
+			this.oracle = null;
 		}
 
 		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final Object[] objects) {
@@ -350,15 +354,17 @@ public abstract class SQLFunction<T> {
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
 			this.postgres = null;
+			this.oracle = null;
 			this.objects  = objects;
 		}
 
-		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final String postgres, final Object[] objects) {
+		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final String postgres, final String oracle, final Object[] objects) {
 			this.sep = sep;
 			this.mysql = mysql;
 			this.sqlserver = sqlserver;
 			this.hsql = hsql;
 			this.postgres = postgres;
+			this.oracle = oracle;
 			this.objects  = objects;
 		}
 
@@ -367,6 +373,7 @@ public abstract class SQLFunction<T> {
 			this.hsql = null;
 			this.mysql = null;
 			this.postgres = null;
+			this.oracle = null;
 			this.sep = sep;
 			this.objects = new Object[] {o1, o2};
 		}
@@ -381,6 +388,7 @@ public abstract class SQLFunction<T> {
 				case HSQL:		sb.append(hsql==null ? "" : hsql); break;
 				case SQLITE3:		sb.append(hsql==null ? "" : hsql); break;
 				case POSTGRES:		sb.append(postgres==null ? "" : postgres); break;
+				case ORACLE:		sb.append(oracle==null ? "" : oracle); break;
 				default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
 				}
 			} else {
@@ -838,6 +846,13 @@ public abstract class SQLFunction<T> {
 	 */
 	public SQLFunction<T> modulus(final SQLFunction v) {
 		return new SQLFunction.Custom<T>(this, "%", v);
+	}
+	
+	static class SQLLiteral {
+		final String sql;
+		SQLLiteral(String sql) {
+			this.sql = sql;
+		}
 	}
 
 }

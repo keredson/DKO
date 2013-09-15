@@ -3,11 +3,13 @@ package org.kered.dko;
 import static org.kered.dko.Constants.DIRECTION.DESCENDING;
 
 import java.lang.reflect.Constructor;
+import java.net.SocketException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLRecoverableException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -147,7 +149,8 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			sb.append(Util.join(", ", tmp));
 		}
 
-		if (context.dbType!=DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
+		if (context.dbType!=DB_TYPE.SQLSERVER && context.dbType!=DB_TYPE.ORACLE && 
+				query.top>0 && query.joinsToMany.size()==0) {
 			sb.append(" limit ").append(query.top);
 		}
 
@@ -298,8 +301,12 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			try {
 				if (conn!=null && !conn.isClosed()) conn.close();
 			} catch (final SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				if (context.dbType==DB_TYPE.ORACLE && e instanceof SQLRecoverableException 
+						&& "IO Error: Socket closed".equals(e.getMessage())) {
+					// ignore oracle here
+				} else {
+					e.printStackTrace();
+				}
 			}
 		}
 		if (usageMonitor!=null && finishedNatually) {

@@ -128,6 +128,7 @@ Nor are they limited to one level deep:
 ```java
 Bug bug = Bug.ALL.with(Bug.FK_REPORTER_USER, User.FK_MANAGER).first();
 System.out.println(bug.getReporterFK().getManagerFK().getName());
+```
 
 Server-side updates are supported of course:
 

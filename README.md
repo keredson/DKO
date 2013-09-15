@@ -64,64 +64,79 @@ what we do here.  (In fact the ONLY way to generate code with DKO is through an 
 
 Another example:
 
-    for (Bug bug : Bug.ALL.where(Bug.REPORTER.eq(Bug.ASSIGNEE))) {
-      // people work on their own bugs a lot
-    }
+```java
+for (Bug bug : Bug.ALL.where(Bug.REPORTER.eq(Bug.ASSIGNEE))) {
+  // people work on their own bugs a lot
+}
+```
 
 `Bug.REPORTER` is static constant `Field<Integer>`.  Fields have methods for all normal SQL comparisons.  Here we're
 comparing it to another field of the same table.
 
 For simplicity, let's leave out the for loop going forward...
 
-    Bug.ALL.where(Bug.CREATE_DATE.between(new Date(2010,06,30), new Date(2013,09,04)));
+```java
+Bug.ALL.where(Bug.CREATE_DATE.between(new Date(2010,06,30), new Date(2013,09,04)));
+```
 
-    Bug.ALL.where(
-        Bug.CREATE_DATE.lt(new Date(2013,03,05))
-        .and(Bug.CLOSE_DATE.isNull())
-    );
+```java
+Bug.ALL.where(
+    Bug.CREATE_DATE.lt(new Date(2013,03,05))
+    .and(Bug.CLOSE_DATE.isNull())
+);
+```
 
 Remember when I said DKOs embrace SQL?
 
 Joins on foreign keys are easy too:
 
-    Query<Bug> q = Bug.ALL
-        .with(Bug.FK_REPORTER_USER)
-        .where(User.NAME.like("%Derek%"));
-    // this only runs one query - no O(n) database ops!
-    for (Bug bug : q) {
-        System.out.println(bug.getReporterFK().getName());
-    }
+```java
+Query<Bug> q = Bug.ALL
+    .with(Bug.FK_REPORTER_USER)
+    .where(User.NAME.like("%Derek%"));
+// this only runs one query - no O(n) database ops!
+for (Bug bug : q) {
+    System.out.println(bug.getReporterFK().getName());
+}
+```
 
 BTW, that works both ways:
 
-    Query<User> q = User.ALL
-        .with(Bug.FK_REPORTER_USER)
-        .where(Bug.ESTIMATED_TIME.gt(4.5)) // hours
-    // only one joined query (streaming over User) happens here
-    for (User user : q) {
-        // no second query here!
-        for (Bug bug : user.getReporterUserSet()) {
-        }
+```java
+Query<User> q = User.ALL
+    .with(Bug.FK_REPORTER_USER)
+    .where(Bug.ESTIMATED_TIME.gt(4.5)) // hours
+// only one joined query (streaming over User) happens here
+for (User user : q) {
+    // no second query here!
+    for (Bug bug : user.getReporterUserSet()) {
     }
+}
+```
 
 Foreign key relationships aren't limited to one join:
 
-    // joins to two tables
-    Bug.ALL
-        .with(Bug.FK_REPORTER_USER)
-        .with(Bug.FK_PRODUCT);
+```java
+// joins to two tables
+Bug.ALL
+    .with(Bug.FK_REPORTER_USER)
+    .with(Bug.FK_PRODUCT);
+```
 
 Nor are they limited to one level deep:
 
-    Bug bug = Bug.ALL.with(Bug.FK_REPORTER_USER, User.FK_MANAGER).first();
-    System.out.println(bug.getReporterFK().getManagerFK().getName());
+```java
+Bug bug = Bug.ALL.with(Bug.FK_REPORTER_USER, User.FK_MANAGER).first();
+System.out.println(bug.getReporterFK().getManagerFK().getName());
 
 Server-side updates are supported of course:
 
-    long count = Bug.ALL
-        .where(Bug.LAST_UPDATED.lt(new Date(2010,06,30)))
-        .set(Bug.PRIORITY, 0)
-        .update();
+```java
+long count = Bug.ALL
+    .where(Bug.LAST_UPDATED.lt(new Date(2010,06,30)))
+    .set(Bug.PRIORITY, 0)
+    .update();
+```
 
 As are deletes, inserts, etc.  You get the drill.  Virtually all SQL operations you care about are supported.  Here 
 are some highlights:

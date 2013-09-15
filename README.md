@@ -49,9 +49,9 @@ The Nickel Tour
 Hello world...
 
 ```java
-    for (Bug bug : Bug.ALL.limit(100)) {
-      System.out.println(bug.getId() +" "+ bug.getTitle());
-    }
+for (Bug bug : Bug.ALL.limit(100)) {
+  System.out.println(bug.getId() +" "+ bug.getTitle());
+}
 ```
 
 The constant `Bug.ALL` is of type `Query<Bug>`, as is `Bug.ALL.limit(100)`.  And `Query<Bug>` implements `Iterable<Bug>`

@@ -18,9 +18,9 @@ Build the DKO Library
 Run:
 
 ```bash
-    $ git clone https://github.com/keredson/DKO.git
-    $ cd DKO
-    $ ant
+$ git clone https://github.com/keredson/DKO.git
+$ cd DKO
+$ ant
 ```
 
 Copy `lib/dko.jar` to your project's `lib` directory.
@@ -38,31 +38,39 @@ To extract your schema, you define an Ant target.  (So it's easy to repeat later
 schema changes.)  All you need is the `dko.jar`, your JDBC driver jar (ex: `sqlserver.jar`),
 and your JDBC URL.  Here's an example:
 
-    <target name="extract-schemas" depends="init">
-        <taskdef name="dkoextractschemas" 
-                 classname="org.kered.dko.ant.SchemaExtractor" 
-                 classpath="lib/dko.jar:lib/sqlserver.jar" />
-        <dkoextractschemas
-            url="jdbc:sqlserver://192.168.0.234"
-            username="username"
-            password="shhh..."
-            out="schemas.json" />
-    </target>
+```xml
+<target name="extract-schemas" depends="init">
+    <taskdef name="dkoextractschemas" 
+             classname="org.kered.dko.ant.SchemaExtractor" 
+             classpath="lib/dko.jar:lib/sqlserver.jar" />
+    <dkoextractschemas
+        url="jdbc:sqlserver://192.168.0.234"
+        username="username"
+        password="shhh..."
+        out="schemas.json" />
+</target>
+```
 
 Then run:
 
-    $ ant extract-schemas
+```bash
+$ ant extract-schemas
+```
 
 This will connect to your database and write a file `schemas.json`.  This should be 
 checked into your VCS:
 
-    $ git add schemas.json
-    $ git commit schemas.json
+```bash
+$ git add schemas.json
+$ git commit schemas.json
+```
 
 Whenever your database schema changes (and it will), just rerun:
 
-    $ ant extract-schemas
-    $ git commit schemas.json
+```bash
+$ ant extract-schemas
+$ git commit schemas.json
+```
 
 
 Generating Your DKOs
@@ -72,15 +80,17 @@ Generating Your DKOs
 
 To generate your DKOs, add another Ant target:
 
-    <target name="dko-pre-compile" depends="init">
-        <taskdef name="dkogen" 
-                 classname="org.kered.dko.ant.CodeGenerator" 
-                 classpath="lib/dko.jar"/>
-        <dkogen package="com.mycompany.dko" 
-                schemas="schemas.json"
-                javaoutputdir="gensrcdko"
-                datasource="com.mycompany.Util.getDefaultDS();" />
-    </target>
+```xml
+<target name="dko-pre-compile" depends="init">
+    <taskdef name="dkogen" 
+             classname="org.kered.dko.ant.CodeGenerator" 
+             classpath="lib/dko.jar"/>
+    <dkogen package="com.mycompany.dko" 
+            schemas="schemas.json"
+            javaoutputdir="gensrcdko"
+            datasource="com.mycompany.Util.getDefaultDS();" />
+</target>
+```
 
 The `package` parameter defines which java package to put your DKOs into.  The `schemas`
 parameter is the file generated above.  The `javaoutputdir` parameter is where to write the
@@ -90,9 +100,11 @@ Java source files to *(don't mix with your normal hand-written source files)*.  
 
 Then add that as a prereq to your compile target:
 
-    <target name="compile" depends="dko-pre-compile">
-        [...]
-    </target>
+```xml
+<target name="compile" depends="dko-pre-compile">
+    [...]
+</target>
+```
 
 And add that `gensrcdko` directory to your `javac` task.
 
@@ -104,8 +116,10 @@ That `dkogen` task will write one Java class for every database table in your
 database.  If you have a schema `mydata` and tables `people` and `places`, you
 will have the following classes:
 
-    gensrcdko/com/mycompany/dko/mydata/People.java
-    gensrcdko/com/mycompany/dko/mydata/Places.java
+```bash
+gensrcdko/com/mycompany/dko/mydata/People.java
+gensrcdko/com/mycompany/dko/mydata/Places.java
+```
 
 Again, **DO NOT CHECK THESE INTO SOURCE CONTROL!**  You don't have to regen them
 literally every time you compile (although it's usually sub-second, so I don't

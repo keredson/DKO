@@ -308,8 +308,19 @@ public class SchemaExtractor extends Task {
 			final String tableName = columnRS.getString("TABLE_NAME");
 			//final String tableType = columnRS.getString("TABLE_TYPE");
 			final String columnName = columnRS.getString("COLUMN_NAME");
-			final String columnType = columnRS.getString("TYPE_NAME");
-			//System.out.println("found column: "+ schema +" "+ tableName +" "+ tableType +" "+ columnName +" "+ columnType);
+			String columnType = columnRS.getString("TYPE_NAME");
+			final int decimalDigits = columnRS.getInt("DECIMAL_DIGITS");
+			final int columnSize = columnRS.getInt("COLUMN_SIZE");
+			if (dbType==DB_TYPE.ORACLE && "NUMBER".equals(columnType) && decimalDigits==0) {
+				// oracle converts int to number with decimal precision 0
+				columnType = "INTEGER";
+			}
+			if (dbType==DB_TYPE.ORACLE && "VARCHAR2".equals(columnType)) {
+				// in oracle, no varchar(2) == any varchar(3), so it's important
+				// we keep the size
+				columnType += "("+ columnSize +")";
+			}
+			System.out.println("found column: "+ schema +" "+ tableName +" "+ columnSize +" "+ columnName +" "+ columnType);
 			//if (!"TABLE".equals(tableType)) continue;
 			Map<String, Map<String, String>> tables = schemas.get(schema);
 			if (tables == null) {
@@ -550,8 +561,41 @@ public class SchemaExtractor extends Task {
 		if (dbType == DB_TYPE.HSQL) return getPrimaryKeysHSQL(conn);
 		if (dbType == DB_TYPE.SQLITE3) return getPrimaryKeysSQLITE3(conn);
 		if (dbType == DB_TYPE.POSTGRES) return getPrimaryKeysJDBC(conn);
-		if (dbType == DB_TYPE.ORACLE) return getPrimaryKeysJDBC(conn);
+		if (dbType == DB_TYPE.ORACLE) return getPrimaryKeysOracle(conn);
 		return getPrimaryKeysMySQL(conn);
+	}
+
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysOracle(
+			Connection conn) throws SQLException {
+		final Map<String, Map<String, Set<String>>> pks = new LinkedHashMap<String, Map<String, Set<String>>>();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT ucc.table_name,ucc.constraint_name,ucc.column_name," +
+				"ucc.position,uc.owner " +
+				"FROM user_cons_columns ucc, user_constraints uc " +
+				"WHERE ucc.constraint_name = uc.constraint_name AND ucc.table_name = uc.table_name " +
+				"AND uc.constraint_type  = 'P'" +
+				"ORDER BY ucc.constraint_name, ucc.position");
+		while (rs.next()) {
+			String constraint_name = rs.getString("constraint_name");
+			String schema_name = rs.getString("owner");
+			String table_name = rs.getString("table_name");
+			String column_name = rs.getString("column_name");
+			if (constraint_name.startsWith("BIN$") && table_name.startsWith("BIN$")) continue;
+			Map<String, Set<String>> schema = pks.get(schema_name);
+			if (schema == null) {
+				schema = new LinkedHashMap<String, Set<String>>();
+				pks.put(schema_name, schema);
+			}
+			Set<String> table = schema.get(table_name);
+			if (table == null) {
+				table = new LinkedHashSet<String>();
+				schema.put(table_name, table);
+			}
+			table.add(column_name);
+			System.out.println("found PK column: "+ schema_name +"."+ table_name +"."+ column_name);
+		}
+		stmt.close();
+		return pks;
 	}
 
 	private Map<String, Map<String, Set<String>>> getPrimaryKeysSQLITE3(

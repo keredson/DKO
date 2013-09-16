@@ -332,6 +332,8 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		if (context.dbType != Constants.DB_TYPE.SQLSERVER) {
 			if (context.dbType == Constants.DB_TYPE.SQLITE3) {
 				sql = "explain query plan " + sql;
+			} else if (context.dbType == Constants.DB_TYPE.ORACLE) {
+				sql = "explain plan for " + sql;
 			} else {
 				sql = "explain " + sql;
 			}

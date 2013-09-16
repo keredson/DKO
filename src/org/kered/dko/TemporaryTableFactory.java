@@ -2,6 +2,7 @@ package org.kered.dko;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Field.FK;
 import org.kered.dko.Field.PK;
 
@@ -154,10 +156,13 @@ class TemporaryTableFactory {
 					if (i < fields.size()-1) sqlSb.append(", ");
 				}
 				sqlSb.append(")");
+				if (context.dbType==Constants.DB_TYPE.ORACLE) sqlSb.append(" ON COMMIT PRESERVE ROWS");
 				final String sql = sqlSb.toString();
 				Util.log(sql, null);
 				stmt.execute(sql);
-				ps = conn.prepareStatement("insert into "+ tableName +" values ("+ Util.join(",", placeholders) +")");
+				String sqlInsert = "insert into "+ tableName +" values ("+ Util.join(",", placeholders) +")";
+				Util.log(sqlInsert, null);
+				ps = conn.prepareStatement(sqlInsert);
 				int i = 0;
 				int added = 0;
 				for (final T t : set) {
@@ -168,13 +173,33 @@ class TemporaryTableFactory {
 						Util.setBindingWithTypeFixes(ps, j+1, o);
 					}
 					ps.addBatch();
-					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;
+					if (i%64 == 0) {
+						for (int x : ps.executeBatch()) {
+							if (context.dbType==DB_TYPE.ORACLE && x==-2) {
+								// from oracle's docs:  a value of -2 indicates that a element was processed 
+								// successfully, but that the number of effected rows is unknown.
+								x = 1;
+							}
+							added += x;
+						}
+					}
 				}
 				if (i%64 != 0) {
-					for (final int x : ps.executeBatch()) {
+					for (int x : ps.executeBatch()) {
+						if (context.dbType==DB_TYPE.ORACLE && x==-2) {
+							// from oracle's docs:  a value of -2 indicates that a element was processed 
+							// successfully, but that the number of effected rows is unknown.
+							x = 1;
+						}
 						added += x;
 					}
 				}
+//				ResultSet rs = stmt.executeQuery("select count(1) from "+ tableName);
+//				while (rs.next()) {
+//					System.err.println("tmp table "+ tableName +" has "+ rs.getLong(1) +" rows");
+//				}
+//				rs.close();
+				//System.out.println("added "+ added);
 			} catch (final SQLException e) {
 				throw e;
 			} finally {
@@ -193,9 +218,16 @@ class TemporaryTableFactory {
 		@Override
 		protected void __NOSCO_PRIVATE_postExecute(final SqlContext context, final Connection conn) throws SQLException {
 			Statement stmt = null;
+			final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
 			try {
 				stmt = conn.createStatement();
-				final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+				if (context.dbType==DB_TYPE.ORACLE) {
+					// oracle requires a TRUNCATE before a drop for tmp tables, otherwise you get:
+					// ORA-14452: attempt to create, alter or drop an index on temporary table already in use
+					final String sql = "TRUNCATE TABLE "+ tableName;
+					Util.log(sql, null);
+					stmt.execute(sql);
+				}
 				final String sql = "DROP TABLE "+ tableName;
 				Util.log(sql, null);
 				stmt.execute(sql);

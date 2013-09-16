@@ -288,7 +288,12 @@ public class Bulk {
 				//System.err.println("... done! "+ Util.join(",", batchResults));
 				if (shouldCloseConn && !conn.getAutoCommit()) conn.commit();
 				//System.err.println("... committed!");
-				for (final int k : batchResults) {
+				for (int k : batchResults) {
+					if (dbType==DB_TYPE.ORACLE && k==-2) {
+						// from oracle's docs:  a value of -2 indicates that a element was processed 
+						// successfully, but that the number of effected rows is unknown.
+						k = 1;
+					}
 					count += k;
 				}
 			} catch (final BatchUpdateException e) {
@@ -454,7 +459,7 @@ public class Bulk {
 			sb.delete(sb.length()-2, sb.length());
 			sb.append(" where ");
 			sb.append(Util.joinFields(dbType, "=? and ", pks));
-			sb.append("=?;");
+			sb.append("=?");
 			final String sql = sb.toString();
 			Util.log(sql, null);
 			ps = conn.prepareStatement(sql);
@@ -490,7 +495,7 @@ public class Bulk {
 					+sep+ Util.getTableName(table.getClass()));
 			sb.append(" where ");
 			sb.append(Util.joinFields(dbType, "=? and ", fields));
-			sb.append("=?;");
+			sb.append("=?");
 			final String sql = sb.toString();
 			Util.log(sql, null);
 			ps = conn.prepareStatement(sql);

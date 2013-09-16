@@ -574,9 +574,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final StringBuffer sb = new StringBuffer();
 		final List<Object> bindings = new ArrayList<Object>();
 		List<Condition> conditions = this.conditions;
-		if (context.dbType==DB_TYPE.ORACLE && top>0) {
+		if (context.dbType==DB_TYPE.ORACLE && top>0 && joinsToMany.size()==0) {
 			conditions = conditions==null ? new ArrayList<Condition>() : new ArrayList<Condition>(conditions);
-			conditions.add(new Condition.Binary2(new SQLFunction.SQLLiteral("rownum"), "<", top));
+			conditions.add(new Condition.Binary2(new SQLFunction.SQLLiteral("rownum"), "<=", top));
 		}
 		if (conditions!=null && conditions.size()>0) {
 			sb.append(" where");
@@ -1726,11 +1726,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Query<T> in(final Collection<T> set) {
-		final String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
-		//final String aliasName = "tmp_"+ Math.round(Math.random() * Integer.MAX_VALUE);
-		final String aliasName = tmpTableName.replace("#NOSCO_", "tmp_");
 		final PK<T> pk = Util.getPK(ofType);
 		final TemporaryTableFactory.DummyTableWithName<T> tmp = TemporaryTableFactory.createTemporaryTable(ofType, pk.GET_FIELDS(), set);
+		final String aliasName = tmp.name.replace("NOSCO_", "tmp_");
 		final Table.__Alias<T> alias = new Table.__Alias<T>(tmp, aliasName);
 		Query<T> q = cross(alias);
 		for (@SuppressWarnings("rawtypes") final Field field : pk.GET_FIELDS()) {

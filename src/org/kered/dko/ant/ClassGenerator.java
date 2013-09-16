@@ -1431,8 +1431,8 @@ class ClassGenerator {
 		put("money", Double.class);
 		put("numeric", Double.class);
 		put("float", Double.class);
+		put("number", Double.class);
 		put("real", Float.class);
-		put("number", Float.class);
 		put("blob", Blob.class);
 		put("longblob", Blob.class);
 		put("datetime", Timestamp.class);
@@ -1455,6 +1455,8 @@ class ClassGenerator {
 
 	private static Class<? extends Object> getFieldClassType(String type) {
 		type = type.toLowerCase();
+		// strip off the "(123)" size info
+		if (type.indexOf('(')>0) type = type.substring(0, type.indexOf('('));
 		final Class cls = columnTypeMap.get(type);
 		if (cls == null) {
 			final StringBuffer sb = new StringBuffer();

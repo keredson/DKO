@@ -109,6 +109,12 @@ public abstract class SQLFunction<T> {
 					bindings.add(count);
 					f1.getSQL(sb, bindings, context);
 					sb.append(")");
+				} else if (dbType == DB_TYPE.POSTGRES) {
+					f1.getSQL(sb, bindings, context);
+					sb.append(" + INTERVAL '"+ count +" " + component +"'");
+				} else if (dbType == DB_TYPE.ORACLE) {
+					f1.getSQL(sb, bindings, context);
+					sb.append(" + INTERVAL '"+ count +"' " + component);
 				} else {
 					sb.append("dateadd(" + component +", ?, ");
 					bindings.add(count);
@@ -137,11 +143,13 @@ public abstract class SQLFunction<T> {
 				if (dbType == DB_TYPE.MYSQL) {
 					sb.append("date_add(" + sql +", interval ? "+ component +")");
 					bindings.add(count);
-				} else if ((dbType == DB_TYPE.HSQL)) {
+				} else if (dbType == DB_TYPE.HSQL) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")");
 					bindings.add(count);
-				} else if ((dbType == DB_TYPE.POSTGRES)) {
-					sb.append(""+ sql +" + INTERVAL '"+ count +" " + component +"'");
+				} else if (dbType == DB_TYPE.POSTGRES) {
+					sb.append(sql +" + INTERVAL '"+ count +" " + component +"'");
+				} else if (dbType == DB_TYPE.ORACLE) {
+					sb.append(sql +" + INTERVAL '"+ count +"' " + component);
 				} else {
 					sb.append("dateadd(" + component +", ?, "+ sql +")");
 					bindings.add(count);

@@ -167,7 +167,7 @@ buy.  And they're small enough to power Android apps (using SQLite).
 
 Plus, and I can't stress this enough:  The code is **boringly simple**.  Plain objects with plain variables.  No 
 byte-code rewriting.  No twenty-layers-of-reflection
-hell.  When you want to know what's going on you don't need a PhD.  Only a debugger.
+hell.  No dictionary-backed objects.  When you want to know what's going on you don't need a PhD.  Only a debugger.
 
 To learn more, see [DKOs - The Book](http://nosco.googlecode.com/hg/doc/dkos-the-book/dkos-the-book.html).
 

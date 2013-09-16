@@ -17,9 +17,11 @@ Build the DKO Library
 
 Run:
 
+```bash
     $ git clone https://github.com/keredson/DKO.git
     $ cd DKO
     $ ant
+```
 
 Copy `lib/dko.jar` to your project's `lib` directory.
 

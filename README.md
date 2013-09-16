@@ -37,6 +37,7 @@ DKOs fully support the following database engines:
  - [Microsoft SQL Server](http://www.microsoft.com/en-us/sqlserver/default.aspx)
  - [MySQL](http://www.mysql.com/)
  - [PostgreSQL](http://www.postgresql.org/)
+ - [Oracle](http://www.oracle.com/)
  - [HSQL](http://hsqldb.org/)
  - [SQLite3](http://www.sqlite.org/)
 

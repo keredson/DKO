@@ -322,6 +322,12 @@ public class BuildInfo {
   <available file="bin/unit_test_mysql_schema.json" property="exists.unit_test_mysql_schema"/>
   <target name="unit-test-extract-schema-mysql" depends="jar" unless="${exists.unit_test_mysql_schema}">
     <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_mysql_jar}"/>
+    <exec executable="mysql">
+      <arg value="-u"/>
+      <arg value="root"/>
+      <arg value="-e"/>
+      <arg value="create database nosco_test_jpetstore;"/>
+    </exec>
     <exec executable="mysql" input="deps/jpetstore/mysql/jpetstore-mysql-schema.sql">
       <arg value="-u"/>
       <arg value="root"/>

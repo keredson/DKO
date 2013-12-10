@@ -59,6 +59,7 @@ public class Util {
 				PERSISTENCE_DB = dbPath;
 			} else if (path == null) {
 				String userHome = System.getProperty("user.home");
+				if (thisIsAndroid()) userHome = getAndroidUserHome();
 				if (userHome==null || "?".equals(userHome)) {
 					throw new RuntimeException("System property 'user.home' not set.  "
 						+ "This is a known bug in some versions of the JDK.  See JDK-6972329.");
@@ -104,12 +105,28 @@ public class Util {
 		return ds;
 	}
 
+	private static String getAndroidUserHome() {
+		StackTraceElement[] st = Thread.currentThread().getStackTrace();
+		int i=0;
+		while (!st[i].getClassName().startsWith("org.kered.dko")) ++i;
+		while (st[i].getClassName().startsWith("org.kered.dko")) ++i;
+		String path = "/data/data/"+ st[i].getClassName();
+		while (!new File(path).isDirectory()) {
+			path = path.substring(0, path.lastIndexOf('.'));
+		}
+		return path;
+	}
+
+	private static boolean thisIsAndroid() {
+		return "Dalvik".equals(System.getProperty("java.vm.name"));
+	}
+
 	private static void checkQueryExecution(final Connection conn) throws SQLException {
 		final Statement stmt = conn.createStatement();
 		try {
 			final ResultSet rs = stmt.executeQuery("select count(1) from query_execution");
 			rs.next();
-			rs.getInt(1);
+			int count = rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
 			log.fine(CREATE_QE);
@@ -125,7 +142,7 @@ public class Util {
 		try {
 			final ResultSet rs = stmt.executeQuery("select count(1) from column_access");
 			rs.next();
-			rs.getInt(1);
+			int count = rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
 			log.fine(CREATE_CA);
@@ -140,7 +157,7 @@ public class Util {
 		try {
 			final ResultSet rs = stmt.executeQuery("select count(1) from query_size");
 			rs.next();
-			rs.getInt(1);
+			int count = rs.getInt(1);
 			rs.close();
 		} catch (final SQLException e) {
 			log.fine(CREATE_QS);

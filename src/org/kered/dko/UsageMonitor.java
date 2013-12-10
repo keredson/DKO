@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
@@ -155,7 +156,8 @@ class UsageMonitor<T extends Table> {
 
 		// grab the current stack trace
 		final StackTraceElement[] tmp = Thread.currentThread().getStackTrace();
-		int i=1;
+		int i=0;
+		while (i<tmp.length && !tmp[i].getClassName().startsWith("org.kered.dko")) ++i;
 		while (i<tmp.length && tmp[i].getClassName().startsWith("org.kered.dko")) ++i;
 		st = new StackTraceElement[tmp.length-i];
 		System.arraycopy(tmp, i, st, 0, st.length);
@@ -221,6 +223,8 @@ class UsageMonitor<T extends Table> {
 			}
 		}
 		pks = Collections.unmodifiableSet(pks);
+		
+		toShutdown.put(this, null);
 	}
 
 	private void warnBadFKUsage() {
@@ -391,10 +395,15 @@ class UsageMonitor<T extends Table> {
 		loadPerformanceInfo.start();
 	}
 
+	private final static Map<UsageMonitor<?>,String> toShutdown = Collections.synchronizedMap(new WeakHashMap<UsageMonitor<?>,String>());
+	
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    @Override
 		    public void run() {
+		    	for (UsageMonitor<?> um : toShutdown.keySet()) {
+		    		um.shutdown();
+		    	}
 		    }
 		});
 	}

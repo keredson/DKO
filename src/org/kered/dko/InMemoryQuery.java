@@ -99,7 +99,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(final Field<?>... fields) {
+	public Query<T> orderBy(final OrderByExpression<?>... obes) {
 		if (!loaded) load();
 		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache.addAll(cache);
@@ -107,12 +107,25 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public int compare(final T o1, final T o2) {
-				for (final Field<?> f : fields) {
-					final Comparable c1 = (Comparable) o1.get(f);
-					final Object c2 = o2.get(f);
-					if (c1 == null && c2 != null) return 1;
-					final int c = c1.compareTo(c2);
-					if (c != 0) return c;
+				for (final OrderByExpression<?> obe : obes) {
+					Field f = null;
+					if (obe instanceof Field) {
+						f = (Field) obe;
+						final Comparable c1 = (Comparable) o1.get(f);
+						final Object c2 = o2.get(f);
+						if (c1 == null && c2 != null) return 1;
+						final int c = c1.compareTo(c2);
+						if (c != 0) return c;
+					}
+					else if (obe instanceof Field.OrderByField) {
+						f = ((Field.OrderByField) obe).underlying;
+						final Comparable c1 = (Comparable) o1.get(f);
+						final Object c2 = o2.get(f);
+						int mul = ((Field.OrderByField) obe).direction==DIRECTION.ASCENDING ? 1 : -1;
+						if (c1 == null && c2 != null) return mul;
+						final int c = c1.compareTo(c2) * mul;
+						if (c != 0) return c;
+					}
 				}
 				return 0;
 			}});
@@ -177,12 +190,6 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	public Iterable<T> all() {
 		if (!loaded) load();
 		return Collections.unmodifiableList(cache);
-	}
-
-	@Override
-	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

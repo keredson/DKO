@@ -96,12 +96,6 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Query<T> limit(final long n) {
 		final LocalJoin<T> q = new LocalJoin<T>(this);
 		q.limit = n;
@@ -154,12 +148,6 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> onlyFields(Field<?>... fields) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -557,6 +545,12 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> avg() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Query<T> orderBy(OrderByExpression<?>... obes) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -15,6 +15,7 @@ import org.kered.dko.Condition.Binary;
 import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Condition.Ternary;
 import org.kered.dko.Constants.DB_TYPE;
+import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Table.__SimplePrimaryKey;
 
 
@@ -52,7 +53,7 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  * @author Derek Anderson
  * @param <T> the field type
  */
-public class Field<T> implements Cloneable {
+public class Field<T> implements Cloneable, OrderByExpression<T> {
 
 	@Override
 	public String toString() {
@@ -1420,6 +1421,65 @@ public class Field<T> implements Cloneable {
 			return "Tag[" + key + "]";
 		}
 
+	}
+
+	@Override
+	public OrderByExpression<T> asc() {
+		return new OrderByField<T>(this, Constants.DIRECTION.ASCENDING);
+	}
+
+	@Override
+	public OrderByExpression<T> desc() {
+		return new OrderByField<T>(this, Constants.DIRECTION.DESCENDING);
+	}
+	
+	static class OrderByField<T> implements OrderByExpression<T> {
+		final Field<T> underlying;
+		DIRECTION direction;
+
+		public OrderByField(Field<T> field, DIRECTION direction) {
+			underlying = field;
+			this.direction = direction;
+		}
+
+		@Override
+		public OrderByExpression<T> asc() {
+			return new OrderByField<T>(underlying, Constants.DIRECTION.ASCENDING);
+		}
+
+		@Override
+		public OrderByExpression<T> desc() {
+			return new OrderByField<T>(underlying, Constants.DIRECTION.DESCENDING);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((direction == null) ? 0 : direction.hashCode());
+			result = prime * result + ((underlying == null) ? 0 : underlying.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			OrderByField other = (OrderByField) obj;
+			if (direction != other.direction)
+				return false;
+			if (underlying == null) {
+				if (other.underlying != null)
+					return false;
+			} else if (!underlying.equals(other.underlying))
+				return false;
+			return true;
+		}
+		
 	}
 
 }

@@ -54,8 +54,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	List<JoinInfo> joinsToMany = new ArrayList<JoinInfo>();
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
-	private List<DIRECTION> orderByDirections = null;
-	private List<Field<?>> orderByFields = null;
+	private List<OrderByExpression<?>> orderByExpressions = null;
 	long top = 0;
 	private Map<Field<?>,Object> data = null;
 	boolean distinct = false;
@@ -113,13 +112,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			onlySet = new LinkedHashSet<Field<?>>();
 			onlySet.addAll(q.onlySet);
 		}
-		if (q.orderByDirections!=null) {
-			orderByDirections = new ArrayList<DIRECTION>();
-			orderByDirections.addAll(q.orderByDirections);
-		}
-		if (q.orderByFields!=null) {
-			orderByFields = new ArrayList<Field<?>>();
-			orderByFields.addAll(q.orderByFields);
+		if (q.orderByExpressions!=null) {
+			orderByExpressions = new ArrayList<OrderByExpression<?>>();
+			orderByExpressions.addAll(q.orderByExpressions);
 		}
 		top = q.top;
 		if (q.data!=null) {
@@ -364,11 +359,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			q.conditions.add(c.not());
 		}
 		return q;
-	}
-
-	@Override
-	public Query<T> orderBy(final Field<?>... fields) {
-		return orderBy(ASCENDING, fields);
 	}
 
 	@Override
@@ -685,23 +675,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
-		final DBQuery<T> q = new DBQuery<T>(this);
-		q.orderByDirections = new ArrayList<DIRECTION>();
-		if (orderByDirections!=null) q.orderByDirections.addAll(orderByDirections);
-		q.orderByFields = new ArrayList<Field<?>>();
-		if (orderByFields!=null) q.orderByFields.addAll(orderByFields);
-		for (final Field<?> field : fields) {
-			if (q.orderByFields.contains(field)) continue;
-			q.orderByDirections.add(direction);
-			q.orderByFields.add(field);
-		}
-		q.orderByDirections = Collections.unmodifiableList(q.orderByDirections);
-		q.orderByFields = Collections.unmodifiableList(q.orderByFields);
-		return q;
-	}
-
-	@Override
 	public Query<T> limit(final long i) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.top  = i;
@@ -811,12 +784,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return bind ? boundFields : fields;
 	}
 
-	List<DIRECTION> getOrderByDirections() {
-		return orderByDirections;
-	}
-
-	List<Field<?>> getOrderByFields() {
-		return orderByFields;
+	List<OrderByExpression<?>> getOrderByExpressions() {
+		return orderByExpressions;
 	}
 
 	public void setBindings(final PreparedStatement ps, final List<Object> bindings) throws SQLException {
@@ -1563,12 +1532,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		result = prime * result
 				+ ((joinsToOne == null) ? 0 : joinsToOne.hashCode());
 		result = prime * result + ((onlySet == null) ? 0 : onlySet.hashCode());
-		result = prime
-				* result
-				+ ((orderByDirections == null) ? 0 : orderByDirections
-						.hashCode());
 		result = prime * result
-				+ ((orderByFields == null) ? 0 : orderByFields.hashCode());
+				+ ((orderByExpressions == null) ? 0 : orderByExpressions.hashCode());
 		result = prime * result
 				+ ((tableInfos == null) ? 0 : tableInfos.hashCode());
 		result = prime * result + (int)top;
@@ -1631,15 +1596,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 				return false;
 		} else if (!onlySet.equals(other.onlySet))
 			return false;
-		if (orderByDirections == null) {
-			if (other.orderByDirections != null)
+		if (orderByExpressions == null) {
+			if (other.orderByExpressions != null)
 				return false;
-		} else if (!orderByDirections.equals(other.orderByDirections))
-			return false;
-		if (orderByFields == null) {
-			if (other.orderByFields != null)
-				return false;
-		} else if (!orderByFields.equals(other.orderByFields))
+		} else if (!orderByExpressions.equals(other.orderByExpressions))
 			return false;
 		if (tableInfos == null) {
 			if (other.tableInfos != null)
@@ -1887,6 +1847,19 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Query<T> setQueryTimeout(int seconds) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.timeout = seconds;
+		return q;
+	}
+
+	@Override
+	public Query<T> orderBy(OrderByExpression<?>... obes) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.orderByExpressions = new ArrayList<OrderByExpression<?>>();
+		if (orderByExpressions!=null) q.orderByExpressions.addAll(orderByExpressions);
+		for (final OrderByExpression<?> obe : obes) {
+			if (q.orderByExpressions.contains(obe)) continue;
+			q.orderByExpressions.add(obe);
+		}
+		q.orderByExpressions = Collections.unmodifiableList(q.orderByExpressions);
 		return q;
 	}
 

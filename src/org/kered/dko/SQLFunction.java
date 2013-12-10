@@ -8,6 +8,7 @@ import java.util.List;
 import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Constants.CALENDAR;
 import org.kered.dko.Constants.DB_TYPE;
+import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Table.__SimplePrimaryKey;
 
 /**
@@ -23,7 +24,17 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  *
  * @author Derek Anderson
  */
-public abstract class SQLFunction<T> {
+public abstract class SQLFunction<T> implements OrderByExpression<T> {
+	
+	@Override
+	public OrderByExpression<T> asc() {
+		return new OrderBySQLFunction<T>(this, DIRECTION.ASCENDING);
+	}
+
+	@Override
+	public OrderByExpression<T> desc() {
+		return new OrderBySQLFunction<T>(this, DIRECTION.DESCENDING);
+	}
 
 	/**
 	 * Create a SQL function for IFNULL() (ISNULL() on SQL Server).
@@ -209,6 +220,24 @@ public abstract class SQLFunction<T> {
 	 */
 	public static SQLFunction<Integer> MONTH(final Field<?> f) {
 		return new Custom<Integer>("MONTH", f);
+	}
+
+	/**
+	 * The lowercase value of a field.
+	 * @param f
+	 * @return
+	 */
+	public static SQLFunction<Integer> LOWER(final Field<?> f) {
+		return new Custom<Integer>("LOWER", f);
+	}
+
+	/**
+	 * The uppercase value of a field.
+	 * @param f
+	 * @return
+	 */
+	public static SQLFunction<Integer> UPPER(final Field<?> f) {
+		return new Custom<Integer>("UPPER", f);
 	}
 
 	/**
@@ -861,6 +890,28 @@ public abstract class SQLFunction<T> {
 		SQLLiteral(String sql) {
 			this.sql = sql;
 		}
+	}
+	
+	static class OrderBySQLFunction<T> implements OrderByExpression<T> {
+
+		final SQLFunction<T> underlying;
+		final DIRECTION direction;
+
+		OrderBySQLFunction(SQLFunction<T> sqlFunction, DIRECTION direction) {
+			underlying = sqlFunction;
+			this.direction = direction;
+		}
+
+		@Override
+		public OrderByExpression<T> asc() {
+			return new OrderBySQLFunction<T>(underlying, DIRECTION.ASCENDING);
+		}
+
+		@Override
+		public OrderByExpression<T> desc() {
+			return new OrderBySQLFunction<T>(underlying, DIRECTION.DESCENDING);
+		}
+		
 	}
 
 }

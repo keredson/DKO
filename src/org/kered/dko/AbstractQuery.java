@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Table.__Alias;
 import org.kered.dko.Table.__PrimaryKey;
 
@@ -740,5 +741,27 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	public Query<T> setQueryTimeout(int seconds) {
 		return this;
 	}
+
+	@Override
+	public Iterator<T> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Query<T> orderBy(Field<?>... fields) {
+		return orderBy((OrderByExpression<?>[]) fields);
+	}
+
+	@Override
+	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
+		OrderByExpression<?>[] obes = new OrderByExpression<?>[fields.length];
+		for (int i=0; i<fields.length; ++i) {
+			obes[i] = direction==DIRECTION.ASCENDING ? fields[i].asc() : fields[i].desc();
+		}
+		return orderBy(obes);
+	}
+	
+	
 
 }

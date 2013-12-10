@@ -85,11 +85,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(final Field<?>... fields) {
-		throw new RuntimeException("not implemented yet"); // TODO
-	}
-
-	@Override
 	public Query<T> limit(final long n) {
 		final SoftJoin<T> q = new SoftJoin<T>(this);
 		q.limit = n;
@@ -133,11 +128,6 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> onlyFields(final Field<?>... fields) {
-		throw new RuntimeException("not implemented yet"); // TODO
-	}
-
-	@Override
-	public Query<T> orderBy(final DIRECTION direction, final Field<?>... fields) {
 		throw new RuntimeException("not implemented yet"); // TODO
 	}
 
@@ -422,6 +412,11 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	public Query<T> avg() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Query<T> orderBy(OrderByExpression<?>... obes) {
+		throw new RuntimeException("not implemented yet"); // TODO
 	}
 
 

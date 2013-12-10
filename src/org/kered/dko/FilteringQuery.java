@@ -55,13 +55,6 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	}
 
 	@Override
-	public Query<T> orderBy(Field<?>... fields) {
-		FilteringQuery<T> ret = new FilteringQuery<T>(this);
-		ret.q = ret.q.orderBy(fields);
-		return ret;
-	}
-
-	@Override
 	public Query<T> limit(long n) {
 		FilteringQuery<T> ret = new FilteringQuery<T>(this);
 		ret.q = ret.q.limit(-1);
@@ -129,13 +122,6 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	public Query<T> onlyFields(Field<?>... fields) {
 		FilteringQuery<T> ret = new FilteringQuery<T>(this);
 		ret.q = ret.q.onlyFields(fields);
-		return ret;
-	}
-
-	@Override
-	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
-		FilteringQuery<T> ret = new FilteringQuery<T>(this);
-		ret.q = ret.q.orderBy(fields);
 		return ret;
 	}
 
@@ -230,6 +216,11 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 		return ret;
 	}
 
-
+	@Override
+	public Query<T> orderBy(OrderByExpression<?>... obes) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.orderBy(obes);
+		return ret;
+	}
 
 }

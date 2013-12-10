@@ -114,6 +114,14 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> orderBy(Field<?>... fields);
 
 	/**
+	 * Sets the ordering of the database query.
+	 * An OrderByExpression is usually a Field or a SQLFunction.
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> orderBy(OrderByExpression<?>... obes);
+
+	/**
 	 * Returns the first n rows of the query.
 	 * Same as .limit(n)
 	 * Note: If any to-many joins are in this query, this is computed on the java side.
@@ -327,6 +335,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param direction
 	 * @param fields
 	 * @return
+	 * @deprecated See SomeClass.ALL.orderBy(SomeClass.SOME_FIELD.asc(), SomeClass.SOME_OTHER_FIELD.desc())
 	 */
 	public Query<T> orderBy(DIRECTION direction, Field<?>... fields);
 

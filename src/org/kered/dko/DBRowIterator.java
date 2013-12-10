@@ -136,15 +136,26 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			}
 		}
 
-		final List<DIRECTION> directions = query.getOrderByDirections();
-		final List<Field<?>> fields = query.getOrderByFields();
-		if (!context.inInnerQuery() && directions!=null & fields!=null) {
+		final List<OrderByExpression<?>> obes = query.getOrderByExpressions();
+		if (!context.inInnerQuery() && obes!=null) {
 			sb.append(" order by ");
-			final int x = Math.min(directions.size(), fields.size());
-			final String[] tmp = new String[x];
-			for (int i=0; i<x; ++i) {
-				final DIRECTION direction = directions.get(i);
-				tmp[i] = Util.derefField(fields.get(i), context) + (direction==DESCENDING ? " DESC" : "");
+			final String[] tmp = new String[obes.size()];
+			for (int i=0; i<obes.size(); ++i) {
+				OrderByExpression<?> obe = obes.get(i);
+				if (obe instanceof Field) {
+					tmp[i] = Util.derefField((Field)obes.get(i), context);
+				} else if (obe instanceof Field.OrderByField) {
+					tmp[i] = Util.derefField(((Field.OrderByField)obe).underlying, context) + (((Field.OrderByField)obe).direction==DESCENDING ? " DESC" : " ASC");
+				} else if (obe instanceof SQLFunction) {
+					StringBuffer sb2 = new StringBuffer();
+					((SQLFunction)obe).getSQL(sb2, bindings, context);
+					tmp[i] = sb2.toString();
+				} else if (obe instanceof SQLFunction.OrderBySQLFunction) {
+					StringBuffer sb2 = new StringBuffer();
+					((SQLFunction.OrderBySQLFunction)obe).underlying.getSQL(sb2, bindings, context);
+					sb2.append(((SQLFunction.OrderBySQLFunction)obe).direction==DESCENDING ? " DESC" : " ASC");
+					tmp[i] = sb2.toString();
+				}
 			}
 			sb.append(Util.join(", ", tmp));
 		}

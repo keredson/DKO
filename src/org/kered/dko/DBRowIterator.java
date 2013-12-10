@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.Constants.DB_TYPE;
-import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Tuple.Tuple2;
 
 
@@ -274,7 +273,10 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 		try {
 			if (!finishedNatually && rs!=null && !rs.isClosed()) {
-				ps.cancel();
+				if (!"org.sqldroid.SQLDroidPreparedStatement".equals(ps.getClass().getName())) {
+					// SQLDroid doesn't implement cancel
+					ps.cancel();
+				}
 			}
 		} catch (final SQLException e2) {
 			// some drivers don't like ps.cancel().  ignore them.

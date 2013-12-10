@@ -1421,6 +1421,7 @@ class ClassGenerator {
 		put("int4", Integer.class);
 		put("mediumint", Integer.class);
 		put("smallint", Integer.class);
+		put("smallint unsigned", Integer.class);
 		put("tinyint", Integer.class);
 		put("bigint", Long.class);
 		put("long", Long.class);

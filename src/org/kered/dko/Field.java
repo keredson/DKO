@@ -432,6 +432,22 @@ public class Field<T> implements Cloneable, OrderByExpression<T> {
 	}
 
 	/**
+	 * Creates a condition representing this field being true.
+	 * @return
+	 */
+	public Condition isTrue() {
+		return new Condition.Unary(this);
+	}
+
+	/**
+	 * Creates a condition representing this field not being true.
+	 * @return
+	 */
+	public Condition isFalse() {
+		return new Condition.Unary("not ", this);
+	}
+
+	/**
 	 * Creates a condition representing this field not equal to null.
 	 * @return
 	 */

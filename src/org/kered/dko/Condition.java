@@ -542,31 +542,46 @@ public abstract class Condition {
 
 	static class Unary extends Condition {
 
+		private final String prefix;
 		final Field<?> field;
-		private final String cmp;
+		private final String suffix;
 
-		public <T> Unary(final Field<T> field, final String cmp) {
+		public <T> Unary(final Field<T> field, final String suffix) {
+			this.prefix = null;
 			this.field = field;
-			this.cmp = cmp;
+			this.suffix = suffix;
+		}
+
+		public <T> Unary(Field<T> field) {
+			this.prefix = null;
+			this.field = field;
+			this.suffix = null;
+		}
+
+		public <T> Unary(String prefix, Field<T> field) {
+			this.prefix = prefix;
+			this.field = field;
+			this.suffix = null;
 		}
 
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
+			if (prefix!=null) sb.append(prefix);
 			sb.append(Util.derefField(field, context));
-			sb.append(cmp);
+			if (suffix!=null) sb.append(suffix);
 		}
 
 		@Override
 		boolean matches(final Table t) {
 			final Object v = t.get(field);
-			if (" is null".equals(this.cmp)) {
+			if (" is null".equals(this.suffix)) {
 				return v == null;
 			}
-			if (" is not null".equals(this.cmp)) {
+			if (" is not null".equals(this.suffix)) {
 				return v != null;
 			}
-			throw new IllegalStateException("unknown comparision function '"+ cmp
+			throw new IllegalStateException("unknown comparision function '"+ suffix
 					+"' for in-memory conditional check");
 		}
 

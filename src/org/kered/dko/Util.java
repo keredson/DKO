@@ -102,10 +102,17 @@ public class Util {
 			final Short v = Short.valueOf(rs.getShort(i));
 			return (S) (rs.wasNull() ? null : v);
 		}
+		if (type==Boolean.class || type==boolean.class) {
+			final Boolean v = Boolean.valueOf(rs.getBoolean(i));
+			return (S) (rs.wasNull() ? null : v);
+		}
 		if (type==Character.class || type==char.class) {
 			final String s = rs.getString(i);
 			if (s != null && s.length() > 0) return (S) Character.valueOf(s.charAt(0));
 			else return null;
+		}
+		if (type==String.class) {
+			return (S) rs.getString(i);
 		}
 		if (type == Blob.class) {
 			final Blob blob = rs.getBlob(i);

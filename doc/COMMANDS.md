@@ -6,7 +6,8 @@ Originally I refused to implement command line versions of these tools, as I bel
 should not be run manually (only as part of a build process).  Ant tasks were the only
 way.  However the world is moving away from Ant, and it's infeasible for me to support all
 options.  Plus: I generally don't like forcing choices.  So here are command line verions
-of the different tasks.
+of the different tasks.  But *please* don't generate-and-forget.  Make sure these are 
+integrated into whatever build system you have.
 
 To list all the commands:
 

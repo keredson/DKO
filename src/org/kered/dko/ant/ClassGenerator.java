@@ -247,17 +247,6 @@ class ClassGenerator {
 		file.delete();
 	}
 
-	static String splitCamelCase(final String s) {
-		   return s.replaceAll(
-		      String.format("%s|%s|%s",
-		         "(?<=[A-Z])(?=[A-Z][a-z])",
-		         "(?<=[^A-Z])(?=[A-Z])",
-		         "(?<=[A-Za-z])(?=[^A-Za-z])"
-		      ),
-		      " "
-		   );
-		}
-
 	private static String getFieldName(String column) {
 		column = splitIfCamelCase(column);
 		column = column
@@ -271,7 +260,7 @@ class ClassGenerator {
 
 	private static String splitIfCamelCase(String column) {
 		if (shouldSplitCamelCase(column)) {
-			column = splitCamelCase(column);
+			column = Util.splitCamelCase(column);
 		}
 		return column;
 	}
@@ -737,7 +726,7 @@ class ClassGenerator {
 			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ fkName +".INDEX)) {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = "+ referencedTableClassName +".ALL");
-			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq("+ underscoreToCamelCase(fk.columns.keySet(), false) +"))");
+			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq("+ Util.underscoreToCamelCase(fk.columns.keySet(), false) +"))");
 			br.write(".getTheOnly();\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ fkName +".INDEX);\n");
 			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkCallback(this, "+ fkName +");\n");
@@ -750,7 +739,7 @@ class ClassGenerator {
 			br.write("\tpublic "+ className +" set"+ methodName +"(final "+ referencedTableClassName +" v) {\n");
 			//br.write(" v) {\n\t\tPUT_VALUE(");
 
-			br.write("\t\t"+ underscoreToCamelCase(fk.columns.keySet(), false) +" = v.get"+ underscoreToCamelCase(fk.columns.values(), true) +"();\n");
+			br.write("\t\t"+ Util.underscoreToCamelCase(fk.columns.keySet(), false) +" = v.get"+ Util.underscoreToCamelCase(fk.columns.values(), true) +"();\n");
 			br.write("\t\tif (__NOSCO_UPDATED_VALUES == null) __NOSCO_UPDATED_VALUES = new java.util.BitSet();\n");
 			br.write("\t\t__NOSCO_UPDATED_VALUES.set("+ getFieldName(fk.columns.keySet()) +".INDEX);\n");
 			br.write("\t\t"+ cachedObjectName +" = v;\n");
@@ -1258,7 +1247,7 @@ class ClassGenerator {
 	}
 
 	private String genFKCachedObjectName(final FK fk) {
-		return "_NOSCO_FK_"+ underscoreToCamelCase(fk.columns.keySet(), false);
+		return "_NOSCO_FK_"+ Util.underscoreToCamelCase(fk.columns.keySet(), false);
 	}
 
 	private void writeToStringPart(final BufferedWriter br, final String column)
@@ -1277,13 +1266,13 @@ class ClassGenerator {
 		column = column.toLowerCase();
 		if (Constants.KEYWORDS_JAVA.contains(column)) column = "NOSCO_JAVA_KEYWORD_PROTECTION" + column;
 	    column = column.replace("-", "_DASH_");
-	    return underscoreToCamelCase(column, false);
+	    return Util.underscoreToCamelCase(column, false);
 	}
 
 	private static String getInstanceMethodName(String column) {
 	    if ("class".equals(column)) column = "JAVA_KEYWORD_class";
 	    column = column.replace("-", "_DASH_");
-	    return underscoreToCamelCase(column, true);
+	    return Util.underscoreToCamelCase(column, true);
 	}
 
 	private String genFKName(final Set<String> columns, String referencedTable) {
@@ -1302,7 +1291,7 @@ class ClassGenerator {
 
 
 	private String genFKMethodName(final Set<String> columns, final String referencedTable) {
-		return this.underscoreToCamelCase(columns, true)+"FK";
+		return Util.underscoreToCamelCase(columns, true)+"FK";
 		//return genTableClassName(genFKName(columns, referencedTable));
 	}
 
@@ -1323,9 +1312,9 @@ class ClassGenerator {
 			}
 		} //*/
 		proposed = proposed.replaceAll("\\W", "_");
-		String proposed2 = underscoreToCamelCase(dePlural(proposed), true);
+		String proposed2 = Util.underscoreToCamelCase(dePlural(proposed), true);
 		if (tableToClassName.containsValue(proposed2)) {
-			proposed2 = underscoreToCamelCase(proposed, true);
+			proposed2 = Util.underscoreToCamelCase(proposed, true);
 		}
 		tableToClassName.put(table, proposed2);
 		return proposed2;
@@ -1468,32 +1457,6 @@ class ClassGenerator {
 			throw new RuntimeException(sb.toString());
 		}
 		return cls;
-	}
-
-	private static String underscoreToCamelCase(String s, final boolean capitalizeFirstChar) {
-		if (s==null) return null;
-		if (s.length()==0) return s;
-		s = s.toLowerCase();
-		s = s.replace(' ', '_').replace("%", "_PERCENT");
-		final char[] c = s.toCharArray();
-		if (capitalizeFirstChar) {
-			c[0] = Character.toUpperCase(c[0]);
-		}
-		for (int i=1; i<c.length; ++i) {
-			if (c[i-1]=='_') {
-				c[i] = Character.toUpperCase(c[i]);
-			}
-		}
-		return new String(c).replaceAll("_", "");
-	}
-
-	private static String underscoreToCamelCase(final Collection<String> strings, boolean capitalizeFirstChar) {
-	    final StringBuffer sb = new StringBuffer();
-	    for (final String s : strings) {
-		sb.append(underscoreToCamelCase(s, capitalizeFirstChar));
-		capitalizeFirstChar = true;
-	    }
-	    return sb.toString();
 	}
 
 }

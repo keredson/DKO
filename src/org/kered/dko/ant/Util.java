@@ -43,4 +43,41 @@ class Util {
 				+"'.  Accepted values are: true/false/t/f/yes/no/y/n/[0-9]+");
 	}
 
+	static String underscoreToCamelCase(String s, final boolean capitalizeFirstChar) {
+		if (s==null) return null;
+		if (s.length()==0) return s;
+		s = s.toLowerCase();
+		s = s.replace(' ', '_').replace("%", "_PERCENT");
+		final char[] c = s.toCharArray();
+		if (capitalizeFirstChar) {
+			c[0] = Character.toUpperCase(c[0]);
+		}
+		for (int i=1; i<c.length; ++i) {
+			if (c[i-1]=='_') {
+				c[i] = Character.toUpperCase(c[i]);
+			}
+		}
+		return new String(c).replaceAll("_", "");
+	}
+
+	static String underscoreToCamelCase(final Collection<String> strings, boolean capitalizeFirstChar) {
+	    final StringBuffer sb = new StringBuffer();
+	    for (final String s : strings) {
+		sb.append(underscoreToCamelCase(s, capitalizeFirstChar));
+		capitalizeFirstChar = true;
+	    }
+	    return sb.toString();
+	}
+
+	static String splitCamelCase(final String s) {
+		return s.replaceAll(
+				String.format("%s|%s|%s",
+						"(?<=[A-Z])(?=[A-Z][a-z])",
+						"(?<=[^A-Z])(?=[A-Z])",
+						"(?<=[A-Za-z])(?=[^A-Za-z])"
+						),
+						" "
+				);
+	}
+
 }

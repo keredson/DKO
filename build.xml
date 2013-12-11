@@ -22,7 +22,7 @@
   <property name="dep_postgresql_jar"  location="deps/postgresql-jdbc4.jar"/>
   <property name="dep_oracle_jar"  location="deps/oracle-jdbc.jar"/>
   <!--property name="dep_gson_jar"  location="deps/gson/gson-2.2.2.jar"/-->
-  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:${dep_postgresql_jar}:${dep_oracle_jar}"/>
+  <property name="all_deps" value="${dep_mysql_jar}:${dep_junit_jar}:${dep_hsqldb_jar}:${dep_postgresql_jar}:${dep_oracle_jar}:${dep_sqlite_jar}"/>
 
 
   <!-- ========[ END PROPS ]======== -->
@@ -115,6 +115,10 @@ public class BuildInfo {
     <jar jarfile="${lib_nosco_jar}">
       <fileset dir="${build}" />
       <fileset dir="${src}" includes="**/*.java"/>
+      <manifest>
+        <attribute name="Main-Class" value="org.kered.dko.Main"/>
+        <!--attribute name="Class-Path" value="${all_deps}"/-->
+      </manifest>
     </jar>
   </target>
 
@@ -126,6 +130,10 @@ public class BuildInfo {
     <jar jarfile="${dist}/lib/dko-${git_tag}.jar">
       <fileset dir="${build}" />
       <fileset dir="${src}" includes="**/*.java"/>
+      <manifest>
+        <attribute name="Main-Class" value="org.kered.dko.Main"/>
+        <!--attribute name="Class-Path" value="${all_deps}"/-->
+      </manifest>
     </jar>
   </target>
 

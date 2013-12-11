@@ -39,7 +39,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.kered.dko.ant.SchemaExtractor;
+import org.kered.dko.ant.SchemaExtractorBase;
 
 public class DumpDatabase {
 
@@ -66,7 +66,7 @@ public class DumpDatabase {
 		@Override
 		public void run() {
 			schemas = null;
-			SchemaExtractor se = new SchemaExtractor();
+			SchemaExtractorBase se = new SchemaExtractorBase();
 			se.setUsername(username.getText());
 			se.setPassword(new String(password.getPassword()));
 			try {

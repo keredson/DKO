@@ -1,0 +1,34 @@
+{
+    "version": [
+        0,
+        2,
+        0
+    ],
+    "schemas": {"": {
+        "place": {
+            "id": "INTEGER",
+            "city": "TEXT",
+            "state": "TEXT"
+        },
+        "person": {
+            "id": "INTEGER",
+            "name": "TEXT",
+            "home_town": "INTEGER"
+        }
+    }},
+    "primary_keys": {"": {
+        "place": ["id"],
+        "person": ["id"]
+    }},
+    "foreign_keys": {"FK_1": {
+        "reffing": [
+            "",
+            "person"
+        ],
+        "reffed": [
+            "",
+            "place"
+        ],
+        "columns": {"home_town": "id"}
+    }}
+}

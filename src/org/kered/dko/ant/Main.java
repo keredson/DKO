@@ -2,7 +2,6 @@ package org.kered.dko.ant;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +11,7 @@ public class Main {
 	static Map<String,Class<?>> commands = new LinkedHashMap<String,Class<?>>();
 	static {
 		commands.put("extract-schema", SchemaExtractorBase.class);
+		commands.put("generate-dkos", CodeGeneratorBase.class);
 	}
 	
 	/**
@@ -63,7 +63,7 @@ public class Main {
 		for (Method m : command.getDeclaredMethods()) {
 			if (m.getName().equalsIgnoreCase(setter)) return m;
 		}
-		return null;
+		throw new RuntimeException("could not find method for: "+ optionName);
 	}
 
 	private static void printHelp(String commandName, Class<?> command) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -76,7 +76,9 @@ public class Main {
 			String name = method.getName();
 			if (!name.startsWith("set")) continue;
 			String optionName = "--"+ Util.splitCamelCase(name.substring(3)).trim().replace(' ', '-').toLowerCase();
-			System.err.println(optionName +" "+ command.getDeclaredMethod("getHelp", String.class).invoke(null, name));
+			Object helpText = command.getDeclaredMethod("getHelp", String.class).invoke(null, name);
+			if (helpText==null) continue;
+			System.err.println(optionName +" "+ helpText);
 			System.err.println("");
 		}
 	}
@@ -87,7 +89,7 @@ public class Main {
 		System.err.println("");
 		System.err.println("Where <command> is one of the following:");
 		for (Entry<String, Class<?>> e : commands.entrySet()) {
-			System.err.print("\t");
+			System.err.print("  ");
 			System.err.print(e.getKey());
 			System.err.print(":\t");
 			try {

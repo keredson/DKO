@@ -62,7 +62,7 @@ to build it yourself:
 
 ```bash
 $ git clone https://github.com/SQLDroid/SQLDroid.git
-$ de SQLDroid
+$ cd SQLDroid
 $ sudo apt-get install rake
 $ rake
 ```
@@ -129,8 +129,43 @@ more common to chain them all together as such:
 import static org.kered.dko.SQLFunction.LOWER;
 ```
 
-Other examples exist in `./src/org/kered/contactlensfinder/ViewProductsActivity.java`
-and `./src/org/kered/contactlensfinder/ViewPropertiesActivity.java`.
+_`./src/org/kered/contactlensfinder/ViewProductsActivity.java`_
+
+This starts out much the same, but based in `Intent` further filters the results. Note
+the SQL join with the table `scraper_fact`.
+
+```java
+		// Here we set up the base query.  No SQL execution yet.
+		Query<Product> query = Product.ALL
+				.where(Product.NAME.neq(""))
+				.orderBy(LOWER(Product.NAME));
+		
+		if (extras!=null && extras.containsKey("manufacturer_id")) {
+			int manufacturerId = extras.getInt("manufacturer_id");
+			// We want to show only products from a specific manufacturer, so add a where
+			// clause here.  Notice this where is added after the orderBy() call above.
+			// That's OK.  Notice also that this is the second call to where().  That's
+			// OK too.  Multiple calls to where() are ANDed together.  Finally, notice
+			// that we assign the query back to itself.  Queries are immutable, so every
+			// where(), orderBy(), etc. always returns a new query.
+			query = query.where(Product.MANUFACTURER_ID.eq(manufacturerId));
+		}
+		
+		if (extras!=null && extras.containsKey("property_id")) {
+			int propertyId = extras.getInt("property_id");
+			// A Fact has a foreign key to a Product, represented by:
+			// Fact.FK_PRODUCT_SCRAPER_PRODUCT  (generally: FK_{COLUMNNAME}_{TABLENAME})
+			// We want to only show products that have a fact of a certain property type.
+			query = query.with(Fact.FK_PRODUCT_SCRAPER_PRODUCT)
+					.where(Fact.PROP_ID.eq(propertyId));
+			// Calling with() joins the two tables on their FK relationship, and the
+			// where() call filters.
+		}
+		
+		// The query is executed here!
+		final List<String> names = query.asList(Product.NAME);
+```
 
 Good luck!
 Derek
+

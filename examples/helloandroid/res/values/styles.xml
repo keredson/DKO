@@ -1,0 +1,35 @@
+<resources>
+
+     <style name="Theme.Styled" parent="@style/Theme.AppCompat">
+         <item name="actionBarStyle">@style/QueryActionBar</item>
+     </style>
+
+<color name="white_opaque">#FFFFFFFF</color>
+<color name="pitch_black">#FF000000</color>
+<color name="blueback">#0000FF00</color>
+
+     <style name="QueryActionBar" parent="@style/Widget.AppCompat.ActionBar">
+         <item name="background">@color/blueback</item>
+         <item name="android:background">@color/blueback</item>
+         <item name="backgroundSplit">@color/blueback</item>
+     </style>
+     
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+      </style>
+
+    
+</resources>

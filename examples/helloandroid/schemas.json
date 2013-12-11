@@ -1,0 +1,112 @@
+{
+    "version": [
+        0,
+        2,
+        0
+    ],
+    "schemas": {"": {
+        "scraper_product": {
+            "id": "integer",
+            "web_page_id": "integer",
+            "manufacturer_id": "integer",
+            "name": "varchar(1000)",
+            "discontinued": "bool",
+            "created": "datetime"
+        },
+        "scraper_property": {
+            "id": "integer",
+            "name": "varchar(1000)",
+            "display_name": "varchar(1000)",
+            "parent_id": "integer",
+            "display": "bool",
+            "created": "datetime"
+        },
+        "scraper_fact": {
+            "id": "integer",
+            "web_page_id": "integer",
+            "product_id": "integer",
+            "prop_id": "integer",
+            "value": "text",
+            "created": "datetime"
+        },
+        "scraper_manufacturer": {
+            "id": "integer",
+            "name": "varchar(1000)",
+            "created": "datetime"
+        }
+    }},
+    "primary_keys": {"": {
+        "scraper_product": ["id"],
+        "scraper_property": ["id"],
+        "scraper_fact": ["id"],
+        "scraper_manufacturer": ["id"]
+    }},
+    "foreign_keys": {
+        "FK_1": {
+            "reffing": [
+                "",
+                "scraper_product"
+            ],
+            "reffed": [
+                "",
+                "scraper_manufacturer"
+            ],
+            "columns": {"manufacturer_id": "id"}
+        },
+        "FK_2": {
+            "reffing": [
+                "",
+                "scraper_product"
+            ],
+            "reffed": [
+                "",
+                "scraper_webpage"
+            ],
+            "columns": {"web_page_id": "id"}
+        },
+        "FK_3": {
+            "reffing": [
+                "",
+                "scraper_property"
+            ],
+            "reffed": [
+                "",
+                "scraper_property"
+            ],
+            "columns": {"parent_id": "id"}
+        },
+        "FK_4": {
+            "reffing": [
+                "",
+                "scraper_fact"
+            ],
+            "reffed": [
+                "",
+                "scraper_property"
+            ],
+            "columns": {"prop_id": "id"}
+        },
+        "FK_5": {
+            "reffing": [
+                "",
+                "scraper_fact"
+            ],
+            "reffed": [
+                "",
+                "scraper_product"
+            ],
+            "columns": {"product_id": "id"}
+        },
+        "FK_6": {
+            "reffing": [
+                "",
+                "scraper_fact"
+            ],
+            "reffed": [
+                "",
+                "scraper_webpage"
+            ],
+            "columns": {"web_page_id": "id"}
+        }
+    }
+}

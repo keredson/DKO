@@ -29,7 +29,8 @@ DKOs addresses all these issues:
  - It doesn't hide from you the fact that it's hitting a database (or what SQL it's running).
  
 Want to get started right now?  Try the [Quick Start Guide](QUICK_START.md).
-Curious about DKOs on Android?  Check out [`helloandroid`](examples/helloandroid/README.md).
+
+Curious about DKOs on Android?  Check out [Hello Android](examples/helloandroid/README.md).
 
 Supported Databases
 -------------------

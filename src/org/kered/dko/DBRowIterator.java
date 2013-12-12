@@ -147,12 +147,12 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			sb.append(Util.join(", ", tmp));
 		}
 
-		final List<OrderByExpression<?>> obes = query.getOrderByExpressions();
+		final List<Expression.OrderBy<?>> obes = query.getOrderByExpressions();
 		if (!context.inInnerQuery() && obes!=null && !obes.isEmpty()) {
 			sb.append(" order by ");
 			final String[] tmp = new String[obes.size()];
 			for (int i=0; i<obes.size(); ++i) {
-				OrderByExpression<?> obe = obes.get(i);
+				Expression.OrderBy<?> obe = obes.get(i);
 				if (obe instanceof Field) {
 					tmp[i] = Util.derefField((Field)obes.get(i), context);
 				} else if (obe instanceof Field.OrderByField) {

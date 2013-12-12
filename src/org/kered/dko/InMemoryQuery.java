@@ -99,7 +99,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(final OrderByExpression<?>... obes) {
+	public Query<T> orderBy(final Expression.OrderBy<?>... obes) {
 		if (!loaded) load();
 		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache.addAll(cache);
@@ -107,7 +107,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public int compare(final T o1, final T o2) {
-				for (final OrderByExpression<?> obe : obes) {
+				for (final Expression.OrderBy<?> obe : obes) {
 					Field f = null;
 					if (obe instanceof Field) {
 						f = (Field) obe;

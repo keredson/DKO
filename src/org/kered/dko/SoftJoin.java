@@ -415,7 +415,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(OrderByExpression<?>... obes) {
+	public Query<T> orderBy(Expression.OrderBy<?>... obes) {
 		throw new RuntimeException("not implemented yet"); // TODO
 	}
 

@@ -758,12 +758,12 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Query<T> orderBy(Field<?>... fields) {
-		return orderBy((OrderByExpression<?>[]) fields);
+		return orderBy((Expression.OrderBy<?>[]) fields);
 	}
 
 	@Override
 	public Query<T> orderBy(DIRECTION direction, Field<?>... fields) {
-		OrderByExpression<?>[] obes = new OrderByExpression<?>[fields.length];
+		Expression.OrderBy<?>[] obes = new Expression.OrderBy<?>[fields.length];
 		for (int i=0; i<fields.length; ++i) {
 			obes[i] = direction==DIRECTION.ASCENDING ? fields[i].asc() : fields[i].desc();
 		}

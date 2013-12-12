@@ -119,7 +119,7 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param fields
 	 * @return
 	 */
-	public Query<T> orderBy(OrderByExpression<?>... obes);
+	public Query<T> orderBy(Expression.OrderBy<?>... obes);
 
 	/**
 	 * Returns the first n rows of the query.

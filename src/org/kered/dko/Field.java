@@ -53,7 +53,7 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  * @author Derek Anderson
  * @param <T> the field type
  */
-public class Field<T> implements Cloneable, OrderByExpression<T>, Expression.Select<T> {
+public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Select<T> {
 
 	@Override
 	public String toString() {
@@ -1443,16 +1443,16 @@ public class Field<T> implements Cloneable, OrderByExpression<T>, Expression.Sel
 	}
 
 	@Override
-	public OrderByExpression<T> asc() {
+	public Expression.OrderBy<T> asc() {
 		return new OrderByField<T>(this, Constants.DIRECTION.ASCENDING);
 	}
 
 	@Override
-	public OrderByExpression<T> desc() {
+	public Expression.OrderBy<T> desc() {
 		return new OrderByField<T>(this, Constants.DIRECTION.DESCENDING);
 	}
 	
-	static class OrderByField<T> implements OrderByExpression<T> {
+	static class OrderByField<T> implements Expression.OrderBy<T> {
 		final Field<T> underlying;
 		DIRECTION direction;
 
@@ -1462,12 +1462,12 @@ public class Field<T> implements Cloneable, OrderByExpression<T>, Expression.Sel
 		}
 
 		@Override
-		public OrderByExpression<T> asc() {
+		public Expression.OrderBy<T> asc() {
 			return new OrderByField<T>(underlying, Constants.DIRECTION.ASCENDING);
 		}
 
 		@Override
-		public OrderByExpression<T> desc() {
+		public Expression.OrderBy<T> desc() {
 			return new OrderByField<T>(underlying, Constants.DIRECTION.DESCENDING);
 		}
 

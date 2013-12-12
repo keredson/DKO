@@ -1,16 +1,12 @@
 package org.kered.dko;
 
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Constants.CALENDAR;
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
-import org.kered.dko.Expression.Select;
 import org.kered.dko.Table.__SimplePrimaryKey;
 
 /**
@@ -26,7 +22,7 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  *
  * @author Derek Anderson
  */
-public abstract class SQLFunction<T> implements OrderByExpression<T>, Expression.Select<T> {
+public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expression.Select<T> {
 	
 	Class<T> type;
 	
@@ -41,12 +37,12 @@ public abstract class SQLFunction<T> implements OrderByExpression<T>, Expression
 	}
 
 	@Override
-	public OrderByExpression<T> asc() {
+	public Expression.OrderBy<T> asc() {
 		return new OrderBySQLFunction<T>(this, DIRECTION.ASCENDING);
 	}
 
 	@Override
-	public OrderByExpression<T> desc() {
+	public Expression.OrderBy<T> desc() {
 		return new OrderBySQLFunction<T>(this, DIRECTION.DESCENDING);
 	}
 
@@ -903,7 +899,7 @@ public abstract class SQLFunction<T> implements OrderByExpression<T>, Expression
 		}
 	}
 	
-	static class OrderBySQLFunction<T> implements OrderByExpression<T> {
+	static class OrderBySQLFunction<T> implements Expression.OrderBy<T> {
 
 		final SQLFunction<T> underlying;
 		final DIRECTION direction;
@@ -914,12 +910,12 @@ public abstract class SQLFunction<T> implements OrderByExpression<T>, Expression
 		}
 
 		@Override
-		public OrderByExpression<T> asc() {
+		public Expression.OrderBy<T> asc() {
 			return new OrderBySQLFunction<T>(underlying, DIRECTION.ASCENDING);
 		}
 
 		@Override
-		public OrderByExpression<T> desc() {
+		public Expression.OrderBy<T> desc() {
 			return new OrderBySQLFunction<T>(underlying, DIRECTION.DESCENDING);
 		}
 		

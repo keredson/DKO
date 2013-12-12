@@ -53,7 +53,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private Set<Field<?>> deferSet = null;
 	private Set<Expression.Select<?>> onlySet = null;
 	private Set<Field<?>> groupBySet = null;
-	private List<OrderByExpression<?>> orderByExpressions = null;
+	private List<Expression.OrderBy<?>> orderByExpressions = null;
 	long top = 0;
 	private Map<Field<?>,Object> data = null;
 	boolean distinct = false;
@@ -116,7 +116,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			groupBySet.addAll(q.groupBySet);
 		}
 		if (q.orderByExpressions!=null) {
-			orderByExpressions = new ArrayList<OrderByExpression<?>>();
+			orderByExpressions = new ArrayList<Expression.OrderBy<?>>();
 			orderByExpressions.addAll(q.orderByExpressions);
 		}
 		top = q.top;
@@ -775,7 +775,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return bind ? boundFields : fields;
 	}
 
-	List<OrderByExpression<?>> getOrderByExpressions() {
+	List<Expression.OrderBy<?>> getOrderByExpressions() {
 		return orderByExpressions;
 	}
 
@@ -1809,11 +1809,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(OrderByExpression<?>... obes) {
+	public Query<T> orderBy(Expression.OrderBy<?>... obes) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.orderByExpressions = new ArrayList<OrderByExpression<?>>();
+		q.orderByExpressions = new ArrayList<Expression.OrderBy<?>>();
 		if (orderByExpressions!=null) q.orderByExpressions.addAll(orderByExpressions);
-		for (final OrderByExpression<?> obe : obes) {
+		for (final Expression.OrderBy<?> obe : obes) {
 			if (q.orderByExpressions.contains(obe)) continue;
 			q.orderByExpressions.add(obe);
 		}

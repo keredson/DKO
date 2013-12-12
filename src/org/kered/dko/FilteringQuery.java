@@ -217,7 +217,7 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	}
 
 	@Override
-	public Query<T> orderBy(OrderByExpression<?>... obes) {
+	public Query<T> orderBy(Expression.OrderBy<?>... obes) {
 		FilteringQuery<T> ret = new FilteringQuery<T>(this);
 		ret.q = ret.q.orderBy(obes);
 		return ret;

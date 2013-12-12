@@ -550,7 +550,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> orderBy(OrderByExpression<?>... obes) {
+	public Query<T> orderBy(Expression.OrderBy<?>... obes) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,7 +1,5 @@
 package org.kered.dko;
 
-import static org.kered.dko.Constants.DIRECTION.ASCENDING;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,7 +22,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.kered.dko.Constants.DB_TYPE;
-import org.kered.dko.Constants.DIRECTION;
 import org.kered.dko.Field.FK;
 import org.kered.dko.Field.PK;
 import org.kered.dko.Table.__Alias;
@@ -54,6 +51,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	List<JoinInfo> joinsToMany = new ArrayList<JoinInfo>();
 	private Set<Field<?>> deferSet = null;
 	private Set<Field<?>> onlySet = null;
+	private Set<Field<?>> groupBySet = null;
 	private List<OrderByExpression<?>> orderByExpressions = null;
 	long top = 0;
 	private Map<Field<?>,Object> data = null;
@@ -111,6 +109,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		if (q.onlySet!=null) {
 			onlySet = new LinkedHashSet<Field<?>>();
 			onlySet.addAll(q.onlySet);
+		}
+		if (q.groupBySet!=null) {
+			groupBySet = new LinkedHashSet<Field<?>>();
+			groupBySet.addAll(q.groupBySet);
 		}
 		if (q.orderByExpressions!=null) {
 			orderByExpressions = new ArrayList<OrderByExpression<?>>();
@@ -385,11 +387,6 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			}
 		}
 		return q;
-	}
-
-	@Override
-	public Query<T> onlyFields(final Field<?>... fields) {
-		return onlyFields(Arrays.asList(fields));
 	}
 
 	@Override
@@ -1532,6 +1529,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		result = prime * result
 				+ ((joinsToOne == null) ? 0 : joinsToOne.hashCode());
 		result = prime * result + ((onlySet == null) ? 0 : onlySet.hashCode());
+		result = prime * result + ((groupBySet == null) ? 0 : groupBySet.hashCode());
 		result = prime * result
 				+ ((orderByExpressions == null) ? 0 : orderByExpressions.hashCode());
 		result = prime * result
@@ -1595,6 +1593,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			if (other.onlySet != null)
 				return false;
 		} else if (!onlySet.equals(other.onlySet))
+			return false;
+		if (groupBySet == null) {
+			if (other.groupBySet != null)
+				return false;
+		} else if (!groupBySet.equals(other.groupBySet))
 			return false;
 		if (orderByExpressions == null) {
 			if (other.orderByExpressions != null)
@@ -1861,6 +1864,18 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		}
 		q.orderByExpressions = Collections.unmodifiableList(q.orderByExpressions);
 		return q;
+	}
+
+	@Override
+	public Query<T> groupBy(Field<?>... fields) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		if (q.groupBySet==null) q.groupBySet = new LinkedHashSet<Field<?>>();
+		for (Field<?> f : fields) q.groupBySet.add(f);
+		return q;
+	}
+
+	Set<Field<?>> getGroupByFields() {
+		return groupBySet==null ? null : Collections.unmodifiableSet(groupBySet);
 	}
 
 }

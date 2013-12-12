@@ -3,7 +3,6 @@ package org.kered.dko;
 import static org.kered.dko.Constants.DIRECTION.DESCENDING;
 
 import java.lang.reflect.Constructor;
-import java.net.SocketException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -135,8 +135,19 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			}
 		}
 
+		final Set<Field<?>> gbFields = query.getGroupByFields();
+		if (!context.inInnerQuery() && gbFields!=null && !gbFields.isEmpty()) {
+			sb.append(" group by ");
+			final String[] tmp = new String[gbFields.size()];
+			int i=0;
+			for (Field<?> f : gbFields) {
+				tmp[i++] = Util.derefField(f, context);
+			}
+			sb.append(Util.join(", ", tmp));
+		}
+
 		final List<OrderByExpression<?>> obes = query.getOrderByExpressions();
-		if (!context.inInnerQuery() && obes!=null) {
+		if (!context.inInnerQuery() && obes!=null && !obes.isEmpty()) {
 			sb.append(" order by ");
 			final String[] tmp = new String[obes.size()];
 			for (int i=0; i<obes.size(); ++i) {

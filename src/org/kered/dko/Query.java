@@ -960,4 +960,18 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Query<T> setQueryTimeout(int seconds);
 
+	/**
+	 * Group by the following fields.
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> groupBy(Field<?>... fields);
+
+	/**
+	 * Group by the following fields.
+	 * @param fields
+	 * @return
+	 */
+	public Query<T> groupBy(Collection<Field<?>> fields);
+
 }

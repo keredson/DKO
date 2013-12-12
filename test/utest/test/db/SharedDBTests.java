@@ -1147,4 +1147,10 @@ public class SharedDBTests extends TestCase {
 			assertEquals("EST-10", items.get(1).getItemid());
 	}
 
+	public void testGroupBy() throws SQLException {
+		printTestName();
+		List<Item> items = Item.ALL.distinct().groupBy(Item.SUPPLIER).asList();
+		assertEquals(Supplier.ALL.count(), items.size());
+	}
+
 }

@@ -5,6 +5,7 @@ import static org.kered.dko.Constants.DIRECTION.DESCENDING;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,11 @@ import org.kered.dko.Table.__PrimaryKey;
  * This class contains default implementations of some of the methods required of Query.
  */
 public abstract class AbstractQuery<T extends Table> implements Query<T> {
+
+	@Override
+	public Query<T> groupBy(Field<?>... fields) {
+		throw new UnsupportedOperationException(" does not implement groupBy().");
+	}
 
 	final Class<T> ofType;
 	private boolean applyGlobalMaxFunction = false;
@@ -762,6 +768,14 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 		return orderBy(obes);
 	}
 	
-	
+	@Override
+	public Query<T> onlyFields(final Field<?>... fields) {
+		return onlyFields(Arrays.asList(fields));
+	}
+
+	@Override
+	public Query<T> groupBy(Collection<Field<?>> fields) {
+		return groupBy(fields.toArray(new Field<?>[0]));
+	}
 
 }

@@ -180,6 +180,7 @@ class ClassGenerator {
 		br.write("import java.util.Collections;\n");
 		br.write("import java.util.Map;\n");
 		br.write("import java.util.HashMap;\n");
+		br.write("import org.kered.dko.Expression;\n");
 		br.write("import org.kered.dko.Table;\n\n");
 		br.write("public class _TableToClassMap {\n");
 		br.write("\tpublic static final Map<String, Class<? extends Table>> IT;\n");
@@ -492,7 +493,7 @@ class ClassGenerator {
 		br.write("\t\tif(o.__NOSCO_UPDATED_VALUES != null) __NOSCO_UPDATED_VALUES = (java.util.BitSet) o.__NOSCO_UPDATED_VALUES.clone();\n\n");
 		br.write("\t}\n\n");
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
-		br.write("\tprotected "+ className +"(final org.kered.dko.Field[] _fields, final Object[] _objects, final int _start, final int _end) {\n");
+		br.write("\tprotected "+ className +"(final org.kered.dko.Expression.Select[] _fields, final Object[] _objects, final int _start, final int _end) {\n");
 		br.write("\t\tif (_fields.length != _objects.length)\n\t\t\tthrow new IllegalArgumentException(");
 		br.write("\"fields.length != objects.length => \"+ _fields.length +\" != \"+ _objects.length");
 		br.write(" +\"\");\n");

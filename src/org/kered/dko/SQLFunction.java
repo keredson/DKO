@@ -1,5 +1,6 @@
 package org.kered.dko;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Constants.CALENDAR;
 import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Constants.DIRECTION;
+import org.kered.dko.Expression.Select;
 import org.kered.dko.Table.__SimplePrimaryKey;
 
 /**
@@ -24,8 +26,20 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  *
  * @author Derek Anderson
  */
-public abstract class SQLFunction<T> implements OrderByExpression<T> {
+public abstract class SQLFunction<T> implements OrderByExpression<T>, Expression.Select<T> {
 	
+	Class<T> type;
+	
+	@Override
+	public Select<T> __getUnderlying() {
+		return null;
+	}
+
+	@Override
+	public Class<T> getType() {
+		return type;
+	}
+
 	@Override
 	public OrderByExpression<T> asc() {
 		return new OrderBySQLFunction<T>(this, DIRECTION.ASCENDING);
@@ -108,33 +122,33 @@ public abstract class SQLFunction<T> implements OrderByExpression<T> {
 	public static <T> SQLFunction<java.sql.Date> DATEADD(final SQLFunction<? extends T> f1, final int count, final CALENDAR component) {
 		return new SQLFunction<java.sql.Date>() {
 			@Override
-			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+			public void __getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				final DB_TYPE dbType = context==null ? null : context.dbType;
 				if (dbType == DB_TYPE.MYSQL) {
 					sb.append("date_add(");
-					f1.getSQL(sb, bindings, context);
+					f1.__getSQL(sb, bindings, context);
 					sb.append(", interval ? "+ component +")");
 					bindings.add(count);
 				} else if ((dbType == DB_TYPE.HSQL)) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, ");
 					bindings.add(count);
-					f1.getSQL(sb, bindings, context);
+					f1.__getSQL(sb, bindings, context);
 					sb.append(")");
 				} else if (dbType == DB_TYPE.POSTGRES) {
-					f1.getSQL(sb, bindings, context);
+					f1.__getSQL(sb, bindings, context);
 					sb.append(" + INTERVAL '"+ count +" " + component +"'");
 				} else if (dbType == DB_TYPE.ORACLE) {
-					f1.getSQL(sb, bindings, context);
+					f1.__getSQL(sb, bindings, context);
 					sb.append(" + INTERVAL '"+ count +"' " + component);
 				} else {
 					sb.append("dateadd(" + component +", ?, ");
 					bindings.add(count);
-					f1.getSQL(sb, bindings, context);
+					f1.__getSQL(sb, bindings, context);
 					sb.append(")");
 				}
 			}
-		};
 
+		};
 	}
 
 	/**
@@ -148,7 +162,7 @@ public abstract class SQLFunction<T> implements OrderByExpression<T> {
 	public static <T> SQLFunction<java.sql.Date> DATEADD(final Field<? extends T> field, final int count, final CALENDAR component) {
 		return new SQLFunction<java.sql.Date>() {
 			@Override
-			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+			public void __getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				final String sql = Util.derefField(field, context);
 				final DB_TYPE dbType = context==null ? null : context.dbType;
 				if (dbType == DB_TYPE.MYSQL) {
@@ -311,12 +325,12 @@ public abstract class SQLFunction<T> implements OrderByExpression<T> {
 	public static SQLFunction<String> CONCAT(final Object... fields) {
 		return new SQLFunction<String>() {
 			@Override
-			void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+			public void __getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 				final DB_TYPE dbType = context==null ? null : context.dbType;
 				if (dbType == DB_TYPE.SQLSERVER) {
-					new Custom<String>(" + ", null, null, null, fields).getSQL(sb, bindings, context);
+					new Custom<String>(" + ", null, null, null, fields).__getSQL(sb, bindings, context);
 				} else {
-					new Custom<String>("CONCAT", fields).getSQL(sb, bindings, context);
+					new Custom<String>("CONCAT", fields).__getSQL(sb, bindings, context);
 				}
 			}
 		};
@@ -326,9 +340,6 @@ public abstract class SQLFunction<T> implements OrderByExpression<T> {
 
 	/* ======================================================================== */
 
-
-
-	abstract void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context);
 
 
 	/**
@@ -416,7 +427,7 @@ public abstract class SQLFunction<T> implements OrderByExpression<T> {
 		}
 
 		@Override
-		void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+		public void __getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			final DB_TYPE dbType = context==null ? null : context.dbType;
 			if (dbType != null) {
 				switch (dbType) {
@@ -439,7 +450,7 @@ public abstract class SQLFunction<T> implements OrderByExpression<T> {
 						sb.append(Util.derefField((Field<?>) o, context));
 					} else if (o instanceof SQLFunction<?>) {
 						final SQLFunction<?> f = (SQLFunction<?>) o;
-						f.getSQL(sb, bindings, context);
+						f.__getSQL(sb, bindings, context);
 					} else if (o instanceof CALENDAR) {
 						if (context != null && context.dbType == DB_TYPE.HSQL) {
 							sb.append("'"+ o.toString().toLowerCase() +"'");

@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.DBQuery.JoinInfo;
+import org.kered.dko.Expression.Select;
 import org.kered.dko.Field.FK;
 import org.kered.dko.persistence.ColumnAccess;
 import org.kered.dko.persistence.QueryExecution;
@@ -49,7 +50,7 @@ class UsageMonitor<T extends Table> {
 	private final Class<T> queryType;
 	private final int stackHash;
 	private QueryExecution qe;
-	private Set<Field<?>> selectedFieldSet;
+	private Set<Select<?>> selectedFieldSet;
 	private final Set<Field<?>> seenFields = new HashSet<Field<?>>();
 	private final DataSource ds;
 	private final boolean newQE;
@@ -118,11 +119,13 @@ class UsageMonitor<T extends Table> {
 	}
 
 	private void questionUnusedColumns() {
-		final Set<Field<?>> unusedColumns = new LinkedHashSet<Field<?>>(this.selectedFieldSet);
+		final Set<Expression.Select<?>> unusedColumns = new LinkedHashSet<Expression.Select<?>>(this.selectedFieldSet);
 		unusedColumns.removeAll(seenFields);
 		unusedColumns.removeAll(pks);
 		final List<String> unusedColumnDescs = new ArrayList<String>();
-		for (final Field<?> field : unusedColumns) {
+		for (final Select<?> column : unusedColumns) {
+			if (!(column instanceof Field)) continue;
+			Field field = (Field) column;
 			unusedColumnDescs.add(field.TABLE.getSimpleName() +"."+ field.JAVA_NAME);
 		}
 		if (!selectOptimized && !unusedColumnDescs.isEmpty() && objectCount > MIN_WARN_COUNT) {
@@ -314,10 +317,10 @@ class UsageMonitor<T extends Table> {
 		}
 	}
 
-	void setSelectedFields(final Field<?>[] selectedFields) {
+	void setSelectedFields(final Expression.Select<?>[] selectedFields) {
 		if (selectedFields==null) throw new IllegalArgumentException("selectedFields cannot be null");
-		this.selectedFieldSet = new HashSet<Field<?>>();
-		for (final Field<?> f : selectedFields) selectedFieldSet.add(f);
+		this.selectedFieldSet = new HashSet<Select<?>>();
+		for (final Select<?> f : selectedFields) selectedFieldSet.add(f);
 	}
 
 	DBQuery<T> getSelectOptimizedQuery() {
@@ -333,9 +336,11 @@ class UsageMonitor<T extends Table> {
 			//final Map<Field<?>,Long> used = qc.get(stackTraceHashString);
 			//System.err.println("used "+ used +" @ "+ this.queryHash);
 			final Set<Field<?>> deffer = new HashSet<Field<?>>();
-			final List<Field<?>> originalSelectedFields = query.getSelectFields(false);
+			final List<Expression.Select<?>> originalSelectedFields = query.getSelectFields(false);
 			final long threshold = qe.getLastSeen() - FORTY_FIVE_DAYS;
-			for (final Field<?> f : originalSelectedFields) {
+			for (final Select<?> c : originalSelectedFields) {
+				if (!(c instanceof Field)) continue;
+				Field f = (Field) c;
 				final Map<String, ColumnAccess> columns = used.get(Util.getTableName(f.TABLE));
 				if (columns==null) continue;
 				final ColumnAccess ca = columns.get(f.NAME);

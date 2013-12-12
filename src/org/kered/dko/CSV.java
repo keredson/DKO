@@ -126,7 +126,7 @@ public class CSV {
 	public static <T extends Table> Iterable<T> read(final Class<T> cls, final File f) {
 		try {
 			final Constructor<T> constructor = (Constructor<T>) cls.getDeclaredConstructor(
-					new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
+					new Expression.Select[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 			constructor.setAccessible(true);
 			return new Iterable<T>() {
 				@Override

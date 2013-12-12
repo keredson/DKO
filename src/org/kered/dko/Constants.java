@@ -8,15 +8,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.kered.dko.datasource.ConnectionCountingDataSource;
 import org.kered.dko.datasource.JDBCDriverDataSource;
 import org.kered.dko.datasource.MatryoshkaDataSource;
-import org.kered.dko.datasource.MirroredDataSource;
-import org.kered.dko.datasource.ReflectedDataSource;
 import org.kered.dko.datasource.UnClosableConnection;
 
 /**

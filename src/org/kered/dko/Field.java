@@ -53,7 +53,7 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  * @author Derek Anderson
  * @param <T> the field type
  */
-public class Field<T> implements Cloneable, OrderByExpression<T> {
+public class Field<T> implements Cloneable, OrderByExpression<T>, Expression.Select<T> {
 
 	@Override
 	public String toString() {
@@ -68,9 +68,9 @@ public class Field<T> implements Cloneable, OrderByExpression<T> {
 		return sb.toString();
 	}
 
-	protected String getSQL(final SqlContext context, final List<Object> bindings) {
+	public String getSQL(final SqlContext context, final List<Object> bindings) {
 		final StringBuffer sb = new StringBuffer();
-		getSQL(sb, bindings, context);
+		__getSQL(sb, bindings, context);
 		return sb.toString();
 	}
 
@@ -81,7 +81,7 @@ public class Field<T> implements Cloneable, OrderByExpression<T> {
 		getSQL(sb, context==null ? Constants.DB_TYPE.SQL92 : context.dbType);
 	}
 
-	protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
+	public void __getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 		getSQL(sb, context);
 	}
 
@@ -1213,29 +1213,32 @@ public class Field<T> implements Cloneable, OrderByExpression<T> {
 		return this.boundTable!=null || this.boundTableInfo!=null;
 	}
 
-	public boolean sameField(final Field<?> other) {
+	boolean sameField(final Expression.Select<?> other) {
 		if (this == other)
 			return true;
 		if (other == null)
 			return false;
+		org.kered.dko.Expression.Select<?> under = other.__getUnderlying();
+		if (under != null) return sameField(under);
 		if (getClass() != other.getClass())
 			return false;
-		if (INDEX != other.INDEX)
+		Field<?> otherField = (Field<?>) other;
+		if (INDEX != otherField.INDEX)
 			return false;
 		if (NAME == null) {
-			if (other.NAME != null)
+			if (otherField.NAME != null)
 				return false;
-		} else if (!NAME.equals(other.NAME))
+		} else if (!NAME.equals(otherField.NAME))
 			return false;
 		if (TABLE == null) {
-			if (other.TABLE != null)
+			if (otherField.TABLE != null)
 				return false;
-		} else if (!TABLE.equals(other.TABLE))
+		} else if (!TABLE.equals(otherField.TABLE))
 			return false;
 		if (TYPE == null) {
-			if (other.TYPE != null)
+			if (otherField.TYPE != null)
 				return false;
-		} else if (!TYPE.equals(other.TYPE))
+		} else if (!TYPE.equals(otherField.TYPE))
 			return false;
 		return true;
 	}
@@ -1496,6 +1499,16 @@ public class Field<T> implements Cloneable, OrderByExpression<T> {
 			return true;
 		}
 		
+	}
+
+	@Override
+	public org.kered.dko.Expression.Select<T> __getUnderlying() {
+		return underlying;
+	}
+
+	@Override
+	public Class<T> getType() {
+		return TYPE;
 	}
 
 }

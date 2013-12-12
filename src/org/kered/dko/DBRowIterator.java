@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.Constants.DB_TYPE;
+import org.kered.dko.Expression.Select;
 import org.kered.dko.Tuple.Tuple2;
 
 
@@ -40,8 +41,8 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	final DBQuery<T> query;
 	private PreparedStatement ps;
 	private ResultSet rs;
-	Field<?>[] selectedFields;
-	private Field<?>[] selectedBoundFields;
+	Select<?>[] selectedFields;
+	private Expression.Select<?>[] selectedBoundFields;
 	private Connection conn;
 	private final Queue<Object[]> nextRows = new LinkedList<Object[]>();
 	private boolean done = false;
@@ -71,8 +72,8 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			usageMonitor = null;
 		}
 		this.query = usageMonitor==null ? dbQuery : usageMonitor.getSelectOptimizedQuery();
-		final List<Field<?>> selectFieldsList = query.getSelectFields(false);
-		selectedFields = toArray(selectFieldsList);
+		final List<Select<?>> selectFieldsList = query.getSelectFields(false);
+		selectedFields = selectFieldsList.toArray(new Expression.Select<?>[0]);
 		if (this.usageMonitor!=null) {
 			this.usageMonitor.setSelectedFields(selectedFields);
 		}
@@ -122,7 +123,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	}
 
 	protected Tuple2<String,List<Object>> getSQL(final SqlContext context) {
-		selectedBoundFields = toArray(query.getSelectFields(true));
+		selectedBoundFields = query.getSelectFields(true).toArray(new Expression.Select<?>[0]);
 		final StringBuffer sb = new StringBuffer();
 		final List<Object> bindings = new ArrayList<Object>();
 		appendSelectFromWhere(query, selectedBoundFields, context, sb, bindings);
@@ -130,7 +131,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			for (DBQuery.Union<T> union : query.unions) {
 				sb.append(" UNION ");
 				if (union.all) sb.append("ALL ");
-				Field<?>[] selectedBoundFieldsOther = toArray(union.q.getSelectFields(true));
+				Expression.Select<?>[] selectedBoundFieldsOther = union.q.getSelectFields(true).toArray(new Expression.Select<?>[0]);
 				appendSelectFromWhere(union.q, selectedBoundFieldsOther, context, sb, bindings);
 			}
 		}
@@ -158,11 +159,11 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 					tmp[i] = Util.derefField(((Field.OrderByField)obe).underlying, context) + (((Field.OrderByField)obe).direction==DESCENDING ? " DESC" : " ASC");
 				} else if (obe instanceof SQLFunction) {
 					StringBuffer sb2 = new StringBuffer();
-					((SQLFunction)obe).getSQL(sb2, bindings, context);
+					((SQLFunction)obe).__getSQL(sb2, bindings, context);
 					tmp[i] = sb2.toString();
 				} else if (obe instanceof SQLFunction.OrderBySQLFunction) {
 					StringBuffer sb2 = new StringBuffer();
-					((SQLFunction.OrderBySQLFunction)obe).underlying.getSQL(sb2, bindings, context);
+					((SQLFunction.OrderBySQLFunction)obe).underlying.__getSQL(sb2, bindings, context);
 					sb2.append(((SQLFunction.OrderBySQLFunction)obe).direction==DESCENDING ? " DESC" : " ASC");
 					tmp[i] = sb2.toString();
 				}
@@ -187,7 +188,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		return new Tuple2<String,List<Object>>(sql, bindings);
 	}
 
-	private static <T extends Table> void appendSelectFromWhere(DBQuery<T> query, final Field<?>[] selectedBoundFields,
+	private static <T extends Table> void appendSelectFromWhere(DBQuery<T> query, final Expression.Select<?>[] selectedBoundFields,
 			final SqlContext context, final StringBuffer sb, List<Object> bindings) {
 		sb.append("select ");
 		if (query.distinct) sb.append("distinct ");
@@ -199,7 +200,11 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		} else {
 			final String[] x = new String[selectedBoundFields.length];
 			for (int i=0; i < x.length; ++i) {
-				x[i] = query.globallyAppliedSelectFunction + "("+ selectedBoundFields[i].getSQL(context, bindings) +")";
+				StringBuffer sb2 = new StringBuffer();
+				sb.append(query.globallyAppliedSelectFunction).append("(");
+				selectedBoundFields[i].__getSQL(sb2, bindings, context);
+				sb2.append(")");
+				x[i] = sb2.toString();
 			}
 			sb.append(Util.join(", ", x));
 		}
@@ -207,15 +212,6 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		final Tuple2<String, List<Object>> ret = query.getWhereClauseAndBindings(context);
 		bindings.addAll(ret.b);
 		sb.append(ret.a);
-	}
-
-	static Field<?>[] toArray(final List<Field<?>> fields) {
-		final Field<?>[] ret = new Field<?>[fields.size()];
-		int i = 0;
-		for (final Field<?> field : fields) {
-			ret[i++] = field;
-		}
-		return ret;
 	}
 
 	@Override

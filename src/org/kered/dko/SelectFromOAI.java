@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.kered.dko.DBQuery.JoinInfo;
+import org.kered.dko.Expression.Select;
 import org.kered.dko.Field.FK;
 
 
@@ -30,7 +31,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 
 	private final DBQuery<T> query;
 	private T next;
-	private Field<?>[] selectedFields;
+	private Select<?>[] selectedFields;
 	private final Map<Class<? extends Table>,Constructor<? extends Table>> constructors =
 			new HashMap<Class<? extends Table>, Constructor<? extends Table>>();
 	private final Map<Class<? extends Table>,Method> fkToOneSetMethods =
@@ -59,8 +60,8 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 		query = dbQuery;
 		usageMonitor = null;
 		allTableInfos = query.getAllTableInfos();
-		final List<Field<?>> selectFieldsList = query.getSelectFields(false);
-		selectedFields = DBRowIterator.toArray(selectFieldsList);
+		final List<Select<?>> selectFieldsList = query.getSelectFields(false);
+		selectedFields = selectFieldsList.toArray(new Select<?>[0]);
 		init();
 	}
 
@@ -81,16 +82,18 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 		usageMonitor = null;
 		allTableInfos = query.getAllTableInfos();
 		final List<Field<?>> selectFieldsList = q.getSelectFields();
-		selectedFields = DBRowIterator.toArray(selectFieldsList);
+		selectedFields = selectFieldsList.toArray(new Expression.Select<?>[0]);
 		init();
 	}
 
 	private void init() {
 		// revert from tagged fields to their untagged srcs
 		for (int i=0; i<selectedFields.length; ++i) {
-			while (selectedFields[i].underlying != null) {
-				selectedFields[i] = selectedFields[i].underlying;
+			Select<?> field = selectedFields[i];
+			while (field instanceof Field<?> && ((Field<?>)field).underlying != null) {
+				field = ((Field<?>)field).underlying;
 			}
+			selectedFields[i] = field;
 		}
 		try {
 			final List<TableInfo> tableInfos = query.getAllTableInfos();
@@ -98,7 +101,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 				if (tableInfo.end > extraFieldsStartAt) extraFieldsStartAt = tableInfo.end;
 				if (tableInfo.tableClass.getName().startsWith("org.nosco.TmpTableBuilder")) continue;
 				final Constructor<? extends Table> constructor = tableInfo.tableClass.getDeclaredConstructor(
-						new Field[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
+						new Expression.Select[0].getClass(), new Object[0].getClass(), Integer.TYPE, Integer.TYPE);
 				constructor.setAccessible(true);
 				constructors.put(tableInfo.tableClass, constructor);
 				try {

@@ -236,16 +236,16 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 * @param fields
 	 * @return
 	 */
-	public Query<T> alsoSelect(Field<?>... fields);
+	public Query<T> alsoSelect(Expression.Select<?>... columns);
 
 	/**
-	 * Add the following fields to the select statement.
+	 * Add the following columns to the select statement.
 	 * Note: The returned object will still contain all .getField() methods.  If any are called that were not selected, another
 	 * SQL call will be made to fetch each value.  (assuming the PK was included with this call)
-	 * @param fields
+	 * @param columns
 	 * @return
 	 */
-	public Query<T> alsoSelect(Collection<Field<?>> fields);
+	public Query<T> alsoSelect(Collection<Expression.Select<?>> columns);
 
 //	/**
 //	 * Add the following inner query to the select statement.  Please note that if the query is not a valid inner query a SQLException

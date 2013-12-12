@@ -76,8 +76,8 @@ public class Util {
 	}
 
 	@SuppressWarnings("unchecked")
-	static <S> S getTypedValueFromRS(final ResultSet rs, final int i, final Field<S> field) throws SQLException {
-		final Class<S> type = field.TYPE;
+	static <S> S getTypedValueFromRS(final ResultSet rs, final int i, final Expression.Select<S> field) throws SQLException {
+		final Class<S> type = field instanceof Field ? ((Field<S>)field).TYPE : field.getType();
 		if (type==Byte.class || type==byte.class) {
 			final Byte v = Byte.valueOf(rs.getByte(i));
 			return (S) (rs.wasNull() ? null : v);
@@ -334,11 +334,15 @@ public class Util {
 		return true;
 	}
 
-	static String joinFields(final SqlContext context, final String s, final Field[] c, final List<Object> bindings) {
+	static String joinFields(final SqlContext context, final String s, final Expression.Select[] c, final List<Object> bindings) {
 		if(c==null || c.length==0) return "";
 	    final StringBuilder sb = new StringBuilder();
-	    for (final Field<?> o : c) {
-	    	sb.append(o==null ? "" : o.getSQL(context, bindings));
+	    for (final Expression.Select<?> o : c) {
+	    	if (o!=null) {
+		    	StringBuffer sb2 = new StringBuffer();
+	    		o.__getSQL(sb2, bindings, context);
+		    	sb.append(sb2.toString());
+	    	}
 	    	sb.append(s);
 	    }
 	    return sb.delete(sb.length()-s.length(), sb.length()).toString();

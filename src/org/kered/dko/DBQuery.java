@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.kered.dko.Constants.DB_TYPE;
+import org.kered.dko.Expression.Select;
 import org.kered.dko.Field.FK;
 import org.kered.dko.Field.PK;
 import org.kered.dko.Table.__Alias;
@@ -37,8 +38,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	static { UsageMonitor.doNothing(); }
 
 	// genned once and cached
-	transient private List<Field<?>> fields;
-	transient private List<Field<?>> boundFields;
+	transient private List<Select<?>> fields;
+	transient private List<Select<?>> boundFields;
 	transient Map<String,Set<String>> tableNameMap = null;
 	transient DB_TYPE detectedDbType = null;
 
@@ -50,7 +51,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	List<JoinInfo> joinsToOne = new ArrayList<JoinInfo>();
 	List<JoinInfo> joinsToMany = new ArrayList<JoinInfo>();
 	private Set<Field<?>> deferSet = null;
-	private Set<Field<?>> onlySet = null;
+	private Set<Expression.Select<?>> onlySet = null;
 	private Set<Field<?>> groupBySet = null;
 	private List<OrderByExpression<?>> orderByExpressions = null;
 	long top = 0;
@@ -107,7 +108,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			deferSet.addAll(q.deferSet);
 		}
 		if (q.onlySet!=null) {
-			onlySet = new LinkedHashSet<Field<?>>();
+			onlySet = new LinkedHashSet<Expression.Select<?>>();
 			onlySet.addAll(q.onlySet);
 		}
 		if (q.groupBySet!=null) {
@@ -392,15 +393,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public DBQuery<T> onlyFields(final Collection<Field<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		q.onlySet = new LinkedHashSet<Field<?>>();
-		for (final Field<?> field : fields) {
-			if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-				throw new RuntimeException("cannot use bound fields " +
-						"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-						"primary/first table");
-			}
-			q.onlySet.add(field);
-		}
+		q.onlySet = new LinkedHashSet<Expression.Select<?>>();
+		q.onlySet.addAll(fields);
 		if (q.unions != null) {
 			for (Union<T> u : unions) {
 				u.q = u.q.onlyFields(fields);
@@ -436,7 +430,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			} else if (other instanceof SQLFunction) {
 				final StringBuffer sb2 = new StringBuffer();
 				sb2.append(field.getSQL(context)).append("=");
-				((SQLFunction)other).getSQL(sb2, bindings, context);
+				((SQLFunction)other).__getSQL(sb2, bindings, context);
 				fields[i++] = sb2.toString();
 			} else {
 				fields[i++] = field.getSQL(context)+"=?";
@@ -727,29 +721,29 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return all;
 	}
 
-	List<Field<?>> getSelectFields(final boolean bind) {
+	List<Expression.Select<?>> getSelectFields(final boolean bind) {
 		if (!bind && fields==null || bind && boundFields==null) {
-			final List<Field<?>> fields = new ArrayList<Field<?>>();
+			final List<Expression.Select<?>> fields = new ArrayList<Expression.Select<?>>();
 			int c = 0;
 			final List<TableInfo> allTableInfos = onlySelectFromFirstTableAndJoins ?
 					getSelectableTableInfos() : getAllTableInfos();
 			if(onlySet!=null) {
-				final LinkedHashSet<Field<?>> unusedOnlySet = new LinkedHashSet<Field<?>>(onlySet);
+				final LinkedHashSet<Expression.Select<?>> unusedOnlySet = new LinkedHashSet<Expression.Select<?>>(onlySet);
 				for (final TableInfo ti : allTableInfos) {
 					ti.start = c;
 					final String tableName = bind ? ti.tableName : null;
-					for (final Field<?> other : onlySet) {
-						final List<Field<?>> fields_ti = ti.innerQuery==null ? Util.getFields(ti.tableClass) : ti.innerQuery.getSelectFields();
-						for (final Field<?> field : fields_ti) {
-							if (field.sameField(other) && ti.nameAutogenned) {
-								fields.add(bind ? other.from(tableName) : other);
+					for (final Expression.Select<?> other : onlySet) {
+						final List<? extends Expression.Select<?>> fields_ti = ti.innerQuery==null ? Util.getFields(ti.tableClass) : ti.innerQuery.getSelectFields();
+						for (final Expression.Select<?> field : fields_ti) {
+							if (field instanceof Field<?> && ((Field)field).sameField(other) && ti.nameAutogenned) {
+								fields.add(bind ? ((Field)other).from(tableName) : other);
 								unusedOnlySet.remove(other);
 								++c;
 								continue;
 							}
-							if (other.isBound() && other.boundTable.equals(ti.tableName)
-									&& field.sameField(other)) {
-								fields.add(bind ? other.from(tableName) : other);
+							if (other instanceof Field<?> && ((Field)other).isBound() && ((Field)other).boundTable.equals(ti.tableName)
+									&& ((Field)other).sameField(field)) {
+								fields.add(bind ? ((Field)other).from(tableName) : other);
 								unusedOnlySet.remove(other);
 								++c;
 								continue;
@@ -1476,7 +1470,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public List<Field<?>> getSelectFields() {
-		return this.getSelectFields(false);
+		List<Field<?>> ret = new ArrayList<Field<?>>();
+		for (Select<?> f : this.getSelectFields(false)) {
+			if (f instanceof Field) ret.add((Field<?>) f);
+		}
+		return ret;
 	}
 
 	@Override
@@ -1701,54 +1699,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
-	public Query<T> alsoSelect(final Field<?>... fields) {
-		final Collection<Field<?>> fs = new ArrayList<Field<?>>();
-		for (final Field<?> f : fields) fs.add(f);
-		return alsoSelect(fs);
-	}
-
-	@Override
-	public Query<T> alsoSelect(final Collection<Field<?>> fields) {
+	public Query<T> alsoSelect(final Collection<Expression.Select<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		if (onlySet==null) {
-			q.onlySet = new LinkedHashSet<Field<?>>();
-			final Set<Field<?>> left = new LinkedHashSet<Field<?>>(fields);
-			for (final Field<?> defaultField : this.getSelectFields()) {
-				boolean foundMatch = false;
-				for (final Field<?> field : fields) {
-					if (field.sameField(defaultField)) {
-						foundMatch = true;
-						if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-							throw new RuntimeException("cannot use bound fields " +
-									"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-									"primary/first table");
-						}
-						q.onlySet.add(field);
-						left.remove(field);
-						break;
-					}
-				}
-				if (!foundMatch) q.onlySet.add(defaultField);
-			}
-			for (final Field<?> field : left) {
-				if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-					throw new RuntimeException("cannot use bound fields " +
-							"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-							"primary/first table");
-				}
-				q.onlySet.add(field);
-			}
-		} else {
-			q.onlySet = new LinkedHashSet<Field<?>>(onlySet);
-			for (final Field<?> field : fields) {
-				if (field.isBound() && !field.boundTable.equals(tableInfos.get(0).tableName)) {
-					throw new RuntimeException("cannot use bound fields " +
-							"(ie: field.from(\"x\")) in onlyFields() if you're not bound to the" +
-							"primary/first table");
-				}
-				q.onlySet.add(field);
-			}
-		}
+		if (onlySet==null) q.onlySet = new LinkedHashSet<Expression.Select<?>>();
+		else q.onlySet = new LinkedHashSet<Expression.Select<?>>(onlySet);
+		q.onlySet.addAll(fields);
 		return q;
 	}
 

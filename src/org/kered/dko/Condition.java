@@ -485,7 +485,7 @@ public abstract class Condition {
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
 			if (v1 instanceof SQLFunction) {
-				((SQLFunction)v1).getSQL(sb, bindings, context);
+				((SQLFunction)v1).__getSQL(sb, bindings, context);
 			} else if (v1 instanceof Field) {
 				sb.append(Util.derefField((Field)v1, context));
 			} else {
@@ -494,7 +494,7 @@ public abstract class Condition {
 			}
 			sb.append(cmp1);
 			if (v2 instanceof SQLFunction) {
-				((SQLFunction)v2).getSQL(sb, bindings, context);
+				((SQLFunction)v2).__getSQL(sb, bindings, context);
 			} else if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v2, context));
 			} else {
@@ -503,7 +503,7 @@ public abstract class Condition {
 			}
 			sb.append(cmp2);
 			if (v3 instanceof SQLFunction) {
-				((SQLFunction)v3).getSQL(sb, bindings, context);
+				((SQLFunction)v3).__getSQL(sb, bindings, context);
 			} else if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v3, context));
 			} else {
@@ -683,7 +683,7 @@ public abstract class Condition {
 			} else if (function!=null) {
 				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
-				function.getSQL(sb, bindings, context);
+				function.__getSQL(sb, bindings, context);
 			} else {
 				sb.append(Util.derefField(field, context));
 				sb.append(" is null");
@@ -743,7 +743,7 @@ public abstract class Condition {
 			sb.append(' ');
 			if (o1 instanceof SQLFunction) {
 				final SQLFunction<?> f = (SQLFunction<?>) o1;
-				f.getSQL(sb, bindings, context);
+				f.__getSQL(sb, bindings, context);
 			} else if (o1 instanceof Field) {
 				final Field<?> f = (Field<?>) o1;
 				sb.append(Util.derefField(f, context));
@@ -756,7 +756,7 @@ public abstract class Condition {
 			sb.append(cmp);
 			if (o2 instanceof SQLFunction) {
 				final SQLFunction<?> f = (SQLFunction<?>) o2;
-				f.getSQL(sb, bindings, context);
+				f.__getSQL(sb, bindings, context);
 			} else if (o2 instanceof Field) {
 				final Field<?> f = (Field<?>) o2;
 				sb.append(Util.derefField(f, context));

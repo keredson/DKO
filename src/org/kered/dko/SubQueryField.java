@@ -39,7 +39,7 @@ class SubQueryField<T extends Table,S> extends Field<S> {
 	}
 
 	@Override
-	protected void getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
+	public void __getSQL(StringBuffer sb, List<Object> bindings, SqlContext context) {
 		sb.append('(');
 		final SqlContext innerContext = new SqlContext(s.getUnderlyingQuery(), context);
 		innerContext.maxFields = 1;

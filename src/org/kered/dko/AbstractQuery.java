@@ -709,12 +709,14 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 	}
 
 	@Override
-	public Query<T> alsoSelect(final Field<?>... fields) {
-		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
+	public Query<T> alsoSelect(final Expression.Select<?>... fields) {
+		final Collection<Expression.Select<?>> fs = new ArrayList<Expression.Select<?>>();
+		for (final Expression.Select<?> f : fields) fs.add(f);
+		return alsoSelect(fs);
 	}
 
 	@Override
-	public Query<T> alsoSelect(final Collection<Field<?>> fields) {
+	public Query<T> alsoSelect(final Collection<Expression.Select<?>> fields) {
 		throw new UnsupportedOperationException("not supported (yet) on "+ this.getClass().getName());
 	}
 

@@ -194,7 +194,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v
 	 * @return
 	 */
-	public Condition eq(final SQLFunction v) {
+	public Condition eq(final Expression<T> v) {
 		return new Binary(this, "=", v);
 	}
 
@@ -221,7 +221,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v
 	 * @return
 	 */
-	public Condition neq(final SQLFunction v) {
+	public Condition neq(final Expression<T> v) {
 		return new Binary(this, "!=", v);
 	}
 
@@ -248,22 +248,12 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	}
 
 	/**
-	 * Creates a condition representing this field "like" the value in the corresponding field.
-	 * Interpretation varies by database.
-	 * @param v
-	 * @return
-	 */
-	public Condition like(final Field<T> v) {
-		return new Binary(this, " like ", v);
-	}
-
-	/**
 	 * Creates a condition representing this field "like" the value of the given SQL function.
 	 * Interpretation varies by database.
 	 * @param v
 	 * @return
 	 */
-	public Condition like(final SQLFunction v) {
+	public Condition like(final Expression<T> v) {
 		return new Binary(this, " like ", v);
 	}
 
@@ -302,7 +292,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v
 	 * @return
 	 */
-	public Condition lt(final SQLFunction v) {
+	public Condition lt(final Expression<T> v) {
 		return new Binary(this, "<", v);
 	}
 
@@ -341,7 +331,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v
 	 * @return
 	 */
-	public Condition lte(final SQLFunction v) {
+	public Condition lte(final Expression<T> v) {
 		return new Binary(this, "<=", v);
 	}
 
@@ -380,7 +370,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v
 	 * @return
 	 */
-	public Condition gt(final SQLFunction v) {
+	public Condition gt(final Expression<T> v) {
 		return new Binary(this, ">", v);
 	}
 
@@ -419,7 +409,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v
 	 * @return
 	 */
-	public Condition gte(final SQLFunction v) {
+	public Condition gte(final Expression<T> v) {
 		return new Binary(this, ">=", v);
 	}
 
@@ -471,7 +461,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final T v1, final SQLFunction v2) {
+	public Condition between(final T v1, final Expression v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -481,7 +471,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final SQLFunction v1, final T v2) {
+	public Condition between(final Expression v1, final T v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -491,57 +481,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v2
 	 * @return
 	 */
-	public Condition between(final SQLFunction v1, final SQLFunction v2) {
-		return new Ternary(this, " between ", v1, " and ",  v2);
-	}
-
-	/**
-	 * Creates a condition representing this field between the values of the parameters.
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public Condition between(final Field v1, final Field v2) {
-		return new Ternary(this, " between ", v1, " and ",  v2);
-	}
-
-	/**
-	 * Creates a condition representing this field between the values of the parameters.
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public Condition between(final Field v1, final SQLFunction v2) {
-		return new Ternary(this, " between ", v1, " and ",  v2);
-	}
-
-	/**
-	 * Creates a condition representing this field between the values of the parameters.
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public Condition between(final SQLFunction v1, final Field v2) {
-		return new Ternary(this, " between ", v1, " and ",  v2);
-	}
-
-	/**
-	 * Creates a condition representing this field between the values of the parameters.
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public Condition between(final Field v1, final T v2) {
-		return new Ternary(this, " between ", v1, " and ",  v2);
-	}
-
-	/**
-	 * Creates a condition representing this field between the values of the parameters.
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public Condition between(final T v1, final Field v2) {
+	public Condition between(final Expression v1, final Expression v2) {
 		return new Ternary(this, " between ", v1, " and ",  v2);
 	}
 
@@ -552,40 +492,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 	 * @param v2
 	 * @return
 	 */
-	public static <T> Condition between(final T v1, final Field<T> f1, final Field<T> f2) {
-		return new Ternary(v1, " between ", f1, " and ",  f2);
-	}
-
-	/**
-	 * Creates a condition representing a value between two fields.  Example:
-	 * {@code select * from car where 25 between city_mpg and highway_mpg}
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public static <T> Condition between(final T v1, final SQLFunction f1, final Field<T> f2) {
-		return new Ternary(v1, " between ", f1, " and ",  f2);
-	}
-
-	/**
-	 * Creates a condition representing a value between two fields.  Example:
-	 * {@code select * from car where 25 between city_mpg and highway_mpg}
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public static <T> Condition between(final T v1, final Field<T> f1, final SQLFunction f2) {
-		return new Ternary(v1, " between ", f1, " and ",  f2);
-	}
-
-	/**
-	 * Creates a condition representing a value between two fields.  Example:
-	 * {@code select * from car where 25 between city_mpg and highway_mpg}
-	 * @param v1
-	 * @param v2
-	 * @return
-	 */
-	public static <T> Condition between(final T v1, final SQLFunction f1, final SQLFunction f2) {
+	public static <T> Condition between(final T v1, final Expression<T> f1, final Expression<T> f2) {
 		return new Ternary(v1, " between ", f1, " and ",  f2);
 	}
 

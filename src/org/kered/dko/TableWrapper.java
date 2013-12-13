@@ -28,7 +28,7 @@ class TableWrapper extends Table {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> S get(final Field<S> field) {
+	public <S> S get(final Expression.Select<S> field) {
 		if (this.field.sameField(field)) return (S) value;
 		return t.get(field);
 	}
@@ -41,7 +41,7 @@ class TableWrapper extends Table {
 	}
 
 	@Override
-	public <S> Table set(final Field<S> field, final S value) {
+	public <S> Table set(final Expression.Select<S> field, final S value) {
 		if (this.field.sameField(field)) this.value = value;
 		else t.set(field, value);
 		return this;

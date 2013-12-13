@@ -129,13 +129,13 @@ class TmpTableBuilder {
 		}
 
 		@Override
-		public <S> S get(final Field<S> field) {
+		public <S> S get(final Expression.Select<S> field) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public <S> Table set(final Field<S> field, final S value) {
+		public <S> Table set(final Expression.Select<S> field, final S value) {
 			return this;
 			// TODO Auto-generated method stub
 

@@ -197,7 +197,7 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 							t.__NOSCO_ORIGINAL_DATA_SOURCE = ds;
 							if (i==0 && extraFieldsStartAt < fieldValues.length) {
 								for (int j=extraFieldsStartAt; j<fieldValues.length; ++j) {
-									t.set((Field)this.selectedFields[j], fieldValues[j]);
+									t.set((Select)this.selectedFields[j], fieldValues[j]);
 								}
 							}
 							objects[i] = t;

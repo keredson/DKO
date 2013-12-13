@@ -484,28 +484,28 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
-			if (v1 instanceof SQLFunction) {
-				((SQLFunction)v1).__getSQL(sb, bindings, context);
-			} else if (v1 instanceof Field) {
+			if (v1 instanceof Field) {
 				sb.append(Util.derefField((Field)v1, context));
+			} else if (v1 instanceof Expression) {
+				((Expression)v1).__getSQL(sb, bindings, context);
 			} else {
 				sb.append("?");
 				bindings.add(v1);
 			}
 			sb.append(cmp1);
-			if (v2 instanceof SQLFunction) {
-				((SQLFunction)v2).__getSQL(sb, bindings, context);
-			} else if (v2 instanceof Field) {
+			if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v2, context));
+			} else if (v2 instanceof Expression) {
+				((Expression)v2).__getSQL(sb, bindings, context);
 			} else {
 				sb.append("?");
 				bindings.add(v2);
 			}
 			sb.append(cmp2);
-			if (v3 instanceof SQLFunction) {
-				((SQLFunction)v3).__getSQL(sb, bindings, context);
-			} else if (v2 instanceof Field) {
+			if (v2 instanceof Field) {
 				sb.append(Util.derefField((Field)v3, context));
+			} else if (v3 instanceof Expression) {
+				((Expression)v3).__getSQL(sb, bindings, context);
 			} else {
 				sb.append("?");
 				bindings.add(v3);
@@ -594,7 +594,7 @@ public abstract class Condition {
 		Field<?> field2;
 		final String cmp;
 		private DBRowIterator<?> s;
-		private SQLFunction function;
+		private Expression o2;
 
 		public <T> Binary(final Field<T> field, final String cmp, final Object v) {
 			// note "v" should be of type T here - set to object to work around
@@ -618,10 +618,10 @@ public abstract class Condition {
 			this.s = new DBRowIterator<S>(q);
 		}
 
-		public <T> Binary(final Field<T> field, final String cmp, final SQLFunction f) {
+		public <T> Binary(final Field<T> field, final String cmp, final Expression f) {
 			this.field = field;
 			this.cmp = cmp;
-			this.function  = f;
+			this.o2  = f;
 		}
 
 		@Override
@@ -680,10 +680,10 @@ public abstract class Condition {
 				sb.append(ret.a);
 				bindings.addAll(ret.b);
 				sb.append(')');
-			} else if (function!=null) {
+			} else if (o2!=null) {
 				sb.append(Util.derefField(field, context));
 				sb.append(cmp);
-				function.__getSQL(sb, bindings, context);
+				o2.__getSQL(sb, bindings, context);
 			} else {
 				sb.append(Util.derefField(field, context));
 				sb.append(" is null");
@@ -741,12 +741,12 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append(' ');
-			if (o1 instanceof SQLFunction) {
-				final SQLFunction<?> f = (SQLFunction<?>) o1;
-				f.__getSQL(sb, bindings, context);
-			} else if (o1 instanceof Field) {
+			if (o1 instanceof Field) {
 				final Field<?> f = (Field<?>) o1;
 				sb.append(Util.derefField(f, context));
+			} else if (o1 instanceof Expression) {
+				final Expression<?> f = (Expression<?>) o1;
+				f.__getSQL(sb, bindings, context);
 			} else if (o1 instanceof SQLFunction.SQLLiteral) {
 				sb.append(((SQLFunction.SQLLiteral)o1).sql);
 			} else {
@@ -754,12 +754,12 @@ public abstract class Condition {
 				bindings.add(o1);
 			}
 			sb.append(cmp);
-			if (o2 instanceof SQLFunction) {
-				final SQLFunction<?> f = (SQLFunction<?>) o2;
-				f.__getSQL(sb, bindings, context);
-			} else if (o2 instanceof Field) {
+			if (o2 instanceof Field) {
 				final Field<?> f = (Field<?>) o2;
 				sb.append(Util.derefField(f, context));
+			} else if (o2 instanceof Expression) {
+				final Expression<?> f = (Expression<?>) o2;
+				f.__getSQL(sb, bindings, context);
 			} else if (o2 instanceof SQLFunction.SQLLiteral) {
 				sb.append(((SQLFunction.SQLLiteral)o2).sql);
 			} else {
@@ -912,56 +912,21 @@ public abstract class Condition {
 	/**
 	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
 	 */
-	public static <T> Condition between(T b, final Field<T> a, final T c) {
+	public static <T> Condition between(T b, final Expression<T> a, final T c) {
 		return new Ternary(b, " between ", a, " and ",  c);
 	}
 
 	/**
 	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
 	 */
-	public static <T> Condition between(T b, final SQLFunction a, final T c) {
+	public static <T> Condition between(T b, final T a, final Expression<T> c) {
 		return new Ternary(b, " between ", a, " and ",  c);
 	}
 
 	/**
 	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
 	 */
-	public static <T> Condition between(T b, final T a, final Field<T> c) {
-		return new Ternary(b, " between ", a, " and ",  c);
-	}
-
-	/**
-	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
-	 */
-	public static <T> Condition between(T b, final T a, final SQLFunction c) {
-		return new Ternary(b, " between ", a, " and ",  c);
-	}
-
-	/**
-	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
-	 */
-	public static <T> Condition between(T b, final Field<T> a, final Field<T> c) {
-		return new Ternary(b, " between ", a, " and ",  c);
-	}
-
-	/**
-	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
-	 */
-	public static <T> Condition between(T b, final Field<T> a, final SQLFunction c) {
-		return new Ternary(b, " between ", a, " and ",  c);
-	}
-
-	/**
-	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
-	 */
-	public static <T> Condition between(T b, final SQLFunction a, final Field<T> c) {
-		return new Ternary(b, " between ", a, " and ",  c);
-	}
-
-	/**
-	 * Creates a condition representing the constant 'b' between the params 'a' and 'c'.
-	 */
-	public static <T> Condition between(T b, final SQLFunction a, final SQLFunction c) {
+	public static <T> Condition between(T b, final Expression<T> a, final Expression<T> c) {
 		return new Ternary(b, " between ", a, " and ",  c);
 	}
 

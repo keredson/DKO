@@ -10,6 +10,9 @@ import java.util.List;
  */
 public interface Expression<T> {
 	
+	public interface Function<T> {
+	}
+
 	public interface Select<T> extends Expression<T> {
 		Select<T> __getUnderlying();
 	}

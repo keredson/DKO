@@ -89,7 +89,7 @@ public abstract class Table {
 	 * @param field
 	 * @return
 	 */
-	public abstract <S> S get(Field<S> field);
+	public abstract <S> S get(Expression.Select<S> field);
 
 	/**
 	 * @return A list of the fields populated in this instance.
@@ -102,7 +102,7 @@ public abstract class Table {
 	 * @param value
 	 * @return
 	 */
-	public abstract <S> Table set(Field<S> field, S value);
+	public abstract <S> Table set(Expression.Select<S> field, S value);
 
 	/**
 	 * Creates and executes an insert statement for this object

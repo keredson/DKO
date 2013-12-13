@@ -1701,7 +1701,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	@Override
 	public Query<T> alsoSelect(final Collection<Expression.Select<?>> fields) {
 		final DBQuery<T> q = new DBQuery<T>(this);
-		if (onlySet==null) q.onlySet = new LinkedHashSet<Expression.Select<?>>();
+		if (onlySet==null) q.onlySet = new LinkedHashSet<Expression.Select<?>>(getSelectFields());
 		else q.onlySet = new LinkedHashSet<Expression.Select<?>>(onlySet);
 		q.onlySet.addAll(fields);
 		return q;

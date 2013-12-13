@@ -1,7 +1,11 @@
 package org.kered.dko;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Constants.CALENDAR;
@@ -22,7 +26,7 @@ import org.kered.dko.Table.__SimplePrimaryKey;
  *
  * @author Derek Anderson
  */
-public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expression.Select<T> {
+public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expression.Select<T>, Expression.Function<T> {
 	
 	Class<T> type;
 	
@@ -332,6 +336,41 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 		};
 	}
 
+	/**
+	 * The COUNT(column_name) function.
+	 * @param f
+	 * @return
+	 */
+	public static SQLFunction<Integer> COUNT(final Field<?> f) {
+		return new Custom<Integer>(Integer.class, "COUNT", f);
+	}
+
+	/**
+	 * The COUNT(1) function;
+	 * @param f
+	 * @return
+	 */
+	public static SQLFunction<Integer> COUNT(int i) {
+		SQLFunction<Integer> ret = _COUNT_INDEX.get(i);
+		if (ret == null) {
+			ret = new Custom<Integer>(Integer.class, "COUNT", new SQLLiteral(i));
+			_COUNT_INDEX.put(i, ret);
+		}
+		return ret;
+	}
+	private static final Map<Integer,SQLFunction<Integer>> _COUNT_INDEX = Collections.synchronizedMap(new HashMap<Integer,SQLFunction<Integer>>());
+
+	/**
+	 * The COUNT(*) function.  String argument must equal "*".
+	 * @param f
+	 * @return
+	 */
+	public static SQLFunction<Integer> COUNT(CharSequence s) {
+		if (!"*".equals(s)) throw new IllegalArgumentException("argument must equal '*'");
+		return _COUNT_STAR;
+	}
+	private static final SQLFunction<Integer> _COUNT_STAR = new Custom<Integer>(Integer.class, "COUNT", "*");
+
 
 
 	/* ======================================================================== */
@@ -382,6 +421,34 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.postgres = func;
 			this.oracle = func;
 			this.objects = objects;
+		}
+
+		/**
+		 * For functions that take arguments.  The first string is the function name.
+		 * The remaining parameters are passed as arguments.
+		 * If an argument is a field it is referenced to a table in the from clause.
+		 * For all others, the object is passed verbatim to the PreparedStatement with setObject().
+		 * @param func the name of the function
+		 * @param objects the arguments of the function
+		 */
+		public Custom(Class<T> type, final String func, final Object... objects) {
+			this.type = type;
+			this.mysql = func;
+			this.sqlserver = func;
+			this.hsql = func;
+			this.postgres = func;
+			this.oracle = func;
+			this.objects = objects;
+		}
+
+		public Custom(Class<T> type, final String func, final Object o) {
+			this.type = type;
+			this.mysql = func;
+			this.sqlserver = func;
+			this.hsql = func;
+			this.postgres = func;
+			this.oracle = func;
+			this.objects = new Object[] {o};
 		}
 
 		Custom(final String mysql, final String sqlserver, final String hsql) {
@@ -447,6 +514,9 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 					} else if (o instanceof SQLFunction<?>) {
 						final SQLFunction<?> f = (SQLFunction<?>) o;
 						f.__getSQL(sb, bindings, context);
+					} else if (o instanceof SQLLiteral) {
+						final SQLLiteral f = (SQLLiteral) o;
+						sb.append(f.sql);
 					} else if (o instanceof CALENDAR) {
 						if (context != null && context.dbType == DB_TYPE.HSQL) {
 							sb.append("'"+ o.toString().toLowerCase() +"'");
@@ -463,6 +533,76 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			sb.append(")");
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + ((bindings == null) ? 0 : bindings.hashCode());
+			result = prime * result + ((hsql == null) ? 0 : hsql.hashCode());
+			result = prime * result + ((mysql == null) ? 0 : mysql.hashCode());
+			result = prime * result + Arrays.hashCode(objects);
+			result = prime * result + ((oracle == null) ? 0 : oracle.hashCode());
+			result = prime * result + ((postgres == null) ? 0 : postgres.hashCode());
+			result = prime * result + ((sep == null) ? 0 : sep.hashCode());
+			result = prime * result + ((sql == null) ? 0 : sql.hashCode());
+			result = prime * result + ((sqlserver == null) ? 0 : sqlserver.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Custom other = (Custom) obj;
+			if (bindings == null) {
+				if (other.bindings != null)
+					return false;
+			} else if (!bindings.equals(other.bindings))
+				return false;
+			if (hsql == null) {
+				if (other.hsql != null)
+					return false;
+			} else if (!hsql.equals(other.hsql))
+				return false;
+			if (mysql == null) {
+				if (other.mysql != null)
+					return false;
+			} else if (!mysql.equals(other.mysql))
+				return false;
+			if (!Arrays.equals(objects, other.objects))
+				return false;
+			if (oracle == null) {
+				if (other.oracle != null)
+					return false;
+			} else if (!oracle.equals(other.oracle))
+				return false;
+			if (postgres == null) {
+				if (other.postgres != null)
+					return false;
+			} else if (!postgres.equals(other.postgres))
+				return false;
+			if (sep == null) {
+				if (other.sep != null)
+					return false;
+			} else if (!sep.equals(other.sep))
+				return false;
+			if (sql == null) {
+				if (other.sql != null)
+					return false;
+			} else if (!sql.equals(other.sql))
+				return false;
+			if (sqlserver == null) {
+				if (other.sqlserver != null)
+					return false;
+			} else if (!sqlserver.equals(other.sqlserver))
+				return false;
+			return true;
+		}
+		
 	}
 
 
@@ -897,6 +1037,9 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 		SQLLiteral(String sql) {
 			this.sql = sql;
 		}
+		public SQLLiteral(int i) {
+			sql = Integer.toString(i);
+		}
 	}
 	
 	static class OrderBySQLFunction<T> implements Expression.OrderBy<T> {
@@ -920,5 +1063,32 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 		}
 		
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((type == null) ? 0 : type.getName().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SQLFunction other = (SQLFunction) obj;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.getName().equals(other.type==null ? null : other.type.getName()))
+			return false;
+		return true;
+	}
+	
+	
 
 }

@@ -73,7 +73,7 @@ public class Join<L extends Table, R extends Table> extends Table {
 	}
 
 	@Override
-	public <S> S get(final Field<S> field) {
+	public <S> S get(final Expression.Select<S> field) {
 		if (l != null) {
 			S o = l.get(field);
 			if (o!=null) return o;
@@ -88,7 +88,7 @@ public class Join<L extends Table, R extends Table> extends Table {
 	}
 
 	@Override
-	public <S> Table set(final Field<S> field, final S value) {
+	public <S> Table set(final Expression.Select<S> field, final S value) {
 		try {
 			l.set(field, value);
 			return this;

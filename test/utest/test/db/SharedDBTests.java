@@ -2,6 +2,7 @@ package test.db;
 
 import static org.kered.dko.SQLFunction.CONCAT;
 import static org.kered.dko.SQLFunction.DATEADD;
+import static org.kered.dko.SQLFunction.COUNT;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -1151,6 +1152,27 @@ public class SharedDBTests extends TestCase {
 		printTestName();
 		List<Item> items = Item.ALL.distinct().groupBy(Item.SUPPLIER).asList();
 		assertEquals(Supplier.ALL.count(), items.size());
+	}
+
+	public void testGroupByCount() throws SQLException {
+		printTestName();
+		for (Item item : Item.ALL.alsoSelect(COUNT(1)).groupBy(Item.SUPPLIER)) {
+			System.err.println(item + " ::: "+ item.get(COUNT(1)));
+		}
+	}
+	
+	public void testGroupByCountColumn() throws SQLException {
+		printTestName();
+		for (Item item : Item.ALL.alsoSelect(COUNT(Item.ITEMID)).groupBy(Item.SUPPLIER)) {
+			System.err.println(item + " ::: "+ item.get(COUNT(Item.ITEMID)));
+		}
+	}
+
+	public void testGroupByCountStar() throws SQLException {
+		printTestName();
+		for (Item item : Item.ALL.alsoSelect(COUNT("*")).groupBy(Item.SUPPLIER)) {
+			System.err.println(item + " ::: "+ item.get(COUNT("*")));
+		}
 	}
 
 }

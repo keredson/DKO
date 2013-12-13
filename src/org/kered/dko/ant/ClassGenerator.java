@@ -530,7 +530,11 @@ class ClassGenerator {
 		br.write("\t\tfor (Field<?> field : _FIELDS) {\n");
 		br.write("\t\t\tif (__NOSCO_FETCHED_VALUES.get(field.INDEX)) fields.add(field);\n");
 		br.write("\t\t}\n");
-		br.write("\t\tif (__NOSCO_EXTRA_VALUES!=null) fields.addAll(__NOSCO_EXTRA_VALUES.keySet());\n");
+		br.write("\t\tif (__NOSCO_EXTRA_VALUES!=null) {\n");
+		br.write("\t\t\tfor (org.kered.dko.Expression.Select _select : __NOSCO_EXTRA_VALUES.keySet()) {\n");
+		br.write("\t\t\t\t if (_select instanceof org.kered.dko.Field) fields.add((org.kered.dko.Field) _select);\n");
+		br.write("\t\t\t}\n");
+		br.write("\t\t}\n");
 		br.write("\t\treturn fields;\n\t}\n\n");
 
 		br.write("\t@SuppressWarnings(\"rawtypes\")\n");
@@ -545,12 +549,13 @@ class ClassGenerator {
 		br.write("};\n\t\treturn fields;\n\t}\n\n");
 
 		// write the fetched values bitset
-		br.write("\t\t{ __NOSCO_FETCHED_VALUES = new java.util.BitSet(); }\n\n");
+		br.write("\t{ __NOSCO_FETCHED_VALUES = new java.util.BitSet(); }\n\n");
 
 		// write the generic get(field) method
 		br.write("\t@SuppressWarnings(\"unchecked\")\n");
-		br.write("\tpublic <S> S get(final Field<S> _field) {\n");
-		br.write("\t\tif ("+ className +".class==_field.TABLE) {\n");
+		br.write("\tpublic <S> S get(final org.kered.dko.Expression.Select<S> _select) {\n");
+		br.write("\t\tif (_select instanceof org.kered.dko.Field && "+ className +".class==((org.kered.dko.Field)_select).TABLE) {\n");
+		br.write("\t\t\torg.kered.dko.Field _field = (org.kered.dko.Field)_select;\n");
 		br.write("\t\t\tif (_field.GETTER != null) {\n");
 		br.write("\t\t\t\ttry { return (S) _field.GETTER.invoke(this, (Object[])null); }\n");
 		br.write("\t\t\t\tcatch (Exception e) { e.printStackTrace(); }\n");
@@ -561,14 +566,14 @@ class ClassGenerator {
 		}
 		br.write("\t\t}\n");
 		br.write("\t\tif (__NOSCO_EXTRA_VALUES!=null) {\n");
-		br.write("\t\t\tObject _value = __NOSCO_EXTRA_VALUES.get(_field);\n");
+		br.write("\t\t\tObject _value = __NOSCO_EXTRA_VALUES.get(_select);\n");
 		br.write("\t\t\tif(_value!=null) return (S) _value;\n");
 		br.write("\t\t\t\n");
 		br.write("\t\t}\n");
 		for (final FK fk : fks) {
 			final String fkOName = genFKCachedObjectName(fk);
 			br.write("\t\tif ("+fkOName+"!=null) {\n");
-			br.write("\t\t\tS _value = "+fkOName+".get(_field);\n");
+			br.write("\t\t\tS _value = "+fkOName+".get(_select);\n");
 			br.write("\t\t\tif(_value!=null) return _value;\n");
 			br.write("\t\t}\n");
 		}
@@ -578,13 +583,13 @@ class ClassGenerator {
 		br.write("\t}\n\n");
 
 		// write the generic set(field, value) method
-		br.write("\tprivate java.util.Map<Field<?>,Object> __NOSCO_EXTRA_VALUES = null;\n\n");
-		br.write("\tpublic <S> "+ className +" set(final Field<S> _field, final S _value) {\n");
+		br.write("\tprivate java.util.Map<org.kered.dko.Expression.Select<?>,Object> __NOSCO_EXTRA_VALUES = null;\n\n");
+		br.write("\tpublic <S> "+ className +" set(final org.kered.dko.Expression.Select<S> _field, final S _value) {\n");
 		for (final String column : columns.keySet()) {
 			br.write("\t\tif (_field=="+ getFieldName(column) +") return set");
 			br.write(getInstanceMethodName(column) +"(("+ getFieldType(pkgName, table, column, columns.getString(column)) +") _value);\n");
 		}
-		br.write("\t\tif (__NOSCO_EXTRA_VALUES==null) __NOSCO_EXTRA_VALUES = new java.util.HashMap<Field<?>,Object>();\n");
+		br.write("\t\tif (__NOSCO_EXTRA_VALUES==null) __NOSCO_EXTRA_VALUES = new java.util.HashMap<org.kered.dko.Expression.Select<?>,Object>();\n");
 		br.write("\t\t__NOSCO_EXTRA_VALUES.put(_field, _value);\n");
 		br.write("\t\treturn this;\n");
 		//br.write("\t\tthrow new IllegalArgumentException(\"unknown field \"+ _field);\n");

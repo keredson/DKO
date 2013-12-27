@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.kered.dko.Constants.DB_TYPE;
 import org.kered.dko.Tuple.Tuple2;
 
 
@@ -76,8 +77,13 @@ public abstract class Condition {
 
 		private final Field<T> field;
 		private final Collection<T> set;
-		private final String tmpTableName = "#NOSCO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
+		private final String tmpTableName = "#DKO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
 		private String type = null;
+		
+		private String getTmpTableName(DB_TYPE dbType) {
+			if (dbType == DB_TYPE.SQLITE3) return tmpTableName.substring(1);
+			return tmpTableName;
+		}
 
 		public InTmpTable(final Field<T> field, final Collection<T> set) {
 			this.field = field;
@@ -102,7 +108,7 @@ public abstract class Condition {
 			sb.append(' ');
 			sb.append(Util.derefField(field, context));
 			sb.append(" in ");
-			sb.append("(select id from "+ tmpTableName +")");
+			sb.append("(select id from "+ getTmpTableName(context.dbType) +")");
 		}
 
 		@Override
@@ -113,24 +119,31 @@ public abstract class Condition {
 				stmt = conn.createStatement();
 				final String collate = Util.isCollateType(type) ? " COLLATE database_default" : "";
 				
-				final String sql = "CREATE TABLE "+ tmpTableName + "(id "+ type + collate +")";
+				String tmpStr = context.dbType==DB_TYPE.SQLITE3 ? "TEMP " : "";
+				final String sql = "CREATE "+ tmpStr +"TABLE "+ getTmpTableName(context.dbType) + "(id "+ type + collate +")";
 				Util.log(sql, null);
 				stmt.execute(sql);
-				ps = conn.prepareStatement("insert into "+ tmpTableName +" values (?)");
+				ps = conn.prepareStatement("insert into "+ getTmpTableName(context.dbType) +" values (?)");
+				boolean addBatchSupported = !"org.sqldroid.SQLDroidPreparedStatement".equals(ps.getClass().getName());
 				int i = 0;
 				int added = 0;
 				for (final T t : set) {
 					++i;
 					Util.setBindingWithTypeFixes(ps, 1, t);
-					ps.addBatch();
-					if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;
+					if (addBatchSupported) {
+						ps.addBatch();
+						if (i%64 == 0) for (final int x : ps.executeBatch()) added += x;
+					} else {
+						ps.execute();
+						++added;
+					}
 				}
-				if (i%64 != 0) {
+				if (addBatchSupported && i%64 != 0) {
 					for (final int x : ps.executeBatch()) {
 						added += x;
 					}
 				}
-				final String createIndex = "CREATE INDEX "+ tmpTableName +"_IDX ON "+ tmpTableName +" (id)";
+				final String createIndex = "CREATE INDEX "+ getTmpTableName(context.dbType) +"_IDX ON "+ getTmpTableName(context.dbType) +" (id)";
 				Util.log(createIndex, null);
 				stmt.execute(createIndex);
 			} catch (final SQLException e) {
@@ -154,7 +167,7 @@ public abstract class Condition {
 			Statement stmt = null;
 			try {
 				stmt = conn.createStatement();
-				final String sql = "DROP TABLE "+ tmpTableName;
+				final String sql = "DROP TABLE "+ getTmpTableName(context.dbType);
 				Util.log(sql, null);
 				stmt.execute(sql);
 			} catch (final SQLException e) {

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.kered.dko.Condition.Binary;
 import org.kered.dko.Condition.Binary2;
 import org.kered.dko.Constants.CALENDAR;
 import org.kered.dko.Constants.DB_TYPE;
@@ -241,8 +242,8 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 	 * @param f
 	 * @return
 	 */
-	public static SQLFunction<Integer> LOWER(final Field<?> f) {
-		return new Custom<Integer>("LOWER", f);
+	public static <S> SQLFunction<S> LOWER(final Field<S> f) {
+		return new Custom<S>("LOWER", f);
 	}
 
 	/**
@@ -250,8 +251,8 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 	 * @param f
 	 * @return
 	 */
-	public static SQLFunction<Integer> UPPER(final Field<?> f) {
-		return new Custom<Integer>("UPPER", f);
+	public static <S> SQLFunction<S> UPPER(final Field<S> f) {
+		return new Custom<S>("UPPER", f);
 	}
 
 	/**
@@ -669,6 +670,25 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 		return new Binary2(this, "!=", v);
 	}
 
+	/**
+	 * Creates a condition representing this function "like" the literal value of the parameter.
+	 * Interpretation varies by database.
+	 * @param v
+	 * @return
+	 */
+	public Condition like(final T v) {
+		return new Binary2(this, " like ", v);
+	}
+
+	/**
+	 * Creates a condition representing this function "like" the value of the given SQL function.
+	 * Interpretation varies by database.
+	 * @param v
+	 * @return
+	 */
+	public Condition like(final Expression<T> v) {
+		return new Binary2(this, " like ", v);
+	}
 	/**
 	 * Creates a condition representing this function less than the literal value of the parameter.
 	 * @param v

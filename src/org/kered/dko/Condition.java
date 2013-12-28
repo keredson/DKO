@@ -328,6 +328,14 @@ public abstract class Condition {
 		}
 
 		@Override
+		public Condition and(Condition... conditions) {
+			And and = new And(new Condition[0]);
+			and.conditions.addAll(this.conditions);
+			for (Condition c : conditions) and.conditions.add(c);
+			return and;
+		}
+
+		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings, final SqlContext context) {
 			sb.append("(");
 			for (int i=0; i<conditions.size(); ++i) {
@@ -385,6 +393,14 @@ public abstract class Condition {
 					this.conditions.add(condition);
 				}
 			}
+		}
+
+		@Override
+		public Condition or(Condition... conditions) {
+			Or or = new Or(new Condition[0]);
+			or.conditions.addAll(this.conditions);
+			for (Condition c : conditions) or.conditions.add(c);
+			return or;
 		}
 
 		@Override

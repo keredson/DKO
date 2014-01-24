@@ -23,7 +23,7 @@ public class SingleConnectionDataSource implements DataSource {
 
 	private final Connection conn;
 	private final Lock lock = new ReentrantLock();
-	private final int timeout = 10;
+	private int timeout = 10;
 	private static final Logger log = Logger.getLogger("org.kered.dko.datasource.SingleConnectionDataSource");
 
 	public SingleConnectionDataSource(final Connection conn) {
@@ -33,6 +33,11 @@ public class SingleConnectionDataSource implements DataSource {
 				lock.unlock();
 			}
 		});
+	}
+	
+	public SingleConnectionDataSource(final Connection conn, int timeout) {
+		this(conn);
+		this.timeout = timeout;
 	}
 
 	@Override
@@ -75,22 +80,22 @@ public class SingleConnectionDataSource implements DataSource {
 	public Connection getConnection() throws SQLException {
 		try {
 			if (lock.tryLock(timeout, TimeUnit.SECONDS)) return conn;
-			log.warning("unable to aquire connection lock after "+ timeout +" seconds");
+			throw new SQLException("unable to aquire connection lock after "+ timeout +" seconds");
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	@Override
 	public Connection getConnection(final String username, final String password) throws SQLException {
 		try {
 			if (lock.tryLock(timeout, TimeUnit.SECONDS)) return conn;
-			log.warning("unable to aquire connection lock after "+ timeout +" seconds");
+			throw new SQLException("unable to aquire connection lock after "+ timeout +" seconds");
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	//@Override

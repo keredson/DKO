@@ -10,7 +10,6 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -266,7 +265,7 @@ class ClassGenerator {
 		return column;
 	}
 
-	private static boolean shouldSplitCamelCase(String column) {
+	private static boolean shouldSplitCamelCase(final String column) {
 		return !column.contains("_") 
 				&& !column.contains(" ") 
 				&& !column.contains("-") 
@@ -732,7 +731,7 @@ class ClassGenerator {
 			final String fkName = genFKName(fk.columns.keySet(), referencedTable);
 			br.write("\t\tif (!__NOSCO_FETCHED_VALUES.get("+ fkName +".INDEX)) {\n");
 			br.write("\t\t\t"+ cachedObjectName +" = "+ referencedTableClassName +".ALL");
-			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq("+ Util.underscoreToCamelCase(fk.columns.keySet(), false) +"))");
+			br.write(".where("+ referencedTableClassName +"."+ getFieldName(fk.columns.values()) +".eq(get"+ Util.underscoreToCamelCase(fk.columns.keySet(), true) +"()))");
 			br.write(".getTheOnly();\n");
 			br.write("\t\t\t__NOSCO_FETCHED_VALUES.set("+ fkName +".INDEX);\n");
 			br.write("\t\t\t__NOSCO_PRIVATE_accessedFkCallback(this, "+ fkName +");\n");
@@ -1016,7 +1015,10 @@ class ClassGenerator {
 		if (pkSet.size() == 1) {
 			final String column = pkSet.iterator().next();
 			final String type = getFieldType(pkgName, table, column, columns.getString(column));
-			br.write("\t\tif (_rowid!=null) "+ getInstanceFieldName(column) +" = ("+ type +")_rowid;\n");
+			br.write("\t\tif (_rowid!=null && _rowid instanceof "+ type +") "+ getInstanceFieldName(column) +" = ("+ type +")_rowid;\n");
+			if ("java.lang.Integer".equals(type)) {
+				br.write("\t\tif (_rowid!=null && _rowid instanceof java.lang.Long) "+ getInstanceFieldName(column) +" = ((java.lang.Long) _rowid).intValue();\n");
+			}
 		}
 		br.write("\t\tif (__NOSCO_CALLBACK_INSERT_POST!=null) "
 				+ "try {\n\t\t\tfinal "+ className +"[] __NOSCO_CALLBACKS = {this};\n"

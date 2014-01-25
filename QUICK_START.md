@@ -28,7 +28,7 @@ Copy `lib/dko.jar` to your project's `lib` directory.
 Extract Your Database Schemas
 -----------------------------
 
-Do you hate Ant?  A command version of this step is available [here](doc/COMMANDS.md):
+*Do you hate Ant?*  A command version of this step is available [here](doc/COMMANDS.md):
 
 First, a question:  Why extract your schema at all?  Why not have the generate task
 and the extract task all in one step?  Because you want your builds to be repeatable.  You

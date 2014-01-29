@@ -2,6 +2,8 @@ DKOs - Data Knowledge Objects
 =============================
 (Or Derek's Objects, depending on who you ask...)
 
+*NEW:* Read the [DKO Presentation](dko_presentation.pdf).
+
 Introduction
 ------------
 DKOs are an ORM for people who hate ORMs.

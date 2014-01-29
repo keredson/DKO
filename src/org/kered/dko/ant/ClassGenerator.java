@@ -1438,7 +1438,7 @@ class ClassGenerator {
 		put("date", Date.class);
 		put("timestamp", Timestamp.class);
 		put("year", Integer.class);
-		put("enum", Integer.class);
+		put("enum", String.class);
 		put("set", String.class);
 		put("bit", Boolean.class);
 		put("bool", Boolean.class);

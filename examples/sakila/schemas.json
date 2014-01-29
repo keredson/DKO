@@ -1,0 +1,494 @@
+{
+    "version": [
+        0,
+        2,
+        0
+    ],
+    "schemas": {"sakila": {
+        "actor": {
+            "actor_id": "smallint",
+            "first_name": "varchar",
+            "last_name": "varchar",
+            "last_update": "timestamp"
+        },
+        "actor_info": {
+            "actor_id": "smallint",
+            "film_info": "text",
+            "first_name": "varchar",
+            "last_name": "varchar"
+        },
+        "address": {
+            "address": "varchar",
+            "address2": "varchar",
+            "address_id": "smallint",
+            "city_id": "smallint",
+            "district": "varchar",
+            "last_update": "timestamp",
+            "phone": "varchar",
+            "postal_code": "varchar"
+        },
+        "category": {
+            "category_id": "tinyint",
+            "last_update": "timestamp",
+            "name": "varchar"
+        },
+        "city": {
+            "city": "varchar",
+            "city_id": "smallint",
+            "country_id": "smallint",
+            "last_update": "timestamp"
+        },
+        "country": {
+            "country": "varchar",
+            "country_id": "smallint",
+            "last_update": "timestamp"
+        },
+        "customer": {
+            "active": "tinyint",
+            "address_id": "smallint",
+            "create_date": "datetime",
+            "customer_id": "smallint",
+            "email": "varchar",
+            "first_name": "varchar",
+            "last_name": "varchar",
+            "last_update": "timestamp",
+            "store_id": "tinyint"
+        },
+        "customer_list": {
+            "address": "varchar",
+            "city": "varchar",
+            "country": "varchar",
+            "ID": "smallint",
+            "name": "varchar",
+            "notes": "varchar",
+            "phone": "varchar",
+            "SID": "tinyint",
+            "zip code": "varchar"
+        },
+        "film": {
+            "description": "text",
+            "film_id": "smallint",
+            "language_id": "tinyint",
+            "last_update": "timestamp",
+            "length": "smallint",
+            "original_language_id": "tinyint",
+            "rating": "enum",
+            "release_year": "year",
+            "rental_duration": "tinyint",
+            "rental_rate": "decimal",
+            "replacement_cost": "decimal",
+            "special_features": "set",
+            "title": "varchar"
+        },
+        "film_actor": {
+            "actor_id": "smallint",
+            "film_id": "smallint",
+            "last_update": "timestamp"
+        },
+        "film_category": {
+            "category_id": "tinyint",
+            "film_id": "smallint",
+            "last_update": "timestamp"
+        },
+        "film_list": {
+            "actors": "text",
+            "category": "varchar",
+            "description": "text",
+            "FID": "smallint",
+            "length": "smallint",
+            "price": "decimal",
+            "rating": "enum",
+            "title": "varchar"
+        },
+        "film_text": {
+            "description": "text",
+            "film_id": "smallint",
+            "title": "varchar"
+        },
+        "inventory": {
+            "film_id": "smallint",
+            "inventory_id": "mediumint",
+            "last_update": "timestamp",
+            "store_id": "tinyint"
+        },
+        "language": {
+            "language_id": "tinyint",
+            "last_update": "timestamp",
+            "name": "char"
+        },
+        "nicer_but_slower_film_list": {
+            "actors": "text",
+            "category": "varchar",
+            "description": "text",
+            "FID": "smallint",
+            "length": "smallint",
+            "price": "decimal",
+            "rating": "enum",
+            "title": "varchar"
+        },
+        "payment": {
+            "amount": "decimal",
+            "customer_id": "smallint",
+            "last_update": "timestamp",
+            "payment_date": "datetime",
+            "payment_id": "smallint",
+            "rental_id": "int",
+            "staff_id": "tinyint"
+        },
+        "rental": {
+            "customer_id": "smallint",
+            "inventory_id": "mediumint",
+            "last_update": "timestamp",
+            "rental_date": "datetime",
+            "rental_id": "int",
+            "return_date": "datetime",
+            "staff_id": "tinyint"
+        },
+        "sales_by_film_category": {
+            "category": "varchar",
+            "total_sales": "decimal"
+        },
+        "sales_by_store": {
+            "manager": "varchar",
+            "store": "varchar",
+            "total_sales": "decimal"
+        },
+        "staff": {
+            "active": "tinyint",
+            "address_id": "smallint",
+            "email": "varchar",
+            "first_name": "varchar",
+            "last_name": "varchar",
+            "last_update": "timestamp",
+            "password": "varchar",
+            "picture": "blob",
+            "staff_id": "tinyint",
+            "store_id": "tinyint",
+            "username": "varchar"
+        },
+        "staff_list": {
+            "address": "varchar",
+            "city": "varchar",
+            "country": "varchar",
+            "ID": "tinyint",
+            "name": "varchar",
+            "phone": "varchar",
+            "SID": "tinyint",
+            "zip code": "varchar"
+        },
+        "store": {
+            "address_id": "smallint",
+            "last_update": "timestamp",
+            "manager_staff_id": "tinyint",
+            "store_id": "tinyint"
+        }
+    }},
+    "primary_keys": {"sakila": {
+        "actor": ["actor_id"],
+        "actor_info": [],
+        "address": ["address_id"],
+        "category": ["category_id"],
+        "city": ["city_id"],
+        "country": ["country_id"],
+        "customer": ["customer_id"],
+        "customer_list": [],
+        "film": ["film_id"],
+        "film_actor": [
+            "actor_id",
+            "film_id"
+        ],
+        "film_category": [
+            "category_id",
+            "film_id"
+        ],
+        "film_list": [],
+        "film_text": ["film_id"],
+        "inventory": ["inventory_id"],
+        "language": ["language_id"],
+        "nicer_but_slower_film_list": [],
+        "payment": ["payment_id"],
+        "rental": ["rental_id"],
+        "sales_by_film_category": [],
+        "sales_by_store": [],
+        "staff": ["staff_id"],
+        "staff_list": [],
+        "store": ["store_id"]
+    }},
+    "foreign_keys": {
+        "fk_address_city": {
+            "reffing": [
+                "sakila",
+                "address"
+            ],
+            "reffed": [
+                "sakila",
+                "city"
+            ],
+            "columns": {"city_id": "city_id"}
+        },
+        "fk_city_country": {
+            "reffing": [
+                "sakila",
+                "city"
+            ],
+            "reffed": [
+                "sakila",
+                "country"
+            ],
+            "columns": {"country_id": "country_id"}
+        },
+        "fk_customer_address": {
+            "reffing": [
+                "sakila",
+                "customer"
+            ],
+            "reffed": [
+                "sakila",
+                "address"
+            ],
+            "columns": {"address_id": "address_id"}
+        },
+        "fk_customer_store": {
+            "reffing": [
+                "sakila",
+                "customer"
+            ],
+            "reffed": [
+                "sakila",
+                "store"
+            ],
+            "columns": {"store_id": "store_id"}
+        },
+        "fk_film_actor_actor": {
+            "reffing": [
+                "sakila",
+                "film_actor"
+            ],
+            "reffed": [
+                "sakila",
+                "actor"
+            ],
+            "columns": {"actor_id": "actor_id"}
+        },
+        "fk_film_actor_film": {
+            "reffing": [
+                "sakila",
+                "film_actor"
+            ],
+            "reffed": [
+                "sakila",
+                "film"
+            ],
+            "columns": {"film_id": "film_id"}
+        },
+        "fk_film_category_category": {
+            "reffing": [
+                "sakila",
+                "film_category"
+            ],
+            "reffed": [
+                "sakila",
+                "category"
+            ],
+            "columns": {"category_id": "category_id"}
+        },
+        "fk_film_category_film": {
+            "reffing": [
+                "sakila",
+                "film_category"
+            ],
+            "reffed": [
+                "sakila",
+                "film"
+            ],
+            "columns": {"film_id": "film_id"}
+        },
+        "fk_film_language": {
+            "reffing": [
+                "sakila",
+                "film"
+            ],
+            "reffed": [
+                "sakila",
+                "language"
+            ],
+            "columns": {"language_id": "language_id"}
+        },
+        "fk_film_language_original": {
+            "reffing": [
+                "sakila",
+                "film"
+            ],
+            "reffed": [
+                "sakila",
+                "language"
+            ],
+            "columns": {"original_language_id": "language_id"}
+        },
+        "fk_inventory_film": {
+            "reffing": [
+                "sakila",
+                "inventory"
+            ],
+            "reffed": [
+                "sakila",
+                "film"
+            ],
+            "columns": {"film_id": "film_id"}
+        },
+        "fk_inventory_store": {
+            "reffing": [
+                "sakila",
+                "inventory"
+            ],
+            "reffed": [
+                "sakila",
+                "store"
+            ],
+            "columns": {"store_id": "store_id"}
+        },
+        "fk_item_1": {
+            "reffing": [
+                "nosco_test_jpetstore",
+                "item"
+            ],
+            "reffed": [
+                "nosco_test_jpetstore",
+                "product"
+            ],
+            "columns": {"productid": "productid"}
+        },
+        "fk_item_2": {
+            "reffing": [
+                "nosco_test_jpetstore",
+                "item"
+            ],
+            "reffed": [
+                "nosco_test_jpetstore",
+                "supplier"
+            ],
+            "columns": {"supplier": "suppid"}
+        },
+        "fk_payment_customer": {
+            "reffing": [
+                "sakila",
+                "payment"
+            ],
+            "reffed": [
+                "sakila",
+                "customer"
+            ],
+            "columns": {"customer_id": "customer_id"}
+        },
+        "fk_payment_rental": {
+            "reffing": [
+                "sakila",
+                "payment"
+            ],
+            "reffed": [
+                "sakila",
+                "rental"
+            ],
+            "columns": {"rental_id": "rental_id"}
+        },
+        "fk_payment_staff": {
+            "reffing": [
+                "sakila",
+                "payment"
+            ],
+            "reffed": [
+                "sakila",
+                "staff"
+            ],
+            "columns": {"staff_id": "staff_id"}
+        },
+        "fk_product_1": {
+            "reffing": [
+                "nosco_test_jpetstore",
+                "product"
+            ],
+            "reffed": [
+                "nosco_test_jpetstore",
+                "category"
+            ],
+            "columns": {"category": "catid"}
+        },
+        "fk_rental_customer": {
+            "reffing": [
+                "sakila",
+                "rental"
+            ],
+            "reffed": [
+                "sakila",
+                "customer"
+            ],
+            "columns": {"customer_id": "customer_id"}
+        },
+        "fk_rental_inventory": {
+            "reffing": [
+                "sakila",
+                "rental"
+            ],
+            "reffed": [
+                "sakila",
+                "inventory"
+            ],
+            "columns": {"inventory_id": "inventory_id"}
+        },
+        "fk_rental_staff": {
+            "reffing": [
+                "sakila",
+                "rental"
+            ],
+            "reffed": [
+                "sakila",
+                "staff"
+            ],
+            "columns": {"staff_id": "staff_id"}
+        },
+        "fk_staff_address": {
+            "reffing": [
+                "sakila",
+                "staff"
+            ],
+            "reffed": [
+                "sakila",
+                "address"
+            ],
+            "columns": {"address_id": "address_id"}
+        },
+        "fk_staff_store": {
+            "reffing": [
+                "sakila",
+                "staff"
+            ],
+            "reffed": [
+                "sakila",
+                "store"
+            ],
+            "columns": {"store_id": "store_id"}
+        },
+        "fk_store_address": {
+            "reffing": [
+                "sakila",
+                "store"
+            ],
+            "reffed": [
+                "sakila",
+                "address"
+            ],
+            "columns": {"address_id": "address_id"}
+        },
+        "fk_store_staff": {
+            "reffing": [
+                "sakila",
+                "store"
+            ],
+            "reffed": [
+                "sakila",
+                "staff"
+            ],
+            "columns": {"manager_staff_id": "staff_id"}
+        }
+    }
+}

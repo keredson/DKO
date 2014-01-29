@@ -239,6 +239,13 @@ public class Constants {
 	public static final String PROP_LOG = "org.nosco.log";
 
 	/**
+	 * Writes the generated SQL to stderr.  Now all SQL is logged by default
+	 * to: {@code java.util.logging.Logger.getLogger("org.nosco.sql");}
+	 */
+	@Deprecated
+	public static final String PROP_LOG_SQL_DKO = "org.kered.dko.log_sql";
+
+	/**
 	 * A Java property that controls the select statement optimizations.
 	 * These optimizations filter out fields from generated queries based on which
 	 * columns have been accessed over the life of all the objects created from the query.

@@ -264,6 +264,7 @@ public class Util {
 		PrintStream log = null; // System.err || null;
 		final String property = System.getProperty(Constants.PROP_LOG_SQL);
 		final String property2 = System.getProperty(Constants.PROP_LOG);
+		final String property3 = System.getProperty(Constants.PROP_LOG_SQL_DKO);
 		if (log == null && property != null) {
 			if ("System.err".equalsIgnoreCase(property)) log = System.err;
 			if ("System.out".equalsIgnoreCase(property)) log = System.out;
@@ -273,6 +274,11 @@ public class Util {
 			if ("System.err".equalsIgnoreCase(property2)) log = System.err;
 			if ("System.out".equalsIgnoreCase(property2)) log = System.out;
 			if (truthy(property2)) log = System.err;
+		}
+		if (log == null && property3 != null) {
+			if ("System.err".equalsIgnoreCase(property2)) log = System.err;
+			if ("System.out".equalsIgnoreCase(property2)) log = System.out;
+			if (truthy(property3)) log = System.err;
 		}
 		if (log != null) log.println("==> "+ msg);
 	}

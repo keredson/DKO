@@ -1,12 +1,12 @@
 <project name="sakila" default="compile" basedir=".">
 
   <property name="dko_jar"  location="../../lib/dko.jar"/>
-  <property name="sqlite_jar"  location="../../deps/mysql.jar"/>
+  <property name="db_jar"  location="../../deps/mysql.jar"/>
 
     <target name="extract-schemas" depends="">
         <taskdef name="dkoextractschemas" 
                  classname="org.kered.dko.ant.SchemaExtractor" 
-                 classpath="${dko_jar}:${sqlite_jar}" />
+                 classpath="${dko_jar}:${db_jar}" />
         <dkoextractschemas
             url="jdbc:mysql://localhost/sakila"
             username="root"
@@ -28,7 +28,7 @@
     <target name="compile" depends="dko-pre-compile">
         <mkdir dir="bin"/>
         <javac srcdir="src:gensrcdko" destdir="bin" debug="on" 
-            classpath="${dko_jar}:${sqlite_jar}"
+            classpath="${dko_jar}:${db_jar}"
        />
     </target>
 

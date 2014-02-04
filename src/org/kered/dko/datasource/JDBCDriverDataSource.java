@@ -27,6 +27,7 @@ public class JDBCDriverDataSource implements DataSource {
 
 	public JDBCDriverDataSource(final String url) {
 		if (url.startsWith("jdbc:sqlite")) type = DB_TYPE.SQLITE3;
+		else if (url.startsWith("jdbc:derby")) type = DB_TYPE.DERBY;
 		else type = null;
 		this.url = url;
 		this.username = null;
@@ -153,6 +154,10 @@ public class JDBCDriverDataSource implements DataSource {
 
 	public DB_TYPE getDBType() {
 		return type;
+	}
+	
+	public String getURL() {
+		return url;
 	}
 
 }

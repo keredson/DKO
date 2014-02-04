@@ -93,6 +93,9 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			Util.log(sql, ret.b);
 			query._preExecute(context, conn);
 			ps = query.createPS(ret.a, conn);
+			if (context.dbType==DB_TYPE.DERBY && query.top>0 && query.joinsToMany.size()==0) {
+				ps.setMaxRows((int) query.top);
+			}
 			query.setBindings(ps, ret.b);
 			ps.execute();
 			rs = ps.getResultSet();
@@ -171,7 +174,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			sb.append(Util.join(", ", tmp));
 		}
 
-		if (context.dbType!=DB_TYPE.SQLSERVER && context.dbType!=DB_TYPE.ORACLE && 
+		if (context.dbType!=DB_TYPE.SQLSERVER && context.dbType!=DB_TYPE.ORACLE && context.dbType!=DB_TYPE.DERBY && 
 				query.top>0 && query.joinsToMany.size()==0) {
 			sb.append(" limit ").append(query.top);
 		}

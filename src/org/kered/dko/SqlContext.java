@@ -64,8 +64,10 @@ class SqlContext {
 		String schema = Util.getSchemaName(tableClass);
 		if (schema != null && !"".equals(schema)) {
 			schema = Context.getSchemaToUse(getRootQuery().getDataSource(), schema);
-			sb.append(schema);
-			sb.append(dbType==Constants.DB_TYPE.SQLSERVER ? ".dbo." : ".");
+			if (schema != null && !"".equals(schema)) {
+				sb.append(schema);
+				sb.append(dbType==Constants.DB_TYPE.SQLSERVER ? ".dbo." : ".");
+			}
 		}
 		sb.append(Util.getTableName(tableClass));
 		return sb.toString();

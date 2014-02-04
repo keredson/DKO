@@ -866,7 +866,7 @@ public class SharedDBTests extends TestCase {
 
     public void testCrossDBJoin() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.use(ods).count();
 		final long c2 = Product.ALL.count();
 		final Query<Join<Item, Product>> q = Item.ALL.use(ods).crossJoin(Product.class);
@@ -879,7 +879,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBLeftJoin() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.count();
 		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).leftJoin(Supplier.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		for (final Join<Item, Supplier> x : q.top(64)) {
@@ -890,7 +890,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBRightJoin() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.count();
 		final Query<Join<Supplier, Item>> q = Supplier.ALL.use(ods).rightJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		for (final Join<Supplier, Item> x : q.top(64)) {
@@ -901,7 +901,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBInnerJoin() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.where(Item.SUPPLIER.isNotNull()).count();
 		final Query<Join<Supplier, Item>> q = Supplier.ALL.use(ods).innerJoin(Item.class, Item.SUPPLIER.eq(Supplier.SUPPID));
 		assertEquals(c1,  q.count());
@@ -912,7 +912,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBLeftJoinAlias() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.count();
 		final Query<Join<Item, Supplier>> q = Item.ALL.use(ods).leftJoin(Supplier.as("something"), Item.SUPPLIER.eq(Supplier.SUPPID));
 		for (final Join<Item, Supplier> x : q.top(64)) {
@@ -923,7 +923,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBCrossJoinX2() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.count();
 		final long c2 = Supplier.ALL.count();
 		final long c3 = Product.ALL.count();
@@ -939,7 +939,7 @@ public class SharedDBTests extends TestCase {
 
 	public void testCDBCrossJoinX3() throws SQLException {
 		printTestName();
-		final DataSource ods = new PassThruDS(ds);
+		final DataSource ods = createPassThruDS();
 		final long c1 = Item.ALL.count();
 		final long c2 = Supplier.ALL.count();
 		final long c3 = Product.ALL.count();
@@ -953,6 +953,10 @@ public class SharedDBTests extends TestCase {
 			++c;
 		}
 		assertEquals(c1*c2*c3*c4,  c);
+	}
+
+	protected PassThruDS createPassThruDS() {
+		return new PassThruDS(ds);
 	}
 
 	public void testSnapshot() throws SQLException {

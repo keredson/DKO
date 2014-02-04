@@ -412,9 +412,12 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String sep = getDBType()==DB_TYPE.SQLSERVER ? ".dbo." : ".";
 		final StringBuffer sb = new StringBuffer();
 		sb.append("update ");
-		final String schema = Util.getSchemaName(ofType);
+		String schema = Util.getSchemaName(ofType);
 		if (schema!=null && !"".equals(schema)) {
-			sb.append(Context.getSchemaToUse(ds, schema)).append(sep);
+			schema = Context.getSchemaToUse(ds, schema);
+			if (schema!=null && !"".equals(schema)) {
+				sb.append(schema).append(sep);
+			}
 		}
 		sb.append(Util.getTableName(ofType));
 		sb.append(" set ");
@@ -478,7 +481,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<String, List<Object>> wcab = q.getWhereClauseAndBindings(context);
 		try {
 			final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ofType));
-			String schemaWithDot = "".equals(schema) ? "" : schema + ".";
+			String schemaWithDot = schema==null || "".equals(schema) ? "" : schema + ".";
 			if (q.getDBType()==DB_TYPE.MYSQL) {
 				if (q.tableInfos.size() > 1 || !q.joins.isEmpty()) throw new RuntimeException("MYSQL multi-table delete " +
 						"is not yet supported");

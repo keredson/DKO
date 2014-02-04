@@ -4,38 +4,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.kered.dko.Context;
-import org.kered.dko.Join;
-import org.kered.dko.Query;
 import org.kered.dko.datasource.ConnectionCountingDataSource;
-import org.kered.dko.unittest.nosco_test_jpetstore.Item;
-import org.kered.dko.unittest.nosco_test_jpetstore.Supplier;
 
 public class TestHSQLDB extends SharedDBTests {
 
-	static String readFileToString(final File file) {
-		try {
-			final FileReader reader = new FileReader(file);
-			final StringBuffer sb = new StringBuffer();
-			int chars;
-			final char[] buf = new char[1024];
-			while ((chars = reader.read(buf)) > 0) {
-				sb.append(buf, 0, chars);
-			}
-			reader.close();
-			return sb.toString();
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	String schema = readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-schema.sql"));
-	String data = readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-dataload.sql"));
+	String schema = Util.readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-schema.sql"));
+	String data = Util.readFileToString(new File("deps/jpetstore/hsql/jpetstore-hsqldb-dataload.sql"));
 
 	@Override
 	protected void setUp() throws Exception {

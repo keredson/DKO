@@ -130,7 +130,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 					f1.__getSQL(sb, bindings, context);
 					sb.append(", interval ? "+ component +")");
 					bindings.add(count);
-				} else if ((dbType == DB_TYPE.HSQL)) {
+				} else if (dbType == DB_TYPE.HSQL || dbType == DB_TYPE.DERBY) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, ");
 					bindings.add(count);
 					f1.__getSQL(sb, bindings, context);
@@ -171,6 +171,9 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 					bindings.add(count);
 				} else if (dbType == DB_TYPE.HSQL) {
 					sb.append("TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")");
+					bindings.add(count);
+				} else if (dbType == DB_TYPE.DERBY) {
+					sb.append("CAST({fn TIMESTAMPADD(SQL_TSI_" + component +", ?, "+ sql +")} as DATE)");
 					bindings.add(count);
 				} else if (dbType == DB_TYPE.POSTGRES) {
 					sb.append(sql +" + INTERVAL '"+ count +" " + component +"'");
@@ -330,6 +333,8 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 				final DB_TYPE dbType = context==null ? null : context.dbType;
 				if (dbType == DB_TYPE.SQLSERVER) {
 					new Custom<String>(" + ", null, null, null, fields).__getSQL(sb, bindings, context);
+				} else if (dbType == DB_TYPE.DERBY) {
+					new Custom<String>(" || ", null, null, null, fields).__getSQL(sb, bindings, context);
 				} else {
 					new Custom<String>("CONCAT", fields).__getSQL(sb, bindings, context);
 				}
@@ -390,6 +395,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 		private final String hsql;
 		private final String postgres;
 		private final String oracle;
+		private final String derby;
 		private Object[] objects = null;
 		private final String sql = null;
 		private final List<Object> bindings = new ArrayList<Object>();
@@ -405,6 +411,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = func;
 			this.postgres = func;
 			this.oracle = func;
+			this.derby = func;
 		}
 
 		/**
@@ -421,6 +428,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = func;
 			this.postgres = func;
 			this.oracle = func;
+			this.derby = func;
 			this.objects = objects;
 		}
 
@@ -439,6 +447,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = func;
 			this.postgres = func;
 			this.oracle = func;
+			this.derby = func;
 			this.objects = objects;
 		}
 
@@ -449,6 +458,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = func;
 			this.postgres = func;
 			this.oracle = func;
+			this.derby = func;
 			this.objects = new Object[] {o};
 		}
 
@@ -458,6 +468,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = hsql;
 			this.postgres = null;
 			this.oracle = null;
+			this.derby = null;
 		}
 
 		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final Object[] objects) {
@@ -467,6 +478,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = hsql;
 			this.postgres = null;
 			this.oracle = null;
+			this.derby = null;
 			this.objects  = objects;
 		}
 
@@ -477,6 +489,18 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.hsql = hsql;
 			this.postgres = postgres;
 			this.oracle = oracle;
+			this.derby = null;
+			this.objects  = objects;
+		}
+
+		Custom(final String sep, final String mysql, final String sqlserver, final String hsql, final String postgres, final String oracle, final String derby, final Object[] objects) {
+			this.sep = sep;
+			this.mysql = mysql;
+			this.sqlserver = sqlserver;
+			this.hsql = hsql;
+			this.postgres = postgres;
+			this.oracle = oracle;
+			this.derby = derby;
 			this.objects  = objects;
 		}
 
@@ -486,7 +510,8 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 			this.mysql = null;
 			this.postgres = null;
 			this.oracle = null;
-			this.sep = sep;
+			this.derby = null;
+		this.sep = sep;
 			this.objects = new Object[] {o1, o2};
 		}
 
@@ -501,6 +526,7 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 				case SQLITE3:		sb.append(hsql==null ? "" : hsql); break;
 				case POSTGRES:		sb.append(postgres==null ? "" : postgres); break;
 				case ORACLE:		sb.append(oracle==null ? "" : oracle); break;
+				case DERBY:		sb.append(derby==null ? "" : derby); break;
 				default: throw new RuntimeException("unknown DB_TYPE "+ dbType);
 				}
 			} else {
@@ -524,6 +550,8 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 						} else {
 							sb.append(o.toString());
 						}
+					} else if ("*".equals(o)) {
+						sb.append("*");
 					} else {
 						sb.append("?");
 						bindings.add(o);

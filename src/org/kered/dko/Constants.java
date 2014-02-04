@@ -56,6 +56,7 @@ public class Constants {
 		ORACLE,
 		SQLITE3,
 		HSQL,
+		DERBY,
 		SQL92;
 
 		private static Map<DataSource, DB_TYPE> cache = Collections
@@ -82,6 +83,10 @@ public class Constants {
 			if (underlying instanceof JDBCDriverDataSource) {
 			    final JDBCDriverDataSource jds = (JDBCDriverDataSource) underlying;
 			    if (jds.getDBType()!=null) return jds.getDBType();
+			    String url = jds.getURL();
+				if (url.startsWith("jdbc:sqlserver")) return SQLSERVER;
+				if (url.startsWith("jdbc:hsql")) return HSQL;
+				if (url.startsWith("jdbc:derby")) return DERBY;
 			}
 
 			// is the class recognizable?
@@ -149,6 +154,7 @@ public class Constants {
 			if (className.contains("SQLDroidConnection")) return SQLITE3;
 			if (className.contains("SQLiteJDBC")) return SQLITE3;
 			if (className.startsWith("oracle")) return ORACLE;
+			if (className.startsWith("org.apache.derby")) return DERBY;
 
 			// try from the jdbc metadata
 			final DatabaseMetaData metaData = conn.getMetaData();
@@ -161,6 +167,7 @@ public class Constants {
 				url = metaData.getURL();
 				if (url.startsWith("jdbc:sqlserver")) return SQLSERVER;
 				if (url.startsWith("jdbc:hsql")) return HSQL;
+				if (url.startsWith("jdbc:derby")) return DERBY;
 			}
 
 			System.err.println("unknown db type for Connection: "+ conn

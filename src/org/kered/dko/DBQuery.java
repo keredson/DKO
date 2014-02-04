@@ -333,9 +333,9 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		Util.log(sql, bindings);
 		PreparedStatement ps;
 		try {
+			_preExecute(context, conn);
 			ps = createPS(sql, conn);
 			setBindings(ps, bindings);
-			_preExecute(context, conn);
 			ps.execute();
 			final ResultSet rs = ps.getResultSet();
 			rs.next();
@@ -930,7 +930,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final List<String> names = new ArrayList<String>();
 		for (final TableInfo ti : tableInfos) {
 			if (ti.dummyTable != null) {
-				names.add((dbType==DB_TYPE.SQLSERVER ? "#" : "") + ti.dummyTable.name +" "+ ti.tableName);
+				String tblPrefix = "";
+				if (dbType==DB_TYPE.SQLSERVER) tblPrefix = "#";
+				if (dbType==DB_TYPE.DERBY) tblPrefix = "SESSION.";
+				names.add(tblPrefix + ti.dummyTable.name +" "+ ti.tableName);
 			} else {
 				final String schema = Context.getSchemaToUse(ds, Util.getSchemaName(ti.tableClass));
 				final String noContextTableName = "".equals(schema) ? Util.getTableName(ti.tableClass) : schema+"."+Util.getTableName(ti.tableClass);

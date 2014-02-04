@@ -120,7 +120,10 @@ public abstract class Condition {
 				final String collate = Util.isCollateType(type) ? " COLLATE database_default" : "";
 				
 				String tmpStr = context.dbType==DB_TYPE.SQLITE3 ? "TEMP " : "";
-				final String sql = "CREATE "+ tmpStr +"TABLE "+ getTmpTableName(context.dbType) + "(id "+ type + collate +")";
+				String sql = "CREATE "+ tmpStr +"TABLE "+ getTmpTableName(context.dbType) + "(id "+ type + collate +")";
+				if (context.dbType==Constants.DB_TYPE.ORACLE || context.dbType==DB_TYPE.DERBY) {
+					sql += " ON COMMIT PRESERVE ROWS";
+				}
 				Util.log(sql, null);
 				stmt.execute(sql);
 				ps = conn.prepareStatement("insert into "+ getTmpTableName(context.dbType) +" values (?)");

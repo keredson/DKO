@@ -277,11 +277,6 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 	public synchronized void close() {
 		if (done) return;
 		try {
-			query._postExecute(context, conn);
-		} catch (final SQLException e1) {
-			e1.printStackTrace();
-		}
-		try {
 			if (!finishedNatually && rs!=null && !rs.isClosed()) {
 				if (!"org.sqldroid.SQLDroidPreparedStatement".equals(ps.getClass().getName())) {
 					// SQLDroid doesn't implement cancel
@@ -319,6 +314,11 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 			} else {
 				throw e;
 			}
+		}
+		try {
+			query._postExecute(context, conn);
+		} catch (final SQLException e1) {
+			e1.printStackTrace();
 		}
 		if (shouldCloseConnection) {
 			try {

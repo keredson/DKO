@@ -138,11 +138,13 @@ class TemporaryTableFactory {
 			try {
 				stmt = conn.createStatement();
 				final StringBuffer sqlSb = new StringBuffer();
-				final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+				String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+				if (context.dbType==Constants.DB_TYPE.DERBY) tableName = "SESSION."+tableName;
 				String fluff = "";
 				if (context.dbType==Constants.DB_TYPE.SQLSERVER) fluff = "TEMPORARY ";
-				if (context.dbType==Constants.DB_TYPE.ORACLE) fluff = "GLOBAL TEMPORARY ";
-				sqlSb.append("CREATE "+ fluff +"TABLE "+ tableName + "(");
+				if (context.dbType==Constants.DB_TYPE.ORACLE || context.dbType==Constants.DB_TYPE.DERBY) fluff = "GLOBAL TEMPORARY ";
+				String create = context.dbType==Constants.DB_TYPE.DERBY ? "DECLARE " : "CREATE ";
+				sqlSb.append(create+ fluff +"TABLE "+ tableName + "(");
 				final List<String> placeholders = new ArrayList<String>();
 				for (int i=0; i<fields.size(); ++i) {
 					final Field<?> field = fields.get(i);
@@ -153,10 +155,18 @@ class TemporaryTableFactory {
 					if (context.dbType==Constants.DB_TYPE.MYSQL && "varchar".equals(field.SQL_TYPE.toLowerCase())) {
 						sqlSb.append("(4096)");
 					}
+					if (context.dbType==Constants.DB_TYPE.DERBY && "varchar".equals(field.SQL_TYPE.toLowerCase())) {
+						sqlSb.append("(32672)");
+					}
 					if (i < fields.size()-1) sqlSb.append(", ");
 				}
 				sqlSb.append(")");
-				if (context.dbType==Constants.DB_TYPE.ORACLE) sqlSb.append(" ON COMMIT PRESERVE ROWS");
+				if (context.dbType==Constants.DB_TYPE.ORACLE || context.dbType==Constants.DB_TYPE.DERBY) {
+					sqlSb.append(" ON COMMIT PRESERVE ROWS");
+				}
+				if (context.dbType==Constants.DB_TYPE.DERBY) {
+					sqlSb.append(" NOT LOGGED");
+				}
 				final String sql = sqlSb.toString();
 				Util.log(sql, null);
 				stmt.execute(sql);
@@ -218,7 +228,8 @@ class TemporaryTableFactory {
 		@Override
 		protected void __NOSCO_PRIVATE_postExecute(final SqlContext context, final Connection conn) throws SQLException {
 			Statement stmt = null;
-			final String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+			String tableName = (context.dbType==Constants.DB_TYPE.SQLSERVER ? "#" : "") + name;
+			if (context.dbType==Constants.DB_TYPE.DERBY) tableName = "SESSION."+tableName;
 			try {
 				stmt = conn.createStatement();
 				if (context.dbType==DB_TYPE.ORACLE) {

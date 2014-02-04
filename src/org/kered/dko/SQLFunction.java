@@ -334,7 +334,9 @@ public abstract class SQLFunction<T> implements Expression.OrderBy<T>, Expressio
 				if (dbType == DB_TYPE.SQLSERVER) {
 					new Custom<String>(" + ", null, null, null, fields).__getSQL(sb, bindings, context);
 				} else if (dbType == DB_TYPE.DERBY) {
+					sb.append("CAST(");
 					new Custom<String>(" || ", null, null, null, fields).__getSQL(sb, bindings, context);
+					sb.append(" as VARCHAR(32672))");
 				} else {
 					new Custom<String>("CONCAT", fields).__getSQL(sb, bindings, context);
 				}

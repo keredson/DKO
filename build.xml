@@ -690,17 +690,16 @@ public class BuildInfo {
   <!-- ========[ BEGIN UNIT TEST DERBY ]======== -->
   
   <target name="unit-test-extract-schema-derby" depends="jar">
+    <delete dir="bin/testderby"/>
+    <java classname="org.kered.dko.junk.DerbyLoadTestSchema" classpath="${lib_nosco_jar}:${dep_derby_jar}" fork="yes" />
     <taskdef name="noscoextractschema" classname="org.kered.dko.ant.SchemaExtractor" classpath="${lib_nosco_jar}:${dep_derby_jar}"/>
     <noscoextractschema
-    	url="jdbc:hsqldb:file:deps/jpetstore/hsql/jpetstore.jsqldb"
-    	username="sa"
-    	password=""
-    	schemas="public"
+    	url="jdbc:derby:bin/testderby"
     	out="bin/unit_test_schema.json"
     />
   </target>
 
-  <target name="unit-test-gen-src-derby" depends=""> <!-- unit-test-extract-schema-derby -->
+  <target name="unit-test-gen-src-derby" depends="unit-test-extract-schema-derby">
     <taskdef name="dkogen" classname="org.kered.dko.ant.CodeGenerator" classpath="${lib_nosco_jar}"/>
     <dkogen package="org.kered.dko.unittest" 
       debug="true"
@@ -708,6 +707,7 @@ public class BuildInfo {
       jarfile="bin/unittest.jar"
       schemas="bin/unit_test_schema.json"
       callbackPackage="test.db.callback"
+      aliases="APP as nosco_test_jpetstore"
     />
     <javac srcdir="gensrc" destdir="bin_test" debug="on" 
     	classpath="examples/bugzilla/lib/dkogen.jar:${lib_nosco_jar}:${all_deps}"

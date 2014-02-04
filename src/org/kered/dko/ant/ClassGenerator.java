@@ -118,8 +118,8 @@ class ClassGenerator {
 			final JSONObject tables = schemas.getJSONObject(schema);
 
 			String pkgName = sanitizeJavaKeywords(schema);
-			if (schemaAliases.containsKey(schema)) {
-				pkgName = sanitizeJavaKeywords(schemaAliases.get(schema));
+			if (schemaAliases.containsKey(schema.toLowerCase())) {
+				pkgName = sanitizeJavaKeywords(schemaAliases.get(schema.toLowerCase()));
 			}
 
 			generator.tableToClassName = new LinkedHashMap<String,String>();

@@ -79,6 +79,8 @@ public class SchemaExtractorBase {
 			this.dbType  = Constants.DB_TYPE.POSTGRES;
 		if ("oracle".equalsIgnoreCase(s))
 			this.dbType  = Constants.DB_TYPE.ORACLE;
+		if ("derby".equalsIgnoreCase(s))
+			this.dbType  = Constants.DB_TYPE.DERBY;
 	}
 
 	public void setURL(final String s) throws Exception {
@@ -113,6 +115,10 @@ public class SchemaExtractorBase {
 		if (url.startsWith("jdbc:oracle")) {
 			final Driver d = (Driver) Class.forName("oracle.jdbc.OracleDriver").newInstance();
 			if (dbType==null) dbType = DB_TYPE.ORACLE;
+		}
+		if (url.startsWith("jdbc:derby")) {
+			final Driver d = (Driver) Class.forName("org.apache.derby.jdbc.AutoloadedDriver").newInstance();
+			if (dbType==null) dbType = DB_TYPE.DERBY;
 		}
 	}
 
@@ -262,7 +268,7 @@ public class SchemaExtractorBase {
 			System.err.println("connecting to "+ url);
 			conn = DriverManager.getConnection(url, username, password);
 			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
-			final Map<String,Map<String,Set<String>>> primaryKeys =getPrimaryKeys(conn);
+			final Map<String,Map<String,Set<String>>> primaryKeys = getPrimaryKeys(conn, schemas);
 			final Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
 
 			final JSONObject json = new JSONObject();
@@ -307,9 +313,20 @@ public class SchemaExtractorBase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			if (conn!=null) {
+			try {
+				if (conn!=null && !conn.isClosed()) {
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			if (dbType==DB_TYPE.DERBY) {
 				try {
-					conn.close();
+					DriverManager.getConnection(url+";shutdown=true");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -359,6 +376,7 @@ public class SchemaExtractorBase {
 		if (dbType == DB_TYPE.SQLITE3) return getSchemasSQLITE3(conn);
 		if (dbType == DB_TYPE.POSTGRES) return getSchemasPostgreSQL(conn);
 		if (dbType == DB_TYPE.ORACLE) return getSchemasJDBC(conn);
+		if (dbType == DB_TYPE.DERBY) return getSchemasJDBC(conn);
 		else return getSchemasSQL92(conn);
 	}
 
@@ -371,6 +389,8 @@ public class SchemaExtractorBase {
 			final String catalog = columnRS.getString("TABLE_CAT");
 			String schema = columnRS.getString("TABLE_SCHEM");
 			if (schema == null) schema = "";
+			if ("SYS".equals(schema)) continue;
+			if ("SYSIBM".equals(schema)) continue;
 			if (includeSchemas!=null && !includeSchemas.contains(schema)) continue;
 			final String tableName = columnRS.getString("TABLE_NAME");
 			//final String tableType = columnRS.getString("TABLE_TYPE");
@@ -403,6 +423,7 @@ public class SchemaExtractorBase {
 			}
 			columns.put(columnName, columnType);
 		}
+		columnRS.close();
 		return schemas;
 	}
 
@@ -623,12 +644,13 @@ public class SchemaExtractorBase {
 		return schemas;
 	}
 
-	private Map<String,Map<String,Set<String>>> getPrimaryKeys(final Connection conn) throws SQLException {
+	private Map<String,Map<String,Set<String>>> getPrimaryKeys(final Connection conn, Map<String, Map<String, Map<String, String>>> schemas) throws SQLException {
 		if (dbType == DB_TYPE.SQLSERVER) return getPrimaryKeysMSSQL(conn);
 		if (dbType == DB_TYPE.HSQL) return getPrimaryKeysHSQL(conn);
 		if (dbType == DB_TYPE.SQLITE3) return getPrimaryKeysSQLITE3(conn);
 		if (dbType == DB_TYPE.POSTGRES) return getPrimaryKeysJDBC(conn);
 		if (dbType == DB_TYPE.ORACLE) return getPrimaryKeysOracle(conn);
+		if (dbType == DB_TYPE.DERBY) return getPrimaryKeysByTableJDBC(conn, schemas);
 		return getPrimaryKeysMySQL(conn);
 	}
 
@@ -731,6 +753,40 @@ public class SchemaExtractorBase {
 				tables.put(tableName, pk);
 			}
 			pk.add(columnName);
+		}
+		return pks;
+	}
+
+	private Map<String, Map<String, Set<String>>> getPrimaryKeysByTableJDBC(
+			final Connection conn, Map<String, Map<String, Map<String, String>>> schemas) throws SQLException {
+		final Map<String, Map<String, Set<String>>> pks = new LinkedHashMap<String, Map<String, Set<String>>>();
+		final DatabaseMetaData metadata = conn.getMetaData();
+		for (Entry<String, Map<String, Map<String, String>>> e1 : schemas.entrySet()) {
+			String schema = e1.getKey();
+			for (String table : e1.getValue().keySet()) {
+				final ResultSet rs = metadata.getPrimaryKeys(null, schema, table);
+				while (rs.next()) {
+					final String catalog = rs.getString("TABLE_CAT");
+					final String schemaName = rs.getString("TABLE_SCHEM");
+					final String tableName = rs.getString("TABLE_NAME");
+					final String columnName = rs.getString("COLUMN_NAME");
+					final String pkName = rs.getString("PK_NAME");
+					if ("pg_toast".equals(schema)) continue;
+					if (includeSchemas!=null && !includeSchemas.contains(schemaName)) continue;
+					Map<String, Set<String>> tables = pks.get(schemaName);
+					if (tables == null) {
+						tables = new LinkedHashMap<String, Set<String>>();
+						pks.put(schemaName, tables);
+					}
+					Set<String> pk = tables.get(tableName);
+					if (pk == null) {
+						pk = new LinkedHashSet<String>();
+						tables.put(tableName, pk);
+					}
+					pk.add(columnName);
+				}
+				rs.close();
+			}
 		}
 		return pks;
 	}
@@ -927,6 +983,7 @@ public class SchemaExtractorBase {
 		if (dbType == DB_TYPE.MYSQL) return getForeignKeysMySQL(conn);
 		if (dbType == DB_TYPE.POSTGRES) return getForeignKeysJDBC(conn);
 		if (dbType == DB_TYPE.ORACLE) return getForeignKeysJDBC(conn);
+		if (dbType == DB_TYPE.DERBY) return getForeignKeysJDBC(conn);
 		return getForeignKeysJDBC(conn);
 	}
 

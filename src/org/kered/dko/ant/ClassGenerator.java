@@ -247,15 +247,27 @@ class ClassGenerator {
 		file.delete();
 	}
 
-	private static String getFieldName(String column) {
-		column = splitIfCamelCase(column);
-		column = column
+	private Map<String,String> fieldNames;
+	private Set<String> usedFieldNames;
+	private String getFieldName(final String column) {
+		if (fieldNames.containsKey(column)) return fieldNames.get(column);
+		String columnTmp = column;
+		columnTmp = splitIfCamelCase(columnTmp);
+		columnTmp = columnTmp
 			.replace("%", "_PERCENT")
 			.replace("-", "_DASH_")
 			.replaceAll("\\W", "_")
 			.toUpperCase();
-		if (Constants.INVALID_FIELD_NAMES.contains(column)) return ""+ column +"_FIELD";
-		return column;
+		if (Character.isDigit(columnTmp.charAt(0))) columnTmp = "_"+columnTmp;
+		if (Constants.INVALID_FIELD_NAMES.contains(columnTmp)) return ""+ columnTmp +"_FIELD";
+	    String base = columnTmp;
+	    String proposed = base;
+	    for (int c=2; usedFieldNames.contains(proposed); ++c) {
+	    	proposed = base +"_"+c;
+	    }
+	    fieldNames.put(column, proposed);
+	    usedFieldNames.add(proposed);
+	    return proposed;
 	}
 
 	private static String splitIfCamelCase(String column) {
@@ -274,12 +286,13 @@ class ClassGenerator {
 	}
 
 	private static String getFieldName(final Collection<String> columns) {
-	    final StringBuffer sb = new StringBuffer();
-	    int i = 1;
-	    for (final String column : columns) {
-		sb.append(column.replace(' ', '_').toUpperCase());
-		if (++i < columns.size()) sb.append("__");
-	    }
+		final StringBuffer sb = new StringBuffer();
+		int i = 1;
+		for (final String column : columns) {
+			sb.append(column.replace(' ', '_').toUpperCase());
+			if (++i < columns.size()) sb.append("__");
+		}
+		if (Character.isDigit(sb.charAt(0))) sb.insert(0, "_");
 		return sb.toString();
 	}
 
@@ -288,6 +301,12 @@ class ClassGenerator {
 			final String dataSourceName, final String callbackPackage, final JSONObject enums,
 			final boolean useDetailedToString)
 	throws IOException, JSONException {
+		fieldNames = new HashMap<String,String>();
+		usedFieldNames = new HashSet<String>();
+		instanceFieldNames = new HashMap<String,String>();
+		usedInstanceFieldNames = new HashSet<String>();
+		instanceMethodNames = new HashMap<String,String>();
+		usedInstanceMethodNames = new HashSet<String>();
 		final String className = genTableClassName(table);
 		final Set<String> pkSet = new HashSet<String>();
 		if (pks == null) pks = new JSONArray();
@@ -1148,13 +1167,13 @@ class ClassGenerator {
 				+ "\t\t\ttry { return (Integer) __NOSCO_CALLBACK_HASH_CODE.invoke(null, this); }\n"
 				+ "\t\t\tcatch (final IllegalAccessException e) { e.printStackTrace(); }\n"
 				+ "\t\t\tcatch (final InvocationTargetException e) { e.printStackTrace(); }\n");
-		br.write("\t\tfinal int prime = 31;\n");
-		br.write("\t\tint result = 1;\n");
+		br.write("\t\tfinal int _prime = 31;\n");
+		br.write("\t\tint _result = 1;\n");
 		for (final String column : pkSet == null || pkSet.size() == 0 ? columns.keySet() : pkSet) {
-			br.write("\t\tresult = prime * result + ((get"+ getInstanceMethodName(column)
+			br.write("\t\t_result = _prime * _result + ((get"+ getInstanceMethodName(column)
 					+"() == null) ? 0 : "+ getInstanceFieldName(column) +".hashCode());\n");
 		}
-		br.write("\t\treturn result;\n");
+		br.write("\t\treturn _result;\n");
 		br.write("\t}\n\n");
 
 		// write the equals function
@@ -1270,17 +1289,38 @@ class ClassGenerator {
 		br.write("\t\t}\n");
 	}
 
-	private static String getInstanceFieldName(String column) {
-		column = column.toLowerCase();
-		if (Constants.KEYWORDS_JAVA.contains(column)) column = "NOSCO_JAVA_KEYWORD_PROTECTION" + column;
-	    column = column.replace("-", "_DASH_");
-	    return Util.underscoreToCamelCase(column, false);
+	private Map<String,String> instanceFieldNames;
+	private Set<String> usedInstanceFieldNames;
+	private String getInstanceFieldName(final String column) {
+		if (instanceFieldNames.containsKey(column)) return instanceFieldNames.get(column);
+		String columnTmp = column.toLowerCase();
+		if (Constants.KEYWORDS_JAVA.contains(columnTmp)) columnTmp = "NOSCO_JAVA_KEYWORD_PROTECTION" + columnTmp;
+	    columnTmp = columnTmp.replace("-", "_DASH_");
+	    if (Character.isDigit(columnTmp.charAt(0))) columnTmp = "_val_" + columnTmp;
+	    String base = Util.underscoreToCamelCase(columnTmp, false);
+	    String proposed = base;
+	    for (int c=2; usedInstanceFieldNames.contains(proposed); ++c) {
+	    	proposed = base +"_"+c;
+	    }
+	    instanceFieldNames.put(column, proposed);
+	    usedInstanceFieldNames.add(proposed);
+	    return proposed;
 	}
 
-	private static String getInstanceMethodName(String column) {
-	    if ("class".equals(column)) column = "JAVA_KEYWORD_class";
-	    column = column.replace("-", "_DASH_");
-	    return Util.underscoreToCamelCase(column, true);
+	private Map<String,String> instanceMethodNames;
+	private Set<String> usedInstanceMethodNames;
+	private String getInstanceMethodName(final String column) {
+		if (instanceMethodNames.containsKey(column)) return instanceMethodNames.get(column);
+		String columnTmp = column;
+	    columnTmp = columnTmp.replace("-", "_DASH_");
+	    String base = Util.underscoreToCamelCase(columnTmp, true);
+	    String proposed = base;
+	    for (int c=2; "Class".equals(proposed) || usedInstanceMethodNames.contains(proposed); ++c) {
+	    	proposed = base +"_"+c;
+	    }
+	    instanceMethodNames.put(column, proposed);
+	    usedInstanceMethodNames.add(proposed);
+	    return proposed;
 	}
 
 	private String genFKName(final Set<String> columns, String referencedTable) {
@@ -1320,6 +1360,10 @@ class ClassGenerator {
 			}
 		} //*/
 		proposed = proposed.replaceAll("\\W", "_");
+		if (Character.isDigit(proposed.charAt(0))) {
+			proposed = "_"+ proposed;
+		}
+		System.out.println("proposed: "+ proposed);
 		String proposed2 = Util.underscoreToCamelCase(dePlural(proposed), true);
 		if (tableToClassName.containsValue(proposed2)) {
 			proposed2 = Util.underscoreToCamelCase(proposed, true);
@@ -1437,6 +1481,7 @@ class ClassGenerator {
 		put("datetime2", Timestamp.class);
 		put("date", Date.class);
 		put("timestamp", Timestamp.class);
+		put("time", java.sql.Time.class);
 		put("year", Integer.class);
 		put("enum", String.class);
 		put("set", String.class);
@@ -1445,6 +1490,7 @@ class ClassGenerator {
 		put("boolean", Boolean.class);
 		put("binary", java.sql.Blob.class);
 		put("varbinary", java.sql.Blob.class);
+		put("mediumblob", java.sql.Blob.class);
 		put("sql_variant", Object.class);
 		put("smalldatetime", Timestamp.class);
 		put("uniqueidentifier", String.class);

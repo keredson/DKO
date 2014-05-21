@@ -57,7 +57,9 @@ class Util {
 				c[i] = Character.toUpperCase(c[i]);
 			}
 		}
-		return new String(c).replaceAll("_", "");
+		String ret = new String(c).replaceAll("_", "");
+		if (c[0]=='_') return "_"+ret;
+		else return ret;
 	}
 
 	static String underscoreToCamelCase(final Collection<String> strings, boolean capitalizeFirstChar) {

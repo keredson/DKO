@@ -17,7 +17,7 @@ class SelectSingleColumn<S> implements Iterable<S> {
 		return new Iterator<S>() {
 			
 			private S next = null;
-			private final Iterable<? extends Table> it1 = q.all();
+			private final Iterable<? extends Table> it1 = q.onlyFields(field);
 			private final Iterator<? extends Table> it = it1.iterator();
 
 			@Override

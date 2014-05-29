@@ -849,6 +849,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final Tuple2<Connection,Boolean> info = getConnRW(ds);
 		final Connection conn = info.a;
 		try {
+			final PreparedStatement ps = createPS(sql, conn);
+			q.setBindings(ps, bindings);
+			_preExecute(context, conn);
+
 			if (getDBType()==DB_TYPE.MYSQL) {
 				// mysql doesn't clear this var if no auto-increment field exists.
 				// set it to a known value so we can test if it was changed by
@@ -860,13 +864,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					s.close();
 				}
 			}
-			final PreparedStatement ps = createPS(sql, conn);
-			q.setBindings(ps, bindings);
-			_preExecute(context, conn);
+
 			ps.execute();
 			final int count = ps.getUpdateCount();
 			ps.close();
-			_postExecute(context, conn);
 
 			if (count==1) {
 				if (getDBType()==DB_TYPE.MYSQL) {
@@ -905,7 +906,10 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 					}
 				}
 			}
-		} finally {
+
+			_postExecute(context, conn);
+
+} finally {
 			if (info.b) {
 				if (!conn.getAutoCommit()) conn.commit();
 				conn.close();

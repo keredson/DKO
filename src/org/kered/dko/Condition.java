@@ -79,6 +79,7 @@ public abstract class Condition {
 		private final Collection<T> set;
 		private final String tmpTableName = "#DKO_"+ Math.round(Math.random() * Integer.MAX_VALUE);
 		private String type = null;
+		private In backup;
 		
 		private String getTmpTableName(DB_TYPE dbType) {
 			if (dbType == DB_TYPE.SQLITE3) return tmpTableName.substring(1);
@@ -86,6 +87,7 @@ public abstract class Condition {
 		}
 
 		public InTmpTable(final Field<T> field, final Collection<T> set) {
+			this.backup = new In(field, " in ", set);
 			this.field = field;
 			// we make a set because we create a PK index on the tmp table
 			this.set = new LinkedHashSet<T>(set);
@@ -105,14 +107,26 @@ public abstract class Condition {
 		@Override
 		protected void getSQL(final StringBuffer sb, final List<Object> bindings,
 				final SqlContext context) {
-			sb.append(' ');
-			sb.append(Util.derefField(field, context));
-			sb.append(" in ");
-			sb.append("(select id from "+ getTmpTableName(context.dbType) +")");
+			if (useBackup(context)) {
+				backup.getSQL(sb, bindings, context);
+			} else {
+				sb.append(' ');
+				sb.append(Util.derefField(field, context));
+				sb.append(" in ");
+				sb.append("(select id from "+ getTmpTableName(context.dbType) +")");
+			}
+		}
+
+		private boolean useBackup(SqlContext context) {
+			return context.dbType == DB_TYPE.MYSQL;
 		}
 
 		@Override
 		public void _preExecute(final SqlContext context, final Connection conn) throws SQLException {
+			if (useBackup(context)) {
+				backup._preExecute(context, conn);
+				return;
+			}
 			Statement stmt = null;
 			PreparedStatement ps = null;
 			try {
@@ -167,6 +181,10 @@ public abstract class Condition {
 
 		@Override
 		public void _postExecute(final SqlContext context, final Connection conn) throws SQLException {
+			if (useBackup(context)) {
+				backup._postExecute(context, conn);
+				return;
+			}
 			Statement stmt = null;
 			try {
 				stmt = conn.createStatement();

@@ -184,9 +184,9 @@ liked their query API and thought "jeez I wish
 Java had this".  (I had spent the previous six years as a corporate Java developer)
 But I quickly fell in love with Python, so I never pursued it.
 Then in 2010 I was thrown back into the Java world when I started at 
-[REDACTED].  I was appalled by our internal use of Hibernate
-(35k lines of XML config files alone!), so I implemented DKO as an external open-source project to prove out the 
-concept.  It worked, I brought it in, and it has been in widespread internal use for greater than two years now.  It 
+Two Sigma Investments.  I was appalled by our internal use/abuse of Hibernate
+(horribly inefficient at our scale), so I implemented DKO as an external open-source project to prove out the 
+concept.  It worked, I brought it in, and it has been in widespread internal use since.  It 
 powers hundreds of daily 
 production-critical jobs and processes, the vast majority *not* written by me (and without any sort of internal mandate
 for its use), and is the preferred go-to API for database access in the office by developers and data analysts alike.
@@ -194,5 +194,5 @@ for its use), and is the preferred go-to API for database access in the office b
 The original name of DKOs was [Nosco](https://code.google.com/p/nosco) (Latin for "get to know", hence 
 "Data Knowledge Objects"), but someone pointed out that that rhymed with "bosco", and I couldn't have that.  :)
 
-Note: *[REDACTED] in no way endorses DKOs.  Opinions stated here are mine and mine alone.*
+Note: *Two Sigma in no way endorses DKOs.  Opinions stated here are mine and mine alone.*
 

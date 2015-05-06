@@ -50,6 +50,7 @@ public class SchemaExtractorBase {
 	private String[] enums = {};
 	private File enumsOut = null;
 	private File out = null;
+	private ConnectionAdapter connAdapter = null;
 
 	private final List<Pattern> onlyTables = new ArrayList<Pattern>();
 	private final List<Pattern> excludeTables = new ArrayList<Pattern>();
@@ -81,6 +82,10 @@ public class SchemaExtractorBase {
 			this.dbType  = Constants.DB_TYPE.ORACLE;
 		if ("derby".equalsIgnoreCase(s))
 			this.dbType  = Constants.DB_TYPE.DERBY;
+	}
+
+	public void setConnectionAdapter(String s) throws Exception {
+		connAdapter = (ConnectionAdapter)Class.forName(s).newInstance();
 	}
 
 	public void setURL(final String s) throws Exception {
@@ -182,7 +187,7 @@ public class SchemaExtractorBase {
 		System.err.println("connecting to "+ url);
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection(url, username, password);
+			conn = getConnection();
 			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
 			return schemas;
 		} catch (SQLException e) {
@@ -260,13 +265,21 @@ public class SchemaExtractorBase {
 		return "<string> (no help available)";
 	}
 
+	private Connection getConnection() throws SQLException
+	{
+        	if (connAdapter == null)
+			return DriverManager.getConnection(url, username, password);
+		else
+			return connAdapter.getConnection(connectionName, this);
+	}
+
 	public void execute() {
 
 		Connection conn = null;
 		try {
 
 			System.err.println("connecting to "+ url);
-			conn = DriverManager.getConnection(url, username, password);
+			conn = getConnection();
 			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
 			final Map<String,Map<String,Set<String>>> primaryKeys = getPrimaryKeys(conn, schemas);
 			final Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);

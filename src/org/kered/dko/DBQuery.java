@@ -55,6 +55,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private Set<Field<?>> groupBySet = null;
 	private List<Expression.OrderBy<?>> orderByExpressions = null;
 	long top = 0;
+	long offset = 0;
 	private Map<Field<?>,Object> data = null;
 	boolean distinct = false;
 	DataSource ds = null;
@@ -120,6 +121,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			orderByExpressions.addAll(q.orderByExpressions);
 		}
 		top = q.top;
+		offset = q.offset;
 		if (q.data!=null) {
 			data = new HashMap<Field<?>,Object>();
 			data.putAll(q.data);
@@ -672,6 +674,13 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	public Query<T> limit(final long i) {
 		final DBQuery<T> q = new DBQuery<T>(this);
 		q.top  = i;
+		return q;
+	}
+
+	@Override
+	public Query<T> offset(final long o) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.offset = o;
 		return q;
 	}
 
@@ -1543,6 +1552,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		result = prime * result
 				+ ((tableInfos == null) ? 0 : tableInfos.hashCode());
 		result = prime * result + (int)top;
+		result = prime * result + (int)offset;
 		result = prime * result
 				+ ((usedTableNames == null) ? 0 : usedTableNames.hashCode());
 		return result;

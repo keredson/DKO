@@ -142,6 +142,15 @@ public interface Query<T extends Table> extends Iterable<T> {
 	public Query<T> limit(long n);
 
 	/**
+	 * Returns rows beginning at offset m as defined by the ordering of the query.
+	 *
+	 * @param m
+	 * @return
+	 */
+	public Query<T> offset(long m);
+
+
+	/**
 	 * Sets the distinct keyword in the select statement.
 	 * @return
 	 */
@@ -284,8 +293,8 @@ public interface Query<T extends Table> extends Iterable<T> {
 	/**
 	 * Executes and update statement populated w/ data from .where() and .set().
 	 * Example:  SomeClass.ALL.set(SomeClass.SOME_FIELD, "xyz")
-	 *                        .where(SomeClass.SOME_FIELD.eq("abc"))
-	 *                        .update();
+	 *			.where(SomeClass.SOME_FIELD.eq("abc"))
+	 *			.update();
 	 * @return
 	 * @throws SQLException
 	 */

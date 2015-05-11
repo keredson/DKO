@@ -35,6 +35,8 @@ public class Util {
 	static boolean warnedNoSqlite3 = false;
 
 	public static DataSource getDS() {
+		if ("false".equals(System.getProperty(Constants.PROPERTY_USE_PERSISTENCE_DB)))
+			return null;
 		if (ds == null) {
 			final String[] drivers = {"org.sqlite.JDBC", "org.sqldroid.SQLDroidDriver"};
 			Class driver = null;

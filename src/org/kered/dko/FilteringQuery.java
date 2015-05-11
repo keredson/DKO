@@ -18,12 +18,14 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	private Query<T> q;
 	private Condition condition = null;
 	private long top = -1;
+	private long offset = -1;
 
 	FilteringQuery(final FilteringQuery<T> src) {
 		super(src.getType());
 		this.q = src.q;
 		this.condition = src.condition;
 		this.top = src.top;
+		this.offset = src.offset;
 	}
 
 	FilteringQuery(final Query<T> q, final Condition... conditions) {
@@ -59,6 +61,14 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 		FilteringQuery<T> ret = new FilteringQuery<T>(this);
 		ret.q = ret.q.limit(-1);
 		ret.top = n;
+		return ret;
+	}
+
+	@Override
+	public Query<T> offset(long m) {
+		FilteringQuery<T> ret = new FilteringQuery<T>(this);
+		ret.q = ret.q.offset(-1);
+		ret.offset = m;
 		return ret;
 	}
 
@@ -179,9 +189,16 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 			final Iterator<T> i = q.iterator();
 			T next = null;
 			int count = 0;
+			long skip = offset;
 
 			@Override
 			public boolean hasNext() {
+				while(skip > 0 && i.hasNext()) {
+					T candidate = i.next();
+					if (condition.matches(candidate)) {
+						skip--;
+					}	
+				}
 				if (next!=null) return true;
 				if (top > -1 && count >= top) return false;
 				while (i.hasNext()) {

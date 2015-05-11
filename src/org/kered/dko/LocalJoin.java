@@ -39,6 +39,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 	private Condition joinCondition;
 	private final JOIN_TYPE joinType;
 	private long limit = -1;
+	private long offset = -1;
 
 	private transient List<Field<?>> selectFields;
 
@@ -50,6 +51,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		qR = q.qR;
 		joinCondition = q.joinCondition;
 		limit = q.limit;
+		offset = q.offset;
 	}
 
 	public LocalJoin(final JOIN_TYPE joinType, final Class<? extends Table> type, final Query<? extends Table> q, final Class<? extends Table> t, final Condition on) {
@@ -103,6 +105,16 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		if (joinType==JOIN_TYPE.RIGHT || joinType==JOIN_TYPE.OUTER) q.qR = q.qR.top(n);
 		return q;
 	}
+
+	@Override
+	public Query<T> offset(long m) {
+		final LocalJoin<T> q = new LocalJoin<T>(this);
+		q.offset = m;
+		if (joinType==JOIN_TYPE.LEFT || joinType==JOIN_TYPE.OUTER) q.qL = q.qL.offset(m);
+		if (joinType==JOIN_TYPE.RIGHT || joinType==JOIN_TYPE.OUTER) q.qR = q.qR.offset(m);
+		return q;
+	}
+
 
 	@Override
 	public Query<T> distinct() {

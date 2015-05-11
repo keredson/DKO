@@ -156,7 +156,7 @@ public class Context {
 		String prop = System.getProperty(Constants.PROPERTY_OPTIMIZE_SELECT_FIELDS);
 		if (prop == null) prop = System.getProperty(Constants.PROPERTY_OPTIMIZE_SELECT_FIELDS_OLD);
 		if (prop != null) return Util.truthy(prop);
-		return true;
+		return false;
 	}
 
 	/**
@@ -330,7 +330,7 @@ public class Context {
 		final UUID uuid = UUID.randomUUID();
 		map.put(uuid, newDatabaseName);
 		final Map<UUID, String> map2 = map;
-		return new Undoer() {
+		return new Undoer("OverrideDB:" + originalDatabaseName + "=>" + newDatabaseName) {
 			@Override
 			public void undo() {
 				map2.remove(uuid);
@@ -348,7 +348,7 @@ public class Context {
 	public Undoer setDataSource(final DataSource ds) {
 		final UUID uuid = UUID.randomUUID();
 		defaultDataSource.put(uuid, ds);
-		return new Undoer() {
+		return new Undoer("setDataSource") {
 			@Override
 			public void undo() {
 				defaultDataSource.remove(uuid);
@@ -374,7 +374,7 @@ public class Context {
 		final UUID uuid = UUID.randomUUID();
 		map.put(uuid, ds);
 		final Map<UUID, DataSource> map2 = map;
-		return new Undoer() {
+		return new Undoer("setDataSource:pkgName=" + pkg.getName()) {
 			@Override
 			public void undo() {
 				map2.remove(uuid);
@@ -397,7 +397,7 @@ public class Context {
 		final UUID uuid = UUID.randomUUID();
 		map.put(uuid, ds);
 		final Map<UUID, DataSource> map2 = map;
-		return new Undoer() {
+		return new Undoer("setDataSource:class=" + cls.getName()) {
 			@Override
 			public void undo() {
 				map2.remove(uuid);
@@ -414,7 +414,7 @@ public class Context {
 	public Undoer enableUsageWarnings(final boolean enable) {
 		final UUID uuid = UUID.randomUUID();
 		enableUsageWarnings.put(uuid, enable);
-		return new Undoer() {
+		return new Undoer("enableUsageWarnings:" + enable) {
 			@Override
 			public void undo() {
 				enableUsageWarnings.remove(uuid);
@@ -430,7 +430,7 @@ public class Context {
 	public Undoer enableSelectOptimizations(final boolean enable) {
 		final UUID uuid = UUID.randomUUID();
 		enableSelectOptimizations.put(uuid, enable);
-		return new Undoer() {
+		return new Undoer("enableSelectOptimizations:" + enable) {
 			@Override
 			public void undo() {
 				enableSelectOptimizations.remove(uuid);
@@ -445,7 +445,8 @@ public class Context {
 	 * @author Derek Anderson
 	 */
 	public static abstract class Undoer {
-		private boolean autoRevoke = true;
+		public final String tag;
+		private boolean autoRevoke = false;
 		public abstract void undo();
 		public boolean willAutoUndo() {
 			return autoRevoke ;
@@ -455,7 +456,10 @@ public class Context {
 			return this;
 		}
 
-		private Undoer() {}
+		private Undoer(String tag) {
+			this.tag = tag;
+		}
+
 		protected void finalize() {
 			if (autoRevoke) undo();
 		}

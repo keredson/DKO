@@ -51,9 +51,17 @@ public class SchemaExtractorBase {
 	private File enumsOut = null;
 	private File out = null;
 	private ConnectionAdapter connAdapter = null;
+	private String connectionName = null;
+	private Task antTask = null;
 
 	private final List<Pattern> onlyTables = new ArrayList<Pattern>();
 	private final List<Pattern> excludeTables = new ArrayList<Pattern>();
+
+	public SchemaExtractorBase() {}
+
+	public SchemaExtractorBase(Task t) {
+		this.antTask = t;
+	}
 
 	public void setOut(final String s) {
 		this.out  = new File(s);
@@ -85,7 +93,11 @@ public class SchemaExtractorBase {
 	}
 
 	public void setConnectionAdapter(String s) throws Exception {
-		connAdapter = (ConnectionAdapter)Class.forName(s).newInstance();
+		this.connAdapter = (ConnectionAdapter)Class.forName(s).newInstance();
+	}
+
+	public void setConnectionName(String s) {
+		this.connectionName = s;
 	}
 
 	public void setURL(final String s) throws Exception {
@@ -270,7 +282,7 @@ public class SchemaExtractorBase {
         	if (connAdapter == null)
 			return DriverManager.getConnection(url, username, password);
 		else
-			return connAdapter.getConnection(connectionName, this);
+			return connAdapter.getConnection(connectionName, antTask);
 	}
 
 	public void execute() {

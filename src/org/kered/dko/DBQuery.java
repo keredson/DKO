@@ -688,9 +688,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		final String name = Util.getTableName(table);
 		String base = "";
 		for (final String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
-		String proposed = null;
-		int i = 1;
-		while (tableNames.contains((proposed = base + (i==1 ? "" : String.valueOf(i))))) ++i;
+		String proposed = base + 0;
+		int i = 0;
+		while (tableNames.contains(proposed)) {
+			proposed = base + String.valueOf(++i);
+                }
 		return proposed;
 	}
 

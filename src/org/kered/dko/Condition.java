@@ -552,7 +552,7 @@ public abstract class Condition {
 				bindings.add(v2);
 			}
 			sb.append(cmp2);
-			if (v2 instanceof Field) {
+			if (v3 instanceof Field) {
 				sb.append(Util.derefField((Field)v3, context));
 			} else if (v3 instanceof Expression) {
 				((Expression)v3).__getSQL(sb, bindings, context);

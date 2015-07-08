@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -224,14 +224,14 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Set<T> asSet() {
-		final Set<T> set = new HashSet<T>();
+		final Set<T> set = new LinkedHashSet<T>();
 		for (final T t : this) set.add(t);
 		return set;
 	}
 
 	@Override
 	public <S> Set<S> asSet(final Field<S> field) {
-		final Set<S> ret = new HashSet<S>();
+		final Set<S> ret = new LinkedHashSet<S>();
 		for (final S s : this.distinct().asIterableOf(field)) {
 			ret.add(s);
 		}

@@ -31,6 +31,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 	private final JOIN_TYPE joinType;
 	//private Class<? extends J> type;
 	private long limit = -1;
+	private long offset = -1;
 
 	private transient List<Field<?>> selectFields;
 
@@ -54,6 +55,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		q2 = q.q2;
 		condition = q.condition;
 		limit = q.limit;
+		offset = q.offset;
 	}
 
 	public SoftJoin(final JOIN_TYPE joinType, final Class<? extends Table> type, final Query<? extends Table> q, final Class<? extends Table> t, final Condition on) {
@@ -90,6 +92,14 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		q.limit = n;
 		return q;
 	}
+
+	@Override
+	public Query<T> offset(long m) {
+		final SoftJoin<T> q = new SoftJoin<T>(this);
+		q.offset = m;
+		return q;
+	}
+
 
 	@Override
 	public Query<T> distinct() {
@@ -241,6 +251,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 			boolean matchedqX = false;
 			boolean matchedqY = false;
 			long count = 0;
+			long skip = offset;
 			Table tX = null;
 			private T next;
 			boolean first = true;
@@ -274,6 +285,9 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 						}
 					}
 					if (matches) {
+						if (skip-- > 0) {
+							continue;
+						}
 						next = t;
 						if (qYpk) {
 							if (qXi.hasNext()) {

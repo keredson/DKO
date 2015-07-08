@@ -50,9 +50,18 @@ public class SchemaExtractorBase {
 	private String[] enums = {};
 	private File enumsOut = null;
 	private File out = null;
+	private ConnectionAdapter connAdapter = null;
+	private String connectionName = null;
+	private Task antTask = null;
 
 	private final List<Pattern> onlyTables = new ArrayList<Pattern>();
 	private final List<Pattern> excludeTables = new ArrayList<Pattern>();
+
+	public SchemaExtractorBase() {}
+
+	public SchemaExtractorBase(Task t) {
+		this.antTask = t;
+	}
 
 	public void setOut(final String s) {
 		this.out  = new File(s);
@@ -81,6 +90,14 @@ public class SchemaExtractorBase {
 			this.dbType  = Constants.DB_TYPE.ORACLE;
 		if ("derby".equalsIgnoreCase(s))
 			this.dbType  = Constants.DB_TYPE.DERBY;
+	}
+
+	public void setConnectionAdapter(String s) throws Exception {
+		this.connAdapter = (ConnectionAdapter)Class.forName(s).newInstance();
+	}
+
+	public void setConnectionName(String s) {
+		this.connectionName = s;
 	}
 
 	public void setURL(final String s) throws Exception {
@@ -182,7 +199,7 @@ public class SchemaExtractorBase {
 		System.err.println("connecting to "+ url);
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection(url, username, password);
+			conn = getConnection();
 			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
 			return schemas;
 		} catch (SQLException e) {
@@ -260,13 +277,21 @@ public class SchemaExtractorBase {
 		return "<string> (no help available)";
 	}
 
+	private Connection getConnection() throws SQLException
+	{
+        	if (connAdapter == null)
+			return DriverManager.getConnection(url, username, password);
+		else
+			return connAdapter.getConnection(connectionName, antTask);
+	}
+
 	public void execute() {
 
 		Connection conn = null;
 		try {
 
 			System.err.println("connecting to "+ url);
-			conn = DriverManager.getConnection(url, username, password);
+			conn = getConnection();
 			final Map<String,Map<String,Map<String,String>>> schemas = getSchemas(conn);
 			final Map<String,Map<String,Set<String>>> primaryKeys = getPrimaryKeys(conn, schemas);
 			final Map<String, Map<String,Object>> foreignKeys = getForeignKeys(conn);
@@ -340,9 +365,9 @@ public class SchemaExtractorBase {
 		if (pks == null) throw new RuntimeException("primary keys not set for enum table: "
 			+ schema +"."+ table +"."+ column);
 		String sep =".";
-		if (conn.getClass().getName().startsWith("com.microsoft")) {
+		if (this.dbType == DB_TYPE.SQLSERVER) {
 			sep ="..";
-	    }
+		}
 		final JSONObject ret = new JSONObject();
 		final String sql = "select "+ column +", "+ Util.join(", ", pks) +" "
 				+ "from "+ schema + sep + table +" order by "+ column +";";

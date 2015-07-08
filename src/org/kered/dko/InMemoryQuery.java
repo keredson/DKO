@@ -142,6 +142,17 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
+	public Query<T> offset(long m) {
+		if (!loaded) load();
+		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
+		q.cache = new ArrayList<T>();
+		if (cache.size() > m) {
+			q.cache.addAll(cache.subList((int)m, cache.size()));
+		}
+		return q;
+	}
+
+	@Override
 	public Query<T> distinct() {
 		// TODO Auto-generated method stub
 		return null;

@@ -151,6 +151,7 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		}
 
 		final List<Expression.OrderBy<?>> obes = query.getOrderByExpressions();
+		boolean orderByApplied = false;
 		if (!context.inInnerQuery() && obes!=null && !obes.isEmpty()) {
 			sb.append(" order by ");
 			final String[] tmp = new String[obes.size()];
@@ -170,14 +171,12 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 					sb2.append(((SQLFunction.OrderBySQLFunction)obe).direction==DESCENDING ? " DESC" : " ASC");
 					tmp[i] = sb2.toString();
 				}
+				orderByApplied = true;
 			}
 			sb.append(Util.join(", ", tmp));
 		}
 
-		if (context.dbType!=DB_TYPE.SQLSERVER && context.dbType!=DB_TYPE.ORACLE && context.dbType!=DB_TYPE.DERBY && 
-				query.top>0 && query.joinsToMany.size()==0) {
-			sb.append(" limit ").append(query.top);
-		}
+		appendLimitAndOffset(query, context, sb, orderByApplied);
 
 		if (selectedFields.length > context.maxFields) {
 			Util.log(sb.toString(), null);
@@ -190,12 +189,37 @@ class DBRowIterator<T extends Table> implements PeekableClosableIterator<Object[
 		final String sql = sb.toString();
 		return new Tuple2<String,List<Object>>(sql, bindings);
 	}
+	private static <T extends Table>  void appendLimitAndOffset(DBQuery<T> query, SqlContext context,
+		StringBuffer sb, boolean orderByApplied) {
+		
+		if (query.joinsToMany.isEmpty()) {
+			if (context.dbType != DB_TYPE.SQLSERVER && context.dbType!=DB_TYPE.ORACLE && context.dbType!=DB_TYPE.DERBY) {
+				if (query.top > 0) {
+					sb.append(" limit ").append(query.top);
+				}
+				if (query.offset > 0) {
+					sb.append(" offset ").append(query.offset);
+				}
+			}
+			else if (query.offset > 0 && context.dbType == DB_TYPE.SQLSERVER) {
+				// this syntax is more complicated than select top(). If you're restricting the number of rows
+				// you need to provide an offset. This also requires the use of the order by clause. Trap this now.
+				if (!orderByApplied) {
+					throw new RuntimeException("offset requires order by clause on SQL Server.");
+				}
+				sb.append(" offset ").append(Math.max(0, query.offset)).append(" rows");
+				if (query.top > 0) {
+					sb.append(" fetch next ").append(query.top).append(" rows only");
+				}
+			}
+		}
+	}
 
 	private static <T extends Table> void appendSelectFromWhere(DBQuery<T> query, final Expression.Select<?>[] selectedBoundFields,
 			final SqlContext context, final StringBuffer sb, List<Object> bindings) {
 		sb.append("select ");
 		if (query.distinct) sb.append("distinct ");
-		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.joinsToMany.size()==0) {
+		if (context.dbType==DB_TYPE.SQLSERVER && query.top>0 && query.offset<=0 && query.joinsToMany.size()==0) {
 			sb.append(" top ").append(query.top).append(" ");
 		}
 		if (query.globallyAppliedSelectFunction == null) {

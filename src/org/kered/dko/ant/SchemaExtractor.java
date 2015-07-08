@@ -4,7 +4,7 @@ import org.apache.tools.ant.Task;
 
 public class SchemaExtractor extends Task {
 	
-	SchemaExtractorBase base = new SchemaExtractorBase();
+	SchemaExtractorBase base = new SchemaExtractorBase(this);
 
 	public void setDBType(final String s) {
 		base.setDBType(s);
@@ -66,4 +66,11 @@ public class SchemaExtractor extends Task {
 		base.execute();
 	}
 
+	public void setConnectionAdapter(final String s) throws Exception {
+		base.setConnectionAdapter(s);
+	}
+
+	public void setConnectionName(final String s) {
+		base.setConnectionName(s);
+	}
 }

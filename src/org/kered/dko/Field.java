@@ -1120,7 +1120,7 @@ public class Field<T> implements Cloneable, Expression.OrderBy<T>, Expression.Se
 		return this.boundTable!=null || this.boundTableInfo!=null;
 	}
 
-	boolean sameField(final Expression.Select<?> other) {
+	public boolean sameField(final Expression.Select<?> other) {
 		if (this == other)
 			return true;
 		if (other == null)

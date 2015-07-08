@@ -55,6 +55,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 	private Set<Field<?>> groupBySet = null;
 	private List<Expression.OrderBy<?>> orderByExpressions = null;
 	long top = 0;
+	long offset = 0;
 	private Map<Field<?>,Object> data = null;
 	boolean distinct = false;
 	DataSource ds = null;
@@ -120,6 +121,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 			orderByExpressions.addAll(q.orderByExpressions);
 		}
 		top = q.top;
+		offset = q.offset;
 		if (q.data!=null) {
 			data = new HashMap<Field<?>,Object>();
 			data.putAll(q.data);
@@ -675,13 +677,22 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return q;
 	}
 
+	@Override
+	public Query<T> offset(final long o) {
+		final DBQuery<T> q = new DBQuery<T>(this);
+		q.offset = o;
+		return q;
+	}
+
 	private String genTableName(final Class<? extends Table> table, final Collection<String> tableNames) {
 		final String name = Util.getTableName(table);
 		String base = "";
 		for (final String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
-		String proposed = null;
-		int i = 1;
-		while (tableNames.contains((proposed = base + (i==1 ? "" : String.valueOf(i))))) ++i;
+		String proposed = base + 0;
+		int i = 0;
+		while (tableNames.contains(proposed)) {
+			proposed = base + String.valueOf(++i);
+                }
 		return proposed;
 	}
 
@@ -1543,6 +1554,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		result = prime * result
 				+ ((tableInfos == null) ? 0 : tableInfos.hashCode());
 		result = prime * result + (int)top;
+		result = prime * result + (int)offset;
 		result = prime * result
 				+ ((usedTableNames == null) ? 0 : usedTableNames.hashCode());
 		return result;

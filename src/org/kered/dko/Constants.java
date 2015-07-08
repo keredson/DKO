@@ -288,6 +288,12 @@ public class Constants {
 	 */
 	public static final String PROPERTY_PERSISTENCE_DB = "org.kered.dko.persistence_db";
 
+	/**
+	 * A Java property (boolean) that controls whether DKO uses the persistence database or not.
+	 * By default: true
+	 */
+	public static final String PROPERTY_USE_PERSISTENCE_DB = "org.kered.dko.use_persistence_db";
+
 	static enum JOIN_TYPE {
 
 		LEFT("left join"),

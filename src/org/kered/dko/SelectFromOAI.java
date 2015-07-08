@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -282,6 +283,9 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 
 	@Override
 	public T next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
 		final T t = next;
 		next = null;
 		++count;

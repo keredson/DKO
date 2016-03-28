@@ -340,7 +340,7 @@ public class SchemaExtractorBase {
 		if (pks == null) throw new RuntimeException("primary keys not set for enum table: "
 			+ schema +"."+ table +"."+ column);
 		String sep =".";
-		if (conn.getClass().getName().startsWith("com.microsoft")) {
+		if (this.dbType == DB_TYPE.SQLSERVER) {
 			sep ="..";
 	    }
 		final JSONObject ret = new JSONObject();

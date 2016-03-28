@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -15,7 +16,6 @@ import javax.sql.DataSource;
 import org.kered.dko.DBQuery.JoinInfo;
 import org.kered.dko.Expression.Select;
 import org.kered.dko.Field.FK;
-
 
 class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 
@@ -282,6 +282,9 @@ class SelectFromOAI<T extends Table> implements ClosableIterator<T> {
 
 	@Override
 	public T next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
 		final T t = next;
 		next = null;
 		++count;

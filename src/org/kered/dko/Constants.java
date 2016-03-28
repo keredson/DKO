@@ -224,6 +224,21 @@ public class Constants {
 		for (final String kw : kws) add(kw.toLowerCase());
 	}});
 
+	// Holder class for thread safe initialization of collection
+	private static class AllKeywordsHolder {
+		private final static Set<String> INSTANCE = Collections.unmodifiableSet(new HashSet<String>() {{
+			addAll(KEYWORDS_SQL92);
+			addAll(KEYWORDS_SQL99);
+			addAll(KEYWORDS_SQL2003);
+			addAll(KEYWORDS_SQLSERVER);
+			addAll(KEYWORDS_MYSQL);
+		}});
+	}
+
+	public static Set<String> getAllSQLKeywords() {
+		return AllKeywordsHolder.INSTANCE;
+	}
+
 	@SuppressWarnings("serial")
 	final public static Set<String> INVALID_FIELD_NAMES = Collections.unmodifiableSet(new HashSet<String>() {{
 		final String[] kws = {"ALL", "FIELDS", "PK", "PKS", "FKS"};
@@ -307,6 +322,5 @@ public class Constants {
 		    return s;
 		}
 	}
-
 }
 

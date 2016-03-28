@@ -210,6 +210,11 @@ class FilteringQuery<T extends Table> extends AbstractQuery<T> implements Matryo
 	}
 
 	@Override
+	public boolean isOrdered() {
+		return q.isOrdered();
+	}
+
+	@Override
 	public Collection<Query<? extends Table>> getUnderlying() {
 		Collection<Query<? extends Table>> ret = new ArrayList();
 		ret.add(q);

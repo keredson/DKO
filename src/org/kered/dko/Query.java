@@ -974,4 +974,6 @@ public interface Query<T extends Table> extends Iterable<T> {
 	 */
 	public Query<T> groupBy(Collection<Field<?>> fields);
 
+
+	boolean isOrdered();
 }

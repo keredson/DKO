@@ -247,6 +247,11 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		return new SelectFromOAI<T>(this);
 	}
 
+	@Override
+	public boolean isOrdered() {
+		return orderByExpressions == null ? false : !orderByExpressions.isEmpty();
+	}
+
 	private void sanityCheckToManyJoins() {
 		final List<Field<?>> selectFields = getSelectFields();
 		for (final JoinInfo join : this.joinsToMany) {
@@ -600,7 +605,7 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 
 	/**
 	 * @param context
-	 * @param bindings2
+	 * @param bindings
 	 * @return
 	 */
 	String getJoinClause(final SqlContext context, final List<Object> bindings) {
@@ -680,8 +685,8 @@ class DBQuery<T extends Table> extends AbstractQuery<T> {
 		String base = "";
 		for (final String s : name.split("_")) base += s.length() > 0 ? s.substring(0, 1) : "";
 		String proposed = null;
-		int i = 1;
-		while (tableNames.contains((proposed = base + (i==1 ? "" : String.valueOf(i))))) ++i;
+		int i = 0;
+		while (tableNames.contains((proposed = base + i))) ++i;
 		return proposed;
 	}
 

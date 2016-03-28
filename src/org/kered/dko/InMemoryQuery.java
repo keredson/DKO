@@ -25,6 +25,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	private List<Field<?>> selectFields;
 	private Query<T> query;
 	private boolean loaded = false;
+	private boolean ordered = false;
 
 	InMemoryQuery(final Query<T> query) {
 		this(query, false);
@@ -74,6 +75,11 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 	}
 
 	@Override
+	public boolean isOrdered() {
+		return ordered;
+	}
+
+	@Override
 	public Query<T> where(final Condition... conditions) {
 		if (!loaded) load();
 		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
@@ -100,6 +106,7 @@ class InMemoryQuery<T extends Table> extends AbstractQuery<T> {
 
 	@Override
 	public Query<T> orderBy(final Expression.OrderBy<?>... obes) {
+		ordered = true;
 		if (!loaded) load();
 		final InMemoryQuery<T> q = new InMemoryQuery<T>(this);
 		q.cache.addAll(cache);

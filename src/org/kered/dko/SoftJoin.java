@@ -408,6 +408,7 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		};
 	}
 
+
 	@Override
 	public Query<T> avg() {
 		// TODO Auto-generated method stub
@@ -419,5 +420,8 @@ class SoftJoin<T extends Table> extends AbstractQuery<T> {
 		throw new RuntimeException("not implemented yet"); // TODO
 	}
 
-
+	@Override
+	public boolean isOrdered() {
+		throw new RuntimeException("not implemented yet"); // TODO
+	}
 }

@@ -346,6 +346,7 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		};
 	}
 
+
 	protected ClosableIterator<Table> buildIteratorFrom(PeekableClosableIterator<Object[]> iterator) {
 		final DualIterator di = new DualIterator(iterator, qL.getSelectFields(), qR.getSelectFields());
     	final ClosableIterator<Table> iL;
@@ -555,4 +556,9 @@ class LocalJoin<T extends Table> extends AbstractQuery<T> {
 		return null;
 	}
 
+	@Override
+	public boolean isOrdered() {
+		// TODO When orderBy implemented...
+		return false;
+	}
 }

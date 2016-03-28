@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -224,14 +225,14 @@ public abstract class AbstractQuery<T extends Table> implements Query<T> {
 
 	@Override
 	public Set<T> asSet() {
-		final Set<T> set = new HashSet<T>();
+		final Set<T> set = isOrdered() ? new LinkedHashSet<T>() : new HashSet<T>();
 		for (final T t : this) set.add(t);
 		return set;
 	}
 
 	@Override
 	public <S> Set<S> asSet(final Field<S> field) {
-		final Set<S> ret = new HashSet<S>();
+		final Set<S> ret = isOrdered() ? new LinkedHashSet<S>() : new HashSet<S>();
 		for (final S s : this.distinct().asIterableOf(field)) {
 			ret.add(s);
 		}

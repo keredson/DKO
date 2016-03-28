@@ -7,7 +7,17 @@ lib/*.jar
 *~
 bin/*
 gensrc/*
-.classpath
-.project
+examples/helloandroid/gen/*
+examples/helloandroid/gensrcdko/*
+examples/helloworld/gensrcdko/*
+examples/sakila/gensrcdko/*
 gen/*
 reports/*
+
+# Eclipse project files
+.classpath
+.project
+
+# IntelliJ project files
+*.iml
+.idea/*
